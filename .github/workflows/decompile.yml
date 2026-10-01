@@ -1,6 +1,9 @@
 name: decompile
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - '.github/ci/decompile'
 jobs:
   decompile:
     runs-on: ubuntu-latest
@@ -16,9 +19,9 @@ jobs:
         run: |
           mkdir -p out
           java -Xmx3g -jar cfr.jar FiskHeroes-1.7.10-2.4.0.jar --outputdir out --silent true
-          find out -name '*.java' | wc -l
+          echo "java files: $(find out -name '*.java' | wc -l)"
       - uses: actions/upload-artifact@v4
         with:
           name: fisk-decompiled
           path: out
-          compression-level: 9
+          compression-level: 6
