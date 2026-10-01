@@ -1,0 +1,611 @@
+package com.fiskmods.heroes.common.hero.modifier;
+
+import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
+import com.fiskmods.heroes.common.hero.power.Modifier;
+import com.fiskmods.heroes.common.hero.power.ModifierEntry;
+import com.fiskmods.heroes.common.hero.power.PowerProperty;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.DamageTypeTags;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+
+/**
+ * Compact implementations of the "stateful but simple" modifiers. Keeping them in one file makes it
+ * easy to compare their behaviour against the original mod's equivalents.
+ */
+final class DamageGroups
+{
+    static Modifiers.DamageGroup groupOf(DamageSource source, String declared)
+    {
+        if (declared != null && !declared.isEmpty())
+        {
+            String name = declared.toLowerCase(java.util.Locale.ROOT);
+
+            if (name.contains("fire") || name.contains("heat"))
+            {
+                return Modifiers.DamageGroup.FIRE;
+            }
+            if (name.contains("cold") || name.contains("ice") || name.contains("cryo"))
+            {
+                return Modifiers.DamageGroup.COLD;
+            }
+            if (name.contains("bullet") || name.contains("projectile") || name.contains("arrow"))
+            {
+                return Modifiers.DamageGroup.PROJECTILE;
+            }
+            if (name.contains("electric") || name.contains("lightning"))
+            {
+                return Modifiers.DamageGroup.ELECTRICITY;
+            }
+            if (name.contains("cosmic"))
+            {
+                return Modifiers.DamageGroup.COSMIC;
+            }
+            if (name.contains("energy"))
+            {
+                return Modifiers.DamageGroup.ENERGY;
+            }
+            if (name.contains("explos"))
+            {
+                return Modifiers.DamageGroup.EXPLOSION;
+            }
+            if (name.contains("magic"))
+            {
+                return Modifiers.DamageGroup.MAGIC;
+            }
+        }
+
+        if (source.is(DamageTypeTags.IS_FIRE))
+        {
+            return Modifiers.DamageGroup.FIRE;
+        }
+        if (source.is(DamageTypeTags.IS_FREEZING))
+        {
+            return Modifiers.DamageGroup.COLD;
+        }
+        if (source.is(DamageTypes.LIGHTNING_BOLT))
+        {
+            return Modifiers.DamageGroup.ELECTRICITY;
+        }
+        if (source.is(DamageTypeTags.IS_PROJECTILE))
+        {
+            return Modifiers.DamageGroup.PROJECTILE;
+        }
+        if (source.is(DamageTypeTags.IS_EXPLOSION))
+        {
+            return Modifiers.DamageGroup.EXPLOSION;
+        }
+        if (source.is(DamageTypeTags.IS_FALL))
+        {
+            return Modifiers.DamageGroup.FALL;
+        }
+        if (source.is(DamageTypeTags.WITCH_RESISTANT_TO))
+        {
+            return Modifiers.DamageGroup.MAGIC;
+        }
+
+        return null;
+    }
+}
+
+/** Full immunity to a damage group (fire immunity, bullet immunity, ...). */
+class ModifierImmunity extends Modifier
+{
+    private final Modifiers.DamageGroup group;
+
+    ModifierImmunity(ResourceLocation id, Modifiers.DamageGroup group)
+    {
+        super(id);
+        this.group = group;
+    }
+
+    @Override
+    public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        return DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE)) == group;
+    }
+}
+
+/** Scales damage of a group down. */
+class ModifierResistance extends Modifier
+{
+    private final Modifiers.DamageGroup group;
+
+    ModifierResistance(ResourceLocation id, Modifiers.DamageGroup group)
+    {
+        super(id);
+        this.group = group;
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        Modifiers.DamageGroup target = DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE));
+
+        if (target == group || group == null && target != null)
+        {
+            return amount * entry.getFloat(PowerProperty.FACTOR);
+        }
+
+        return amount;
+    }
+}
+
+/** Scales damage of a group up (kryptonite-style weaknesses). */
+class ModifierWeakness extends Modifier
+{
+    private final Modifiers.DamageGroup group;
+
+    ModifierWeakness(ResourceLocation id, Modifiers.DamageGroup group)
+    {
+        super(id);
+        this.group = group;
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        Modifiers.DamageGroup target = DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE));
+
+        if (target == group || group == null && target != null)
+        {
+            return amount * entry.getFloat(PowerProperty.FACTOR);
+        }
+
+        return amount;
+    }
+}
+
+/** Immunity to projectiles; absolute immunity also blocks explosions and area effects. */
+class ModifierProjectileImmunity extends Modifier
+{
+    ModifierProjectileImmunity(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        if (source.is(DamageTypeTags.IS_PROJECTILE))
+        {
+            return true;
+        }
+
+        return entry.getBoolean(PowerProperty.IS_ABSOLUTE) && (source.is(DamageTypeTags.IS_EXPLOSION) || source.getDirectEntity() == null);
+    }
+}
+
+/** Catches arrows out of the air instead of taking damage. */
+class ModifierArrowCatching extends Modifier
+{
+    ModifierArrowCatching(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        return source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow;
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.level().isClientSide || entity.tickCount % 5 != 0)
+        {
+            return;
+        }
+
+        for (net.minecraft.world.entity.Entity projectile : entity.level().getEntities(entity, entity.getBoundingBox().inflate(1.5D)))
+        {
+            if (projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && !arrow.isRemoved())
+            {
+                if (arrow.isOnFire())
+                {
+                    arrow.clearFire();
+                }
+
+                arrow.setDeltaMovement(Vec3.ZERO);
+                arrow.discard();
+                entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ITEM_PICKUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.6F, 1.4F);
+            }
+        }
+    }
+}
+
+/** Immunity to a declared damage type; the pack spells the type out in the property. */
+class ModifierDamageImmunity extends Modifier
+{
+    ModifierDamageImmunity(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        String declared = entry.get(PowerProperty.DAMAGE_TYPE);
+
+        if (declared == null || declared.isEmpty())
+        {
+            return false;
+        }
+
+        Modifiers.DamageGroup group = DamageGroups.groupOf(source, declared);
+        return group != null && DamageGroups.groupOf(source, declared) == group && matches(source, declared);
+    }
+
+    private boolean matches(DamageSource source, String declared)
+    {
+        return source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT).replace("_", ""));
+    }
+}
+
+/** Damage resistance whose factor comes from the pack. */
+class ModifierDamageResistance extends Modifier
+{
+    ModifierDamageResistance(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        String declared = entry.get(PowerProperty.DAMAGE_TYPE);
+
+        if (declared == null || declared.isEmpty() || source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT)))
+        {
+            return amount * entry.getFloat(PowerProperty.FACTOR);
+        }
+
+        return amount;
+    }
+}
+
+/** Removes potion effects as fast as they are applied. */
+class ModifierPotionImmunity extends Modifier
+{
+    ModifierPotionImmunity(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.getActiveEffects().isEmpty())
+        {
+            return;
+        }
+
+        for (MobEffectInstance effect : new java.util.ArrayList<>(entity.getActiveEffects()))
+        {
+            if (effect.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL)
+            {
+                entity.removeEffect(effect.getEffect());
+            }
+        }
+    }
+}
+
+/** Metal skin: damage is converted into heat, and heat builds up over time. */
+class ModifierMetalSkin extends Modifier
+{
+    ModifierMetalSkin(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+
+        if (data != null && data.getData().get(Vars.METAL_SKIN))
+        {
+            float heat = data.getData().get(Vars.METAL_HEAT);
+            data.getData().set(Vars.METAL_HEAT, Math.min(100.0F, heat + amount * 2.0F));
+            return amount * entry.getFloat(PowerProperty.FACTOR);
+        }
+
+        return amount;
+    }
+}
+
+/** Invisibility: the wearer becomes untargetable while the effect is toggled. */
+class ModifierInvisibility extends Modifier
+{
+    ModifierInvisibility(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        boolean state = !entry.isToggled(entity);
+        entry.setToggled(entity, state);
+        data.getData().set(Vars.INVISIBLE, state);
+        apply(entity, state);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (data.getData().get(Vars.INVISIBLE))
+        {
+            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, true, false, false));
+        }
+    }
+
+    static void apply(LivingEntity entity, boolean invisible)
+    {
+        entity.setInvisible(invisible);
+    }
+}
+
+/** Hovering: cancels gravity while the ability is active. */
+class ModifierHover extends Modifier
+{
+    ModifierHover(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!data.getData().get(Vars.HOVERING))
+        {
+            return;
+        }
+
+        Vec3 motion = entity.getDeltaMovement();
+        entity.setDeltaMovement(motion.x, entity.isShiftKeyDown() ? -0.1D : 0.0D, motion.z);
+        entity.fallDistance = 0.0F;
+    }
+}
+
+/** Gliding: fall slowly while the ability is toggled on. */
+class ModifierGliding extends Modifier
+{
+    ModifierGliding(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        boolean state = !entry.isToggled(entity);
+        entry.setToggled(entity, state);
+        data.getData().set(Vars.GLIDING, state);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        float timer = data.getData().get(Vars.GLIDING_TIMER);
+
+        if (data.getData().get(Vars.GLIDING) && !entity.onGround())
+        {
+            Vec3 motion = entity.getDeltaMovement();
+            double y = Math.max(motion.y, -0.12D);
+            entity.setDeltaMovement(motion.x, y, motion.z);
+            entity.fallDistance = Math.min(entity.fallDistance, 1.0F);
+            data.getData().set(Vars.GLIDING_TIMER, Math.min(10.0F, timer + 0.5F));
+        }
+        else if (timer > 0)
+        {
+            data.getData().set(Vars.GLIDING_TIMER, Math.max(0.0F, timer - 1.0F));
+        }
+    }
+}
+
+/** Retaliates against attackers with reflected damage. */
+class ModifierThorns extends Modifier
+{
+    ModifierThorns(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        if (source.getEntity() instanceof LivingEntity attacker && attacker != entity)
+        {
+            attacker.hurt(entity.damageSources().thorns(entity), entry.getFloat(PowerProperty.AMOUNT));
+        }
+
+        return amount;
+    }
+}
+
+/** Lets the wearer walk on water by freezing it underneath. */
+class ModifierFrostWalking extends Modifier
+{
+    ModifierFrostWalking(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.level().isClientSide || !(entity instanceof Player player) || !player.onGround() && player.getDeltaMovement().y > 0)
+        {
+            return;
+        }
+
+        if (player.isInWater() || player.level().getBlockState(player.blockPosition().below()).getBlock() == net.minecraft.world.level.block.Blocks.WATER)
+        {
+            net.minecraft.core.BlockPos pos = player.blockPosition().below();
+
+            if (player.level().getBlockState(pos).getBlock() == net.minecraft.world.level.block.Blocks.WATER)
+            {
+                player.level().setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.FROSTED_ICE.defaultBlockState());
+            }
+        }
+    }
+}
+
+/** Manipulates the gravity affecting the wearer. */
+class ModifierGravityManipulation extends Modifier
+{
+    ModifierGravityManipulation(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!data.getData().get(Vars.NO_GRAVITY))
+        {
+            return;
+        }
+
+        Vec3 motion = entity.getDeltaMovement();
+
+        if (motion.y < 0)
+        {
+            entity.setDeltaMovement(motion.x, motion.y * 0.5D, motion.z);
+        }
+
+        entity.fallDistance = 0.0F;
+    }
+}
+
+/** The wearer can climb walls they are pressed against. */
+class ModifierWallCrawling extends Modifier
+{
+    ModifierWallCrawling(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!(entity instanceof Player player) || !data.getData().get(Vars.WALL_CRAWLING))
+        {
+            return;
+        }
+
+        boolean againstWall = player.horizontalCollision;
+
+        if (againstWall && !player.onGround())
+        {
+            Vec3 motion = player.getDeltaMovement();
+
+            if (player.zza > 0)
+            {
+                player.setDeltaMovement(motion.x, 0.2D, motion.z);
+            }
+            else if (player.isShiftKeyDown())
+            {
+                player.setDeltaMovement(motion.x, -0.2D, motion.z);
+            }
+            else
+            {
+                player.setDeltaMovement(motion.x, 0.0D, motion.z);
+            }
+
+            player.fallDistance = 0.0F;
+        }
+    }
+}
+
+/** Alerts the wearer of incoming danger. */
+class ModifierSpiderSense extends Modifier
+{
+    ModifierSpiderSense(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.level().isClientSide)
+        {
+            return;
+        }
+
+        for (net.minecraft.world.entity.projectile.Projectile projectile : entity.level().getEntitiesOfClass(net.minecraft.world.entity.projectile.Projectile.class, entity.getBoundingBox().inflate(6.0D)))
+        {
+            Vec3 motion = projectile.getDeltaMovement();
+
+            if (motion.lengthSqr() > 0.01D)
+            {
+                entity.addEffect(new MobEffectInstance(MobEffects.DIG_SPEED, 10, 0, true, false, false));
+                break;
+            }
+        }
+    }
+}
+
+/** Speedsters tear apart what they run into. */
+class ModifierSpeedDisintegration extends Modifier
+{
+    ModifierSpeedDisintegration(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!(entity instanceof Player player) || player.level().isClientSide || !data.getData().get(Vars.SPEEDING))
+        {
+            return;
+        }
+
+        if (player.getDeltaMovement().horizontalDistanceSqr() < 0.6D)
+        {
+            return;
+        }
+
+        net.minecraft.core.BlockPos origin = player.blockPosition();
+
+        for (int i = 0; i < 6; ++i)
+        {
+            net.minecraft.core.BlockPos pos = origin.offset(player.getRandom().nextInt(3) - 1, player.getRandom().nextInt(2), player.getRandom().nextInt(3) - 1);
+            net.minecraft.world.level.block.state.BlockState state = player.level().getBlockState(pos);
+
+            if (!state.isAir() && state.getDestroySpeed(player.level(), pos) >= 0 && state.getDestroySpeed(player.level(), pos) < 1.0F)
+            {
+                player.level().destroyBlock(pos, false, player);
+            }
+        }
+    }
+}
+
+/** Grants the suit's equipment items. */
+class ModifierEquipment extends Modifier
+{
+    ModifierEquipment(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onRespawn(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity instanceof Player player)
+        {
+            com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.grantEquipment(player, data);
+        }
+    }
+}
