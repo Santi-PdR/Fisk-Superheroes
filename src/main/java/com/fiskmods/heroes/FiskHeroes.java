@@ -47,7 +47,7 @@ public class FiskHeroes
     public static final Logger LOGGER = LogManager.getLogger(NAME);
 
     public static final DeferredRegister<net.minecraft.world.item.CreativeModeTab> CREATIVE_TABS =
-            DeferredRegister.create(ForgeRegistries.CREATIVE_MODE_TABS, MODID);
+            DeferredRegister.create(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, MODID);
 
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_SUITS = CREATIVE_TABS.register("suits", ModItems::createSuitTab);
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_ITEMS = CREATIVE_TABS.register("items", ModItems::createItemTab);
@@ -81,6 +81,8 @@ public class FiskHeroes
             SHNetwork.registerPacket(PacketSyncData.class, PacketSyncData::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketSyncSuit.class, PacketSyncSuit::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketAbility.class, PacketAbility::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketInput.class,
+                    com.fiskmods.heroes.common.network.PacketInput::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
             LOGGER.info("Fisk's Superheroes loaded: {} heroes, {} powers, {} data variables",

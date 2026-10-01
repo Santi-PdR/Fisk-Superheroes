@@ -36,8 +36,8 @@ public class SHNetwork
                 (msg, ctx) ->
                 {
                     NetworkEvent.Context context = ctx.get();
-                    handler.accept(msg, ctx);
                     context.setPacketHandled(true);
+                    context.enqueueWork(() -> handler.accept(msg, ctx));
                 },
                 Optional.of(direction));
     }
@@ -71,7 +71,7 @@ public class SHNetwork
     /** Server -> everyone tracking the player. */
     public static void sendToTracking(SHPacket packet, net.minecraft.world.entity.Entity entity)
     {
-        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(entity), packet);
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), packet);
     }
 
     /** Server -> everyone. */

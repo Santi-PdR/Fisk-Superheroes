@@ -24,9 +24,17 @@ public class ModifierLeaping extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entity.onGround())
+        boolean gliding = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING);
+        float timer = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER);
+
+        if (gliding && !entity.onGround())
         {
-            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER));
+            // Counts how long the wearer has been gliding; the HUD and the renderer animate off it
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, Math.min(200.0F, timer + 1.0F));
+        }
+        else if (timer != 0.0F)
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, 0.0F);
         }
     }
 

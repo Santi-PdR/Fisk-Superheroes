@@ -31,10 +31,12 @@ public class CommonEventHandler
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
-        if (event.phase != TickEvent.Phase.END || !(event.player instanceof LivingEntity entity))
+        if (event.phase != TickEvent.Phase.END)
         {
             return;
         }
+
+        LivingEntity entity = event.player;
 
         HeroTracker.update(entity);
         ModifierHandler.tick(entity);
@@ -97,8 +99,8 @@ public class CommonEventHandler
             return;
         }
 
-        float resistance = entity.getAttributeValue(SHAttributes.FALL_RESISTANCE.get());
-        float immuneTime = resistance * 4.0F;
+        double resistance = entity.getAttributeValue(SHAttributes.FALL_RESISTANCE.get());
+        double immuneTime = resistance * 4.0D;
 
         if (event.getDistance() <= immuneTime)
         {
@@ -131,6 +133,7 @@ public class CommonEventHandler
         if (event.getEntity() instanceof ServerPlayer player)
         {
             DataSyncer.onPlayerLogout(player);
+            com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
         }
     }
 

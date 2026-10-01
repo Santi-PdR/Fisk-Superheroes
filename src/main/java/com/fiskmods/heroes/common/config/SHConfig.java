@@ -13,21 +13,21 @@ public class SHConfig
     public static final ForgeConfigSpec SPEC;
 
     /* Suits */
-    public static final ForgeConfigSpec.BooleanValue REQUIRE_FULL_SUIT;
-    public static final ForgeConfigSpec.BooleanValue SUIT_PIECES_TAKE_DAMAGE;
-    public static final ForgeConfigSpec.BooleanValue FORCE_SLOW_LANDING;
-    public static final ForgeConfigSpec.BooleanValue ALLOW_VANITY_SUITS;
+    public static ForgeConfigSpec.BooleanValue REQUIRE_FULL_SUIT;
+    public static ForgeConfigSpec.BooleanValue SUIT_PIECES_TAKE_DAMAGE;
+    public static ForgeConfigSpec.BooleanValue FORCE_SLOW_LANDING;
+    public static ForgeConfigSpec.BooleanValue ALLOW_VANITY_SUITS;
 
     /* Powers */
-    public static final ForgeConfigSpec.BooleanValue ALLOW_FLIGHT;
-    public static final ForgeConfigSpec.BooleanValue ALLOW_GRIEFING;
-    public static final ForgeConfigSpec.BooleanValue ALLOW_SUPER_SPEED;
-    public static final ForgeConfigSpec.DoubleValue ABILITY_COOLDOWN_MULTIPLIER;
-    public static final ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
+    public static ForgeConfigSpec.BooleanValue ALLOW_FLIGHT;
+    public static ForgeConfigSpec.BooleanValue ALLOW_GRIEFING;
+    public static ForgeConfigSpec.BooleanValue ALLOW_SUPER_SPEED;
+    public static ForgeConfigSpec.DoubleValue ABILITY_COOLDOWN_MULTIPLIER;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
 
     /* Heroes */
-    public static final ForgeConfigSpec.BooleanValue LOAD_EXTERNAL_PACKS;
-    public static final ForgeConfigSpec.BooleanValue LOG_PACK_LOADING;
+    public static ForgeConfigSpec.BooleanValue LOAD_EXTERNAL_PACKS;
+    public static ForgeConfigSpec.BooleanValue LOG_PACK_LOADING;
 
     static
     {

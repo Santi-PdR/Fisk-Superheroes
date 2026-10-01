@@ -167,6 +167,16 @@ public class HeroIteration implements Comparable<HeroIteration>
         return nameKey != null ? nameKey : hero.getNameKey();
     }
 
+    public int getTier()
+    {
+        return hero.getTier();
+    }
+
+    public String getVersionKey()
+    {
+        return hero.getVersionKey();
+    }
+
     public Component getFormattedName()
     {
         return Component.translatable(getNameKey());

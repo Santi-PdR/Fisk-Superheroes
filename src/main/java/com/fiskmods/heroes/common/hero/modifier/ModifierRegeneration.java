@@ -32,7 +32,9 @@ public class ModifierRegeneration extends Modifier
         int delay = entry.getInt(PowerProperty.DELAY);
         int interval = delay > 0 ? delay : Math.max(1, (int) (80.0F / factor));
 
-        if (entity.getHealth() < entity.getMaxHealth() && entity.tickCount % interval == 0 && entity.getFoodData().getFoodLevel() > 0)
+        boolean fed = !(entity instanceof net.minecraft.world.entity.player.Player player) || player.getFoodData().getFoodLevel() > 0;
+
+        if (fed && entity.getHealth() < entity.getMaxHealth() && entity.tickCount % interval == 0)
         {
             entity.heal(1.0F * Math.max(1.0F, factor));
         }

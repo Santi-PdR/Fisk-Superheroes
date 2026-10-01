@@ -55,7 +55,7 @@ public enum HeroAttribute
     /** The vanilla attribute this hero attribute feeds into, or null if it is mod-side only. */
     public Attribute getVanillaAttribute()
     {
-        return SHHeroAttributeMap.get(this);
+        return com.fiskmods.heroes.common.hero.attribute.SHAttributes.get(this);
     }
 
     public static HeroAttribute byName(String name)

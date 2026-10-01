@@ -8,7 +8,6 @@ import com.fiskmods.heroes.common.hero.ItemHeroArmor;
 
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.renderer.item.ClampedItemPropertyFunction;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.resources.ResourceLocation;
@@ -45,7 +44,7 @@ public class SHClientSetup
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event)
     {
-        for (PlayerSkin.Model skin : event.getSkins())
+        for (var skin : event.getSkins())
         {
             LivingEntityRenderer<?, ?> renderer = event.getSkin(skin);
 

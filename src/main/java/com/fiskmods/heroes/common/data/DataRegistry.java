@@ -28,13 +28,19 @@ public class DataRegistry implements Iterable<DataVar<?>>
 
         if (var == null)
         {
-            var = new DataVar<>(name, type, type.getDefaultValue(), resetWithoutSuit);
+            var = create(name, type, resetWithoutSuit);
             byName.put(name, var);
             byString.put(name.toString(), var);
             byString.put(name.getPath(), var);
         }
 
         return var;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static DataVar<?> create(ResourceLocation name, DataType<?> type, boolean resetWithoutSuit)
+    {
+        return new DataVar(name, type, type.getDefaultValue(), resetWithoutSuit);
     }
 
     /** Resolves a data variable key, which may be fully qualified or relative to {@code fiskheroes}. */

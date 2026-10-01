@@ -54,7 +54,8 @@ jobs:
         if: always()
         run: |
           mkdir -p .ci
-          grep -E "error:|\.java:[0-9]+:|Execution failed|FAILED|Caused by|\* What went wrong" ci-build.log | head -400 > .ci/build-log.txt || true
+          grep -E -A3 "error:" ci-build.log | head -1500 > .ci/build-log.txt || true
+          grep -E "Execution failed|FAILED|Caused by|\* What went wrong" ci-build.log | head -60 >> .ci/build-log.txt || true
           tail -40 ci-build.log >> .ci/build-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

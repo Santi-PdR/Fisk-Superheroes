@@ -13,18 +13,18 @@ import net.minecraft.network.FriendlyByteBuf;
 public final class DataType<T>
 {
     public static final DataType<Boolean> BOOLEAN = new DataType<>("BOOLEAN", Boolean.class, Boolean.FALSE,
-            (buf, v) -> buf.writeBoolean(v), buf -> buf.readBoolean(), Boolean::booleanValue, JsonElement::getAsBoolean);
+            (buf, v) -> buf.writeBoolean(v), buf -> buf.readBoolean(), json -> json.getAsBoolean());
     public static final DataType<Byte> BYTE = new DataType<>("BYTE", Byte.class, (byte) 0,
-            FriendlyByteBuf::writeByte, ByteBuf::readByte, JsonElement::getAsByte, e -> (byte) e.getAsInt());
+            (buf, v) -> buf.writeByte(v), buf -> buf.readByte(), json -> json.getAsByte());
     public static final DataType<Integer> INT = new DataType<>("INT", Integer.class, 0,
-            FriendlyByteBuf::writeVarInt, FriendlyByteBuf::readVarInt, JsonElement::getAsInt);
+            (buf, v) -> buf.writeVarInt(v), buf -> buf.readVarInt(), json -> json.getAsInt());
     public static final DataType<Float> FLOAT = new DataType<>("FLOAT", Float.class, 0.0F,
-            ByteBuf::writeFloat, ByteBuf::readFloat, JsonElement::getAsFloat);
+            (buf, v) -> buf.writeFloat(v), buf -> buf.readFloat(), json -> json.getAsFloat());
     /** A float which is interpolated over time on the client when rendered. */
     public static final DataType<Float> FLOAT_INTERP = new DataType<>("FLOAT_INTERP", Float.class, 0.0F,
-            ByteBuf::writeFloat, ByteBuf::readFloat, JsonElement::getAsFloat);
+            (buf, v) -> buf.writeFloat(v), buf -> buf.readFloat(), json -> json.getAsFloat());
     public static final DataType<String> STRING = new DataType<>("STRING", String.class, "",
-            (buf, v) -> buf.writeUtf(v), b -> b.readUtf(32767), JsonElement::getAsString);
+            (buf, v) -> buf.writeUtf(v), buf -> buf.readUtf(32767), json -> json.getAsString());
 
     private static final DataType<?>[] TYPES = { BOOLEAN, BYTE, INT, FLOAT, FLOAT_INTERP, STRING };
 

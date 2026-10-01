@@ -76,9 +76,16 @@ public class ModifierControlledFlight extends Modifier
             double y = motion.y + look.y * velocity;
             double z = motion.z + look.z * velocity;
 
-            if (!canBoost && player.jumping)
+            boolean jumping = com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player);
+            boolean sneaking = com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player);
+
+            if (jumping)
             {
                 y += velocity;
+            }
+            else if (sneaking)
+            {
+                y -= velocity;
             }
 
             player.setDeltaMovement(x, y, z);

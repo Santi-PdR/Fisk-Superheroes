@@ -24,18 +24,7 @@ public class ModItems
 {
     public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, FiskHeroes.MODID);
 
-    public static final ArmorMaterial MATERIAL_SUPERHERO = new ArmorMaterial(
-            java.util.Map.of(
-                    ArmorItem.Type.HELMET, 2,
-                    ArmorItem.Type.CHESTPLATE, 3,
-                    ArmorItem.Type.LEGGINGS, 2,
-                    ArmorItem.Type.BOOTS, 1),
-            15,
-            SoundEvents.ARMOR_EQUIP_LEATHER,
-            () -> Ingredient.EMPTY,
-            java.util.List.of(),
-            0.0F,
-            0.0F);
+    public static final ArmorMaterial MATERIAL_SUPERHERO = SuperheroArmorMaterial.INSTANCE;
 
     /* --- Suit pieces --- */
     public static final RegistryObject<Item> HELMET = REGISTRY.register("superhero_helmet",

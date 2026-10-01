@@ -54,9 +54,20 @@ public class SHAttributes
     public static final RegistryObject<Attribute> DAMAGE_REDUCTION = REGISTRY.register("damage_reduction", () -> new RangedAttribute("attribute.fiskheroes.damage_reduction", 0.0D, 0.0D, 1.0D).setSyncable(true));
     public static final RegistryObject<Attribute> BASE_SPEED_LEVELS = REGISTRY.register("base_speed_levels", () -> new RangedAttribute("attribute.fiskheroes.base_speed_levels", 0.0D, 0.0D, 2048.0D).setSyncable(true));
 
-    private static final Map<HeroAttribute, Attribute> MAPPING = new EnumMap<>(HeroAttribute.class);
+    private static Map<HeroAttribute, Attribute> mapping;
 
-    static
+    private static Map<HeroAttribute, Attribute> mapping()
+    {
+        if (mapping == null)
+        {
+            mapping = new EnumMap<>(HeroAttribute.class);
+            populate(mapping);
+        }
+
+        return mapping;
+    }
+
+    private static void populate(Map<HeroAttribute, Attribute> MAPPING)
     {
         MAPPING.put(HeroAttribute.PUNCH_DAMAGE, PUNCH_DAMAGE.get());
         MAPPING.put(HeroAttribute.WEAPON_DAMAGE, WEAPON_DAMAGE.get());
@@ -77,12 +88,12 @@ public class SHAttributes
 
     public static Attribute get(HeroAttribute attribute)
     {
-        return MAPPING.get(attribute);
+        return mapping().get(attribute);
     }
 
     public static void onAttributeModification(EntityAttributeModificationEvent event)
     {
-        for (Attribute attribute : MAPPING.values())
+        for (Attribute attribute : mapping().values())
         {
             if (attribute != null && !event.has(EntityType.PLAYER, attribute))
             {
@@ -118,7 +129,7 @@ public class SHAttributes
             return;
         }
 
-        Map<HeroAttribute, AttributeMod> values = collect(entity, iteration.getHero());
+        Map<HeroAttribute, Hero.AttributeMod> values = collect(entity, iteration.getHero());
 
         for (HeroAttribute attribute : HeroAttribute.values())
         {
@@ -138,7 +149,7 @@ public class SHAttributes
 
             UUID id = uuid(entity, attribute, "hero");
             AttributeModifier existing = instance.getModifier(id);
-            AttributeMod mod = values.get(attribute);
+            Hero.AttributeMod mod = values.get(attribute);
             double amount = mod != null ? mod.amount() : 0.0D;
             AttributeModifier.Operation operation = mod != null ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
 
@@ -197,9 +208,9 @@ public class SHAttributes
     }
 
     /** Resolves the final value of every hero attribute for an entity, including active profiles. */
-    public static Map<HeroAttribute, AttributeMod> collect(LivingEntity entity, Hero hero)
+    public static Map<HeroAttribute, Hero.AttributeMod> collect(LivingEntity entity, Hero hero)
     {
-        Map<HeroAttribute, AttributeMod> map = new EnumMap<>(HeroAttribute.class);
+        Map<HeroAttribute, Hero.AttributeMod> map = new EnumMap<>(HeroAttribute.class);
 
         for (Map.Entry<HeroAttribute, List<Hero.AttributeMod>> e : hero.getAttributes().entrySet())
         {
@@ -239,11 +250,11 @@ public class SHAttributes
         return map;
     }
 
-    private static AttributeMod combine(List<Hero.AttributeMod> list)
+    private static Hero.AttributeMod combine(List<Hero.AttributeMod> list)
     {
         if (list.isEmpty())
         {
-            return new AttributeMod(0, 0);
+            return new Hero.AttributeMod(0, 0);
         }
 
         double amount = 0;
@@ -254,11 +265,6 @@ public class SHAttributes
             amount += mod.amount();
         }
 
-        return new AttributeMod(amount, operation);
-    }
-
-    /** A resolved attribute value. */
-    public record AttributeMod(double amount, int operation)
-    {
+        return new Hero.AttributeMod(amount, operation);
     }
 }

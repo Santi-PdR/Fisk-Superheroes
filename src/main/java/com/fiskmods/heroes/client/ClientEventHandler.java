@@ -67,6 +67,19 @@ public class ClientEventHandler
             return;
         }
 
+        boolean jump = Minecraft.getInstance().options.keyJump.isDown();
+        boolean sneak = Minecraft.getInstance().options.keyShift.isDown();
+
+        if (!com.fiskmods.heroes.common.network.PacketInput.lastSent
+                || jump != com.fiskmods.heroes.common.network.PacketInput.lastJump
+                || sneak != com.fiskmods.heroes.common.network.PacketInput.lastSneak)
+        {
+            com.fiskmods.heroes.common.network.PacketInput.lastSent = true;
+            com.fiskmods.heroes.common.network.PacketInput.lastJump = jump;
+            com.fiskmods.heroes.common.network.PacketInput.lastSneak = sneak;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketInput(jump, sneak));
+        }
+
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
 
         if (data == null)
