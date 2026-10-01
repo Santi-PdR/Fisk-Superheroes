@@ -60,7 +60,7 @@ public class CommandHero
                                     CommandSuit.equip(player, hero.getDefaultIteration());
                                     context.getSource().sendSuccess(() -> Component.translatable("command.fiskheroes.suit.success", hero.getFormattedName()), true);
                                     return 1;
-                                })));
+                                }))));
     }
 
     private static int info(ServerPlayer player)

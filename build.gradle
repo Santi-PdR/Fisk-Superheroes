@@ -95,6 +95,8 @@ tasks.named('processResources', ProcessResources).configure {
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.release = 17
+    // Report every error in one run so a single CI round trip can be acted on.
+    options.compilerArgs.addAll(['-Xmaxerrs', '2000', '-Xlint:none'])
 }
 
 publishing {
