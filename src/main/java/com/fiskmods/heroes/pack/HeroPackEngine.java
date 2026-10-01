@@ -65,14 +65,17 @@ public class HeroPackEngine
         Hero.REGISTRY.clear();
         Power.REGISTRY.clear();
         com.fiskmods.heroes.common.data.var.Vars.ensureRegistered();
+        com.fiskmods.heroes.common.sound.SHSounds.clear();
 
         loadedPacks.clear();
         loadBuiltIn();
         loadExternal();
+        com.fiskmods.heroes.common.sound.SHSounds.resolveInheritance();
         Hero.REGISTRY.sort();
         loaded = true;
 
-        FiskHeroes.LOGGER.info("Loaded {} hero pack(s): {} heroes, {} powers", loadedPacks.size(), Hero.REGISTRY.size(), Power.REGISTRY.size());
+        FiskHeroes.LOGGER.info("Loaded {} hero pack(s): {} heroes, {} powers, {} sounds",
+                loadedPacks.size(), Hero.REGISTRY.size(), Power.REGISTRY.size(), com.fiskmods.heroes.common.sound.SHSounds.size());
     }
 
     public boolean isLoaded()
@@ -375,7 +378,74 @@ public class HeroPackEngine
             }
         }
 
-        // 3. powers
+        // 3. sound definitions (events/sounds/*.json) and their ranges
+        Map<String, Double> ranges = new LinkedHashMap<>();
+
+        if (json.has("sounds") && json.get("sounds").isJsonObject())
+        {
+            JsonObject sounds = json.getAsJsonObject("sounds");
+
+            if (sounds.has("range") && sounds.get("range").isJsonObject())
+            {
+                for (Map.Entry<String, JsonElement> e : sounds.getAsJsonObject("range").entrySet())
+                {
+                    JsonElement value = e.getValue();
+                    double range = 16.0D;
+
+                    if (value.isJsonObject())
+                    {
+                        JsonObject object = value.getAsJsonObject();
+
+                        if (object.has("distance"))
+                        {
+                            range = object.get("distance").getAsDouble();
+                        }
+                    }
+                    else if (value.isJsonPrimitive())
+                    {
+                        range = value.getAsDouble();
+                    }
+
+                    ranges.put(e.getKey(), range);
+                }
+            }
+        }
+
+        int soundCount = 0;
+
+        for (Map.Entry<String, String> e : files.entrySet())
+        {
+            String path = e.getKey();
+
+            if (!path.startsWith("events/sounds/") || !path.endsWith(".json"))
+            {
+                continue;
+            }
+
+            String soundId = path.substring("events/sounds/".length(), path.length() - ".json".length());
+
+            try
+            {
+                com.fiskmods.heroes.common.sound.SoundDefinition definition = com.fiskmods.heroes.common.sound.SoundDefinition.parse(
+                        new ResourceLocation(domain, soundId), JsonParser.parseString(e.getValue()).getAsJsonObject());
+
+                Double range = ranges.get(soundId);
+
+                if (range != null)
+                {
+                    definition.setRange(range);
+                }
+
+                com.fiskmods.heroes.common.sound.SHSounds.register(definition);
+                soundCount++;
+            }
+            catch (Exception ex)
+            {
+                FiskHeroes.LOGGER.warn("Could not read sound definition {}", path, ex);
+            }
+        }
+
+        // 4. powers
         int powerCount = 0;
 
         for (Map.Entry<String, String> e : files.entrySet())

@@ -12,7 +12,7 @@ permissions:
 jobs:
   server:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
 
@@ -34,22 +34,23 @@ jobs:
       - name: Boot dedicated server
         run: |
           set +e
-          timeout 420 ./gradlew runServer --console=plain > smoke.log 2>&1
+          ( sleep 200; echo "stop"; sleep 60; echo "stop"; sleep 60; echo "stop" ) | timeout -k 20 780 ./gradlew runServer --console=plain > smoke.log 2>&1
           echo "exit code: $?" >> smoke.log
+          pgrep -f "net.minecraft|GradleWrapperMain" | xargs -r kill -9 2>/dev/null
 
       - name: Collect log
         if: always()
         run: |
           mkdir -p .ci
           {
-            echo "==== flightrecorder / crash reports ===="
+            echo "==== crash reports ===="
             ls -la run/crash-reports 2>/dev/null && for f in run/crash-reports/*; do echo "--- $f"; cat "$f"; done
-            echo "==== mod list mentions ===="
-            grep -E "fiskheroes|Fisk" smoke.log | head -200
+            echo "==== mod mentions ===="
+            grep -E "fiskheroes|Fisk" smoke.log | head -250
             echo "==== errors and exceptions ===="
-            grep -nE "ERROR|FATAL|Exception|Caused by|FAILED|Done \(|Starting minecraft server|Stopping server|Loaded .* hero pack|heroes, .* powers|crash" smoke.log | tail -600
+            grep -nE "ERROR|FATAL|Exception|Caused by|FAILED|Done \(|Starting minecraft server|Stopping server|hero pack|heroes, .*powers|/WARN" smoke.log | tail -700
             echo "==== tail ===="
-            tail -120 smoke.log
+            tail -150 smoke.log
           } > .ci/server-log.txt 2>&1
 
       - name: Publish log
