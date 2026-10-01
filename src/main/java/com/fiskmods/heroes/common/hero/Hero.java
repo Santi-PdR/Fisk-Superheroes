@@ -45,12 +45,14 @@ public class Hero implements Comparable<Hero>
     private int armorCount;
 
     private double defaultScale = 1.0;
+    private int tierOverride = -1;
     private boolean hidden;
     private boolean maskToggle = true;
 
     private final Map<HeroAttribute, List<AttributeMod>> attributes = new EnumMap<>(HeroAttribute.class);
     private final Map<String, Map<HeroAttribute, AttributeMod>> attributeProfiles = new LinkedHashMap<>();
     private final Map<String, Boolean> profileInheritsDefaults = new HashMap<>();
+    private final Map<String, Boolean> profileRevokesAugments = new HashMap<>();
     private ScriptFunction attributeProfileFunc;
 
     private final List<KeyBind> keyBinds = new ArrayList<>();
@@ -196,6 +198,17 @@ public class Hero implements Comparable<Hero>
         profileInheritsDefaults.put(name, inheritDefaults);
     }
 
+    public void setProfileRevokesAugments(String name, boolean revoke)
+    {
+        profileRevokesAugments.put(name, revoke);
+    }
+
+    /** Whether the given profile discards the augments the hero grants while it is active. */
+    public boolean profileRevokesAugments(String name)
+    {
+        return profileRevokesAugments.containsKey(name) && profileRevokesAugments.get(name);
+    }
+
     public boolean profileInheritsDefaults(String name)
     {
         return profileInheritsDefaults.getOrDefault(name, true);
@@ -305,6 +318,17 @@ public class Hero implements Comparable<Hero>
     public String getNameKey()
     {
         return nameKey != null ? nameKey : "hero." + registryName.getNamespace() + "." + registryName.getPath() + ".name";
+    }
+
+    public void setTierOverride(int tier)
+    {
+        tierOverride = tier;
+    }
+
+    /** Tier used when sorting suit pieces, or {@code -1} when the hero's own tier applies. */
+    public int getTierOverride()
+    {
+        return tierOverride;
     }
 
     public String getVersionKey()

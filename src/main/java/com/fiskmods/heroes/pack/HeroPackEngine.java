@@ -282,6 +282,14 @@ public class HeroPackEngine
     /** Processes the manifest, powers and hero scripts of one pack. */
     private LoadedPack process(String name, Map<String, String> files)
     {
+        Map<String, String> content = new LinkedHashMap<>();
+
+        for (Map.Entry<String, String> e : files.entrySet())
+        {
+            content.put(stripAssetPrefix(e.getKey()), e.getValue());
+        }
+
+        files = content;
         String manifest = files.get("heropack.json");
 
         if (manifest == null)
@@ -423,6 +431,22 @@ public class HeroPackEngine
         }
 
         return new LoadedPack(new PackSource(name, heroCount, powerCount));
+    }
+
+    /**
+     * The mod's own pack keeps its data in {@code assets/fiskheroes/...} (the layout the original
+     * mod shipped), while external packs keep it at the pack root. Both are accepted by stripping
+     * the {@code assets/<namespace>/} prefix when present.
+     */
+    private static String stripAssetPrefix(String path)
+    {
+        if (!path.startsWith("assets/"))
+        {
+            return path;
+        }
+
+        int index = path.indexOf('/', "assets/".length());
+        return index == -1 ? path : path.substring(index + 1);
     }
 
     private void loadPower(ResourceLocation id, JsonObject json)

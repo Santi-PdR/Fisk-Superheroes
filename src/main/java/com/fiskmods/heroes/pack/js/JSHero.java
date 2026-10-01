@@ -55,6 +55,12 @@ public class JSHero
         hero.setTier(tier);
     }
 
+    /** Overrides the tier used for suit piece ordering; {@code -1} clears the override. */
+    public void setTierOverride(int tier)
+    {
+        hero.setTierOverride(tier);
+    }
+
     public void setDefaultScale(double scale)
     {
         hero.setDefaultScale(scale);
@@ -117,9 +123,10 @@ public class JSHero
 
         if (function instanceof Function fn)
         {
-            JSProfileBuilder builder = new JSProfileBuilder(map);
+            JSProfileBuilder builder = new JSProfileBuilder(hero, name, map);
             JSContext.call(scope, fn, builder);
             inherited = builder.inherits;
+            hero.setProfileRevokesAugments(name, builder.revokesAugments);
         }
 
         hero.addAttributeProfile(name, map, inherited);
@@ -317,12 +324,23 @@ public class JSHero
     /** Builder passed to {@code addAttributeProfile} scripts. */
     public static class JSProfileBuilder
     {
+        private final Hero hero;
+        private final String profile;
         private final Map<HeroAttribute, Hero.AttributeMod> map;
         private boolean inherits = true;
+        private boolean revokesAugments;
 
-        JSProfileBuilder(Map<HeroAttribute, Hero.AttributeMod> map)
+        JSProfileBuilder(Hero hero, String profile, Map<HeroAttribute, Hero.AttributeMod> map)
         {
+            this.hero = hero;
+            this.profile = profile;
             this.map = map;
+        }
+
+        public void revokeAugments()
+        {
+            // Augments granted by the hero are dropped while this profile is active
+            revokesAugments = true;
         }
 
         public void inheritDefaults()
