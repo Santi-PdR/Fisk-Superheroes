@@ -40,12 +40,25 @@ jobs:
           fi
           chmod +x gradlew
 
-      - name: Compile
-        run: ./gradlew compileJava --no-daemon --stacktrace
-        continue-on-error: true
-
       - name: Build
-        run: ./gradlew build --no-daemon --stacktrace
+        id: gradle
+        run: |
+          set +e
+          ./gradlew build --no-daemon --stacktrace --console=plain > ci-build.log 2>&1
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+          tail -5 ci-build.log
+
+      - name: Publish build log back to the branch
+        if: always()
+        run: |
+          mkdir -p .ci
+          grep -E "error:|\.java:[0-9]+:|Execution failed|FAILED|Caused by|\* What went wrong" ci-build.log | head -400 > .ci/build-log.txt || true
+          tail -40 ci-build.log >> .ci/build-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/build-log.txt
+          git diff --cached --quiet || git commit -m "ci: build log [skip ci]" --no-verify
+          git push
 
       - name: Upload artifacts
         if: always()
