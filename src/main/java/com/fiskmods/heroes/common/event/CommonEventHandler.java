@@ -108,7 +108,7 @@ public class CommonEventHandler
             return;
         }
 
-        event.setDamageMultiplier(event.getDamageMultiplier() * Math.max(0.0F, 1.0F - resistance / 10.0F));
+        event.setDamageMultiplier(event.getDamageMultiplier() * Math.max(0.0F, 1.0F - (float) resistance / 10.0F));
     }
 
     @SubscribeEvent

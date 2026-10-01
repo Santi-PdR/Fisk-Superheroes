@@ -3,7 +3,6 @@ package com.fiskmods.heroes.common.data;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 
-import io.netty.buffer.ByteBuf;
 import net.minecraft.network.FriendlyByteBuf;
 
 /**
@@ -30,12 +29,12 @@ public final class DataType<T>
 
     public interface TypeWriter<T>
     {
-        void write(ByteBuf buf, T value);
+        void write(FriendlyByteBuf buf, T value);
     }
 
     public interface TypeReader<T>
     {
-        T read(ByteBuf buf);
+        T read(FriendlyByteBuf buf);
     }
 
     public interface TypeParser<T>
@@ -75,13 +74,13 @@ public final class DataType<T>
         return defaultValue;
     }
 
-    public void write(ByteBuf buf, T value)
+    public void write(FriendlyByteBuf buf, T value)
     {
         writer.write(buf, value);
     }
 
     @SuppressWarnings("unchecked")
-    public T read(ByteBuf buf)
+    public T read(FriendlyByteBuf buf)
     {
         return reader.read(buf);
     }
