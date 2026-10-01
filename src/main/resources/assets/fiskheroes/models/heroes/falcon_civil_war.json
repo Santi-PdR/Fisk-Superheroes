@@ -1,0 +1,43 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:falcon_civil_war_layer1",
+    "layer2": "fiskheroes:falcon_civil_war_layer2",
+    "wings": "fiskheroes:falcon_civil_war_wings",
+    "jetpack": "fiskheroes:falcon_civil_war_jetpack",
+    "jetpack_lights": "fiskheroes:falcon_civil_war_jetpack_lights"
+  },
+  "custom": {
+    "fiskheroes:wings": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "wings",
+      "dataWings": "fiskheroes:wing_animation_timer",
+      "dataShield": "fiskheroes:shield_blocking_timer"
+    },
+    "fiskheroes:model": {
+      "applicable": ["CHESTPLATE"],
+      "modelType": "fiskheroes:falcon_jetpack",
+      "texture": ["jetpack", "jetpack_lights"],
+      "anchor": "body",
+      "opacity": 1.0
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:falcon_cw",
+      "conditionals": ["vars:BOOSTING"]
+    },
+    "fiskheroes:booster": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:red_fire_layer_%s",
+      "anchor": "body",
+      "offset": [2.4, 5.0, 2.6],
+      "rotation": [0.0, -18.0, 0.0],
+      "scale": [1.75, 3.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    }
+  },
+  "vars": {
+    "BOOSTING": "entity.getData('fiskheroes:jetpacking_timer') > 0"
+  }
+}

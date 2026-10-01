@@ -1,0 +1,26 @@
+{
+  "particles": [
+    {
+      "condition": "!firstPerson",
+      "type": "SMOKE",
+      "anchor": "body",
+      "amount": 1,
+      "offset": [1.5, 7.0, 2.25],
+      "motion": [0.01, -0.15, -0.01],
+      "mirror": true
+    },
+    {
+      "type": "SMOKE_SMALL",
+      "anchor": "rightLeg",
+      "amount": 1,
+      "offset": {
+        "tp": [0.0, 6.5, 2.5],
+        "fp": [2.5, 18.5, 2.5]
+      },
+      "motion": [0.0, -0.12, -0.02],
+      "randMotion": [-0.0125, 0.0, 0.025],
+      "mirror": true,
+      "lockFPYaw": true
+    }
+  ]
+}

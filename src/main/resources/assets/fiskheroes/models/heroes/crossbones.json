@@ -1,0 +1,26 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:crossbones_layer1",
+    "layer2": "fiskheroes:crossbones_layer2",
+    "gauntlets": "fiskheroes:crossbones_gauntlets.tx.json"
+  },
+  "custom": {
+    "fiskheroes:arm_overlay": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "gauntlets",
+      "offset": [0.0, 1.5, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "side": "RIGHT",
+      "data": "(1 - entity.getInterpolatedData('fiskheroes:punch_charge')) * entity.getInterpolatedData('fiskheroes:punchmode_timer')"
+    },
+    "fiskheroes:arm_overlay|left": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "gauntlets",
+      "offset": [0.0, 0.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "side": "LEFT",
+      "data": 0.0
+    }
+  }
+}

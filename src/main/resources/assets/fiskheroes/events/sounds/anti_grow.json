@@ -1,0 +1,9 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:suit.antimonitor.grow",
+  "condition": "entity.getData('fiskheroes:size_state') == 1",
+  "volume": "Math.min(0.1 + (entity.getData('fiskheroes:scale') - 1) * 0.35, 2.0)",
+  "fadeIn": 10,
+  "fadeOut": 10,
+  "scale": false
+}

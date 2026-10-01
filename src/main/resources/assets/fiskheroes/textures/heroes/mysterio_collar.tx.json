@@ -1,0 +1,22 @@
+{
+  "texture": {
+    "in": "fiskheroes:mysterio_layer1",
+    "transform": [
+      {
+        "operation": "XOR",
+        "supply": "fiskheroes:xor/mysterio_collar_<TIMER>"
+      }
+    ],
+    "out": "fiskheroes:generated/mysterio_collar_<TIMER>"
+  },
+  "getters": {
+    "TIMER": {
+      "key": "Math.max(1, Math.ceil(16 * entity.getInterpolatedData('fiskheroes:mask_open_timer2')) - 6) | 0",
+      "values": {
+        "min": 1,
+        "max": 10
+      }
+    }
+  },
+  "isDynamic": true
+}

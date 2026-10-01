@@ -1,0 +1,43 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:spider_man_layer1",
+    "layer2": "fiskheroes:spider_man_layer2",
+    "wings": "fiskheroes:spider_man_wings"
+  },
+  "animations": {
+    "AIMING": "fiskheroes:web_aim_right",
+    "AIMING_LEFT": "fiskheroes:web_aim_left",
+    "WEBSWING_DEFAULT": "fiskheroes:swing_default",
+    "WEBSWING_RIGHT": "fiskheroes:swing_right",
+    "WEBSWING_LEFT": "fiskheroes:swing_left",
+    "WEBSWING_TRICK_DEFAULT": ["fiskheroes:swing_roll", "fiskheroes:swing_roll2", "fiskheroes:swing_roll5"],
+    "WEBSWING_TRICK_RIGHT": "fiskheroes:swing_rotate_right",
+    "WEBSWING_TRICK_LEFT": "fiskheroes:swing_rotate_left",
+    "WEBSWING_ZIP": "fiskheroes:swing_zip",
+    "WEBSWING_DIVE": ["fiskheroes:swing_dive", "fiskheroes:swing_dive2"],
+    "WEBSWING_LEAP": "fiskheroes:swing_springboard",
+    "WEBSWING_SHOOT_RIGHT": "fiskheroes:web_swing_shoot_right",
+    "WEBSWING_SHOOT_LEFT": "fiskheroes:web_swing_shoot_left",
+    "WEBSHOOTER_SHOOT_RIGHT": "fiskheroes:web_shoot_right",
+    "WEBSHOOTER_SHOOT_LEFT": "fiskheroes:web_shoot_left",
+
+    "WEB_RAPPEL": "fiskheroes:web_rappel",
+    "CEILING_CRAWL": "fiskheroes:crawl_ceiling"
+  },
+  "custom": {
+    "fiskheroes:arm_animation": {
+      "dataRArmPose": "fiskheroes:web_aim_right_timer",
+      "dataLArmPose": "fiskheroes:web_aim_left_timer"
+    },
+    "fiskheroes:equipment_wheel": {
+      "color": "0x00DAFF"
+    },
+    "fiskheroes:wingsuit": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "wings",
+      "opacity": 0.99,
+      "data": "fiskheroes:wing_animation_timer"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{vel} = sqrt({motX}^2 + {motZ}^2)
+{x} = curve(min({vel}, 1))
+
+{rightArm_rotX} @ {x} -> 0
+{rightArm_rotY} @ {x} -'> 0
+{rightArm_rotZ} @ {x} -> 0
+{leftArm_rotX} @ {x} -> 0
+{leftArm_rotY} @ {x} -'> 0
+{leftArm_rotZ} @ {x} -> 0
+{rightLeg_rotX} @ {x} -> 0
+{rightLeg_rotY} @ {x} -'> 0
+{rightLeg_rotZ} @ {x} -> 0
+{leftLeg_rotX} @ {x} -> 0
+{leftLeg_rotY} @ {x} -'> 0
+{leftLeg_rotZ} @ {x} -> 0
+
+{head_rotX} -= 60'{x}{data}
+
+out "pivot" (0, 0.783333333, 0)
+out "rotate" (-60{x}{data}, 1, 0, 0)

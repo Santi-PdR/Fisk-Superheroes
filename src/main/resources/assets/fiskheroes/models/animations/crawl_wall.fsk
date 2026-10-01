@@ -1,0 +1,42 @@
+{data} = curve {data}
+
+{rightArm_rotX} @ {data} -> 0
+{rightArm_rotY} @ {data} -'> 0
+{rightArm_rotZ} @ {data} -> 0
+{leftArm_rotX} @ {data} -> 0
+{leftArm_rotY} @ {data} -'> 0
+{leftArm_rotZ} @ {data} -> 0
+{rightLeg_rotX} @ {data} -> 0
+{rightLeg_rotY} @ {data} -'> 0
+{rightLeg_rotZ} @ {data} -> 0
+{leftLeg_rotX} @ {data} -> 0
+{leftLeg_rotY} @ {data} -'> 0
+{leftLeg_rotZ} @ {data} -> 0
+
+{f1} = {data}(cos(0.6662{limbSwing}) + 1) / 2
+{f2} = {data}(cos(0.6662{limbSwing} + pi) + 1) / 2
+{body_rotY} -= 0.1{data} - 0.2{f1}
+
+{rightArm_rotX} -= 0.9{data} + 1.5{f2}
+{rightArm_rotY} += 0.2{data} - 0.5{f2}
+{rightArm_rotZ} += 0.2{f2}
+{rightArm_posY} += {data} - {f2}
+{rightArm_posZ} += 2{data} - 3.5{f2}
+
+{leftArm_rotX} -= 0.9{data} + 1.5{f1}
+{leftArm_rotY} -= 0.2{data} - 0.5{f1}
+{leftArm_rotZ} -= 0.2{f1}
+{leftArm_posY} -= {data} - {f1}
+{leftArm_posZ} += 2{data} - 3.5{f1}
+
+{rightLeg_rotY} += 0.2{f1}
+{rightLeg_rotZ} -= 0.2{f1}
+{leftLeg_rotY} -= 0.2{f2}
+{leftLeg_rotZ} += 0.2{f2}
+
+{rightLeg_posX} -= 2{f1}
+{rightLeg_posY} -= 5{f1}
+{rightLeg_posZ} -= 3{f1}
+{leftLeg_posX} += 2{f2}
+{leftLeg_posY} -= 5{f2}
+{leftLeg_posZ} -= 3{f2}

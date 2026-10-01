@@ -1,0 +1,199 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "base": "fiskheroes:iron_man_mk85",
+    "suit": "fiskheroes:iron_man_mk85_suit.tx.json",
+    "mask": "fiskheroes:iron_man_mk85_mask.tx.json",
+    "mask_lights": "fiskheroes:iron_man_mk85_mask_lights",
+    "lights": "fiskheroes:iron_man_mk85_lights",
+    "reactor": "fiskheroes:iron_man_mk85_reactor",
+    "reactor_lights": "fiskheroes:iron_man_mk85_reactor_lights",
+    "shield": "fiskheroes:iron_man_mk85_shield",
+    "shield_handle": "fiskheroes:iron_man_mk85_shield_handle",
+    "shield_handle_lights": "fiskheroes:iron_man_mk85_shield_handle_lights",
+    "blade": "fiskheroes:iron_man_mk85_blade",
+    "blade_lights": "fiskheroes:iron_man_mk85_blade_lights",
+    "backpack": "fiskheroes:iron_man_mk85_backpack"
+  },
+  "texture": {
+    "vars:MASK_OPEN" : {
+      "true": "mask"
+    },
+    "vars:DISPLAY": {
+      "false": {
+        "vars:OPEN": {
+          "true": "reactor"
+        },
+        "vars:ANIM": {
+          "true": "suit"
+        }
+      }
+    },
+    "default": "base"
+  },
+  "lights": {
+    "vars:MASK_OPEN" : {
+      "true": "mask_lights"
+    },
+    "vars:DISPLAY": {
+      "false": {
+        "vars:ANIM": {
+          "true": "reactor_lights"
+        }
+      }
+    },
+    "default": "lights"
+  },
+  "showModel": {
+    "head": ["CHESTPLATE"],
+    "headwear": ["CHESTPLATE"],
+    "body": ["CHESTPLATE"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE"],
+    "leftLeg": ["CHESTPLATE"]
+  },
+  "fixHatLayer": ["CHESTPLATE"],
+  "custom": {
+    "fiskheroes:metal_heat": {
+      "applicable": ["CHESTPLATE"],
+      "includeEffects": ["fiskheroes:shield|blade", "fiskheroes:shield|shield_handle", "fiskheroes:shield|backpack1", "fiskheroes:shield|backpack2", "fiskheroes:shield|backpack3"],
+      "texture": "null",
+      "data": "fiskheroes:metal_heat"
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:iron_man",
+      "conditionals": ["vars:FLYING"]
+    },
+    "fiskheroes:arm_animation": {
+      "dataRArmPose": "Math.max(entity.getInterpolatedData('fiskheroes:beam_charge') * 5 - 4, 0)",
+      "dataLArmPose": "Math.max(entity.getInterpolatedData('fiskheroes:beam_charge') * 5 - 4, 0)"
+    },
+    "fiskheroes:charged_beam": {
+      "color": "0xFFE77C",
+      "anchor": "body",
+      "beams": [
+        {
+          "offset": [6.75, 10.0, 3.0],
+          "size": [2.0, 2.0]
+        },
+        {
+          "offset": [10.0, 0.5, 3.0],
+          "size": [2.0, 2.0]
+        },
+        {
+          "offset": [6.5, -4.5, 3.0],
+          "size": [2.0, 2.0]
+        }
+      ],
+      "mirror": true,
+      "renderer": "fiskheroes:charged_beam",
+      "particleType": "fiskheroes:impact_charged_beam"
+    },
+    "fiskheroes:shield|blade": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["blade", "blade_lights"],
+      "offset": [1.5, 8.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "curve": [0.0, 0.0],
+      "mirror": false,
+      "large": true,
+      "data": "fiskheroes:blade_timer"
+    },
+    "fiskheroes:shield|shield": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "shield"],
+      "offset": [6.0, 10.25, 0.0],
+      "rotation": [55.0, -20.0, -10.0],
+      "curve": [15.0, 50.0],
+      "mirror": false,
+      "large": true,
+      "opacity": 0.5,
+      "data": "fiskheroes:shield_blocking_timer"
+    },
+    "fiskheroes:shield|shield_handle": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["shield_handle", "shield_handle_lights"],
+      "offset": [3.5, 7.0, -3.0],
+      "rotation": [55.0, -20.0, 20.0],
+      "curve": [100.0, 45.0],
+      "mirror": false,
+      "large": false,
+      "data": "entity.getData('fiskheroes:shield') ? Math.min(entity.getInterpolatedData('fiskheroes:shield_timer') * 2, 1) : Math.max(entity.getInterpolatedData('fiskheroes:shield_timer') * 2 - 1, 0)"
+    },
+    "fiskheroes:shield|backpack1": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "backpack",
+      "anchor": "body",
+      "offset": [1.5, 5.0, 3.75],
+      "rotation": [-90.0, 45.0, 120.0],
+      "curve": [70.0, 160.0],
+      "mirror": true,
+      "large": false,
+      "data": "Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 4, 1)"
+    },
+    "fiskheroes:shield|backpack2": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "backpack",
+      "anchor": "body",
+      "offset": [3.5, 4.0, 3.75],
+      "rotation": [-90.0, -25.0, 120.0],
+      "curve": [70.0, 160.0],
+      "mirror": true,
+      "large": false,
+      "data": "Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 4, 1)"
+    },
+    "fiskheroes:shield|backpack3": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "backpack",
+      "anchor": "body",
+      "offset": [3.0, 2.0, 3.75],
+      "rotation": [-90.0, -60.0, 120.0],
+      "curve": [70.0, 160.0],
+      "mirror": true,
+      "large": false,
+      "data": "Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 4, 1)"
+    },
+    "fiskheroes:booster|boots": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:repulsor_layer_%s",
+      "anchor": "rightLeg",
+      "offset": [0.0, 12.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [2.5, 3.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:booster|hands": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:repulsor_layer_%s",
+      "anchor": "rightArm",
+      "offset": [1.0, 10.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [2.0, 2.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "hideFirstPerson": true,
+      "data": "entity.getData('fiskheroes:hovering') ? 0 : entity.getInterpolatedData('fiskheroes:jetpacking_timer')"
+    },
+    "fiskheroes:booster|back": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:repulsor_layer_%s",
+      "anchor": "body",
+      "offset": [2.0, 4.0, 1.75],
+      "rotation": [25.0, 0.0, 10.0],
+      "scale": [1.5, 3.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "data": "entity.getData('fiskheroes:hovering') ? entity.getInterpolatedData('fiskheroes:jetpacking_timer') : 0"
+    }
+  },
+  "vars": {
+    "ANIM": "entity.getInterpolatedData('fiskheroes:dyn/nanite_timer') < 1",
+    "OPEN": "entity.getInterpolatedData('fiskheroes:dyn/nanite_timer') == 0",
+    "MASK_OPEN": "entity.getData('fiskheroes:mask_open_timer2') > 0",
+    "DISPLAY": "entity.is('DISPLAY') && entity.as('DISPLAY').getDisplayType() !== 'BOOK_PREVIEW'",
+    "FLYING": "entity.getData('fiskheroes:jetpacking') || entity.getData('fiskheroes:hovering')"
+  }
+}

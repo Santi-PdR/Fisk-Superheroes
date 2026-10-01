@@ -1,0 +1,33 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.tier8_9.name"
+    },
+    "description": {
+      "translate": "node.fiskheroes.tier8_9.desc"
+    },
+    "icon": {
+      "text": "8-9"
+    },
+    "isLevelable": true
+  },
+  "requirements": [ ],
+  "price": {
+    "IRID_GOLD": 8,
+    "XP_LEVELS": 25
+  },
+  "criteria": {
+    "tier": {
+      "trigger": "fiskheroes:suit_tier",
+      "description": {
+        "translate": "node.fiskheroes.tier8_9.tier.desc"
+      },
+      "condition": {
+        "variables": {
+          "max": "MAX_TIER_UNLOCKED"
+        },
+        "check": "max >= 7"
+      }
+    }
+  }
+}

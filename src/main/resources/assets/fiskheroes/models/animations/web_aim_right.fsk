@@ -1,0 +1,16 @@
+{data} = curve {data}
+{rightArm_posX} -= {data}
+{rightArm_posY} -= {data}
+{rightArm_rotZ} @ {data} -> -pi / 2
+{rightArm_rotX} @ {data} -> 0.1 - pi / 2 - {head_rotY}
+{rightArm_rotY} @ {data} -'> min({head_rotX} + 0.1, pi / 2)
+
+out "firstPerson" (true)
+out "translate" (-0.35{data}, 0, 0.15{data})
+out "rotate" (-27{data}, 0, 1, 0)
+out "rotate" (-20{data}, 1, 0, 0)
+out "rotate" (-30{data}, 0, 0, 1)
+out "translate" (-0.4{data}, 0, 0)
+out "rotate" (150{data}, 0, 1, 0)
+out "rotate" (-20{data}, 0, 0, 1)
+out "translate" (0.3{data}, 0, 0)

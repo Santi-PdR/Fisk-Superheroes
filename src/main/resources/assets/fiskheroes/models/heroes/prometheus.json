@@ -1,0 +1,33 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:prometheus_layer1",
+    "layer2": "fiskheroes:prometheus_layer2",
+    "arrow": "fiskheroes:arrow/prometheus",
+    "quiver": "fiskheroes:quiver/prometheus",
+    "quiver_auto": "fiskheroes:quiver/prometheus_auto",
+    "sheath": "fiskheroes:sword_sheath"
+  },
+  "custom": {
+    "fiskheroes:archery": {
+      "textureArrow": "arrow",
+      "textureQuiver": "quiver",
+      "textureAutoQuiver": "quiver_auto"
+    },
+    "fiskheroes:prometheus_sheath": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "sheath"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 0.48,
+          "offset": [-6.68, -3.4, 2.64],
+          "rotation": [180.0, 90.0, -30.0]
+        }
+      ]
+    }
+  }
+}

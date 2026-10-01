@@ -1,0 +1,23 @@
+extend("fiskheroes:hero_basic");
+loadTextures({
+    "layer1": "fiskheroes:zoom_layer1",
+    "layer2": "fiskheroes:zoom_layer2",
+    "eyes": "fiskheroes:zoom_eyes"
+});
+
+var speedster = implement("fiskheroes:external/speedster_utils");
+
+function init(renderer) {
+    parent.init(renderer);
+    renderer.setTexture((entity, renderLayer) => {
+        if (renderLayer == "HELMET") {
+            return entity.is("DISPLAY") && entity.as("DISPLAY").isStatic() ? "layer2" : "layer1";
+        }
+        return renderLayer == "LEGGINGS" ? "layer2" : "layer1";
+    });
+    renderer.setLights((entity, renderLayer) => renderLayer == "HELMET" && !(entity.is("DISPLAY") && entity.as("DISPLAY").isStatic()) ? "eyes" : null);
+}
+
+function initEffects(renderer) {
+    speedster.init(renderer, "fiskheroes:lightning_zoom");
+}

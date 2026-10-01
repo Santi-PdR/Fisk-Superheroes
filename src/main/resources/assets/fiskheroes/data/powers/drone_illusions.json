@@ -1,0 +1,120 @@
+{
+  "name": "power.fiskheroes.drone_illusions.name",
+  "modifiers": {
+    "fiskheroes:spellcasting": {
+      "spells": {
+        "fiskheroes:drones": {
+          "sequence": "dwasdsa",
+          "cooldown": 600,
+          "centerDist": 5.0,
+          "quantity": 2,
+          "range": 24.0,
+          "damageProfile": {
+            "damage": 1.5,
+            "types": {
+              "BULLET": 1.0
+            },
+            "properties": {
+              "REDUCE_KNOCKBACK": 1.0
+            }
+          }
+        },
+        "fiskheroes:duplication": {
+          "sequence": "ddaas",
+          "cooldown": 120,
+          "quantity": 5
+        },
+        "fiskheroes:blindness": {
+          "sequence": "ssda",
+          "cooldown": 100,
+          "duration": 400,
+          "range": 24.0
+        }
+      },
+      "soundEvents": {
+        "CAST_FAIL": "fiskheroes:spell_fail"
+      }
+    },
+    "fiskheroes:charged_beam": {
+      "damageProfile": {
+        "damage": 7.0,
+        "types": {
+          "BULLET": 1.0
+        }
+      },
+      "chargeTime": 20,
+      "duration": 40,
+      "cooldownTime": 40,
+      "range": 32.0,
+      "radius": 0.2,
+      "canDoGriefing": false,
+      "soundEvents": {
+        "CHARGE": "fiskheroes:mysterio_charged_beam_charge",
+        "SHOOT": "fiskheroes:mysterio_charged_beam_start",
+        "SHOOT_STOP": ["fiskheroes:mysterio_charged_beam_stop1", "fiskheroes:mysterio_charged_beam_stop2"],
+        "BEAM_AMBIENT": "fiskheroes:mysterio_charged_beam_loop"
+      }
+    },
+    "fiskheroes:energy_projection": {
+      "damageProfile": {
+        "damage": 2.0,
+        "types": {
+          "BULLET": 1.0
+        }
+      },
+      "range": 24.0,
+      "radius": 0.1,
+      "canDoGriefing": false,
+      "soundEvents": {
+        "SHOOT": "fiskheroes:mysterio_beam_start",
+        "SHOOT_STOP": "fiskheroes:mysterio_beam_stop",
+        "BEAM_AMBIENT": "fiskheroes:mysterio_beam_loop"
+      }
+    },
+    "fiskheroes:controlled_flight": {
+      "speed": 0.08,
+      "boostSpeed": 0.19,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": false
+        }
+      },
+      "soundEvents": {
+        "ENABLE": ["fiskheroes:flight_loop", "fiskheroes:flight_cape_loop"],
+        "BOOST": "fiskheroes:flight_boost"
+      }
+    },
+    "fiskheroes:controlled_flight|boosted": {
+      "speed": 0.08,
+      "boostSpeed": 0.25,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": false
+        }
+      },
+      "soundEvents": {
+        "ENABLE": "fiskheroes:mysterio_boost_enable",
+        "BOOST": "fiskheroes:mysterio_boost_loop"
+      }
+    }
+  },
+  "hud": [
+    {
+      "type": "CIRCLE",
+      "color": "fiskheroes:charged_beam",
+      "data": "fiskheroes:beam_charge"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:rip_hunter_time_master",
+    "layer2": "fiskheroes:rip_hunter_pants"
+  },
+  "itemIcons": {
+    "HELMET": "rip_hunter_0",
+    "CHESTPLATE": "%s_1",
+    "LEGGINGS": "rip_hunter_2",
+    "BOOTS": "rip_hunter_3"
+  },
+  "custom": {
+    "fiskheroes:energy_bolt": {
+      "color": "0x005EFF"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["LEGGINGS"],
+      "items": [
+        {
+          "anchor": "rightLeg",
+          "scale": 0.325,
+          "offset": [-2.0, 0.0, 1.5],
+          "rotation": [90.0, 0.0, -7.0]
+        }
+      ]
+    }
+  }
+}

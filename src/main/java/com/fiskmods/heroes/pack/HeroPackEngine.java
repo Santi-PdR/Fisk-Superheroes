@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.net.URI;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -82,31 +84,80 @@ public class HeroPackEngine
 
     private void loadBuiltIn()
     {
-        Path root = modRoot();
-
-        if (root == null)
-        {
-            FiskHeroes.LOGGER.error("Could not locate the FiskHeroes mod file; no built-in heroes will be available");
-            return;
-        }
-
         try
         {
-            if (Files.isDirectory(root))
+            Path manifestDir = locateBuiltIn();
+
+            if (manifestDir == null)
             {
-                LoadedPack pack = loadDirectory(root, "fiskheroes");
-                loadedPacks.add(pack.source);
+                FiskHeroes.LOGGER.error("Could not locate the FiskHeroes mod file; no built-in heroes will be available");
+                return;
+            }
+
+            if (Files.isDirectory(manifestDir))
+            {
+                loadedPacks.add(loadDirectory(manifestDir, "fiskheroes").source);
             }
             else
             {
-                LoadedPack pack = loadZip(root, "fiskheroes");
-                loadedPacks.add(pack.source);
+                loadedPacks.add(loadZip(manifestDir, "fiskheroes").source);
             }
         }
         catch (Exception e)
         {
             FiskHeroes.LOGGER.error("Failed to load the built-in hero pack", e);
         }
+    }
+
+    /**
+     * Resolves the root the built-in pack is read from: the directory holding {@code heropack.json}
+     * when running from a directory (development), or the mod jar itself in production. Resolving it
+     * through the classpath keeps both layouts working, since the manifest sits next to the mod's
+     * resources in either case.
+     */
+    private static Path locateBuiltIn()
+    {
+        try
+        {
+            URL url = HeroPackEngine.class.getClassLoader().getResource("heropack.json");
+
+            if (url != null)
+            {
+                if ("file".equals(url.getProtocol()))
+                {
+                    return Path.of(url.toURI()).getParent();
+                }
+
+                if ("jar".equals(url.getProtocol()))
+                {
+                    String path = url.getPath();
+                    int index = path.indexOf("!/");
+
+                    if (index != -1)
+                    {
+                        return Path.of(URI.create(path.substring(0, index)));
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            FiskHeroes.LOGGER.warn("Could not resolve the built-in hero pack through the classpath", e);
+        }
+
+        Path root = modRoot();
+
+        if (root != null && Files.isDirectory(root) && !Files.isRegularFile(root.resolve("heropack.json")))
+        {
+            Path nested = root.resolve("assets/fiskheroes");
+
+            if (Files.isRegularFile(nested.resolve("heropack.json")))
+            {
+                return nested;
+            }
+        }
+
+        return root;
     }
 
     private void loadExternal()

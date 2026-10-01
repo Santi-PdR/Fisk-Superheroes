@@ -1,0 +1,90 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:black_manta_dceu_layer1",
+    "layer2": "fiskheroes:black_manta_dceu_layer2",
+    "lights": "fiskheroes:black_manta_dceu_lights",
+    "jetpack": "fiskheroes:black_manta_dceu_jetpack",
+    "jetpack_lights": "fiskheroes:black_manta_dceu_jetpack_lights",
+    "helmet": "fiskheroes:black_manta_dceu_helmet",
+    "helmet_lights": "fiskheroes:black_manta_dceu_helmet_lights",
+    "eyes": "fiskheroes:black_manta_dceu_eyes",
+    "blade": "fiskheroes:black_manta_dceu_blade"
+  },
+  "lights": {
+    "renderLayer": {
+      "LEGGINGS": "null"
+    },
+    "default": "lights"
+  },
+  "custom": {
+    "fiskheroes:model": {
+      "applicable": ["HELMET"],
+      "modelType": "fiskheroes:black_manta_helmet",
+      "texture": ["helmet", "helmet_lights"],
+      "anchor": "head",
+      "opacity": 1.0
+    },
+    "fiskheroes:mantapack": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["jetpack", "jetpack_lights"],
+      "icon": "fiskheroes:red_fire_layer_%s",
+      "scale": [1.75, 3.75],
+      "opacity": 0.7,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:booster": {
+      "applicable": ["BOOTS"],
+      "icon": "fiskheroes:red_fire_layer_%s",
+      "anchor": "rightLeg",
+      "offset": [0.0, 8.5, 2.0],
+      "rotation": [20.0, 0.0, 0.0],
+      "scale": [1.5, 4.0],
+      "opacity": 0.7,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:black_manta_dceu",
+      "conditionals": ["vars:FLYING"]
+    },
+    "fiskheroes:particles|eyes": {
+      "particleType": "fiskheroes:black_manta_dceu_eyes",
+      "conditionals": ["vars:CHARGING"]
+    },
+    "fiskheroes:charged_beam": {
+      "color": "0xFF2227",
+      "anchor": "head",
+      "beams": [
+        {
+          "firstPerson": [3.0, 0.0, 2.0],
+          "offset": [3.0, -4.0, -4.0],
+          "size": [3.0, 2.0]
+        }
+      ],
+      "mirror": true,
+      "renderer": "fiskheroes:charged_beam",
+      "particleType": "fiskheroes:impact_charged_beam"
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["HELMET"],
+      "texture": ["null", "eyes"],
+      "opacity": 1.0,
+      "data": "fiskheroes:beam_charge"
+    },
+    "fiskheroes:shield": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "blade",
+      "offset": [3.25, 8.5, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "curve": [0.0, 0.0],
+      "mirror": false,
+      "large": false,
+      "data": "fiskheroes:blade_timer"
+    }
+  },
+  "vars": {
+    "FLYING": "entity.getData('fiskheroes:jetpacking') || entity.getData('fiskheroes:hovering')",
+    "CHARGING": "entity.getData('fiskheroes:beam_charging') && entity.getData('fiskheroes:beam_charge') < 1"
+  }
+}

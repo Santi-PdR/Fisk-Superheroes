@@ -1,0 +1,13 @@
+;{x} = (curve animate2({data}, 0.3, 0.0, 0.07, 0.13)) ; Chargeup
+;{y} = (curve animate2({data}, 0.2, 0.1, 0.07, 0.13))^2 ; Pull
+;{data} = sin(pi(1 - {data}))^2
+;
+;{rightArm_rotX} @ {data} -> 0
+;{rightArm_rotX} += 2{y} - 0.6{x}
+;{rightArm_rotY} @ {y} -> -0.6
+
+{vel} = curve min(2sqrt({motX}^2 + {motZ}^2), 1)
+{x} = curve min(4{data}, 1)
+
+out "pivot" (0, 0.5, 0)
+out "rotate" (-80{vel}{x}, 1, 0, 0)
