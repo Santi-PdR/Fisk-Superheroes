@@ -74,6 +74,18 @@ public class SHNetwork
         CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), packet);
     }
 
+    /** Server -> everyone within range of a point. */
+    public static void sendToNearby(SHPacket packet, net.minecraft.world.level.Level level, double x, double y, double z, double range)
+    {
+        if (!(level instanceof net.minecraft.server.level.ServerLevel serverLevel))
+        {
+            return;
+        }
+
+        PacketDistributor.TargetPoint point = new PacketDistributor.TargetPoint(x, y, z, range, serverLevel.dimension());
+        CHANNEL.send(PacketDistributor.NEAR.with(() -> point), packet);
+    }
+
     /** Server -> everyone. */
     public static void sendToAll(SHPacket packet)
     {

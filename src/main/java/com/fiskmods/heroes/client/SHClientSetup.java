@@ -41,6 +41,16 @@ public class SHClientSetup
         event.registerReloadListener(HeroModelRegistry.INSTANCE);
     }
 
+    /** Mounts the downloaded sound repository as a resource pack. */
+    @SubscribeEvent
+    public static void addPackFinders(net.minecraftforge.event.AddPackFindersEvent event)
+    {
+        if (event.getPackType() == net.minecraft.server.packs.PackType.CLIENT_RESOURCES)
+        {
+            com.fiskmods.heroes.client.sound.SHSoundPack.register(event::addRepositorySource);
+        }
+    }
+
     @SubscribeEvent
     public static void addLayers(EntityRenderersEvent.AddLayers event)
     {
@@ -58,6 +68,11 @@ public class SHClientSetup
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event)
     {
+        // The original mod downloads its audio on first launch; so does the port.
+        com.fiskmods.heroes.client.sound.SHSoundRepository.downloadIfMissing(
+                com.fiskmods.heroes.common.sound.SHSounds.getRepository(),
+                com.fiskmods.heroes.common.sound.SHSounds.getRepositoryVersion());
+
         event.enqueueWork(() ->
         {
             ClampedItemPropertyFunction function = (stack, level, entity, seed) ->

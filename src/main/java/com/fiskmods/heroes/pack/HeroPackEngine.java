@@ -418,10 +418,27 @@ public class HeroPackEngine
 
         // 3. sound definitions (events/sounds/*.json) and their ranges
         Map<String, Double> ranges = new LinkedHashMap<>();
+        String soundRepository = null;
+        int soundVersion = 0;
 
         if (json.has("sounds") && json.get("sounds").isJsonObject())
         {
             JsonObject sounds = json.getAsJsonObject("sounds");
+
+            if (sounds.has("download") && sounds.get("download").isJsonObject())
+            {
+                JsonObject download = sounds.getAsJsonObject("download");
+
+                if (download.has("repository"))
+                {
+                    soundRepository = download.get("repository").getAsString();
+                }
+
+                if (download.has("version"))
+                {
+                    soundVersion = download.get("version").getAsInt();
+                }
+            }
 
             if (sounds.has("range") && sounds.get("range").isJsonObject())
             {
@@ -481,6 +498,11 @@ public class HeroPackEngine
             {
                 FiskHeroes.LOGGER.warn("Could not read sound definition {}", path, ex);
             }
+        }
+
+        if (soundRepository != null)
+        {
+            com.fiskmods.heroes.common.sound.SHSounds.setDownloadInfo(soundRepository, soundVersion);
         }
 
         // 4. powers

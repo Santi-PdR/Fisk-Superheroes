@@ -67,6 +67,8 @@ public class ClientEventHandler
             return;
         }
 
+        com.fiskmods.heroes.client.sound.SHSoundPlayer.tick();
+
         boolean jump = Minecraft.getInstance().options.keyJump.isDown();
         boolean sneak = Minecraft.getInstance().options.keyShift.isDown();
 

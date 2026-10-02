@@ -156,6 +156,7 @@ public final class SHSoundRepository
         writeIndex(dir);
         loadCached();
         FiskHeroes.LOGGER.info("FiskHeroes sound repository ready: {} sounds", INDEX.size());
+        net.minecraft.client.Minecraft.getInstance().execute(SHSoundPack::refresh);
     }
 
     /** Extracts the archive, keeping only the audio files and flattening the folder layout. */
@@ -259,10 +260,5 @@ public final class SHSoundRepository
     public static void markReady(boolean value)
     {
         ready = value;
-    }
-
-    static String describe(int count)
-    {
-        return count + " sounds";
     }
 }

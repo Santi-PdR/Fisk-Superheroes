@@ -79,17 +79,31 @@ final class AbilityData
             return;
         }
 
-        String id = sound.isJsonArray() ? sound.getAsJsonArray().get(0).getAsString() : sound.getAsString();
+        // Sound entries may be a single id or a list of variants; one is picked at random, as the
+        // original dispatcher did.
+        String id;
+
+        if (sound.isJsonArray())
+        {
+            var list = sound.getAsJsonArray();
+
+            if (list.isEmpty())
+            {
+                return;
+            }
+
+            id = list.get(entity.getRandom().nextInt(list.size())).getAsString();
+        }
+        else
+        {
+            id = sound.getAsString();
+        }
+
         ResourceLocation location = ResourceLocation.tryParse(id);
 
-        if (location != null && entity.level() instanceof ServerLevel level)
+        if (location != null)
         {
-            SoundEvent event = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.get(location);
-
-            if (event != null)
-            {
-                level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), event, SoundSource.PLAYERS, 1.0F, 1.0F);
-            }
+            com.fiskmods.heroes.common.sound.SHSounds.play(entity, location, SoundSource.PLAYERS, 1.0F, 1.0F);
         }
     }
 }

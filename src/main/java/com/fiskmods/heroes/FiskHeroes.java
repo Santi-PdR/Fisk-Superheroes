@@ -83,6 +83,10 @@ public class FiskHeroes
             SHNetwork.registerPacket(PacketAbility.class, PacketAbility::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketInput.class,
                     com.fiskmods.heroes.common.network.PacketInput::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketPlaySound.class,
+                    com.fiskmods.heroes.common.network.PacketPlaySound::new, NetworkDirection.PLAY_TO_CLIENT);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketStopSound.class,
+                    com.fiskmods.heroes.common.network.PacketStopSound::new, NetworkDirection.PLAY_TO_CLIENT);
 
             HeroPackEngine.INSTANCE.setup();
             LOGGER.info("Fisk's Superheroes loaded: {} heroes, {} powers, {} data variables",
