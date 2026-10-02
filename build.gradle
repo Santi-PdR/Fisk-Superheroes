@@ -57,6 +57,9 @@ dependencies {
     // Rhino is the maintained ECMAScript engine that evaluates the hero pack scripts (.js)
     // which drive Fisk's Superheroes' data-driven content.
     implementation("org.mozilla:rhino:${rhino_version}") { transitive = false }
+    // The ForgeGradle run configurations do not pick up jarJar-embedded libraries, so Rhino is also
+    // declared as a runtime dependency of the development runs.
+    runtimeOnly("org.mozilla:rhino:${rhino_version}")
     jarJar(group: 'org.mozilla', name: 'rhino', version: "[${rhino_version},1.8)") {
         jarJar.pin(it, "${rhino_version}")
     }

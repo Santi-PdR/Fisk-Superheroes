@@ -28,7 +28,7 @@ public class ModifierControlledFlight extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entry.getBoolean(PowerProperty.IS_TOGGLE))
+        if (entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             boolean state = !entry.isToggled(entity);
             entry.setToggled(entity, state);
@@ -43,7 +43,7 @@ public class ModifierControlledFlight extends Modifier
     @Override
     public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!entry.getBoolean(PowerProperty.IS_TOGGLE))
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             data.getData().set(Vars.FLYING, false);
         }
@@ -62,9 +62,9 @@ public class ModifierControlledFlight extends Modifier
 
         if (flying)
         {
-            float speed = entry.getFloat(PowerProperty.SPEED);
-            float boostSpeed = entry.getFloat(PowerProperty.BOOST_SPEED);
-            boolean canBoost = entry.getBoolean(PowerProperty.CAN_BOOST);
+            float speed = entry.getFloat(entity, PowerProperty.SPEED);
+            float boostSpeed = entry.getFloat(entity, PowerProperty.BOOST_SPEED);
+            boolean canBoost = entry.getBoolean(entity, PowerProperty.CAN_BOOST);
             boolean boosting = canBoost && player.isSprinting();
             double velocity = boosting ? speed + boostSpeed : speed;
 
@@ -110,7 +110,7 @@ public class ModifierControlledFlight extends Modifier
      */
     public static void onCollision(Player player, SHPlayerData data, ModifierEntry entry)
     {
-        float knockback = entry.getFloat(PowerProperty.KNOCKBACK);
+        float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
         Vec3 motion = player.getDeltaMovement();
         double horizontal = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
 

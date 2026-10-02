@@ -150,6 +150,78 @@ public class PowerProperty<T>
         return defaultValue;
     }
 
+    /** Parses a plain string literal of this property's type, or null when it is not one. */
+    @SuppressWarnings("unchecked")
+    public T tryParseLiteral(String text)
+    {
+        if (text == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            if (typeClass == Boolean.class)
+            {
+                return "true".equalsIgnoreCase(text) || "false".equalsIgnoreCase(text) ? (T) Boolean.valueOf(text) : null;
+            }
+            if (typeClass == Float.class)
+            {
+                return (T) Float.valueOf(text);
+            }
+            if (typeClass == Integer.class)
+            {
+                return (T) Integer.valueOf(text);
+            }
+            if (typeClass == String.class)
+            {
+                return (T) text;
+            }
+        }
+        catch (NumberFormatException e)
+        {
+            return null;
+        }
+
+        return null;
+    }
+
+    /** Converts the result of a script expression into this property's type. */
+    @SuppressWarnings("unchecked")
+    public T fromScript(Object value)
+    {
+        if (value == null)
+        {
+            return defaultValue;
+        }
+
+        try
+        {
+            if (typeClass == Boolean.class)
+            {
+                return (T) Boolean.valueOf(value instanceof Boolean b ? b : Boolean.parseBoolean(String.valueOf(value)));
+            }
+            if (typeClass == Float.class)
+            {
+                return (T) Float.valueOf(value instanceof Number n ? n.floatValue() : Float.parseFloat(String.valueOf(value)));
+            }
+            if (typeClass == Integer.class)
+            {
+                return (T) Integer.valueOf(value instanceof Number n ? n.intValue() : Integer.parseInt(String.valueOf(value)));
+            }
+            if (typeClass == String.class)
+            {
+                return (T) String.valueOf(value);
+            }
+        }
+        catch (Exception e)
+        {
+            return defaultValue;
+        }
+
+        return defaultValue;
+    }
+
     public JsonElement toJson(T value)
     {
         if (value instanceof Boolean b)

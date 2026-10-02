@@ -35,7 +35,7 @@ class ModifierEnergyProjection extends Modifier
             return;
         }
 
-        int chargeTime = entry.getInt(PowerProperty.CHARGE_TIME);
+        int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
 
         if (chargeTime > 0 && data.getData().get(Vars.BEAM_CHARGE) < chargeTime)
         {
@@ -49,7 +49,7 @@ class ModifierEnergyProjection extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        int chargeTime = entry.getInt(PowerProperty.CHARGE_TIME);
+        int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
         float charge = data.getData().get(Vars.BEAM_CHARGE);
 
         if (data.getData().get(Vars.BEAM_CHARGING))
@@ -72,8 +72,8 @@ class ModifierEnergyProjection extends Modifier
     /** Fires a hitscan energy shot along the entity's look vector. */
     protected void fire(LivingEntity entity, ModifierEntry entry, SHPlayerData data, ServerLevel level, boolean charged)
     {
-        float range = entry.getFloat(PowerProperty.RANGE);
-        float damage = entry.getFloat(PowerProperty.AMOUNT);
+        float range = entry.getFloat(entity, PowerProperty.RANGE);
+        float damage = entry.getFloat(entity, PowerProperty.AMOUNT);
 
         if (damage <= 0)
         {
@@ -95,7 +95,7 @@ class ModifierEnergyProjection extends Modifier
         {
             target.hurt(entity.damageSources().indirectMagic(entity, entity), damage * (charged ? 2.0F : 1.0F));
 
-            if (entry.getBoolean(PowerProperty.IS_EXPLOSIVE))
+            if (entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE))
             {
                 level.explode(entity, target.getX(), target.getY(), target.getZ(), 1.0F, false, net.minecraft.world.level.Level.ExplosionInteraction.NONE);
             }
@@ -137,7 +137,7 @@ class ModifierChargedBeam extends ModifierEnergyProjection
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        int chargeTime = entry.getInt(PowerProperty.CHARGE_TIME);
+        int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
         float charge = data.getData().get(Vars.BEAM_CHARGE);
 
         if (data.getData().get(Vars.BEAM_CHARGING))
@@ -147,7 +147,7 @@ class ModifierChargedBeam extends ModifierEnergyProjection
 
             if (charge >= chargeTime && entity.level() instanceof ServerLevel level)
             {
-                int duration = entry.getInt(PowerProperty.DURATION);
+                int duration = entry.getInt(entity, PowerProperty.DURATION);
 
                 if (duration <= 0 || entity.tickCount % Math.max(1, duration / 8) == 0)
                 {
@@ -192,7 +192,7 @@ class ModifierHeatVision extends ModifierEnergyProjection
             return;
         }
 
-        float range = entry.getFloat(PowerProperty.RANGE);
+        float range = entry.getFloat(entity, PowerProperty.RANGE);
         Vec3 start = player.getEyePosition();
         Vec3 direction = player.getLookAngle();
         HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(player, e -> e != player, range);

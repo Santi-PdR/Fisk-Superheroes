@@ -233,7 +233,7 @@ class ModifierShield extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entry.getBoolean(PowerProperty.IS_TOGGLE))
+        if (entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             boolean state = !entry.isToggled(entity);
             entry.setToggled(entity, state);
@@ -251,7 +251,7 @@ class ModifierShield extends Modifier
     @Override
     public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!entry.getBoolean(PowerProperty.IS_TOGGLE))
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             data.getData().set(Vars.SHIELD, false);
             data.getData().set(Vars.SHIELD_COOLDOWN, (short) 20);
@@ -348,7 +348,7 @@ class ModifierIntangibility extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-        return data != null && data.getData().get(Vars.INTANGIBLE) && !entry.getBoolean(PowerProperty.IS_ABSOLUTE);
+        return data != null && data.getData().get(Vars.INTANGIBLE) && !entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE);
     }
 
     @Override
@@ -383,8 +383,8 @@ class ModifierSizeManipulation extends Modifier
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
         float scale = data.getData().get(Vars.SCALE);
-        float min = entry.getFloat(PowerProperty.MIN_SIZE);
-        float max = entry.getFloat(PowerProperty.MAX_SIZE);
+        float min = entry.getFloat(entity, PowerProperty.MIN_SIZE);
+        float max = entry.getFloat(entity, PowerProperty.MAX_SIZE);
         float next = scale <= (min + max) * 0.5F ? max : min;
 
         data.getData().set(Vars.SCALE, next);
@@ -419,7 +419,7 @@ class ModifierTeleportation extends Modifier
             return;
         }
 
-        float range = entry.getFloat(PowerProperty.RANGE);
+        float range = entry.getFloat(entity, PowerProperty.RANGE);
         Vec3 look = entity.getLookAngle();
         double x = entity.getX();
         double y = entity.getY();
@@ -462,7 +462,7 @@ class ModifierGrapple extends Modifier
             return;
         }
 
-        float range = entry.getFloat(PowerProperty.RANGE);
+        float range = entry.getFloat(entity, PowerProperty.RANGE);
         var hit = player.pick(range, 0.0F, false);
 
         if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
@@ -537,7 +537,7 @@ class ModifierTelekinesis extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float range = entry.getFloat(PowerProperty.RANGE);
+        float range = entry.getFloat(entity, PowerProperty.RANGE);
 
         for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(range), e -> e != entity))
         {
@@ -579,7 +579,7 @@ class ModifierChargedPunch extends Modifier
 
         if (entity instanceof Player player && player.getAttackStrengthScale(0.0F) >= 1.0F)
         {
-            data.getData().set(Vars.PUNCH_TIMER, Math.min(entry.getInt(PowerProperty.CHARGE_TIME), timer + 1));
+            data.getData().set(Vars.PUNCH_TIMER, Math.min(entry.getInt(entity, PowerProperty.CHARGE_TIME), timer + 1));
         }
     }
 }
@@ -595,8 +595,8 @@ class ModifierGriefing extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float radius = Math.min(entry.getFloat(PowerProperty.RADIUS), 16.0F);
-        float knockback = entry.getFloat(PowerProperty.KNOCKBACK);
+        float radius = Math.min(entry.getFloat(entity, PowerProperty.RADIUS), 16.0F);
+        float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
 
         for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(radius), e -> e != entity))
         {
@@ -605,7 +605,7 @@ class ModifierGriefing extends Modifier
             target.hurtMarked = true;
         }
 
-        if (entry.getBoolean(PowerProperty.CAN_DO_GRIEFING) && entity.level() instanceof ServerLevel level)
+        if (entry.getBoolean(entity, PowerProperty.CAN_DO_GRIEFING) && entity.level() instanceof ServerLevel level)
         {
             net.minecraft.core.BlockPos origin = entity.blockPosition();
 

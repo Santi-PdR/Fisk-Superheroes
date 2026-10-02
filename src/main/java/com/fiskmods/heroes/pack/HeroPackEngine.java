@@ -99,6 +99,7 @@ public class HeroPackEngine
 
             JsonObject manifest = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
             int missing = 0;
+            int mismatched = 0;
 
             for (Map.Entry<String, JsonElement> e : manifest.entrySet())
             {
@@ -109,9 +110,15 @@ public class HeroPackEngine
                     missing++;
                     FiskHeroes.LOGGER.warn("Data variable {} ({}) from the original mapping is not registered", e.getKey(), e.getValue().getAsString());
                 }
+                else if (!var.getType().getName().equals(e.getValue().getAsString()))
+                {
+                    mismatched++;
+                    FiskHeroes.LOGGER.warn("Data variable {} has type {} but the original used {}", e.getKey(),
+                            var.getType().getName(), e.getValue().getAsString());
+                }
             }
 
-            FiskHeroes.LOGGER.info("Data variable manifest: {} entries, {} missing", manifest.size(), missing);
+            FiskHeroes.LOGGER.info("Data variable manifest: {} entries, {} missing, {} with a different type", manifest.size(), missing, mismatched);
         }
         catch (Exception e)
         {
@@ -613,7 +620,7 @@ public class HeroPackEngine
 
                         if (key != null)
                         {
-                            entry.setProperty(key, key.parse(property.getValue()));
+                            entry.setProperty(key, property.getValue());
                         }
                     }
                 }

@@ -18,7 +18,7 @@ public class ModifierEntry
 {
     private final Modifier modifier;
     private final String card;
-    private final Map<PowerProperty<?>, Object> properties = new LinkedHashMap<>();
+    private final Map<PowerProperty<?>, PropertyValue<?>> properties = new LinkedHashMap<>();
     private boolean enabled = true;
 
     public ModifierEntry(Modifier modifier, @Nullable String card)
@@ -28,7 +28,7 @@ public class ModifierEntry
 
         for (Map.Entry<PowerProperty<?>, Object> e : modifier.getDefaultProperties().entrySet())
         {
-            properties.put(e.getKey(), e.getValue());
+            setProperty(e.getKey(), e.getValue());
         }
     }
 
@@ -42,29 +42,63 @@ public class ModifierEntry
         return card;
     }
 
-    public Map<PowerProperty<?>, Object> getProperties()
+    public Map<PowerProperty<?>, PropertyValue<?>> getProperties()
     {
         return properties;
     }
 
+    /** Sets a property from a plain Java value (the modifier's defaults). */
     public void setProperty(PowerProperty<?> property, Object value)
     {
-        if (value != null)
+        setProperty(property, value != null ? new com.google.gson.JsonPrimitive(value instanceof Number n ? n
+                : value instanceof Boolean b ? b : String.valueOf(value)) : null);
+    }
+
+    /** Sets a property from the power file; strings may be script expressions. */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public void setProperty(PowerProperty<?> property, com.google.gson.JsonElement json)
+    {
+        if (property != null)
         {
-            properties.put(property, value);
+            properties.put(property, PropertyValue.of((PowerProperty) property, json));
         }
+    }
+
+    private PropertyValue<?> value(PowerProperty<?> property)
+    {
+        return properties.get(property);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T get(PowerProperty<T> property)
     {
-        Object value = properties.get(property);
-        return (T) (value != null ? value : property.getDefault());
+        PropertyValue<?> value = value(property);
+        return value != null ? (T) value.literal() : property.getDefault();
+    }
+
+    /** Resolves a property for an entity, evaluating script-valued properties. */
+    @SuppressWarnings("unchecked")
+    public <T> T get(net.minecraft.world.entity.Entity entity, PowerProperty<T> property)
+    {
+        PropertyValue<?> value = value(property);
+
+        if (value == null)
+        {
+            return property.getDefault();
+        }
+
+        return entity != null ? (T) value.resolve(entity) : (T) value.literal();
     }
 
     public float getFloat(PowerProperty<Float> property)
     {
         Float value = get(property);
+        return value != null ? value : 0.0F;
+    }
+
+    public float getFloat(net.minecraft.world.entity.Entity entity, PowerProperty<Float> property)
+    {
+        Float value = get(entity, property);
         return value != null ? value : 0.0F;
     }
 
@@ -74,9 +108,21 @@ public class ModifierEntry
         return value != null ? value : 0;
     }
 
+    public int getInt(net.minecraft.world.entity.Entity entity, PowerProperty<Integer> property)
+    {
+        Integer value = get(entity, property);
+        return value != null ? value : 0;
+    }
+
     public boolean getBoolean(PowerProperty<Boolean> property)
     {
         Boolean value = get(property);
+        return value != null && value;
+    }
+
+    public boolean getBoolean(net.minecraft.world.entity.Entity entity, PowerProperty<Boolean> property)
+    {
+        Boolean value = get(entity, property);
         return value != null && value;
     }
 

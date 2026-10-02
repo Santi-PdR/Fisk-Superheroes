@@ -22,14 +22,14 @@ public class ModifierRegeneration extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float factor = entry.getFloat(PowerProperty.FACTOR);
+        float factor = entry.getFloat(entity, PowerProperty.FACTOR);
 
         if (factor <= 0)
         {
             factor = 1.0F;
         }
 
-        int delay = entry.getInt(PowerProperty.DELAY);
+        int delay = entry.getInt(entity, PowerProperty.DELAY);
         int interval = delay > 0 ? delay : Math.max(1, (int) (80.0F / factor));
 
         boolean fed = !(entity instanceof net.minecraft.world.entity.player.Player player) || player.getFoodData().getFoodLevel() > 0;

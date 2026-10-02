@@ -41,7 +41,7 @@ public class ModifierLeaping extends Modifier
     /** Jump impulse hook, invoked from the jump event. */
     public static void onJump(LivingEntity entity, ModifierEntry entry)
     {
-        float leap = entry.getFloat(PowerProperty.AMOUNT);
+        float leap = entry.getFloat(entity, PowerProperty.AMOUNT);
 
         if (leap != 0)
         {

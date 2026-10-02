@@ -131,7 +131,7 @@ class ModifierResistance extends Modifier
 
         if (target == group || group == null && target != null)
         {
-            return amount * entry.getFloat(PowerProperty.FACTOR);
+            return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
 
         return amount;
@@ -156,7 +156,7 @@ class ModifierWeakness extends Modifier
 
         if (target == group || group == null && target != null)
         {
-            return amount * entry.getFloat(PowerProperty.FACTOR);
+            return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
 
         return amount;
@@ -179,7 +179,7 @@ class ModifierProjectileImmunity extends Modifier
             return true;
         }
 
-        return entry.getBoolean(PowerProperty.IS_ABSOLUTE) && (source.is(DamageTypeTags.IS_EXPLOSION) || source.getDirectEntity() == null);
+        return entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE) && (source.is(DamageTypeTags.IS_EXPLOSION) || source.getDirectEntity() == null);
     }
 }
 
@@ -265,7 +265,7 @@ class ModifierDamageResistance extends Modifier
 
         if (declared == null || declared.isEmpty() || source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT)))
         {
-            return amount * entry.getFloat(PowerProperty.FACTOR);
+            return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
 
         return amount;
@@ -315,7 +315,7 @@ class ModifierMetalSkin extends Modifier
         {
             float heat = data.getData().get(Vars.METAL_HEAT);
             data.getData().set(Vars.METAL_HEAT, Math.min(100.0F, heat + amount * 2.0F));
-            return amount * entry.getFloat(PowerProperty.FACTOR);
+            return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
 
         return amount;
@@ -425,7 +425,7 @@ class ModifierThorns extends Modifier
     {
         if (source.getEntity() instanceof LivingEntity attacker && attacker != entity)
         {
-            attacker.hurt(entity.damageSources().thorns(entity), entry.getFloat(PowerProperty.AMOUNT));
+            attacker.hurt(entity.damageSources().thorns(entity), entry.getFloat(entity, PowerProperty.AMOUNT));
         }
 
         return amount;

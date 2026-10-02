@@ -43,7 +43,7 @@ public class ModifierSuperSpeed extends Modifier
 
         if (speeding && player.isSprinting())
         {
-            float speed = entry.getFloat(PowerProperty.SPEED);
+            float speed = entry.getFloat(entity, PowerProperty.SPEED);
             Vec3 look = player.getLookAngle().scale(0.1D * speed);
             Vec3 motion = player.getDeltaMovement();
 
