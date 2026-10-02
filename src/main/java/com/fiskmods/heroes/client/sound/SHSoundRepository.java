@@ -155,7 +155,6 @@ public final class SHSoundRepository
         Files.deleteIfExists(temp);
         writeIndex(dir);
         loadCached();
-        SHSoundPack.refresh();
         FiskHeroes.LOGGER.info("FiskHeroes sound repository ready: {} sounds", INDEX.size());
     }
 
