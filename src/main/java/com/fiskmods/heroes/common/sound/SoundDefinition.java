@@ -197,11 +197,11 @@ public class SoundDefinition
     {
         if (variant != null)
         {
-            ResourceLocation start = start.get(variant);
+            ResourceLocation started = start.get(variant);
 
-            if (start != null)
+            if (started != null)
             {
-                return start;
+                return started;
             }
 
             ResourceLocation overridden = override.get(variant);

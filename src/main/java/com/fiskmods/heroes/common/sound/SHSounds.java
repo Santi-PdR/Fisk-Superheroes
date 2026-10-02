@@ -47,11 +47,11 @@ public final class SHSounds
     {
         for (SoundDefinition definition : DEFINITIONS.values())
         {
-            SoundDefinition parent = definition.getParent();
+            net.minecraft.resources.ResourceLocation parentId = definition.getParent();
 
-            if (parent != null)
+            if (parentId != null)
             {
-                SoundDefinition inherited = DEFINITIONS.get(parent);
+                SoundDefinition inherited = DEFINITIONS.get(parentId);
 
                 if (inherited != null)
                 {
