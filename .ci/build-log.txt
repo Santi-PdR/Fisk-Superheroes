@@ -1,21 +1,13 @@
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/sound/SHSoundPlayer.java:63: error: incompatible types: ResourceLocation cannot be converted to SoundEvent
-            mc.getSoundManager().play(new SimpleSoundInstance(event.getLocation(), packet.getSource(), packet.getVolume(),
-                                                                               ^
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/sound/SHLoopingSound.java:123: error: cannot find symbol
-            setVolume(baseVolume * (1.0F - (float) fadingOut / fadeOut));
-            ^
-  symbol:   method setVolume(float)
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/sound/SHLoopingSound.java:130: error: cannot find symbol
-            setVolume(baseVolume * progress);
-            ^
-  symbol:   method setVolume(float)
+/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/sound/SHSoundPlayer.java:63: error: constructor SimpleSoundInstance in class SimpleSoundInstance cannot be applied to given types;
+            mc.getSoundManager().play(new SimpleSoundInstance(event, packet.getSource(), packet.getVolume(),
+                                      ^
+  required: SoundEvent,SoundSource,float,float,RandomSource,boolean,int,Attenuation,double,double,double
 > Task :compileJava FAILED
 * What went wrong:
 Execution failed for task ':compileJava'.
 org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':compileJava'.
 Caused by: org.gradle.api.internal.tasks.compile.CompilationFailedException: Compilation failed; see the compiler error output for details.
-BUILD FAILED in 50s
+BUILD FAILED in 1m 2s
 	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
 	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
 	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
@@ -45,14 +37,14 @@ BUILD FAILED in 50s
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 
 
-BUILD FAILED in 50s
+BUILD FAILED in 1m 2s
 7 actionable tasks: 7 executed
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
 
 > Task :dumpApi
 API dump written to /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/api.txt
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790984763890.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790985026682.json
 
-BUILD SUCCESSFUL in 14s
+BUILD SUCCESSFUL in 25s
 1 actionable task: 1 executed
