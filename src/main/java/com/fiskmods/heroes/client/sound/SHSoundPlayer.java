@@ -61,8 +61,7 @@ public final class SHSoundPlayer
         else
         {
             mc.getSoundManager().play(new SimpleSoundInstance(event, packet.getSource(), packet.getVolume(),
-                    packet.getPitch(), net.minecraft.util.RandomSource.create(), false, packet.getDelay(),
-                    net.minecraft.client.resources.sounds.SoundInstance.Attenuation.LINEAR, packet.getX(), packet.getY(), packet.getZ()));
+                    packet.getPitch(), net.minecraft.util.RandomSource.create(), packet.getX(), packet.getY(), packet.getZ()));
         }
     }
 
