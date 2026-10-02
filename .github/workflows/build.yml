@@ -46,7 +46,7 @@ jobs:
         id: gradle
         run: |
           set +e
-          ./gradlew build --no-daemon --stacktrace --console=plain > ci-build.log 2>&1
+          ./gradlew build dumpApi --no-daemon --stacktrace --console=plain > ci-build.log 2>&1
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
           tail -5 ci-build.log
 
