@@ -88,8 +88,7 @@ public class ClientEventHandler
         }
 
         // Interpolate the values the HUD animates
-        interpolate(data, Vars.MASK_OPEN_TIMER, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
-        interpolate(data, Vars.SUIT_OPEN_TIMER, data.getData().get(Vars.SUIT_OPEN) ? 1.0F : 0.0F);
+        interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
         interpolate(data, Vars.BOOSTER_TIMER, data.getData().get(Vars.FLYING) ? 1.0F : 0.0F);
     }
 

@@ -495,17 +495,23 @@ class ModifierWallCrawling extends Modifier
         super(id);
     }
 
+    /** Crawl states stored in the {@code wall_crawling} data variable. */
+    static final byte CRAWL_NONE = 0;
+    static final byte CRAWL_WALL = 1;
+    static final byte CRAWL_CEILING = 2;
+
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!(entity instanceof Player player) || !data.getData().get(Vars.WALL_CRAWLING))
+        if (!(entity instanceof Player player) || player.onGround())
         {
+            data.getData().set(Vars.WALL_CRAWLING, CRAWL_NONE);
             return;
         }
 
-        boolean againstWall = player.horizontalCollision;
+        data.getData().set(Vars.WALL_CRAWLING, player.horizontalCollision ? CRAWL_WALL : CRAWL_NONE);
 
-        if (againstWall && !player.onGround())
+        if (player.horizontalCollision)
         {
             Vec3 motion = player.getDeltaMovement();
 

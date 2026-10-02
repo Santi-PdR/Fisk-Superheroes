@@ -228,7 +228,7 @@ class ModifierShield extends Modifier
         else
         {
             data.getData().set(Vars.SHIELD, true);
-            data.getData().set(Vars.SHIELD_COOLDOWN, 10.0F);
+            data.getData().set(Vars.SHIELD_COOLDOWN, (short) 10);
         }
 
         AbilityData.playSound(entity, entry, "ENABLE");
@@ -240,7 +240,7 @@ class ModifierShield extends Modifier
         if (!entry.getBoolean(PowerProperty.IS_TOGGLE))
         {
             data.getData().set(Vars.SHIELD, false);
-            data.getData().set(Vars.SHIELD_COOLDOWN, 20.0F);
+            data.getData().set(Vars.SHIELD_COOLDOWN, (short) 20);
         }
     }
 
@@ -258,13 +258,15 @@ class ModifierShield extends Modifier
         float health = shield != null && shield.has("health") ? shield.get("health").getAsFloat() : 100.0F;
 
         // The shield absorbs the hit from the data pool and reflects it
-        float current = data.getData().get(Vars.SHIELD_COOLDOWN);
+        // The shield keeps a health pool: absorbing a hit draws from it and the pool refills at
+        // the rate the power declares. The pool is stored in the data variable the original used.
+        short current = data.getData().get(Vars.SHIELD_COOLDOWN);
         double incoming = amount * 10.0D;
         double remaining = health - incoming;
 
         if (remaining > 0)
         {
-            data.getData().set(Vars.SHIELD_COOLDOWN, (float) Math.max(current, health - (float) remaining));
+            data.getData().set(Vars.SHIELD_COOLDOWN, (short) Math.max(current, Math.round(health - remaining)));
             AbilityData.playSound(entity, entry, "DEFLECT");
             return true;
         }
@@ -278,11 +280,11 @@ class ModifierShield extends Modifier
         JsonObject shield = AbilityData.object(entry.get(PowerProperty.SHIELD));
         int cooldown = shield != null && shield.has("cooldown") ? shield.get("cooldown").getAsInt() : 60;
 
-        float value = data.getData().get(Vars.SHIELD_COOLDOWN);
+        short value = data.getData().get(Vars.SHIELD_COOLDOWN);
 
         if (value > 0)
         {
-            data.getData().set(Vars.SHIELD_COOLDOWN, (float) Math.max(0.0D, value - (110.0D / Math.max(1, cooldown))));
+            data.getData().set(Vars.SHIELD_COOLDOWN, (short) Math.max(0.0D, value - (110.0D / Math.max(1, cooldown))));
         }
     }
 }
@@ -372,7 +374,7 @@ class ModifierSizeManipulation extends Modifier
         float next = scale <= (min + max) * 0.5F ? max : min;
 
         data.getData().set(Vars.SCALE, next);
-        data.getData().set(Vars.SIZE_STATE, next > 1.0F ? 1 : next < 1.0F ? -1 : 0);
+        data.getData().set(Vars.SIZE_STATE, (byte) (next > 1.0F ? 1 : next < 1.0F ? -1 : 0));
         data.getData().markDirty(Vars.SCALE);
         data.getData().markDirty(Vars.SIZE_STATE);
     }

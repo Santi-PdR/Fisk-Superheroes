@@ -99,6 +99,40 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(['-Xmaxerrs', '2000', '-Xlint:none'])
 }
 
+// Dumps the public/protected signatures of the vanilla and Forge classes listed in
+// .ci/api-classes.txt. The port needs exact 1.20.1 signatures and the build environment is the
+// only place the mapped game jar is available.
+tasks.register('dumpApi') {
+    def classesFile = file('.ci/api-classes.txt')
+    def outputFile = file('.ci/api.txt')
+    def compileClasspath = sourceSets.main.compileClasspath
+
+    doLast {
+        outputFile.parentFile.mkdirs()
+        def javap = new File(System.getProperty('java.home'), 'bin/javap').absolutePath
+        def names = classesFile.exists()
+                ? classesFile.readLines().collect { it.trim() }.findAll { it && !it.startsWith('#') }
+                : []
+        def builder = new StringBuilder()
+        def classpath = compileClasspath.asPath
+
+        names.each { name ->
+            builder.append('===== ' + name + ' =====\n')
+            def process = [javap, '-classpath', classpath, '-protected', name].execute()
+            process.waitFor()
+            builder.append(process.in.text)
+            def error = process.err.text
+            if (error) {
+                builder.append(error)
+            }
+            builder.append('\n')
+        }
+
+        outputFile.text = builder.toString()
+        println 'API dump written to ' + outputFile
+    }
+}
+
 publishing {
     publications {
         register('mavenJava', MavenPublication) {

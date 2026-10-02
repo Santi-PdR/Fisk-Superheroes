@@ -22,10 +22,16 @@ public final class DataType<T>
     /** A float which is interpolated over time on the client when rendered. */
     public static final DataType<Float> FLOAT_INTERP = new DataType<>("FLOAT_INTERP", Float.class, 0.0F,
             (buf, v) -> buf.writeFloat(v), buf -> buf.readFloat(), json -> json.getAsFloat());
+    public static final DataType<Short> SHORT = new DataType<>("SHORT", Short.class, (short) 0,
+            (buf, v) -> buf.writeShort(v), buf -> buf.readShort(), json -> json.getAsShort());
+    public static final DataType<Double> DOUBLE = new DataType<>("DOUBLE", Double.class, 0.0D,
+            (buf, v) -> buf.writeDouble(v), buf -> buf.readDouble(), json -> json.getAsDouble());
+    public static final DataType<Double> DOUBLE_INTERP = new DataType<>("DOUBLE_INTERP", Double.class, 0.0D,
+            (buf, v) -> buf.writeDouble(v), buf -> buf.readDouble(), json -> json.getAsDouble());
     public static final DataType<String> STRING = new DataType<>("STRING", String.class, "",
             (buf, v) -> buf.writeUtf(v), buf -> buf.readUtf(32767), json -> json.getAsString());
 
-    private static final DataType<?>[] TYPES = { BOOLEAN, BYTE, INT, FLOAT, FLOAT_INTERP, STRING };
+    private static final DataType<?>[] TYPES = { BOOLEAN, BYTE, INT, FLOAT, FLOAT_INTERP, SHORT, DOUBLE, DOUBLE_INTERP, STRING };
 
     public interface TypeWriter<T>
     {

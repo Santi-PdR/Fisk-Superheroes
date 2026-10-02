@@ -66,6 +66,7 @@ public class HeroPackEngine
         Power.REGISTRY.clear();
         com.fiskmods.heroes.common.data.var.Vars.ensureRegistered();
         com.fiskmods.heroes.common.sound.SHSounds.clear();
+        validateDataVariables();
 
         loadedPacks.clear();
         loadBuiltIn();
@@ -81,6 +82,41 @@ public class HeroPackEngine
     public boolean isLoaded()
     {
         return loaded;
+    }
+
+    /**
+     * Cross-checks the built-in variable registry against the manifest generated from the original
+     * mod's data mapping. A mismatch means a variable was lost or mistyped during the port.
+     */
+    private static void validateDataVariables()
+    {
+        try (java.io.InputStream in = HeroPackEngine.class.getResourceAsStream("/data_vars.json"))
+        {
+            if (in == null)
+            {
+                return;
+            }
+
+            JsonObject manifest = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
+            int missing = 0;
+
+            for (Map.Entry<String, JsonElement> e : manifest.entrySet())
+            {
+                com.fiskmods.heroes.common.data.var.DataVar<?> var = DataRegistry.INSTANCE.get(new ResourceLocation(FiskHeroes.MODID, e.getKey()).toString());
+
+                if (var == null)
+                {
+                    missing++;
+                    FiskHeroes.LOGGER.warn("Data variable {} ({}) from the original mapping is not registered", e.getKey(), e.getValue().getAsString());
+                }
+            }
+
+            FiskHeroes.LOGGER.info("Data variable manifest: {} entries, {} missing", manifest.size(), missing);
+        }
+        catch (Exception e)
+        {
+            FiskHeroes.LOGGER.error("Could not validate the data variable manifest", e);
+        }
     }
 
     /* ------------------------------------------------------------------ */
@@ -326,7 +362,9 @@ public class HeroPackEngine
 
                 if (type != null)
                 {
-                    DataRegistry.INSTANCE.register(new ResourceLocation(domain, e.getKey()), type, reset);
+                    // Pack-declared variables are namespaced "dyn/" so scripts address them as
+                    // fiskheroes:dyn/<name>, matching the original pack format.
+                    DataRegistry.INSTANCE.register(new ResourceLocation(domain, "dyn/" + e.getKey()), type, reset);
                 }
             }
         }
