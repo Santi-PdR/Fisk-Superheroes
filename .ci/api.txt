@@ -1,0 +1,274 @@
+===== net.minecraft.server.packs.PackResources =====
+Compiled from "PackResources.java"
+public interface net.minecraft.server.packs.PackResources extends java.lang.AutoCloseable,net.minecraftforge.common.extensions.IForgePackResources {
+  public static final java.lang.String METADATA_EXTENSION;
+  public static final java.lang.String PACK_META;
+  public abstract net.minecraft.server.packs.resources.IoSupplier<java.io.InputStream> getRootResource(java.lang.String...);
+  public abstract net.minecraft.server.packs.resources.IoSupplier<java.io.InputStream> getResource(net.minecraft.server.packs.PackType, net.minecraft.resources.ResourceLocation);
+  public abstract void listResources(net.minecraft.server.packs.PackType, java.lang.String, java.lang.String, net.minecraft.server.packs.PackResources$ResourceOutput);
+  public abstract java.util.Set<java.lang.String> getNamespaces(net.minecraft.server.packs.PackType);
+  public abstract <T> T getMetadataSection(net.minecraft.server.packs.metadata.MetadataSectionSerializer<T>) throws java.io.IOException;
+  public abstract java.lang.String packId();
+  public default boolean isBuiltin();
+  public abstract void close();
+}
+
+===== net.minecraft.server.packs.PackType =====
+Compiled from "PackType.java"
+public final class net.minecraft.server.packs.PackType extends java.lang.Enum<net.minecraft.server.packs.PackType> {
+  public static final net.minecraft.server.packs.PackType CLIENT_RESOURCES;
+  public static final net.minecraft.server.packs.PackType SERVER_DATA;
+  public static net.minecraft.server.packs.PackType[] values();
+  public static net.minecraft.server.packs.PackType valueOf(java.lang.String);
+  public java.lang.String getDirectory();
+}
+
+===== net.minecraft.server.packs.repository.Pack =====
+Compiled from "Pack.java"
+public class net.minecraft.server.packs.repository.Pack {
+  public static net.minecraft.server.packs.repository.Pack readMetaAndCreate(java.lang.String, net.minecraft.network.chat.Component, boolean, net.minecraft.server.packs.repository.Pack$ResourcesSupplier, net.minecraft.server.packs.PackType, net.minecraft.server.packs.repository.Pack$Position, net.minecraft.server.packs.repository.PackSource);
+  public static net.minecraft.server.packs.repository.Pack create(java.lang.String, net.minecraft.network.chat.Component, boolean, net.minecraft.server.packs.repository.Pack$ResourcesSupplier, net.minecraft.server.packs.repository.Pack$Info, net.minecraft.server.packs.PackType, net.minecraft.server.packs.repository.Pack$Position, boolean, net.minecraft.server.packs.repository.PackSource);
+  public static net.minecraft.server.packs.repository.Pack$Info readPackInfo(java.lang.String, net.minecraft.server.packs.repository.Pack$ResourcesSupplier);
+  public net.minecraft.network.chat.Component getTitle();
+  public net.minecraft.network.chat.Component getDescription();
+  public net.minecraft.network.chat.Component getChatLink(boolean);
+  public net.minecraft.server.packs.repository.PackCompatibility getCompatibility();
+  public net.minecraft.world.flag.FeatureFlagSet getRequestedFeatures();
+  public net.minecraft.server.packs.PackResources open();
+  public java.lang.String getId();
+  public boolean isRequired();
+  public boolean isFixedPosition();
+  public net.minecraft.server.packs.repository.Pack$Position getDefaultPosition();
+  public net.minecraft.server.packs.repository.PackSource getPackSource();
+  public boolean isHidden();
+  public boolean equals(java.lang.Object);
+  public int hashCode();
+}
+
+===== net.minecraft.server.packs.repository.PackSource =====
+Compiled from "PackSource.java"
+public interface net.minecraft.server.packs.repository.PackSource {
+  public static final java.util.function.UnaryOperator<net.minecraft.network.chat.Component> NO_DECORATION;
+  public static final net.minecraft.server.packs.repository.PackSource DEFAULT;
+  public static final net.minecraft.server.packs.repository.PackSource BUILT_IN;
+  public static final net.minecraft.server.packs.repository.PackSource FEATURE;
+  public static final net.minecraft.server.packs.repository.PackSource WORLD;
+  public static final net.minecraft.server.packs.repository.PackSource SERVER;
+  public abstract net.minecraft.network.chat.Component decorate(net.minecraft.network.chat.Component);
+  public abstract boolean shouldAddAutomatically();
+  public static net.minecraft.server.packs.repository.PackSource create(java.util.function.UnaryOperator<net.minecraft.network.chat.Component>, boolean);
+}
+
+===== net.minecraft.server.packs.repository.RepositorySource =====
+Compiled from "RepositorySource.java"
+public interface net.minecraft.server.packs.repository.RepositorySource {
+  public abstract void loadPacks(java.util.function.Consumer<net.minecraft.server.packs.repository.Pack>);
+}
+
+===== net.minecraft.server.packs.repository.PackRepository =====
+Compiled from "PackRepository.java"
+public class net.minecraft.server.packs.repository.PackRepository {
+  public net.minecraft.server.packs.repository.PackRepository(net.minecraft.server.packs.repository.RepositorySource...);
+  public void reload();
+  public void setSelected(java.util.Collection<java.lang.String>);
+  public boolean addPack(java.lang.String);
+  public boolean removePack(java.lang.String);
+  public java.util.Collection<java.lang.String> getAvailableIds();
+  public java.util.Collection<net.minecraft.server.packs.repository.Pack> getAvailablePacks();
+  public java.util.Collection<java.lang.String> getSelectedIds();
+  public net.minecraft.world.flag.FeatureFlagSet getRequestedFeatureFlags();
+  public java.util.Collection<net.minecraft.server.packs.repository.Pack> getSelectedPacks();
+  public net.minecraft.server.packs.repository.Pack getPack(java.lang.String);
+  public synchronized void addPackFinder(net.minecraft.server.packs.repository.RepositorySource);
+  public boolean isAvailable(java.lang.String);
+  public java.util.List<net.minecraft.server.packs.PackResources> openAllSelected();
+}
+
+===== net.minecraft.server.packs.metadata.pack.PackMetadataSection =====
+Compiled from "PackMetadataSection.java"
+public class net.minecraft.server.packs.metadata.pack.PackMetadataSection {
+  public static final net.minecraft.server.packs.metadata.MetadataSectionType<net.minecraft.server.packs.metadata.pack.PackMetadataSection> TYPE;
+  public net.minecraft.server.packs.metadata.pack.PackMetadataSection(net.minecraft.network.chat.Component, int);
+  public net.minecraft.server.packs.metadata.pack.PackMetadataSection(net.minecraft.network.chat.Component, int, java.util.Map<net.minecraft.server.packs.PackType, java.lang.Integer>);
+  public net.minecraft.network.chat.Component getDescription();
+  public int getPackFormat();
+  public int getPackFormat(net.minecraft.server.packs.PackType);
+}
+
+===== net.minecraft.server.packs.metadata.MetadataSectionSerializer =====
+Compiled from "MetadataSectionSerializer.java"
+public interface net.minecraft.server.packs.metadata.MetadataSectionSerializer<T> {
+  public abstract java.lang.String getMetadataSectionName();
+  public abstract T fromJson(com.google.gson.JsonObject);
+}
+
+===== net.minecraftforge.event.AddPackFindersEvent =====
+Compiled from "AddPackFindersEvent.java"
+public class net.minecraftforge.event.AddPackFindersEvent extends net.minecraftforge.eventbus.api.Event implements net.minecraftforge.fml.event.IModBusEvent {
+  public net.minecraftforge.event.AddPackFindersEvent(net.minecraft.server.packs.PackType, java.util.function.Consumer<net.minecraft.server.packs.repository.RepositorySource>);
+  public void addRepositorySource(net.minecraft.server.packs.repository.RepositorySource);
+  public net.minecraft.server.packs.PackType getPackType();
+}
+
+===== net.minecraft.client.renderer.entity.LivingEntityRenderer =====
+Compiled from "LivingEntityRenderer.java"
+public abstract class net.minecraft.client.renderer.entity.LivingEntityRenderer<T extends net.minecraft.world.entity.LivingEntity, M extends net.minecraft.client.model.EntityModel<T>> extends net.minecraft.client.renderer.entity.EntityRenderer<T> implements net.minecraft.client.renderer.entity.RenderLayerParent<T, M> {
+  protected M model;
+  protected final java.util.List<net.minecraft.client.renderer.entity.layers.RenderLayer<T, M>> layers;
+  public net.minecraft.client.renderer.entity.LivingEntityRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider$Context, M, float);
+  public final boolean addLayer(net.minecraft.client.renderer.entity.layers.RenderLayer<T, M>);
+  public M getModel();
+  public void render(T, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  protected net.minecraft.client.renderer.RenderType getRenderType(T, boolean, boolean, boolean);
+  public static int getOverlayCoords(net.minecraft.world.entity.LivingEntity, float);
+  protected boolean isBodyVisible(T);
+  protected boolean isShaking(T);
+  protected void setupRotations(T, com.mojang.blaze3d.vertex.PoseStack, float, float, float);
+  protected float getAttackAnim(T, float);
+  protected float getBob(T, float);
+  protected float getFlipDegrees(T);
+  protected float getWhiteOverlayProgress(T, float);
+  protected void scale(T, com.mojang.blaze3d.vertex.PoseStack, float);
+  protected boolean shouldShowName(T);
+  public static boolean isEntityUpsideDown(net.minecraft.world.entity.LivingEntity);
+  protected boolean shouldShowName(net.minecraft.world.entity.Entity);
+  public void render(net.minecraft.world.entity.Entity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+}
+
+===== net.minecraft.client.renderer.entity.player.PlayerRenderer =====
+Compiled from "PlayerRenderer.java"
+public class net.minecraft.client.renderer.entity.player.PlayerRenderer extends net.minecraft.client.renderer.entity.LivingEntityRenderer<net.minecraft.client.player.AbstractClientPlayer, net.minecraft.client.model.PlayerModel<net.minecraft.client.player.AbstractClientPlayer>> {
+  public net.minecraft.client.renderer.entity.player.PlayerRenderer(net.minecraft.client.renderer.entity.EntityRendererProvider$Context, boolean);
+  public void render(net.minecraft.client.player.AbstractClientPlayer, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.world.phys.Vec3 getRenderOffset(net.minecraft.client.player.AbstractClientPlayer, float);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.minecraft.client.player.AbstractClientPlayer);
+  protected void scale(net.minecraft.client.player.AbstractClientPlayer, com.mojang.blaze3d.vertex.PoseStack, float);
+  protected void renderNameTag(net.minecraft.client.player.AbstractClientPlayer, net.minecraft.network.chat.Component, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public void renderRightHand(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, net.minecraft.client.player.AbstractClientPlayer);
+  public void renderLeftHand(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int, net.minecraft.client.player.AbstractClientPlayer);
+  protected void setupRotations(net.minecraft.client.player.AbstractClientPlayer, com.mojang.blaze3d.vertex.PoseStack, float, float, float);
+  protected void scale(net.minecraft.world.entity.LivingEntity, com.mojang.blaze3d.vertex.PoseStack, float);
+  protected void setupRotations(net.minecraft.world.entity.LivingEntity, com.mojang.blaze3d.vertex.PoseStack, float, float, float);
+  public void render(net.minecraft.world.entity.LivingEntity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.resources.ResourceLocation getTextureLocation(net.minecraft.world.entity.Entity);
+  protected void renderNameTag(net.minecraft.world.entity.Entity, net.minecraft.network.chat.Component, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public void render(net.minecraft.world.entity.Entity, float, float, com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.renderer.MultiBufferSource, int);
+  public net.minecraft.world.phys.Vec3 getRenderOffset(net.minecraft.world.entity.Entity, float);
+}
+
+===== net.minecraft.client.model.PlayerModel =====
+Compiled from "PlayerModel.java"
+public class net.minecraft.client.model.PlayerModel<T extends net.minecraft.world.entity.LivingEntity> extends net.minecraft.client.model.HumanoidModel<T> {
+  public final net.minecraft.client.model.geom.ModelPart leftSleeve;
+  public final net.minecraft.client.model.geom.ModelPart rightSleeve;
+  public final net.minecraft.client.model.geom.ModelPart leftPants;
+  public final net.minecraft.client.model.geom.ModelPart rightPants;
+  public final net.minecraft.client.model.geom.ModelPart jacket;
+  public net.minecraft.client.model.PlayerModel(net.minecraft.client.model.geom.ModelPart, boolean);
+  public static net.minecraft.client.model.geom.builders.MeshDefinition createMesh(net.minecraft.client.model.geom.builders.CubeDeformation, boolean);
+  protected java.lang.Iterable<net.minecraft.client.model.geom.ModelPart> bodyParts();
+  public void renderEars(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int);
+  public void renderCloak(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int);
+  public void setupAnim(T, float, float, float, float, float);
+  public void setAllVisible(boolean);
+  public void translateToHand(net.minecraft.world.entity.HumanoidArm, com.mojang.blaze3d.vertex.PoseStack);
+  public net.minecraft.client.model.geom.ModelPart getRandomModelPart(net.minecraft.util.RandomSource);
+  public void setupAnim(net.minecraft.world.entity.Entity, float, float, float, float, float);
+}
+
+===== net.minecraft.client.model.HumanoidModel =====
+Compiled from "HumanoidModel.java"
+public class net.minecraft.client.model.HumanoidModel<T extends net.minecraft.world.entity.LivingEntity> extends net.minecraft.client.model.AgeableListModel<T> implements net.minecraft.client.model.ArmedModel, net.minecraft.client.model.HeadedModel {
+  public static final float OVERLAY_SCALE;
+  public static final float HAT_OVERLAY_SCALE;
+  public static final float LEGGINGS_OVERLAY_SCALE;
+  public static final float TOOT_HORN_XROT_BASE;
+  public static final float TOOT_HORN_YROT_BASE;
+  public final net.minecraft.client.model.geom.ModelPart head;
+  public final net.minecraft.client.model.geom.ModelPart hat;
+  public final net.minecraft.client.model.geom.ModelPart body;
+  public final net.minecraft.client.model.geom.ModelPart rightArm;
+  public final net.minecraft.client.model.geom.ModelPart leftArm;
+  public final net.minecraft.client.model.geom.ModelPart rightLeg;
+  public final net.minecraft.client.model.geom.ModelPart leftLeg;
+  public net.minecraft.client.model.HumanoidModel$ArmPose leftArmPose;
+  public net.minecraft.client.model.HumanoidModel$ArmPose rightArmPose;
+  public boolean crouching;
+  public float swimAmount;
+  public net.minecraft.client.model.HumanoidModel(net.minecraft.client.model.geom.ModelPart);
+  public net.minecraft.client.model.HumanoidModel(net.minecraft.client.model.geom.ModelPart, java.util.function.Function<net.minecraft.resources.ResourceLocation, net.minecraft.client.renderer.RenderType>);
+  public static net.minecraft.client.model.geom.builders.MeshDefinition createMesh(net.minecraft.client.model.geom.builders.CubeDeformation, float);
+  protected java.lang.Iterable<net.minecraft.client.model.geom.ModelPart> headParts();
+  protected java.lang.Iterable<net.minecraft.client.model.geom.ModelPart> bodyParts();
+  public void prepareMobModel(T, float, float, float);
+  public void setupAnim(T, float, float, float, float, float);
+  protected void setupAttackAnimation(T, float);
+  protected float rotlerpRad(float, float, float);
+  public void copyPropertiesTo(net.minecraft.client.model.HumanoidModel<T>);
+  public void setAllVisible(boolean);
+  public void translateToHand(net.minecraft.world.entity.HumanoidArm, com.mojang.blaze3d.vertex.PoseStack);
+  protected net.minecraft.client.model.geom.ModelPart getArm(net.minecraft.world.entity.HumanoidArm);
+  public net.minecraft.client.model.geom.ModelPart getHead();
+  public void prepareMobModel(net.minecraft.world.entity.Entity, float, float, float);
+  public void setupAnim(net.minecraft.world.entity.Entity, float, float, float, float, float);
+}
+
+===== net.minecraft.client.model.geom.ModelPart =====
+Compiled from "ModelPart.java"
+public final class net.minecraft.client.model.geom.ModelPart {
+  public static final float DEFAULT_SCALE;
+  public float x;
+  public float y;
+  public float z;
+  public float xRot;
+  public float yRot;
+  public float zRot;
+  public float xScale;
+  public float yScale;
+  public float zScale;
+  public boolean visible;
+  public boolean skipDraw;
+  public net.minecraft.client.model.geom.ModelPart(java.util.List<net.minecraft.client.model.geom.ModelPart$Cube>, java.util.Map<java.lang.String, net.minecraft.client.model.geom.ModelPart>);
+  public net.minecraft.client.model.geom.PartPose storePose();
+  public net.minecraft.client.model.geom.PartPose getInitialPose();
+  public void setInitialPose(net.minecraft.client.model.geom.PartPose);
+  public void resetPose();
+  public void loadPose(net.minecraft.client.model.geom.PartPose);
+  public void copyFrom(net.minecraft.client.model.geom.ModelPart);
+  public boolean hasChild(java.lang.String);
+  public net.minecraft.client.model.geom.ModelPart getChild(java.lang.String);
+  public void setPos(float, float, float);
+  public void setRotation(float, float, float);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int);
+  public void render(com.mojang.blaze3d.vertex.PoseStack, com.mojang.blaze3d.vertex.VertexConsumer, int, int, float, float, float, float);
+  public void visit(com.mojang.blaze3d.vertex.PoseStack, net.minecraft.client.model.geom.ModelPart$Visitor);
+  public void translateAndRotate(com.mojang.blaze3d.vertex.PoseStack);
+  public net.minecraft.client.model.geom.ModelPart$Cube getRandomCube(net.minecraft.util.RandomSource);
+  public boolean isEmpty();
+  public void offsetPos(org.joml.Vector3f);
+  public void offsetRotation(org.joml.Vector3f);
+  public void offsetScale(org.joml.Vector3f);
+  public java.util.stream.Stream<net.minecraft.client.model.geom.ModelPart> getAllParts();
+}
+
+===== net.minecraftforge.client.event.EntityRenderersEvent$AddLayers =====
+Compiled from "EntityRenderersEvent.java"
+public class net.minecraftforge.client.event.EntityRenderersEvent$AddLayers extends net.minecraftforge.client.event.EntityRenderersEvent {
+  public net.minecraftforge.client.event.EntityRenderersEvent$AddLayers(java.util.Map<net.minecraft.world.entity.EntityType<?>, net.minecraft.client.renderer.entity.EntityRenderer<?>>, java.util.Map<java.lang.String, net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.world.entity.player.Player>>, net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
+  public java.util.Set<java.lang.String> getSkins();
+  public <R extends net.minecraft.client.renderer.entity.LivingEntityRenderer<? extends net.minecraft.world.entity.player.Player, ? extends net.minecraft.client.model.EntityModel<? extends net.minecraft.world.entity.player.Player>>> R getSkin(java.lang.String);
+  public <T extends net.minecraft.world.entity.LivingEntity, R extends net.minecraft.client.renderer.entity.LivingEntityRenderer<T, ? extends net.minecraft.client.model.EntityModel<T>>> R getRenderer(net.minecraft.world.entity.EntityType<? extends T>);
+  public net.minecraft.client.model.geom.EntityModelSet getEntityModels();
+  public net.minecraft.client.renderer.entity.EntityRendererProvider$Context getContext();
+}
+
+===== net.minecraftforge.client.event.RegisterClientReloadListenersEvent =====
+Compiled from "RegisterClientReloadListenersEvent.java"
+public class net.minecraftforge.client.event.RegisterClientReloadListenersEvent extends net.minecraftforge.eventbus.api.Event implements net.minecraftforge.fml.event.IModBusEvent {
+  public net.minecraftforge.client.event.RegisterClientReloadListenersEvent(net.minecraft.server.packs.resources.ReloadableResourceManager);
+  public void registerReloadListener(net.minecraft.server.packs.resources.PreparableReloadListener);
+}
+
+===== net.minecraft.client.resources.PlayerSkin =====
+Error: class not found: net.minecraft.client.resources.PlayerSkin
+
