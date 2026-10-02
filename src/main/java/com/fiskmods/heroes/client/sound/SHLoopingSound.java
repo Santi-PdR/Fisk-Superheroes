@@ -120,14 +120,14 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
                 return;
             }
 
-            setVolume(baseVolume * (1.0F - (float) fadingOut / fadeOut));
+            volume = baseVolume * (1.0F - (float) fadingOut / fadeOut);
             return;
         }
 
         if (fadeIn > 0)
         {
             float progress = Mth.clamp((float) ticks / fadeIn, 0.0F, 1.0F);
-            setVolume(baseVolume * progress);
+            volume = baseVolume * progress;
         }
 
         // Stop when the listener has walked out of the sound's range
