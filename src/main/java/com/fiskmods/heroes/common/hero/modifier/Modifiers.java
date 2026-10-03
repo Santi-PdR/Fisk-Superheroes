@@ -151,7 +151,9 @@ public final class Modifiers
                 .addProperty(PowerProperty.FACTOR, 0.5F));
         DAMAGE_WEAKNESS = registry.register(new ModifierDamageResistance(new ResourceLocation(FiskHeroes.MODID, "damage_weakness"))
                 .addProperty(PowerProperty.FACTOR, 2.0F));
-        DAMAGE_BONUS = registry.register(create("damage_bonus").addProperty(PowerProperty.AMOUNT));
+        DAMAGE_BONUS = registry.register(new ModifierDamageBonus(new ResourceLocation(FiskHeroes.MODID, "damage_bonus"))
+                .addProperty(PowerProperty.AMOUNT, 0.0F)
+                .addProperty(PowerProperty.DAMAGE_BONUS));
         POTION_IMMUNITY = registry.register(new ModifierPotionImmunity(new ResourceLocation(FiskHeroes.MODID, "potion_immunity")));
         POTION_RETENTION = registry.register(create("potion_retention").hideFromHud());
         METAL_SKIN = registry.register(new ModifierMetalSkin(new ResourceLocation(FiskHeroes.MODID, "metal_skin"))
@@ -231,8 +233,8 @@ public final class Modifiers
         CRYOKINESIS = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryokinesis"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
-        CRYO_CHARGE = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryo_charge"))
-                .addProperty(PowerProperty.COOLDOWN_TIME, 20)).setSoundState(Vars.CRYO_CHARGING);
+        CRYO_CHARGE = registry.register(new ModifierCryoCharge(new ResourceLocation(FiskHeroes.MODID, "cryo_charge"))
+                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.CRYO_CHARGING);
         CRYOBALL = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryoball"))
                 .addProperty(PowerProperty.RADIUS, 1.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));

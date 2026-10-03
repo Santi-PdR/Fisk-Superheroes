@@ -593,3 +593,110 @@ class ModifierEquipment extends Modifier
         }
     }
 }
+
+/** Adds pack-defined bonus damage to melee hits and consumes any configured uses. */
+class ModifierDamageBonus extends Modifier
+{
+    private static final java.util.Map<String, com.fiskmods.heroes.pack.ScriptFunction> EXPRESSIONS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    ModifierDamageBonus(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry, net.minecraft.world.entity.Entity target,
+            DamageSource source, float amount)
+    {
+        if (entity.level().isClientSide || source.getEntity() != entity || source.getDirectEntity() != entity
+                || !(source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)))
+        {
+            return amount;
+        }
+
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        com.google.gson.JsonElement definition = entry.get(entity, PowerProperty.DAMAGE_BONUS);
+        if (data == null || definition == null || !definition.isJsonObject()) return amount;
+
+        com.google.gson.JsonObject bonus = definition.getAsJsonObject();
+        com.google.gson.JsonElement dataElement = bonus.get("data");
+        if (dataElement == null || !dataElement.isJsonPrimitive()) return amount;
+        String dataName = dataElement.getAsString();
+        com.fiskmods.heroes.common.data.var.DataVar<?> variable = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(dataName);
+        float fraction = variable != null ? readFraction(data, variable) : evaluateFraction(entity, dataName);
+        if (fraction <= 0.0F) return amount;
+
+        int uses = bonus.has("uses") ? bonus.get("uses").getAsInt() : -1;
+        if (uses > 0 && variable != null && (variable.getType() == com.fiskmods.heroes.common.data.DataType.FLOAT
+                || variable.getType() == com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP))
+        {
+            writeFraction(data, variable, Math.max(0.0F, (int) (fraction * uses - 1.0F) / (float) uses));
+        }
+
+        return amount + entry.getFloat(entity, PowerProperty.AMOUNT) * fraction;
+    }
+
+    private static float readFraction(SHPlayerData data, com.fiskmods.heroes.common.data.var.DataVar<?> variable)
+    {
+        Object value = data.getData().get(variable);
+        return value instanceof Number number ? number.floatValue() : 0.0F;
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    private static void writeFraction(SHPlayerData data, com.fiskmods.heroes.common.data.var.DataVar<?> variable, float value)
+    {
+        data.getData().set((com.fiskmods.heroes.common.data.var.DataVar) variable, value);
+    }
+
+    private static float evaluateFraction(LivingEntity entity, String expression)
+    {
+        com.fiskmods.heroes.pack.ScriptFunction function = EXPRESSIONS.get(expression);
+        if (function == null)
+        {
+            function = com.fiskmods.heroes.pack.js.JSExpressions.compile(expression);
+            if (function == null) return 0.0F;
+            EXPRESSIONS.put(expression, function);
+        }
+
+        Object result = function.call(new com.fiskmods.heroes.pack.js.JSEntity(entity));
+        return result instanceof Number number ? number.floatValue() : 0.0F;
+    }
+}
+
+/** Charges the cryogenic punch while its key is held, matching the original 20-tick ramp. */
+class ModifierCryoCharge extends Modifier
+{
+    ModifierCryoCharge(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.CRYO_CHARGING, true);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
+        {
+            data.getData().set(Vars.CRYO_CHARGING, false);
+        }
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        float charge = data.getData().get(Vars.CRYO_CHARGE);
+        boolean charging = data.getData().get(Vars.CRYO_CHARGING);
+        charge = Math.max(0.0F, Math.min(1.0F, charge + (charging ? 0.05F : -0.05F)));
+        data.getData().set(Vars.CRYO_CHARGE, charge);
+
+        if (entry.getBoolean(entity, PowerProperty.IS_TOGGLE) && charging && charge >= 1.0F)
+        {
+            data.getData().set(Vars.CRYO_CHARGING, false);
+        }
+    }
+}

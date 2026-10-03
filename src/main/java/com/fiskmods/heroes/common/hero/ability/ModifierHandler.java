@@ -153,6 +153,30 @@ public final class ModifierHandler
         }
     }
 
+    /** Applies attacker-side modifiers before the defender processes the same hit. */
+    public static float modifyOutgoingDamage(LivingEntity attacker, net.minecraft.world.entity.Entity target,
+            DamageSource source, float amount)
+    {
+        if (attacker == null || attacker.level().isClientSide || source.getEntity() != attacker
+                || source.getDirectEntity() != attacker
+                || !(source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                        || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK)))
+        {
+            return amount;
+        }
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(attacker);
+        if (data == null || data.getHeroType() == null) return amount;
+
+        float result = amount;
+        for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
+        {
+            if (!entry.isEnabled() || !entry.isModifierEnabled(attacker, data)) continue;
+            result = entry.getModifier().modifyOutgoingDamage(attacker, entry, target, source, result);
+        }
+        return Math.max(0.0F, result);
+    }
+
     public static void onJump(LivingEntity entity)
     {
         SHPlayerData data = SHDataCapabilities.getPlayer(entity);

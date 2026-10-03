@@ -134,6 +134,13 @@ public class Modifier
         return amount;
     }
 
+    /** Allows a modifier to increase damage dealt by this entity before the target takes damage. */
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry,
+            net.minecraft.world.entity.Entity target, net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        return amount;
+    }
+
     /** Called when a player wearing a suit with this modifier respawns or reconnects. */
     public void onRespawn(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {

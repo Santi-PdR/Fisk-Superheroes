@@ -89,7 +89,10 @@ public class CommonEventHandler
             return;
         }
 
-        float result = ModifierHandler.modifyDamage(entity, event.getSource(), event.getAmount());
+        net.minecraft.world.entity.Entity attackerEntity = event.getSource().getEntity();
+        LivingEntity attacker = attackerEntity instanceof LivingEntity living ? living : null;
+        float outgoing = ModifierHandler.modifyOutgoingDamage(attacker, entity, event.getSource(), event.getAmount());
+        float result = ModifierHandler.modifyDamage(entity, event.getSource(), outgoing);
 
         if (result <= 0)
         {
