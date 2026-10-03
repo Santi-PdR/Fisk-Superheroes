@@ -100,6 +100,7 @@ public class ClientEventHandler
 
         boolean jump = Minecraft.getInstance().options.keyJump.isDown();
         boolean sneak = Minecraft.getInstance().options.keyShift.isDown();
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, jump, sneak);
 
         if (!com.fiskmods.heroes.common.network.PacketInput.lastSent
                 || jump != com.fiskmods.heroes.common.network.PacketInput.lastJump

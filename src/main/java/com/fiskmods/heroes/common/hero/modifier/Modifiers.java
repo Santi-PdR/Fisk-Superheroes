@@ -106,7 +106,8 @@ public final class Modifiers
     {
         ModifierRegistry registry = ModifierRegistry.INSTANCE;
 
-        FLIGHT = registry.register(create("flight").addProperty(PowerProperty.SPEED, 0.05F));
+        FLIGHT = registry.register(new ModifierFlight(new ResourceLocation(FiskHeroes.MODID, "flight"))
+                .addProperty(PowerProperty.SPEED, 0.1F));
         CONTROLLED_FLIGHT = registry.register(new ModifierControlledFlight(new ResourceLocation(FiskHeroes.MODID, "controlled_flight"))
                 .addProperty(PowerProperty.SPEED, 0.1F)
                 .addProperty(PowerProperty.BOOST_SPEED, 0.2F)
