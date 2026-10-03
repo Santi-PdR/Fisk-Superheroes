@@ -256,7 +256,9 @@ Compiled from "EntityRenderersEvent.java"
 public class net.minecraftforge.client.event.EntityRenderersEvent$AddLayers extends net.minecraftforge.client.event.EntityRenderersEvent {
   public net.minecraftforge.client.event.EntityRenderersEvent$AddLayers(java.util.Map<net.minecraft.world.entity.EntityType<?>, net.minecraft.client.renderer.entity.EntityRenderer<?>>, java.util.Map<java.lang.String, net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.world.entity.player.Player>>, net.minecraft.client.renderer.entity.EntityRendererProvider$Context);
   public java.util.Set<java.lang.String> getSkins();
+  public <R extends net.minecraft.client.renderer.entity.EntityRenderer<? extends net.minecraft.world.entity.player.Player>> R getPlayerSkin(java.lang.String);
   public <R extends net.minecraft.client.renderer.entity.LivingEntityRenderer<? extends net.minecraft.world.entity.player.Player, ? extends net.minecraft.client.model.EntityModel<? extends net.minecraft.world.entity.player.Player>>> R getSkin(java.lang.String);
+  public <T extends net.minecraft.world.entity.Entity, R extends net.minecraft.client.renderer.entity.EntityRenderer<T>> R getEntityRenderer(net.minecraft.world.entity.EntityType<? extends T>);
   public <T extends net.minecraft.world.entity.LivingEntity, R extends net.minecraft.client.renderer.entity.LivingEntityRenderer<T, ? extends net.minecraft.client.model.EntityModel<T>>> R getRenderer(net.minecraft.world.entity.EntityType<? extends T>);
   public net.minecraft.client.model.geom.EntityModelSet getEntityModels();
   public net.minecraft.client.renderer.entity.EntityRendererProvider$Context getContext();
