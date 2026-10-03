@@ -36,6 +36,7 @@ public final class ModBlocks
     public static final RegistryObject<Block> OLIVINE_BLOCK = register("olivine_block", 3.0F, 5.0F, false, 1);
     public static final RegistryObject<Block> PACKED_OLIVINE = register("packed_olivine", 2.0F, 5.0F, false, 1);
     public static final RegistryObject<Block> ETERNIUM_BLOCK = register("eternium_block", 7.5F, 6000.0F, true, 3);
+    public static final RegistryObject<Block> SUPERCHARGED_ETERNIUM = registerSuperchargedEternium();
     public static final RegistryObject<Block> ETERNIUM_STONE = register("eternium_stone", 5.0F, 3000.0F, false, 0);
     public static final RegistryObject<Block> TUTRIDIUM_ORE = ore("tutridium_ore", 3.0F, 5.0F, 2, 3, 7);
     public static final RegistryObject<Block> TITANIUM_ORE = ore("titanium_ore", 4.0F, 100.0F, 2, 0, 0);
@@ -52,7 +53,7 @@ public final class ModBlocks
 
     public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
-            GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, ETERNIUM_STONE,
+            GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, SUPERCHARGED_ETERNIUM, ETERNIUM_STONE,
             TUTRIDIUM_ORE, TITANIUM_ORE, DWARF_STAR_ORE, OLIVINE_ORE, ETERNIUM_ORE, TUTRITE_ORE,
             LUNAR_IRON_ORE, LUNAR_TITANIUM_ORE, LUNAR_OLIVINE_ORE, VIBRANIUM_ORE, LUNAR_ROCK, COBBLED_LUNAR_ROCK);
 
@@ -94,6 +95,16 @@ public final class ModBlocks
             return new OreBlock(properties, 2, 5);
         });
         ITEMS.register("vibranium_ore", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerSuperchargedEternium()
+    {
+        RegistryObject<Block> block = REGISTRY.register("supercharged_eternium", () ->
+                new Block(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_LIGHT_BLUE)
+                        .strength(20.0F, 6000.0F).sound(SoundType.METAL).lightLevel(state -> 15)
+                        .noOcclusion().requiresCorrectToolForDrops()));
+        ITEMS.register("supercharged_eternium", () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 

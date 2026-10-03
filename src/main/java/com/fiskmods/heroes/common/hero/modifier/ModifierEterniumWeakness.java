@@ -93,11 +93,13 @@ public final class ModifierEterniumWeakness extends Modifier
     {
         return stack.is(ModItems.ETERNIUM_SHARD.get())
                 || stack.is(ModBlocks.ETERNIUM_ORE.get().asItem())
-                || stack.is(ModBlocks.ETERNIUM_BLOCK.get().asItem());
+                || stack.is(ModBlocks.ETERNIUM_BLOCK.get().asItem())
+                || stack.is(ModBlocks.SUPERCHARGED_ETERNIUM.get().asItem());
     }
 
     private static boolean isPoisonEterniumBlock(Block block)
     {
-        return block == ModBlocks.ETERNIUM_ORE.get() || block == ModBlocks.ETERNIUM_BLOCK.get();
+        return block == ModBlocks.ETERNIUM_ORE.get() || block == ModBlocks.ETERNIUM_BLOCK.get()
+                || block == ModBlocks.SUPERCHARGED_ETERNIUM.get();
     }
 }
