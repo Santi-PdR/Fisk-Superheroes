@@ -90,6 +90,12 @@ public final class JSContext
         return engine.eval(source);
     }
 
+    /** Evaluates an external helper in its own bindings, as the original hero pack loader did. */
+    public static Object evaluate(ScriptEngine engine, String source, String name, Bindings bindings) throws Exception
+    {
+        return engine.eval(source, bindings);
+    }
+
     public static Object get(ScriptEngine engine, String name)
     {
         return engine.get(name);

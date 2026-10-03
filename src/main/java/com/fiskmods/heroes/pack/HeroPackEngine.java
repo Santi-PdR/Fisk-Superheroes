@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -544,7 +545,7 @@ public class HeroPackEngine
         // 4. heroes (scripts)
         int heroCount = 0;
         List<String> scripts = new ArrayList<>();
-        List<String> helperScripts = new ArrayList<>();
+        Map<String, String> externalScripts = new LinkedHashMap<>();
 
         for (Map.Entry<String, String> e : files.entrySet())
         {
@@ -555,7 +556,8 @@ public class HeroPackEngine
 
             if (e.getKey().startsWith("data/heroes/external/"))
             {
-                helperScripts.add(e.getValue());
+                String path = e.getKey().substring("data/heroes/".length(), e.getKey().length() - ".js".length());
+                externalScripts.put(new ResourceLocation(domain, path).toString(), e.getValue());
             }
             else if (e.getKey().startsWith("data/heroes/"))
             {
@@ -572,7 +574,7 @@ public class HeroPackEngine
 
             try
             {
-                loadHero(new ResourceLocation(domain, id), source, helperScripts, alts.getOrDefault(domain + ":" + id, alts.get(id)));
+                loadHero(new ResourceLocation(domain, id), source, externalScripts, alts.getOrDefault(domain + ":" + id, alts.get(id)));
                 heroCount++;
             }
             catch (Exception ex)
@@ -646,7 +648,7 @@ public class HeroPackEngine
         Power.REGISTRY.register(power);
     }
 
-    private void loadHero(ResourceLocation id, String source, List<String> helperScripts, Map<String, HeroIteration.Candidate> candidates)
+    private void loadHero(ResourceLocation id, String source, Map<String, String> externalScripts, Map<String, HeroIteration.Candidate> candidates)
     {
         Hero hero = new Hero(id);
         ScriptEngine engine = com.fiskmods.heroes.pack.js.JSContext.createEngine();
@@ -658,11 +660,36 @@ public class HeroPackEngine
                 return;
             }
 
-            // Helpers shared by several heroes (speedster_base, firestorm_base, ...)
-            for (String helper : helperScripts)
+            Map<String, Bindings> implemented = new LinkedHashMap<>();
+            engine.put("__fiskheroesImplement", (java.util.function.Function<String, Bindings>) path ->
             {
-                com.fiskmods.heroes.pack.js.JSContext.evaluate(engine, helper, id + ":helpers");
-            }
+                ResourceLocation helperId = ResourceLocation.tryParse(path);
+                String key = helperId != null && helperId.getNamespace().equals("minecraft")
+                        ? new ResourceLocation(id.getNamespace(), helperId.getPath()).toString()
+                        : helperId != null ? helperId.toString() : "";
+                String helper = externalScripts.get(key);
+
+                if (helper == null)
+                {
+                    throw new IllegalArgumentException("Hero helper not found: " + path);
+                }
+
+                return implemented.computeIfAbsent(key, ignored ->
+                {
+                    Bindings bindings = engine.createBindings();
+
+                    try
+                    {
+                        com.fiskmods.heroes.pack.js.JSContext.evaluate(engine, helper, key, bindings);
+                        return bindings;
+                    }
+                    catch (Exception e)
+                    {
+                        throw new IllegalStateException("Could not evaluate hero helper " + key, e);
+                    }
+                });
+            });
+            engine.eval("function implement(path) { return __fiskheroesImplement.apply(String(path)); }");
 
             com.fiskmods.heroes.pack.js.JSContext.evaluate(engine, source, id.toString());
 

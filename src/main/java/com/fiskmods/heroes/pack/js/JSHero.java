@@ -160,6 +160,13 @@ public class JSHero
         }
     }
 
+    /** Original packs may declare a key name and key index together with the callback. */
+    public void addKeyBindFunc(String name, Object function, String keyName, int index)
+    {
+        addKeyBind(name, keyName, index);
+        addKeyBindFunc(name, function);
+    }
+
     public void setKeyBindEnabled(Object function)
     {
         ScriptFunction wrapper = JSContext.wrap(function);
@@ -268,6 +275,12 @@ public class JSHero
     }
 
     public void addPrimaryEquipment(String item, boolean primary)
+    {
+        addEquipment(item, primary);
+    }
+
+    /** Original packs may attach an item predicate to a primary equipment candidate. */
+    public void addPrimaryEquipment(String item, boolean primary, Object predicate)
     {
         addEquipment(item, primary);
     }
