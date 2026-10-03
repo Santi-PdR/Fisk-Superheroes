@@ -2,6 +2,7 @@ package com.fiskmods.heroes;
 
 import com.fiskmods.heroes.common.command.CommandHero;
 import com.fiskmods.heroes.common.command.CommandSuit;
+import com.fiskmods.heroes.common.block.ModBlocks;
 import com.fiskmods.heroes.common.config.SHConfig;
 import com.fiskmods.heroes.common.data.DataRegistry;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
@@ -54,12 +55,15 @@ public class FiskHeroes
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_SUITS = CREATIVE_TABS.register("suits", ModItems::createSuitTab);
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_ITEMS = CREATIVE_TABS.register("items", ModItems::createItemTab);
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_EQUIPMENT = CREATIVE_TABS.register("equipment", ModItems::createEquipmentTab);
+    public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_BLOCKS = CREATIVE_TABS.register("blocks", ModBlocks::createBlockTab);
 
     public FiskHeroes(FMLJavaModLoadingContext context)
     {
         IEventBus modBus = context.getModEventBus();
 
         ModItems.REGISTRY.register(modBus);
+        ModBlocks.REGISTRY.register(modBus);
+        ModBlocks.ITEMS.register(modBus);
         ModMenus.REGISTRY.register(modBus);
         ModEntities.REGISTRY.register(modBus);
         SHAttributes.REGISTRY.register(modBus);
