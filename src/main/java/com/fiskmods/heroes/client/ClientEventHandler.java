@@ -67,6 +67,18 @@ public class ClientEventHandler
             return;
         }
 
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)
+        {
+            if (!SHKeyBinds.WEAPON.isDown()) mc.setScreen(null);
+        }
+        else if (mc.screen == null && SHKeyBinds.WEAPON.isDown())
+        {
+            com.fiskmods.heroes.client.gui.EquipmentWheelScreen wheel =
+                    com.fiskmods.heroes.client.gui.EquipmentWheelScreen.createForCurrentPlayer();
+            if (wheel != null) mc.setScreen(wheel);
+        }
+
         com.fiskmods.heroes.client.sound.SHSoundPlayer.tick();
 
         boolean jump = Minecraft.getInstance().options.keyJump.isDown();
