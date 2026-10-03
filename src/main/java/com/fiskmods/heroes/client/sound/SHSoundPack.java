@@ -112,12 +112,13 @@ public final class SHSoundPack implements PackResources
 
         Path base = root.resolve("assets").resolve(namespace);
 
-        if (!Files.isDirectory(base))
+        Path directory = base.resolve(path);
+        if (!Files.isDirectory(directory))
         {
             return;
         }
 
-        try (Stream<Path> stream = Files.walk(base.resolve(path)))
+        try (Stream<Path> stream = Files.walk(directory))
         {
             stream.filter(Files::isRegularFile).forEach(file ->
             {

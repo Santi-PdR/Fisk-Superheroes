@@ -26,11 +26,19 @@ public class ClientEventHandler
 {
     /** Ability indices are 1-based to match the pack scripts; 0 is the mask toggle. */
     private static final int[] ABILITY_INDICES = { 1, 2, 3, 4, 5 };
+    private static boolean weaponKeyHeld;
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event)
     {
         Minecraft mc = Minecraft.getInstance();
+        if (SHKeyBinds.WEAPON.matches(event.getKey(), event.getScanCode()))
+        {
+            if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
+                    && (mc.screen == null || mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)) weaponKeyHeld = true;
+            else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE) weaponKeyHeld = false;
+        }
+
         LocalPlayer player = mc.player;
 
         if (player == null || mc.screen != null)
@@ -70,9 +78,9 @@ public class ClientEventHandler
         Minecraft mc = Minecraft.getInstance();
         if (mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)
         {
-            if (!SHKeyBinds.WEAPON.isDown()) mc.setScreen(null);
+            if (!weaponKeyHeld) mc.setScreen(null);
         }
-        else if (mc.screen == null && SHKeyBinds.WEAPON.isDown())
+        else if (mc.screen == null && weaponKeyHeld)
         {
             com.fiskmods.heroes.client.gui.EquipmentWheelScreen wheel =
                     com.fiskmods.heroes.client.gui.EquipmentWheelScreen.createForCurrentPlayer();
@@ -104,6 +112,16 @@ public class ClientEventHandler
         // Interpolate the values the HUD animates
         interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
         interpolate(data, Vars.BOOSTER_TIMER, data.getData().get(Vars.FLYING) ? 1.0F : 0.0F);
+    }
+
+    @SubscribeEvent
+    public static void onMouseInput(InputEvent.MouseButton event)
+    {
+        if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
+                && (mc.screen == null || mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)) weaponKeyHeld = true;
+        else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE) weaponKeyHeld = false;
     }
 
     private static void interpolate(SHPlayerData data, com.fiskmods.heroes.common.data.var.DataVar<Float> var, float target)
