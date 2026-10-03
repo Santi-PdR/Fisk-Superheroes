@@ -63,7 +63,7 @@ public final class AbilityHandler
 
             if (function != null)
             {
-                function.call(player, pressed);
+                function.call(new com.fiskmods.heroes.pack.js.JSEntity(player), new com.fiskmods.heroes.pack.js.JSManager());
                 continue;
             }
 

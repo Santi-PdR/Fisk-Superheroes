@@ -36,6 +36,19 @@ public final class ModifierHandler
 
         boolean integrated = entity.level() instanceof net.minecraft.server.level.ServerLevel;
 
+        if (integrated && data.getHeroType().getTickHandler() != null)
+        {
+            try
+            {
+                data.getHeroType().getTickHandler().call(
+                        new com.fiskmods.heroes.pack.js.JSEntity(entity), new com.fiskmods.heroes.pack.js.JSManager());
+            }
+            catch (Exception e)
+            {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.error("Error running hero tick handler for {}", data.getHeroType().getName(), e);
+            }
+        }
+
         for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
         {
             if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))

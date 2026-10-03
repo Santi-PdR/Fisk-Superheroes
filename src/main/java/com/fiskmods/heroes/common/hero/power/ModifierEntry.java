@@ -155,7 +155,7 @@ public class ModifierEntry
     {
         if (data.getHeroType() != null)
         {
-            return data.getHeroType().isModifierEnabled(entity, modifier.getId().getPath());
+            return data.getHeroType().isModifierEnabled(entity, this);
         }
 
         return true;

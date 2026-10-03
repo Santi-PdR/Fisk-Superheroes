@@ -488,22 +488,28 @@ public class Hero implements Comparable<Hero>
 
     public boolean isKeyBindEnabled(Entity entity, String name)
     {
-        return keyBindEnabledFunc == null || keyBindEnabledFunc.callBoolean(entity, name);
+        return keyBindEnabledFunc == null || keyBindEnabledFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), name);
     }
 
     public boolean isModifierEnabled(Entity entity, String modifier)
     {
-        return modifierEnabledFunc == null || modifierEnabledFunc.callBoolean(entity, modifier);
+        return modifierEnabledFunc == null || modifierEnabledFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), modifier);
+    }
+
+    public boolean isModifierEnabled(Entity entity, com.fiskmods.heroes.common.hero.power.ModifierEntry modifier)
+    {
+        return modifierEnabledFunc == null || modifierEnabledFunc.callBoolean(
+                new com.fiskmods.heroes.pack.js.JSEntity(entity), new com.fiskmods.heroes.pack.js.JSModifier(modifier));
     }
 
     public boolean hasPermission(Entity entity, String permission)
     {
-        return permissionFunc == null || permissionFunc.callBoolean(entity, permission);
+        return permissionFunc == null || permissionFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), permission);
     }
 
     public boolean hasProperty(Entity entity, String property)
     {
-        return propertyFunc == null || propertyFunc.callBoolean(entity, property);
+        return propertyFunc == null || propertyFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), property);
     }
 
     public String getDamageProfile(Entity entity)
