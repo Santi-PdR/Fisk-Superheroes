@@ -50,8 +50,22 @@ public class ModifierEntry
     /** Sets a property from a plain Java value (the modifier's defaults). */
     public void setProperty(PowerProperty<?> property, Object value)
     {
-        setProperty(property, value != null ? new com.google.gson.JsonPrimitive(value instanceof Number n ? n
-                : value instanceof Boolean b ? b : String.valueOf(value)) : null);
+        com.google.gson.JsonElement json = null;
+
+        if (value instanceof Number number)
+        {
+            json = new com.google.gson.JsonPrimitive(number);
+        }
+        else if (value instanceof Boolean bool)
+        {
+            json = new com.google.gson.JsonPrimitive(bool);
+        }
+        else if (value != null)
+        {
+            json = new com.google.gson.JsonPrimitive(String.valueOf(value));
+        }
+
+        setProperty(property, json);
     }
 
     /** Sets a property from the power file; strings may be script expressions. */

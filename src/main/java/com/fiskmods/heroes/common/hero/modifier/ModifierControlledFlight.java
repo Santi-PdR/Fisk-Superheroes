@@ -110,7 +110,7 @@ public class ModifierControlledFlight extends Modifier
      */
     public static void onCollision(Player player, SHPlayerData data, ModifierEntry entry)
     {
-        float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
+        float knockback = entry.getFloat(player, PowerProperty.KNOCKBACK);
         Vec3 motion = player.getDeltaMovement();
         double horizontal = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
 
