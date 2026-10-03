@@ -99,6 +99,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, model, slot);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, model, iteration, slot);
+            renderCape(poseStack, buffer, packedLight, player, playerModel, model, slot);
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
             ResourceLocation lights = model.getLights(slot, player);
@@ -217,6 +218,110 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(vector.get(1).getAsFloat()));
             poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(vector.get(0).getAsFloat()));
         }
+    }
+
+    /** Renders the segmented, motion-reactive cape effect declared by the original hero models. */
+    private void renderCape(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:cape");
+        if (effect == null || !appliesToSlot(effect, slot))
+        {
+            return;
+        }
+
+        float animation = model.evaluateRenderData(effect.get("data"), player, 0.0F);
+        float open = 1.0F - Math.min(Math.max(animation, 0.0F) * 2.0F, 1.0F);
+        float flare = Math.max(0.0F, Math.min(1.0F, (animation - 0.5F) * 2.0F));
+        float length = effect.has("length") ? effect.get("length").getAsFloat() : 24.0F;
+        boolean wide = effect.has("wide") && effect.get("wide").getAsBoolean();
+        float width = wide ? 16.0F : 14.0F;
+
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            String key = textureForPass(effect.get("texture"), pass);
+            if (key == null || key.equals("null"))
+            {
+                continue;
+            }
+            ResourceLocation texture = model.resolveCustomTexture(key, player, slot);
+            if (texture == null)
+            {
+                continue;
+            }
+
+            boolean[] hidden = hidePartsFor(playerModel, model, slot);
+            ModelPart body = playerModel.body;
+            poseStack.pushPose();
+            body.translateAndRotate(poseStack);
+            poseStack.translate(0.0D, -0.02D, 0.1575D);
+
+            float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
+            net.minecraft.world.phys.Vec3 velocity = player.getDeltaMovement();
+            float horizontalSpeed = (float) Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z) / Math.max(scale, 0.001F);
+            float verticalSpeed = (float) velocity.y / Math.max(scale, 0.001F);
+            float swing = Math.max(0.0F, Math.min(110.0F, horizontalSpeed * 22.0F + Math.max(0.0F, verticalSpeed * 10.0F)));
+            float lean = (6.0F + swing) * open + 6.0F * flare;
+            poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(lean));
+
+            RenderType type = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
+            VertexConsumer consumer = buffer.getBuffer(type);
+            renderCapeMesh(poseStack, consumer, packedLight, player.tickCount, width, length, open);
+            poseStack.popPose();
+            restoreParts(playerModel, hidden);
+        }
+    }
+
+    private static void renderCapeMesh(PoseStack poseStack, VertexConsumer consumer, int packedLight,
+            int ticks, float widthPixels, float lengthPixels, float open)
+    {
+        final int segments = 24;
+        float pixelScale = 1.0F / 16.0F;
+        float width = widthPixels * pixelScale;
+        float segmentLength = lengthPixels * pixelScale / segments;
+        float uWidth = widthPixels / 64.0F;
+        float vLength = lengthPixels / 32.0F;
+        float u0 = 0.0F;
+        float u1 = uWidth;
+        float flex = (1.0F - open) * 0.65F;
+
+        for (int i = 0; i < segments; ++i)
+        {
+            float top = segmentLength * i;
+            float bottom = segmentLength * (i + 1);
+            float topV = vLength * i / segments;
+            float bottomV = vLength * (i + 1) / segments;
+            float wave = (float) Math.sin((ticks * 0.09F) + i * 0.16F) * flex * (i / (float) segments);
+            float left = -width * 0.5F - wave;
+            float right = width * 0.5F + wave;
+            float bend = (float) Math.sin((ticks * 0.07F) + i * 0.12F) * flex * 0.012F * (i + 1);
+
+            poseStack.pushPose();
+            poseStack.translate(0.0D, top, bend);
+            vertex(consumer, poseStack, left, 0, 0, u0, topV, packedLight);
+            vertex(consumer, poseStack, right, 0, 0, u1, topV, packedLight);
+            vertex(consumer, poseStack, right, segmentLength, 0, u1, bottomV, packedLight);
+            vertex(consumer, poseStack, left, segmentLength, 0, u0, bottomV, packedLight);
+            // The reverse face uses the back half of the original cape texture region.
+            vertex(consumer, poseStack, left, segmentLength, 0, uWidth, bottomV, packedLight);
+            vertex(consumer, poseStack, right, segmentLength, 0, uWidth * 2.0F, bottomV, packedLight);
+            vertex(consumer, poseStack, right, 0, 0, uWidth * 2.0F, topV, packedLight);
+            vertex(consumer, poseStack, left, 0, 0, uWidth, topV, packedLight);
+            poseStack.popPose();
+            poseStack.translate(0.0D, segmentLength, 0.0D);
+        }
+    }
+
+    private static void vertex(VertexConsumer consumer, PoseStack poseStack, float x, float y, float z,
+            float u, float v, int packedLight)
+    {
+        consumer.vertex(poseStack.last().pose(), x, y, z)
+                .color(255, 255, 255, 255)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(poseStack.last().normal(), 0.0F, 0.0F, 1.0F)
+                .endVertex();
     }
 
     /** Draws the original model's second texture pass for visors, eyes and animated suit details. */
