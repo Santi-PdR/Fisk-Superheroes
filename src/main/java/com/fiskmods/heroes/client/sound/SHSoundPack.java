@@ -151,20 +151,9 @@ public final class SHSoundPack implements PackResources
         {
             JsonObject json = JsonParser.parseString(new String(in.readAllBytes(), StandardCharsets.UTF_8)).getAsJsonObject();
 
-            if (!json.has("pack") || !json.get("pack").isJsonObject())
-            {
-                return null;
-            }
-
-            JsonObject section = json.getAsJsonObject("pack");
             String name = serializer.getMetadataSectionName();
-
-            if (section.has(name) && section.get(name).isJsonObject())
-            {
-                return serializer.fromJson(section.getAsJsonObject(name));
-            }
-
-            return serializer.fromJson(section);
+            if (!json.has(name) || !json.get(name).isJsonObject()) return null;
+            return serializer.fromJson(json.getAsJsonObject(name));
         }
     }
 

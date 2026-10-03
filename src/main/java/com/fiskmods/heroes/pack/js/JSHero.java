@@ -277,7 +277,7 @@ public class JSHero
 
     public void addPrimaryEquipment(String item, boolean primary)
     {
-        addEquipment(item, primary);
+        addPrimaryEquipment(item, primary, null);
     }
 
     /** Original packs may attach an item predicate to a primary equipment candidate. */

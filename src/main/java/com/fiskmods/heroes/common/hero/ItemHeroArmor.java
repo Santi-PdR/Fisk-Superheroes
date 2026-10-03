@@ -6,6 +6,9 @@ import javax.annotation.Nullable;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
@@ -22,6 +25,7 @@ public class ItemHeroArmor extends ArmorItem
     public static final String TAG_HERO = "HeroType";
     public static final String TAG_ITERATION = "Iteration";
     public static final String TAG_UNLOCKED = "NeedsUnlock";
+    public static final String TAG_WEAPONS = "Equipment";
 
     private final int slot;
 
@@ -118,6 +122,63 @@ public class ItemHeroArmor extends ArmorItem
     {
         ItemStack stack = create(hero, item);
         stack.setDamageValue(damage);
+        return stack;
+    }
+
+    /** Reads the weapon choices stored on a suit core, or the hero's included defaults. */
+    @Nullable
+    public static ItemStack[] getWeapons(ItemStack stack)
+    {
+        HeroIteration iteration = getHero(stack);
+        if (iteration == null) return null;
+
+        WeaponList weapons = iteration.getHero().getWeaponStacks();
+        if (weapons.isEmpty()) return null;
+        ItemStack[] result = new ItemStack[weapons.size()];
+        CompoundTag tag = stack.getTag();
+        if (tag != null && tag.contains(TAG_WEAPONS, Tag.TAG_COMPOUND))
+        {
+            result[0] = ItemStack.of(tag.getCompound(TAG_WEAPONS));
+            return result;
+        }
+        if (tag != null && tag.contains(TAG_WEAPONS, Tag.TAG_LIST))
+        {
+            ListTag list = tag.getList(TAG_WEAPONS, Tag.TAG_COMPOUND);
+            for (int i = 0; i < list.size(); ++i)
+            {
+                CompoundTag choice = list.getCompound(i);
+                int index = choice.getByte("Index") & 0xFF;
+                if (index < result.length && choice.contains("Item", Tag.TAG_COMPOUND))
+                {
+                    result[index] = ItemStack.of(choice.getCompound("Item"));
+                }
+            }
+            return result;
+        }
+        for (WeaponList.Entry entry : weapons.entries().toList())
+        {
+            if (entry.included()) result[entry.index()] = entry.value().copy();
+        }
+        return result;
+    }
+
+    /** Stores selected weapons by their stable candidate index on the suit core. */
+    public static ItemStack setWeapons(ItemStack stack, @Nullable ItemStack[] choices)
+    {
+        ListTag list = new ListTag();
+        if (choices != null)
+        {
+            for (int i = 0; i < choices.length; ++i)
+            {
+                ItemStack choice = choices[i];
+                if (choice == null || choice.isEmpty()) continue;
+                CompoundTag encoded = new CompoundTag();
+                encoded.putByte("Index", (byte) i);
+                encoded.put("Item", choice.save(new CompoundTag()));
+                list.add(encoded);
+            }
+        }
+        stack.getOrCreateTag().put(TAG_WEAPONS, list);
         return stack;
     }
 

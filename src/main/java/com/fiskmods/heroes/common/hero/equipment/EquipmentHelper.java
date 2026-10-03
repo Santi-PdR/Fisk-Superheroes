@@ -12,9 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 /**
- * Hands out the equipment a hero declares with {@code hero.addPrimaryEquipment(...)} /
- * {@code hero.addEquipment(...)}. Equipment is only granted when the player does not already carry
- * it, so re-equipping a suit never duplicates items.
+ * Hands out ordinary equipment declared with {@code hero.addEquipment(...)}. Primary weapon
+ * candidates are tracked separately by {@link com.fiskmods.heroes.common.hero.WeaponList}; they
+ * are not treated as a second equipment inventory.
  */
 public final class EquipmentHelper
 {
@@ -40,14 +40,9 @@ public final class EquipmentHelper
 
         for (Hero.EquipmentEntry entry : hero.getEquipment())
         {
-            if (!entry.primary())
-            {
-                continue;
-            }
-
             ItemStack stack = entry.stack();
 
-            if (stack.isEmpty() || !entry.accepts(stack) || hasItem(player, stack))
+            if (stack.isEmpty() || hasItem(player, stack))
             {
                 continue;
             }

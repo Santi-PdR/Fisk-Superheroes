@@ -67,6 +67,7 @@ public class Hero implements Comparable<Hero>
     private final Map<String, ScriptFunction> functions = new HashMap<>();
     private final Map<String, Map<String, Double>> damageProfiles = new LinkedHashMap<>();
     private final List<EquipmentEntry> equipment = new ArrayList<>();
+    private final List<WeaponList.Candidate> primaryEquipment = new ArrayList<>();
     private final List<ResourceLocation> powers = new ArrayList<>();
     private final PowerContainer powerContainer = new PowerContainer();
 
@@ -277,7 +278,9 @@ public class Hero implements Comparable<Hero>
 
     public void addPrimaryEquipment(ItemStack stack, boolean included, ScriptFunction predicate)
     {
-        equipment.add(new EquipmentEntry(stack, included, predicate));
+        addEquipment(stack, false);
+        primaryEquipment.add(new WeaponList.Candidate(stack, candidate -> predicate == null
+                || predicate.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity.JSItem(candidate)), included));
     }
 
     public void addPowers(ResourceLocation... ids)
@@ -529,6 +532,16 @@ public class Hero implements Comparable<Hero>
     public List<EquipmentEntry> getEquipment()
     {
         return ImmutableList.copyOf(equipment);
+    }
+
+    public WeaponList getWeaponStacks()
+    {
+        return new WeaponList(primaryEquipment);
+    }
+
+    public boolean isValidWeapon(ItemStack stack)
+    {
+        return getWeaponStacks().indexOf(stack) >= 0;
     }
 
     public List<ResourceLocation> getPowers()
