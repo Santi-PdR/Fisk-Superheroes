@@ -332,7 +332,50 @@ public class JSHero
 
     private static ItemStack createStack(String name)
     {
-        ResourceLocation id = ResourceLocation.tryParse(name);
+        if (name == null || name.isBlank())
+        {
+            return ItemStack.EMPTY;
+        }
+
+        // Fisk's 1.7.10 packs use keys in the form namespace:item@metadata{nbt}.
+        // ResourceLocation.tryParse rejects that entire legacy key, which used to silently drop
+        // every equipment declaration carrying a metadata value or an NBT variant.
+        String itemKey = name.trim();
+        net.minecraft.nbt.CompoundTag tag = null;
+        int tagStart = itemKey.indexOf('{');
+        if (tagStart >= 0)
+        {
+            if (!itemKey.endsWith("}"))
+            {
+                return ItemStack.EMPTY;
+            }
+            try
+            {
+                tag = net.minecraft.nbt.TagParser.parseTag(itemKey.substring(tagStart));
+            }
+            catch (com.mojang.brigadier.exceptions.CommandSyntaxException exception)
+            {
+                return ItemStack.EMPTY;
+            }
+            itemKey = itemKey.substring(0, tagStart);
+        }
+
+        int metadata = 0;
+        int metadataStart = itemKey.lastIndexOf('@');
+        if (metadataStart >= 0)
+        {
+            try
+            {
+                metadata = Integer.parseInt(itemKey.substring(metadataStart + 1));
+            }
+            catch (NumberFormatException exception)
+            {
+                return ItemStack.EMPTY;
+            }
+            itemKey = itemKey.substring(0, metadataStart);
+        }
+
+        ResourceLocation id = ResourceLocation.tryParse(itemKey);
 
         if (id == null)
         {
@@ -340,7 +383,21 @@ public class JSHero
         }
 
         var item = net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(id);
-        return item != null ? new ItemStack(item) : ItemStack.EMPTY;
+        if (item == null)
+        {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack stack = new ItemStack(item);
+        if (metadata != 0)
+        {
+            stack.setDamageValue(metadata);
+        }
+        if (tag != null)
+        {
+            stack.setTag(tag);
+        }
+        return stack;
     }
 
     /** Builder passed to {@code addAttributeProfile} scripts. */
