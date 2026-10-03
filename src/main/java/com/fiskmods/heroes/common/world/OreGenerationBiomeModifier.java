@@ -54,6 +54,10 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
         {
             add(builder, ore(ModBlocks.DWARF_STAR_ORE.get().defaultBlockState(), 3, 1, 0, 16));
         }
+        if (temperature >= 0.9F && temperature <= 1.5F && downfall <= 0.0F)
+        {
+            add(builder, ore(ModBlocks.VIBRANIUM_ORE.get().defaultBlockState(), 6, 2, 32, 48));
+        }
         int olivineCount = temperature >= 0.9F && downfall >= 0.8F ? 4 : 1;
         for (int i = 0; i < olivineCount; ++i)
         {

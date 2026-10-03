@@ -46,12 +46,15 @@ public final class ModBlocks
     public static final RegistryObject<Block> LUNAR_IRON_ORE = ore("lunar_iron_ore", 3.0F, 5.0F, 1, 0, 0);
     public static final RegistryObject<Block> LUNAR_TITANIUM_ORE = ore("lunar_titanium_ore", 4.0F, 100.0F, 2, 0, 0);
     public static final RegistryObject<Block> LUNAR_OLIVINE_ORE = ore("lunar_olivine_ore", 2.0F, 5.0F, 1, 0, 2);
+    public static final RegistryObject<Block> VIBRANIUM_ORE = registerVibraniumOre();
+    public static final RegistryObject<Block> LUNAR_ROCK = register("lunar_rock", 1.5F, 10.0F, false, 0);
+    public static final RegistryObject<Block> COBBLED_LUNAR_ROCK = register("cobbled_lunar_rock", 2.0F, 10.0F, false, 0);
 
     public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
             GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, ETERNIUM_STONE,
             TUTRIDIUM_ORE, TITANIUM_ORE, DWARF_STAR_ORE, OLIVINE_ORE, ETERNIUM_ORE, TUTRITE_ORE,
-            LUNAR_IRON_ORE, LUNAR_TITANIUM_ORE, LUNAR_OLIVINE_ORE);
+            LUNAR_IRON_ORE, LUNAR_TITANIUM_ORE, LUNAR_OLIVINE_ORE, VIBRANIUM_ORE, LUNAR_ROCK, COBBLED_LUNAR_ROCK);
 
     private ModBlocks() {}
 
@@ -78,6 +81,19 @@ public final class ModBlocks
             return new OreBlock(properties, xpMin, xpMax);
         });
         ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerVibraniumOre()
+    {
+        RegistryObject<Block> block = REGISTRY.register("vibranium_ore", () ->
+        {
+            BlockBehaviour.Properties properties = BlockBehaviour.Properties.of().mapColor(MapColor.STONE)
+                    .strength(3.0F, 2000.0F).sound(SoundType.STONE).requiresCorrectToolForDrops()
+                    .lightLevel(state -> 8);
+            return new OreBlock(properties, 2, 5);
+        });
+        ITEMS.register("vibranium_ore", () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 
