@@ -1,6 +1,11 @@
 package com.fiskmods.heroes.common.hero.ability;
 
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
@@ -18,6 +23,9 @@ import net.minecraft.server.level.ServerPlayer;
  */
 public final class AbilityHandler
 {
+    /** Non-toggle modifiers started by a key-down, grouped until their matching key-up. */
+    private static final Map<UUID, Map<Integer, List<ModifierEntry>>> HELD_ABILITIES = new HashMap<>();
+
     private AbilityHandler()
     {
     }
@@ -32,6 +40,12 @@ public final class AbilityHandler
         }
 
         HeroIteration iteration = data.getHero();
+
+        if (!pressed)
+        {
+            release(player, data, index);
+            if (index == 0) return;
+        }
 
         if (iteration == null)
         {
@@ -52,6 +66,11 @@ public final class AbilityHandler
 
         Set<String> keys = hero.getKeyBindsMatching(index);
 
+        if (!pressed)
+        {
+            return;
+        }
+
         for (String key : keys)
         {
             if (!hero.isKeyBindEnabled(player, key))
@@ -67,29 +86,59 @@ public final class AbilityHandler
                 continue;
             }
 
-            activate(player, data, hero, key, pressed);
+            ModifierEntry entry = activate(player, data, hero, key);
+            if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
+            {
+                HELD_ABILITIES.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>())
+                        .computeIfAbsent(index, ignored -> new ArrayList<>()).add(entry);
+            }
         }
     }
 
-    /** Runs the default behaviour of an ability key: toggle or activate the modifier bound to it. */
-    private static void activate(ServerPlayer player, SHPlayerData data, Hero hero, String key, boolean pressed)
+    /** Runs the default key-down behaviour and returns the started modifier, if any. */
+    private static ModifierEntry activate(ServerPlayer player, SHPlayerData data, Hero hero, String key)
     {
         ModifierEntry entry = findModifier(hero, key);
 
         if (entry == null)
         {
-            return;
+            return null;
         }
 
-        boolean toggle = entry.getBoolean(PowerProperty.IS_TOGGLE);
+        entry.getModifier().onActivate(player, entry, data);
+        return entry;
+    }
 
-        if (pressed)
+    /** Delivers key-up to the exact entries that accepted the corresponding key-down. */
+    private static void release(ServerPlayer player, SHPlayerData data, int index)
+    {
+        Map<Integer, List<ModifierEntry>> byIndex = HELD_ABILITIES.get(player.getUUID());
+        if (byIndex == null) return;
+
+        List<ModifierEntry> entries = byIndex.remove(index);
+        if (entries != null)
         {
-            entry.getModifier().onActivate(player, entry, data);
+            for (ModifierEntry entry : entries)
+            {
+                entry.getModifier().onToggle(player, entry, data);
+            }
         }
-        else if (!toggle)
+
+        if (byIndex.isEmpty()) HELD_ABILITIES.remove(player.getUUID());
+    }
+
+    public static void clear(ServerPlayer player)
+    {
+        Map<Integer, List<ModifierEntry>> byIndex = HELD_ABILITIES.remove(player.getUUID());
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (byIndex == null || data == null) return;
+
+        for (List<ModifierEntry> entries : byIndex.values())
         {
-            entry.getModifier().onToggle(player, entry, data);
+            for (ModifierEntry entry : entries)
+            {
+                entry.getModifier().onToggle(player, entry, data);
+            }
         }
     }
 

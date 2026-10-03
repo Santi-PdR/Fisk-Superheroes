@@ -145,6 +145,7 @@ public class CommonEventHandler
         {
             DataSyncer.onPlayerLogout(player);
             com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
         }
     }
 
