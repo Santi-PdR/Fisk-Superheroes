@@ -32,11 +32,13 @@ public final class JSContext
     @Nullable
     public static ScriptEngine createEngine()
     {
-        ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+        // The pack scripts are ES6 (arrow functions, template literals, let/const), which Nashorn
+        // only accepts with the es6 option; the plain factory route defaults to ES5.
+        ScriptEngine engine = createFallbackEngine();
 
         if (engine == null)
         {
-            engine = createFallbackEngine();
+            engine = new ScriptEngineManager().getEngineByName("nashorn");
         }
 
         if (engine == null)
@@ -74,7 +76,7 @@ public final class JSContext
             Class<?> factory = Class.forName("org.openjdk.nashorn.api.scripting.NashornScriptEngineFactory");
             Object instance = factory.getDeclaredConstructor().newInstance();
             Method method = factory.getMethod("getScriptEngine", String[].class);
-            return (ScriptEngine) method.invoke(instance, (Object) new String[0]);
+            return (ScriptEngine) method.invoke(instance, (Object) new String[] { "--language=es6" });
         }
         catch (Throwable t)
         {
