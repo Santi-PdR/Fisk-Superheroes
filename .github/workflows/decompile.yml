@@ -40,11 +40,11 @@ jobs:
             done
             echo "$name.txt: $(stat -c %s ".ci/reference/$name.txt") bytes" >> .ci/decompile-log.txt
           }
-          dump common_core out/com/fiskmods/heroes/common/hero com/fiskmods/heroes/common/data com/fiskmods/heroes/common/spell
-          dump common_world out/com/fiskmods/heroes/common/entity com/fiskmods/heroes/common/item com/fiskmods/heroes/common/block com/fiskmods/heroes/common/tileentity com/fiskmods/heroes/common/world com/fiskmods/heroes/common/network
-          dump client_render out/com/fiskmods/heroes/client/render com/fiskmods/heroes/client/model com/fiskmods/heroes/client/animation com/fiskmods/heroes/client/particle com/fiskmods/heroes/client/texture
-          dump client_misc out/com/fiskmods/heroes/client/gui com/fiskmods/heroes/client/hud com/fiskmods/heroes/client/keybinds com/fiskmods/heroes/client/sound com/fiskmods/heroes/client/pack
-          dump api_other out/com/fiskmods/heroes/pack com/fiskmods/heroes/api com/fiskmods/heroes/util
+          dump common_core out/com/fiskmods/heroes/common/hero out/com/fiskmods/heroes/common/data out/com/fiskmods/heroes/common/spell
+          dump common_world out/com/fiskmods/heroes/common/entity out/com/fiskmods/heroes/common/item out/com/fiskmods/heroes/common/block out/com/fiskmods/heroes/common/tileentity out/com/fiskmods/heroes/common/world out/com/fiskmods/heroes/common/network
+          dump client_render out/com/fiskmods/heroes/client/render out/com/fiskmods/heroes/client/model out/com/fiskmods/heroes/client/animation out/com/fiskmods/heroes/client/particle out/com/fiskmods/heroes/client/texture
+          dump client_misc out/com/fiskmods/heroes/client/gui out/com/fiskmods/heroes/client/hud out/com/fiskmods/heroes/client/keybinds out/com/fiskmods/heroes/client/sound out/com/fiskmods/heroes/client/pack
+          dump api_other out/com/fiskmods/heroes/pack out/com/fiskmods/heroes/api out/com/fiskmods/heroes/util
           ls -l .ci/reference >> .ci/decompile-log.txt 2>&1
       - name: Publish reference sources back to the branch
         run: |
