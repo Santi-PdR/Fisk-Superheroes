@@ -1,12 +1,10 @@
 package com.fiskmods.heroes.pack.js;
 
 import javax.annotation.Nullable;
-
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
+import javax.script.ScriptEngine;
 
 import com.fiskmods.heroes.FiskHeroes;
+import com.fiskmods.heroes.pack.ScriptFunction;
 
 import net.minecraft.world.entity.Entity;
 
@@ -20,12 +18,10 @@ import net.minecraft.world.entity.Entity;
  */
 public final class SoundOverride
 {
-    private final Scriptable scope;
-    private final Function function;
+    private final ScriptFunction function;
 
-    private SoundOverride(Scriptable scope, Function function)
+    private SoundOverride(ScriptFunction function)
     {
-        this.scope = scope;
         this.function = function;
     }
 
@@ -37,52 +33,36 @@ public final class SoundOverride
             return null;
         }
 
-        Context cx = JSContext.enter();
+        ScriptEngine engine = JSContext.createEngine();
+
+        if (engine == null)
+        {
+            return null;
+        }
 
         try
         {
-            Scriptable scope = JSContext.createScope(cx);
-            cx.evaluateString(scope, source, "sound override", 1, null);
-            Object value = scope.get("continuePlaying", scope);
+            JSContext.evaluate(engine, source, "sound override");
+            ScriptFunction function = JSContext.wrap(JSContext.get(engine, "continuePlaying"));
 
-            if (value instanceof Function function)
+            if (function == null)
             {
-                return new SoundOverride(scope, function);
+                FiskHeroes.LOGGER.warn("Sound override has no continuePlaying function");
             }
 
-            FiskHeroes.LOGGER.warn("Sound override has no continuePlaying function");
+            return function != null ? new SoundOverride(function) : null;
         }
         catch (Exception e)
         {
             FiskHeroes.LOGGER.warn("Could not compile a sound override: {}", e.toString());
+            return null;
         }
-        finally
-        {
-            Context.exit();
-        }
-
-        return null;
     }
 
     /** Runs the function with the entity and the playing sound; returns whether it keeps playing. */
     public boolean continuePlaying(Entity entity, Object sound)
     {
-        Context cx = JSContext.enter();
-
-        try
-        {
-            Object result = function.call(cx, scope, scope, new Object[] { new JSEntity(entity), sound });
-            Object value = JSContext.unwrap(result);
-            return value instanceof Boolean b ? b : Boolean.TRUE.equals(value);
-        }
-        catch (Exception e)
-        {
-            FiskHeroes.LOGGER.error("Error while running a sound override", e);
-            return true;
-        }
-        finally
-        {
-            Context.exit();
-        }
+        Object value = function.call(new JSEntity(entity), sound);
+        return value instanceof Boolean b ? b : value != null;
     }
 }

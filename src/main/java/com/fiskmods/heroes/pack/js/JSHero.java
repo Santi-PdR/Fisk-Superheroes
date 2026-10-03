@@ -3,8 +3,7 @@ package com.fiskmods.heroes.pack.js;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
+import javax.script.ScriptEngine;
 
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.HeroAttribute;
@@ -22,15 +21,15 @@ import net.minecraft.world.item.ItemStack;
 public class JSHero
 {
     private final Hero hero;
-    private final Scriptable scope;
+    private final ScriptEngine engine;
     private final Map<String, Map<HeroAttribute, Hero.AttributeMod>> pendingProfiles = new LinkedHashMap<>();
     private final Map<String, Boolean> pendingInherits = new LinkedHashMap<>();
-    private Scriptable currentProfile;
+    private Object currentProfile;
 
-    public JSHero(Hero hero, Scriptable scope)
+    public JSHero(Hero hero, ScriptEngine engine)
     {
         this.hero = hero;
-        this.scope = scope;
+        this.engine = engine;
     }
 
     /* --- Identity --- */
@@ -121,10 +120,12 @@ public class JSHero
         Map<HeroAttribute, Hero.AttributeMod> map = new LinkedHashMap<>();
         boolean inherited = true;
 
-        if (function instanceof Function fn)
+        com.fiskmods.heroes.pack.ScriptFunction fn = JSContext.wrap(function);
+
+        if (fn != null)
         {
             JSProfileBuilder builder = new JSProfileBuilder(hero, name, map);
-            JSContext.call(scope, fn, builder);
+            fn.call(builder);
             inherited = builder.inherits;
             hero.setProfileRevokesAugments(name, builder.revokesAugments);
         }
@@ -134,7 +135,7 @@ public class JSHero
 
     public void setAttributeProfile(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -151,7 +152,7 @@ public class JSHero
 
     public void addKeyBindFunc(String name, Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -161,7 +162,7 @@ public class JSHero
 
     public void setKeyBindEnabled(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -171,7 +172,7 @@ public class JSHero
 
     public void setModifierEnabled(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -181,7 +182,7 @@ public class JSHero
 
     public void setHasPermission(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -191,7 +192,7 @@ public class JSHero
 
     public void setHasProperty(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -201,7 +202,7 @@ public class JSHero
 
     public void setDamageProfile(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -213,14 +214,9 @@ public class JSHero
     {
         Map<String, Double> map = new LinkedHashMap<>();
 
-        if (types instanceof org.mozilla.javascript.Scriptable scriptable)
+        for (Map.Entry<String, Object> entry : JSContext.asMap(types).entrySet())
         {
-            for (Object id : scriptable.getIds())
-            {
-                String key = String.valueOf(id);
-                Object value = scriptable.get(key, scriptable);
-                map.put(key, value instanceof Number ? ((Number) value).doubleValue() : 0.0D);
-            }
+            map.put(entry.getKey(), entry.getValue() instanceof Number n ? n.doubleValue() : 0.0D);
         }
 
         hero.addDamageProfile(name, map);
@@ -228,7 +224,7 @@ public class JSHero
 
     public void setTickHandler(Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -238,7 +234,7 @@ public class JSHero
 
     public void supplyFunction(String name, Object function)
     {
-        ScriptFunction wrapper = JSContext.wrap(scope, function);
+        ScriptFunction wrapper = JSContext.wrap(function);
 
         if (wrapper != null)
         {
@@ -290,15 +286,17 @@ public class JSHero
     {
         Map<Integer, String> map = new LinkedHashMap<>();
 
-        if (overrides instanceof org.mozilla.javascript.Scriptable scriptable)
+        for (Map.Entry<String, Object> entry : JSContext.asMap(overrides).entrySet())
         {
-            for (Object id : scriptable.getIds())
+            if (entry.getValue() instanceof String string)
             {
-                Object value = scriptable.get(String.valueOf(id), scriptable);
-
-                if (value instanceof String string)
+                try
                 {
-                    map.put(Integer.parseInt(String.valueOf(id)), string);
+                    map.put(Integer.parseInt(entry.getKey()), string);
+                }
+                catch (NumberFormatException e)
+                {
+                    // Not an indexed override; ignore
                 }
             }
         }

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import javax.script.ScriptEngine;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,9 +29,6 @@ import com.fiskmods.heroes.pack.js.JSHero;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.mozilla.javascript.Context;
-import org.mozilla.javascript.Function;
-import org.mozilla.javascript.Scriptable;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -651,32 +649,36 @@ public class HeroPackEngine
     private void loadHero(ResourceLocation id, String source, List<String> helperScripts, Map<String, HeroIteration.Candidate> candidates)
     {
         Hero hero = new Hero(id);
-        Context cx = com.fiskmods.heroes.pack.js.JSContext.enter();
+        ScriptEngine engine = com.fiskmods.heroes.pack.js.JSContext.createEngine();
 
         try
         {
-            Scriptable scope = com.fiskmods.heroes.pack.js.JSContext.createScope(cx);
+            if (engine == null)
+            {
+                return;
+            }
 
             // Helpers shared by several heroes (speedster_base, firestorm_base, ...)
             for (String helper : helperScripts)
             {
-                cx.evaluateString(scope, helper, id + ":helpers", 1, null);
+                com.fiskmods.heroes.pack.js.JSContext.evaluate(engine, helper, id + ":helpers");
             }
 
-            cx.evaluateString(scope, source, id.toString(), 1, null);
+            com.fiskmods.heroes.pack.js.JSContext.evaluate(engine, source, id.toString());
 
-            Object init = scope.get("init", scope);
+            Object init = com.fiskmods.heroes.pack.js.JSContext.get(engine, "init");
+            com.fiskmods.heroes.pack.ScriptFunction function = com.fiskmods.heroes.pack.js.JSContext.wrap(init);
 
-            if (init instanceof Function function)
+            if (function != null)
             {
-                function.call(cx, scope, scope, new Object[] { new JSHero(hero, scope) });
+                function.call(new JSHero(hero, engine));
             }
 
             Hero.REGISTRY.register(id, hero, candidates);
         }
-        finally
+        catch (Exception e)
         {
-            Context.exit();
+            FiskHeroes.LOGGER.error("Could not load hero {}", id, e);
         }
     }
 }

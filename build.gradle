@@ -53,58 +53,26 @@ repositories {
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    // Nashorn was removed from the JDK in Java 15 and Forge 1.20.1 runs on Java 17.
-    // Rhino is the maintained ECMAScript engine that evaluates the hero pack scripts (.js)
-    // which drive Fisk's Superheroes' data-driven content.
-    implementation("org.mozilla:rhino:${rhino_version}") { transitive = false }
-    // The ForgeGradle run configurations do not pick up jarJar-embedded libraries, so Rhino is also
-    // declared as a runtime dependency of the development runs.
-    runtimeOnly("org.mozilla:rhino:${rhino_version}")
-    jarJar(group: 'org.mozilla', name: 'rhino', version: "[${rhino_version},1.8)") {
-        jarJar.pin(it, "${rhino_version}")
-    }
+    // The hero pack is written in JavaScript. The original mod ran it on Nashorn, which the JDK
+    // dropped in Java 15; Forge 1.20.1 ships org.openjdk.nashorn:nashorn-core, so the very same
+    // engine is available in development, on a dedicated server and in production without the mod
+    // having to ship a scripting engine (see JSContext, which also tries the engine factory
+    // directly when the service loader does not find it).
 }
 
-// The jarJar-embedded libraries are not part of the classpath of the development run
-// configurations, so Rhino is added to them explicitly; without it the mod cannot evaluate the
-// hero pack scripts and startup fails with NoClassDefFoundError.
-configurations {
-    runLibraries
-}
-
-dependencies {
-    runLibraries("org.mozilla:rhino:${rhino_version}") { transitive = false }
-}
-
-tasks.matching { it.name == 'runServer' || it.name == 'runClient' || it.name == 'runData' }.configureEach { task ->
-    // Applied at execution time, once ForgeGradle has finished assembling the classpath, so the
-    // dependency cannot be overwritten by the run configuration setup.
-    task.doFirst {
-        classpath = files(classpath, configurations.runLibraries)
-        def entries = classpath.files
-        def file = rootProject.file('.ci/run-classpath.txt')
-        file.parentFile.mkdirs()
-        file.text = entries.collect { it.absolutePath }.join('\n')
-        logger.lifecycle("Game run classpath: ${entries.size()} entries, rhino=${entries.findAll { it.name.contains('rhino') }}")
-    }
-}
-
-// Prints the classpath the game runs with, so the CI smoke log proves Rhino is present.
+// Prints the classpath the game runs with; the smoke test publishes it so a missing library is
+// visible in the CI log.
 tasks.register('dumpRunClasspath') {
-    def classpath = sourceSets.main.runtimeClasspath + configurations.runLibraries
+    def classpath = sourceSets.main.runtimeClasspath
     doLast {
         def file = file('.ci/run-classpath.txt')
         file.parentFile.mkdirs()
         file.text = classpath.files.collect { it.absolutePath }.join('\n')
         println "Run classpath entries: ${classpath.files.size()}"
-        println "Rhino: ${classpath.files.findAll { it.name.contains('rhino') }}"
+        println "Nashorn: ${classpath.files.findAll { it.name.contains('nashorn') }}"
     }
 }
 
-// Jar-in-Jar: embed Rhino in the shipped artifact so the mod is self-contained.
-jarJar.enable()
-tasks.named('jarJar') { archiveClassifier = '' }
-tasks.named('jar', Jar) { archiveClassifier = 'slim' }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [
@@ -175,7 +143,7 @@ tasks.register('dumpApi') {
 publishing {
     publications {
         register('mavenJava', MavenPublication) {
-            artifact tasks.named('jarJar').get()
+            from components.java
         }
     }
     repositories {
