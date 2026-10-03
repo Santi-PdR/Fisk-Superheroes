@@ -17,6 +17,7 @@ import net.minecraft.nbt.CompoundTag;
 public class DataContainer
 {
     private final Map<DataVar<?>, Object> values = new LinkedHashMap<>();
+    private final Map<DataVar<?>, Object> prevValues = new LinkedHashMap<>();
     private final List<DataVar<?>> dirty = new ArrayList<>();
 
     public boolean isEmpty()
@@ -45,6 +46,32 @@ public class DataContainer
     private static boolean equals(Object a, Object b)
     {
         return a == null ? b == null : a.equals(b);
+    }
+
+    /**
+     * Remembers the current values as the previous ones. Interpolated variables are rendered
+     * between the previous and the current value, so this is called once per tick.
+     */
+    public void updatePrevious()
+    {
+        prevValues.clear();
+        prevValues.putAll(values);
+    }
+
+    /** The value of the previous tick, used to interpolate between ticks when rendering. */
+    @SuppressWarnings("unchecked")
+    public <T> T getPrevious(DataVar<T> var)
+    {
+        Object value = prevValues.get(var);
+        return value != null ? (T) value : get(var);
+    }
+
+    /** Interpolates a float variable between the previous tick and the current one. */
+    public float getInterpolated(DataVar<Float> var, float partialTicks)
+    {
+        float prev = getPrevious(var);
+        float value = get(var);
+        return prev + (value - prev) * partialTicks;
     }
 
     public void markDirty(DataVar<?> var)

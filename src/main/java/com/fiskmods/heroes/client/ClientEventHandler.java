@@ -100,9 +100,17 @@ public class ClientEventHandler
         data.getData().set(var, value + (target - value) * 0.15F);
     }
 
+    /** The current frame's partial tick, kept by the render events. */
+    public static float partialTicks()
+    {
+        return net.minecraft.client.Minecraft.getInstance().getFrameTime();
+    }
+
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event)
     {
+        com.fiskmods.heroes.common.data.RenderTickInfo.set(com.fiskmods.heroes.client.ClientEventHandler.partialTicks());
+
         SuitHud.render(event.getGuiGraphics(), event.getPartialTick());
     }
 }

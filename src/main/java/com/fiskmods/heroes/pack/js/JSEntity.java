@@ -96,8 +96,26 @@ public class JSEntity
 
     public float getInterpolatedData(String key)
     {
+        DataVar<?> var = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(key);
+
+        if (var != null && var.getType() == com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP)
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(entity);
+
+            if (data != null)
+            {
+                return data.getData().getInterpolated((DataVar<Float>) var, clientPartialTicks());
+            }
+        }
+
         Object value = getData(key);
         return value instanceof Number ? ((Number) value).floatValue() : 0.0F;
+    }
+
+    /** The fraction of the way through the current tick, used to interpolate values. */
+    private static float clientPartialTicks()
+    {
+        return com.fiskmods.heroes.common.data.RenderTickInfo.get();
     }
 
     @SuppressWarnings("unchecked")

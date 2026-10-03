@@ -38,6 +38,17 @@ public class CommonEventHandler
 
         LivingEntity entity = event.player;
 
+        // Snapshot the values so interpolated variables can be rendered smoothly this tick
+        if (entity instanceof net.minecraft.world.entity.player.Player)
+        {
+            com.fiskmods.heroes.common.data.SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+
+            if (data != null)
+            {
+                data.getData().updatePrevious();
+            }
+        }
+
         HeroTracker.update(entity);
         ModifierHandler.tick(entity);
 
