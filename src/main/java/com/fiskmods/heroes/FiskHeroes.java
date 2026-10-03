@@ -5,6 +5,7 @@ import com.fiskmods.heroes.common.command.CommandSuit;
 import com.fiskmods.heroes.common.config.SHConfig;
 import com.fiskmods.heroes.common.data.DataRegistry;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.entity.ModEntities;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
 import com.fiskmods.heroes.common.item.ModItems;
@@ -60,6 +61,7 @@ public class FiskHeroes
 
         ModItems.REGISTRY.register(modBus);
         ModMenus.REGISTRY.register(modBus);
+        ModEntities.REGISTRY.register(modBus);
         SHAttributes.REGISTRY.register(modBus);
         CREATIVE_TABS.register(modBus);
 
