@@ -498,6 +498,22 @@ public class HeroPackEngine
                     definition.setRange(range);
                 }
 
+                // The optional JS function which drives the sound's volume and pitch while it plays
+                if (definition.getOverridePath() != null)
+                {
+                    String overridePath = "events/sounds/" + definition.getOverridePath().getPath() + ".js";
+                    String source = files.get(overridePath);
+
+                    if (source != null)
+                    {
+                        definition.setOverrideSource(source);
+                    }
+                    else
+                    {
+                        FiskHeroes.LOGGER.warn("Missing sound override function {}", overridePath);
+                    }
+                }
+
                 com.fiskmods.heroes.common.sound.SHSounds.register(definition);
                 soundCount++;
             }

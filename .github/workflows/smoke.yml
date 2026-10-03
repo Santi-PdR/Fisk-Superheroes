@@ -31,6 +31,9 @@ jobs:
           echo "eula=true" > run/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\n' > run/server.properties
 
+      - name: Report run classpath
+        run: ./gradlew dumpRunClasspath --console=plain | tail -5
+
       - name: Boot dedicated server
         run: |
           set +e
@@ -47,6 +50,8 @@ jobs:
             ls -la run/crash-reports 2>/dev/null && for f in run/crash-reports/*; do echo "--- $f"; cat "$f"; done
             echo "==== mod mentions ===="
             grep -E "fiskheroes|Fisk" smoke.log | head -250
+            echo "==== run classpath ===="
+            cat .ci/run-classpath.txt 2>/dev/null | head -80
             echo "==== errors and exceptions ===="
             grep -nE "ERROR|FATAL|Exception|Caused by|FAILED|Done \(|Starting minecraft server|Stopping server|hero pack|heroes, .*powers|/WARN" smoke.log | tail -700
             echo "==== tail ===="

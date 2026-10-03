@@ -88,6 +88,12 @@ public class JSEntity
         apply(data, var, value);
     }
 
+    /** The entity's velocity, as the pack scripts use it ({@code entity.motion().length()}). */
+    public JSVector motion()
+    {
+        return new JSVector(entity.getDeltaMovement());
+    }
+
     public float getInterpolatedData(String key)
     {
         Object value = getData(key);

@@ -65,6 +65,36 @@ dependencies {
     }
 }
 
+// The jarJar-embedded libraries are not part of the classpath of the development run
+// configurations, so Rhino is added to them explicitly; without it the mod cannot evaluate the
+// hero pack scripts and startup fails with NoClassDefFoundError.
+configurations {
+    runLibraries
+}
+
+dependencies {
+    runLibraries("org.mozilla:rhino:${rhino_version}") { transitive = false }
+}
+
+tasks.matching { it.name == 'runServer' || it.name == 'runClient' || it.name == 'runData' }.configureEach {
+    classpath += configurations.runLibraries
+    doFirst {
+        logger.lifecycle("run classpath: ${classpath.files.findAll { it.name.contains('rhino') }}")
+    }
+}
+
+// Prints the classpath the game runs with, so the CI smoke log proves Rhino is present.
+tasks.register('dumpRunClasspath') {
+    def classpath = sourceSets.main.runtimeClasspath + configurations.runLibraries
+    doLast {
+        def file = file('.ci/run-classpath.txt')
+        file.parentFile.mkdirs()
+        file.text = classpath.files.collect { it.absolutePath }.join('\n')
+        println "Run classpath entries: ${classpath.files.size()}"
+        println "Rhino: ${classpath.files.findAll { it.name.contains('rhino') }}"
+    }
+}
+
 // Jar-in-Jar: embed Rhino in the shipped artifact so the mod is self-contained.
 jarJar.enable()
 tasks.named('jarJar') { archiveClassifier = '' }

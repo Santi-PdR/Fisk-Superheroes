@@ -155,9 +155,9 @@ public final class SHSounds
     public static void play(Level level, double x, double y, double z, ResourceLocation id, SoundSource source, float volume, float pitch)
     {
         SoundDefinition definition = DEFINITIONS.get(id);
-        float scale = definition != null ? definition.getVolume() : 1.0F;
-        float pitchScale = definition != null ? definition.getPitch() : 1.0F;
-        send(level, null, id, x, y, z, source, volume * scale, pitch * pitchScale, false);
+        float volumeScale = definition != null ? definition.getVolume().getFloat(null, 1.0F) : 1.0F;
+        float pitchScale = definition != null ? definition.getPitch().getFloat(null, 1.0F) : 1.0F;
+        send(level, null, id, x, y, z, source, volume * volumeScale, pitch * pitchScale, false);
     }
 
     /** Plays a one-shot sound on an entity. */
@@ -169,10 +169,10 @@ public final class SHSounds
         }
 
         SoundDefinition definition = DEFINITIONS.get(id);
-        float scale = definition != null ? definition.getVolume() : 1.0F;
-        float pitchScale = definition != null ? definition.getPitch() : 1.0F;
+        float volumeScale = definition != null ? definition.getVolume().getFloat(null, 1.0F) : 1.0F;
+        float pitchScale = definition != null ? definition.getPitch().getFloat(null, 1.0F) : 1.0F;
 
-        send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), source, volume * scale, pitch * pitchScale, false);
+        send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), source, volume * volumeScale, pitch * pitchScale, false);
     }
 
     /** Plays a sound by its pack id, taking the volume and pitch declared by the definition. */
@@ -194,8 +194,8 @@ public final class SHSounds
 
         SoundDefinition definition = DEFINITIONS.get(id);
         send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), SoundSource.PLAYERS,
-                definition != null ? definition.getVolume() : 1.0F,
-                definition != null ? definition.getPitch() : 1.0F, true);
+                definition != null ? definition.getVolume().getFloat(null, 1.0F) : 1.0F,
+                definition != null ? definition.getPitch().getFloat(null, 1.0F) : 1.0F, true);
     }
 
     /** Stops a looping sound previously started with {@link #playLoop}. */
