@@ -95,6 +95,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 restoreParts(playerModel, hidden);
             }
 
+            renderOverlay(poseStack, buffer, packedLight, player, playerModel, model, slot);
+
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
             ResourceLocation lights = model.getLights(slot, player);
 
@@ -116,6 +118,109 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         }
 
         poseStack.popPose();
+    }
+
+    /** Draws the original model's second texture pass for visors, eyes and animated suit details. */
+    private void renderOverlay(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+    {
+        com.google.gson.JsonObject overlay = model.getCustom().get("fiskheroes:overlay");
+        if (overlay == null || !appliesToSlot(overlay, slot) || !passesConditionals(overlay, model, player))
+        {
+            return;
+        }
+
+        float data = model.evaluateRenderData(overlay.get("data"), player, 1.0F);
+        float opacity = overlay.has("opacity") ? overlay.get("opacity").getAsFloat() : 1.0F;
+        float alpha = Math.max(0.0F, Math.min(1.0F, data * opacity));
+        if (alpha <= 0.0F)
+        {
+            return;
+        }
+
+        com.google.gson.JsonElement textures = overlay.get("texture");
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            String key = textureForPass(textures, pass);
+            if (key == null || key.equals("null"))
+            {
+                continue;
+            }
+
+            ResourceLocation texture = model.resolveCustomTexture(key, player, slot);
+            if (texture == null)
+            {
+                continue;
+            }
+
+            boolean[] hidden = hidePartsFor(playerModel, model, slot);
+            RenderType renderType = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
+            VertexConsumer consumer = buffer.getBuffer(renderType);
+            playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                    1.0F, 1.0F, 1.0F, alpha);
+            restoreParts(playerModel, hidden);
+        }
+    }
+
+    private static String textureForPass(com.google.gson.JsonElement textures, int pass)
+    {
+        if (textures == null || textures.isJsonNull())
+        {
+            return null;
+        }
+        if (textures.isJsonPrimitive())
+        {
+            return pass == 0 ? textures.getAsString() : null;
+        }
+        if (textures.isJsonArray() && textures.getAsJsonArray().size() > pass)
+        {
+            return textures.getAsJsonArray().get(pass).getAsString();
+        }
+        return null;
+    }
+
+    private static boolean appliesToSlot(com.google.gson.JsonObject effect, int slot)
+    {
+        if (!effect.has("applicable") || !effect.get("applicable").isJsonArray())
+        {
+            return false;
+        }
+        String slotName = switch (slot)
+        {
+            case 0 -> "HELMET";
+            case 1 -> "CHESTPLATE";
+            case 2 -> "LEGGINGS";
+            default -> "BOOTS";
+        };
+        for (com.google.gson.JsonElement applicable : effect.getAsJsonArray("applicable"))
+        {
+            if (applicable.isJsonPrimitive() && applicable.getAsString().equalsIgnoreCase(slotName))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean passesConditionals(com.google.gson.JsonObject effect, HeroModelData model, AbstractClientPlayer player)
+    {
+        if (!effect.has("conditionals") || !effect.get("conditionals").isJsonArray())
+        {
+            return true;
+        }
+        for (com.google.gson.JsonElement conditional : effect.getAsJsonArray("conditionals"))
+        {
+            if (!conditional.isJsonPrimitive())
+            {
+                return false;
+            }
+            String condition = conditional.getAsString();
+            if (condition.startsWith("vars:") && !model.evaluate(condition.substring("vars:".length()), player))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static boolean hasPiece(AbstractClientPlayer player, int slot)

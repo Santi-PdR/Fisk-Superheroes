@@ -46,6 +46,7 @@ public class HeroModelData
     private final Map<String, JsonObject> animations = new LinkedHashMap<>();
     private final Map<String, String> vars = new LinkedHashMap<>();
     private final Map<String, String> itemIcons = new LinkedHashMap<>();
+    private final Map<String, ScriptFunction> renderExpressions = new HashMap<>();
 
     private JsonElement texture;
     private JsonElement lights;
@@ -294,6 +295,59 @@ public class HeroModelData
         }
 
         return TextureResolver.resolve(resources.getOrDefault(key, key), entity, slot);
+    }
+
+    /** Resolves a texture alias used by one of this model's custom render effects. */
+    @Nullable
+    public ResourceLocation resolveCustomTexture(@Nullable String key, Entity entity, int slot)
+    {
+        return resolveResource(key, entity, slot);
+    }
+
+    /** Evaluates the number/string forms accepted by the original render effect data field. */
+    public float evaluateRenderData(@Nullable JsonElement value, Entity entity, float defaultValue)
+    {
+        if (value == null || value.isJsonNull())
+        {
+            return defaultValue;
+        }
+        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber())
+        {
+            return value.getAsFloat();
+        }
+        if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString())
+        {
+            return defaultValue;
+        }
+
+        String expression = value.getAsString();
+        if (expression.matches("^[a-zA-Z0-9_]+:[a-zA-Z0-9_./-]+$"))
+        {
+            Object data = JSEntity.read(entity, expression);
+            if (data == null)
+            {
+                return defaultValue;
+            }
+            if (data instanceof Number number)
+            {
+                net.minecraft.world.entity.player.Player player = entity instanceof net.minecraft.world.entity.player.Player p ? p : null;
+                com.fiskmods.heroes.common.data.var.DataVar<?> variable = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(expression);
+                if (player != null && variable != null && variable.getType() == com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP)
+                {
+                    return new JSEntity(entity).getInterpolatedData(expression);
+                }
+                return number.floatValue();
+            }
+            return defaultValue;
+        }
+
+        ScriptFunction function = renderExpressions.computeIfAbsent(expression, JSExpressions::compile);
+        if (function == null)
+        {
+            return defaultValue;
+        }
+        Object result = function.call(new JSEntity(entity));
+        return result instanceof Number number ? number.floatValue() : defaultValue;
     }
 
     /** Whether the given armour slot has an emissive layer at all. */
