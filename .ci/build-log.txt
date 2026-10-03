@@ -1,206 +1,13 @@
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/ModifierAbilities.java:32: error: class AbilityData is public, should be declared in a file named AbilityData.java
-public final class AbilityData
-             ^
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:52: error: cannot find symbol
-    public static ResourceLocation register(ResourceLocation id, net.minecraft.client.renderer.texture.NativeImage image)
-                                                                                                      ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:73: error: cannot find symbol
-    public static net.minecraft.client.renderer.texture.NativeImage read(ResourceLocation texture) throws java.io.IOException
-                                                       ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:98: error: cannot find symbol
-    public static net.minecraft.client.renderer.texture.NativeImage apply(net.minecraft.client.renderer.texture.NativeImage input, JsonObject stitch)
-                                                                                                               ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:98: error: cannot find symbol
-    public static net.minecraft.client.renderer.texture.NativeImage apply(net.minecraft.client.renderer.texture.NativeImage input, JsonObject stitch)
-                                                       ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:162: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage combine(net.minecraft.client.renderer.texture.NativeImage base, String supply,
-                                                                                                                  ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:162: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage combine(net.minecraft.client.renderer.texture.NativeImage base, String supply,
+/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:83: error: local variables referenced from a lambda expression must be final or effectively final
+                () -> new java.io.FileNotFoundException(file.toString()));
                                                         ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:233: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage hue(net.minecraft.client.renderer.texture.NativeImage base, int degrees)
-                                                                                                              ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:233: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage hue(net.minecraft.client.renderer.texture.NativeImage base, int degrees)
-                                                        ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:321: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage stitch(net.minecraft.client.renderer.texture.NativeImage source, String stitcher) throws java.io.IOException
-                                                                                                                 ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:321: error: cannot find symbol
-    private static net.minecraft.client.renderer.texture.NativeImage stitch(net.minecraft.client.renderer.texture.NativeImage source, String stitcher) throws java.io.IOException
-                                                        ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/TextureResolver.java:117: error: cannot find symbol
-            net.minecraft.client.renderer.texture.NativeImage base = in != null
-                                                 ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/TextureResolver.java:119: error: cannot find symbol
-                    : new net.minecraft.client.renderer.texture.NativeImage(64, 32, true);
-                                                               ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/TextureResolver.java:122: error: cannot find symbol
-            net.minecraft.client.renderer.texture.NativeImage result = SHTextures.apply(base, resolved);
-                                                 ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:87: error: cannot find symbol
-            return net.minecraft.client.renderer.texture.NativeImage.read(in);
-                                                        ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:100: error: cannot find symbol
-        net.minecraft.client.renderer.texture.NativeImage result = input;
-                                             ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:172: error: cannot find symbol
-        net.minecraft.client.renderer.texture.NativeImage overlay = read(sprite);
-                                             ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:341: error: cannot find symbol
-        net.minecraft.client.renderer.texture.NativeImage result = new net.minecraft.client.renderer.texture.NativeImage(width, height, true);
-                                             ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/client/texture/SHTextures.java:341: error: cannot find symbol
-        net.minecraft.client.renderer.texture.NativeImage result = new net.minecraft.client.renderer.texture.NativeImage(width, height, true);
-                                                                                                            ^
-  symbol:   class NativeImage
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:115: error: cannot find symbol
-                .addProperty(PowerProperty.KNOCKBACK, 0.4F)).setSoundState(Vars.FLYING);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:118: error: cannot find symbol
-                .addProperty(PowerProperty.CAN_BOOST, true)).setSoundState(Vars.JETPACKING);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:121: error: cannot find symbol
-                .addProperty(PowerProperty.CAN_USE_TREADMILL, true)).setSoundState(Vars.SPEEDING);
-                                                                                   ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:123: error: cannot find symbol
-                .addProperty(PowerProperty.SPEED, 1.0F)).setSoundState(Vars.SLOW_MOTION);
-                                                                       ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:159: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.INVISIBLE);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:162: error: cannot find symbol
-                .addProperty(PowerProperty.IS_ABSOLUTE, false)).setSoundState(Vars.INTANGIBLE);
-                                                                              ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:168: error: cannot find symbol
-                .addProperty(PowerProperty.KNOCKBACK, 0.2F)).setSoundState(Vars.SHIELD);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:170: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.BLADE);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:172: error: cannot find symbol
-                .addProperty(PowerProperty.RANGE, 10.0F)).setSoundState(Vars.ENERGY_PROJECTION);
-                                                                        ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:179: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.BEAM_CHARGING);
-                                                                            ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:191: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.ENERGY_CHARGING);
-                                                                            ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:194: error: cannot find symbol
-                .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.HEAT_VISION);
-                                                                            ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:203: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.GLIDING);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:213: error: cannot find symbol
-        HOVER = registry.register(new ModifierHover(new ResourceLocation(FiskHeroes.MODID, "hover"))).setSoundState(Vars.HOVERING);
-                                                                                                                    ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:215: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SUIT_OPEN);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:219: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SHADOWFORM);
-                                                                           ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:221: error: cannot find symbol
-                .addProperty(PowerProperty.RANGE, 16.0F)).setSoundState(Vars.TELEKINESIS);
-                                                                        ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:222: error: cannot find symbol
-        GRAVITY_MANIPULATION = registry.register(new ModifierGravityManipulation(new ResourceLocation(FiskHeroes.MODID, "gravity_manipulation"))).setSoundState(Vars.GRAVITY_MANIP);
-                                                                                                                                                                ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:234: error: cannot find symbol
-                .addProperty(PowerProperty.COOLDOWN_TIME, 20)).setSoundState(Vars.CRYO_CHARGING);
-                                                                             ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:251: error: cannot find symbol
-                .addProperty(PowerProperty.COOLDOWN_TIME, 40)).setSoundState(Vars.SONIC_WAVES);
-                                                                             ^
-  symbol:   variable Vars
---
-/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/Modifiers.java:257: error: cannot find symbol
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.PUNCHMODE);
-                                                                           ^
-  symbol:   variable Vars
+Note: /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/pack/js/JSEntity.java uses or overrides a deprecated API.
 > Task :compileJava FAILED
 * What went wrong:
 Execution failed for task ':compileJava'.
 org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':compileJava'.
 Caused by: org.gradle.api.internal.tasks.compile.CompilationFailedException: Compilation failed; see the compiler error output for details.
-BUILD FAILED in 1m 33s
+BUILD FAILED in 1m 2s
 	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
 	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
 	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
@@ -230,14 +37,14 @@ BUILD FAILED in 1m 33s
 	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 
 
-BUILD FAILED in 1m 33s
+BUILD FAILED in 1m 2s
 7 actionable tasks: 7 executed
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
 
 > Task :dumpApi
 API dump written to /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/api.txt
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790986352634.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790986624501.json
 
-BUILD SUCCESSFUL in 26s
+BUILD SUCCESSFUL in 24s
 1 actionable task: 1 executed
