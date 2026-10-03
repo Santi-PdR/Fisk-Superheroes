@@ -2,6 +2,11 @@ package com.fiskmods.heroes.common.item;
 
 import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
 import com.fiskmods.heroes.common.entity.ModEntities;
+import com.fiskmods.heroes.common.hero.Hero;
+import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.hero.modifier.Modifiers;
+import com.fiskmods.heroes.common.hero.power.ModifierEntry;
+import com.fiskmods.heroes.common.hero.power.PowerProperty;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -49,7 +54,14 @@ public class ItemTrickArrow extends ArrowItem
     {
         if (EXPLOSIVE.equals(getType(stack)))
         {
-            return new TrickArrowEntity(ModEntities.TRICK_ARROW.get(), level, shooter, getType(stack));
+            float radius = 2.0F;
+            Hero hero = HeroTracker.getHeroType(shooter);
+            if (hero != null)
+            {
+                ModifierEntry archery = hero.getPowerContainer().getEntry(Modifiers.ARCHERY.getId());
+                if (archery != null) radius = archery.getFloat(shooter, PowerProperty.RADIUS);
+            }
+            return new TrickArrowEntity(ModEntities.TRICK_ARROW.get(), level, shooter, getType(stack), radius);
         }
         return super.createArrow(level, stack, shooter);
     }

@@ -17,7 +17,9 @@ import net.minecraft.world.phys.EntityHitResult;
 /** Server-authoritative special arrow projectile. */
 public class TrickArrowEntity extends Arrow
 {
+    private static final float DEFAULT_EXPLOSION_RADIUS = 2.0F;
     private static final EntityDataAccessor<String> ARROW_TYPE = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.STRING);
+    private float explosionRadius = DEFAULT_EXPLOSION_RADIUS;
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level)
     {
@@ -26,10 +28,16 @@ public class TrickArrowEntity extends Arrow
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level, LivingEntity shooter, String arrowType)
     {
+        this(type, level, shooter, arrowType, DEFAULT_EXPLOSION_RADIUS);
+    }
+
+    public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level, LivingEntity shooter, String arrowType, float explosionRadius)
+    {
         this(type, level);
         setOwner(shooter);
         setPos(shooter.getX(), shooter.getEyeY() - 0.1D, shooter.getZ());
         setArrowType(arrowType);
+        setExplosionRadius(explosionRadius);
     }
 
     @Override
@@ -47,6 +55,11 @@ public class TrickArrowEntity extends Arrow
     public void setArrowType(String type)
     {
         entityData.set(ARROW_TYPE, ItemTrickArrow.EXPLOSIVE.equals(type) ? ItemTrickArrow.EXPLOSIVE : ItemTrickArrow.NORMAL);
+    }
+
+    private void setExplosionRadius(float radius)
+    {
+        explosionRadius = Float.isFinite(radius) ? Math.max(0.0F, radius) : DEFAULT_EXPLOSION_RADIUS;
     }
 
     @Override
@@ -77,7 +90,7 @@ public class TrickArrowEntity extends Arrow
     private void detonateIfExplosive()
     {
         if (level().isClientSide || !ItemTrickArrow.EXPLOSIVE.equals(getArrowType())) return;
-        level().explode(getOwner(), getX(), getY(), getZ(), 2.0F, false, Level.ExplosionInteraction.NONE);
+        level().explode(getOwner(), getX(), getY(), getZ(), explosionRadius, false, Level.ExplosionInteraction.NONE);
         discard();
     }
 
@@ -92,6 +105,7 @@ public class TrickArrowEntity extends Arrow
     {
         super.addAdditionalSaveData(tag);
         tag.putString("ArrowType", getArrowType());
+        tag.putFloat("ExplosionRadius", explosionRadius);
     }
 
     @Override
@@ -99,5 +113,6 @@ public class TrickArrowEntity extends Arrow
     {
         super.readAdditionalSaveData(tag);
         setArrowType(tag.getString("ArrowType"));
+        setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
     }
 }

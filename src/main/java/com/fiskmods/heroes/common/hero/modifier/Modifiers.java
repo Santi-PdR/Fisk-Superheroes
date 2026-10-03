@@ -248,6 +248,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.COOLDOWN_TIME, 60));
         ARCHERY = registry.register(new ModifierArchery(new ResourceLocation(FiskHeroes.MODID, "archery"))
                 .addProperty(PowerProperty.KEY, ModifierArchery.KEY_HORIZONTAL)
+                .addProperty(PowerProperty.RADIUS, 2.0F)
                 .addProperty(PowerProperty.IS_TOGGLE, false));
         EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment")));
         THORNS = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "thorns"))
