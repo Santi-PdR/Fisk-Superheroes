@@ -14,7 +14,7 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "fiskheroes:tutridium_stone",
+              "name": "fiskheroes:lunar_olivine_ore",
               "conditions": [
                 {
                   "condition": "minecraft:match_tool",
@@ -33,17 +33,27 @@
             },
             {
               "type": "minecraft:item",
-              "name": "fiskheroes:tutridium_gem",
+              "name": "fiskheroes:olivine_dust",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": {
+                    "type": "minecraft:uniform",
+                    "min": 2,
+                    "max": 3
+                  }
+                },
+                {
+                  "function": "minecraft:apply_bonus",
+                  "enchantment": "minecraft:fortune",
+                  "formula": "minecraft:ore_drops"
+                }
+              ],
               "conditions": [
                 {
-                  "condition": "minecraft:random_chance",
-                  "chance": 0.05
+                  "condition": "minecraft:survives_explosion"
                 }
               ]
-            },
-            {
-              "type": "minecraft:item",
-              "name": "minecraft:stone"
             }
           ]
         }

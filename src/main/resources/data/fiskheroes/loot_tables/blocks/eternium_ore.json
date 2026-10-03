@@ -14,7 +14,7 @@
           "children": [
             {
               "type": "minecraft:item",
-              "name": "fiskheroes:tutridium_stone",
+              "name": "fiskheroes:eternium_ore",
               "conditions": [
                 {
                   "condition": "minecraft:match_tool",
@@ -33,17 +33,18 @@
             },
             {
               "type": "minecraft:item",
-              "name": "fiskheroes:tutridium_gem",
+              "name": "fiskheroes:eternium_ore",
+              "functions": [
+                {
+                  "function": "minecraft:set_count",
+                  "count": 1
+                }
+              ],
               "conditions": [
                 {
-                  "condition": "minecraft:random_chance",
-                  "chance": 0.05
+                  "condition": "minecraft:survives_explosion"
                 }
               ]
-            },
-            {
-              "type": "minecraft:item",
-              "name": "minecraft:stone"
             }
           ]
         }
