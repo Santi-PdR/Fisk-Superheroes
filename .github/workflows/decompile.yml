@@ -13,14 +13,15 @@ jobs:
         with:
           java-version: '17'
           distribution: temurin
-      - name: Fetch CFR
-        run: curl -sSL -o cfr.jar https://repo1.maven.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar
       - name: Decompile original jar
         run: |
-          mkdir -p out
-          java -Xmx3g -jar cfr.jar FiskHeroes-1.7.10-2.4.0.jar --outputdir out --silent true || true
-          echo "java files: $(find out -name '*.java' | wc -l)"
-          mkdir -p .ci/reference
+          set -x
+          mkdir -p out .ci/reference
+          : > .ci/decompile-log.txt
+          curl -sSL -o cfr.jar https://repo1.maven.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar >> .ci/decompile-log.txt 2>&1
+          echo "cfr.jar: $(stat -c %s cfr.jar 2>/dev/null || echo missing)" >> .ci/decompile-log.txt
+          java -Xmx3g -jar cfr.jar FiskHeroes-1.7.10-2.4.0.jar --outputdir out --silent true >> .ci/decompile-log.txt 2>&1 || echo "cfr exit=$?" >> .ci/decompile-log.txt
+          echo "java files: $(find out -name '*.java' | wc -l)" >> .ci/decompile-log.txt
           dump() {
             name="$1"; shift
             : > ".ci/reference/$name.txt"
@@ -30,20 +31,23 @@ jobs:
                   echo "// ==================== ${f#out/} ====================" >> ".ci/reference/$name.txt"
                   cat "$f" >> ".ci/reference/$name.txt"
                 done
+              else
+                echo "// (missing) $d" >> ".ci/reference/$name.txt"
               fi
             done
-            wc -c ".ci/reference/$name.txt"
+            echo "$name.txt: $(stat -c %s ".ci/reference/$name.txt") bytes" >> .ci/decompile-log.txt
           }
           dump common_core com/fiskmods/heroes/common/hero com/fiskmods/heroes/common/data com/fiskmods/heroes/common/spell
-          dump common_world com/fiskmods/heroes/common/entity com/fiskmods/heroes/common/item com/fiskmods/heroes/common/block com/fiskmods/heroes/common/tileentity com/fiskmods/heroes/common/world com/fiskmods/heroes/common/network com/fiskmods/heroes/common/util com/fiskmods/heroes/common/packet
+          dump common_world com/fiskmods/heroes/common/entity com/fiskmods/heroes/common/item com/fiskmods/heroes/common/block com/fiskmods/heroes/common/tileentity com/fiskmods/heroes/common/world com/fiskmods/heroes/common/network
           dump client_render com/fiskmods/heroes/client/render com/fiskmods/heroes/client/model com/fiskmods/heroes/client/animation com/fiskmods/heroes/client/particle com/fiskmods/heroes/client/texture
-          dump client_misc com/fiskmods/heroes/client/gui com/fiskmods/heroes/client/hud com/fiskmods/heroes/client/keybinds com/fiskmods/heroes/client/sound com/fiskmods/heroes/client/pack com/fiskmods/heroes/client
-          dump api_other com/fiskmods/heroes/pack com/fiskmods/heroes/api com/fiskmods/heroes/util com/fiskmods/heroes
+          dump client_misc com/fiskmods/heroes/client/gui com/fiskmods/heroes/client/hud com/fiskmods/heroes/client/keybinds com/fiskmods/heroes/client/sound com/fiskmods/heroes/client/pack
+          dump api_other com/fiskmods/heroes/pack com/fiskmods/heroes/api com/fiskmods/heroes/util
+          ls -l .ci/reference >> .ci/decompile-log.txt 2>&1
       - name: Publish reference sources back to the branch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -f .ci/reference
+          git add -f .ci/reference .ci/decompile-log.txt || true
           git diff --cached --quiet || git commit -m "ci: decompiled reference sources [skip ci]" --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
