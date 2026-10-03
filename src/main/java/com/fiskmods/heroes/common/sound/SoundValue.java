@@ -30,6 +30,12 @@ public final class SoundValue
 {
     public static final SoundValue UNSET = new SoundValue(null, null, null, false);
 
+    /** The value of a definition that does not set this property; the parent's value is used. */
+    public static SoundValue unset()
+    {
+        return UNSET;
+    }
+
     /** Number or Boolean; {@code null} when the value is not a literal. */
     private final Object literal;
     @Nullable

@@ -214,9 +214,9 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
             }
 
             // Bigger or smaller entities carry the sound further, exactly like the original
-            if (definition.isScale() && entity != null && !Float.isInfinite(range))
+            if (definition.isScale() && entity instanceof net.minecraft.world.entity.LivingEntity living && !Float.isInfinite(range))
             {
-                float scale = Vars.getScale(entity);
+                float scale = Vars.getScale(living);
                 rangeScale = scale < 1.0F ? (float) Math.pow(scale, 2.0D / 3.0D) : scale;
             }
         }
