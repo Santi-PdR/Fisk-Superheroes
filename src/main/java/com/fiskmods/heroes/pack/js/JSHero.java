@@ -10,6 +10,7 @@ import com.fiskmods.heroes.common.hero.HeroAttribute;
 import com.fiskmods.heroes.common.hero.ItemHeroArmor;
 import com.fiskmods.heroes.common.item.ModItems;
 import com.fiskmods.heroes.pack.ScriptFunction;
+import com.fiskmods.heroes.pack.js.JSContext;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -282,7 +283,11 @@ public class JSHero
     /** Original packs may attach an item predicate to a primary equipment candidate. */
     public void addPrimaryEquipment(String item, boolean primary, Object predicate)
     {
-        addEquipment(item, primary);
+        ItemStack stack = createStack(item);
+        if (!stack.isEmpty())
+        {
+            hero.addPrimaryEquipment(stack, primary, JSContext.wrap(predicate));
+        }
     }
 
     public void addSoundEvent(String name, String sound)

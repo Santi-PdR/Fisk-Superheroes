@@ -399,7 +399,7 @@ public class JSEntity
     {
         private final ItemStack stack;
 
-        JSItem(ItemStack stack)
+        public JSItem(ItemStack stack)
         {
             this.stack = stack;
         }
@@ -422,6 +422,12 @@ public class JSEntity
         public int getCount()
         {
             return stack.getCount();
+        }
+
+        /** NBT facade used by original pack predicates such as {@code item.nbt().getBoolean(...)}. */
+        public net.minecraft.nbt.CompoundTag nbt()
+        {
+            return stack.getOrCreateTag();
         }
 
         public String getHero()

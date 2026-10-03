@@ -47,7 +47,7 @@ public final class EquipmentHelper
 
             ItemStack stack = entry.stack();
 
-            if (stack.isEmpty() || hasItem(player, stack))
+            if (stack.isEmpty() || !entry.accepts(stack) || hasItem(player, stack))
             {
                 continue;
             }

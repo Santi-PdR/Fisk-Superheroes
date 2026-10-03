@@ -272,7 +272,12 @@ public class Hero implements Comparable<Hero>
 
     public void addEquipment(ItemStack stack, boolean primary)
     {
-        equipment.add(new EquipmentEntry(stack, primary));
+        equipment.add(new EquipmentEntry(stack, primary, null));
+    }
+
+    public void addPrimaryEquipment(ItemStack stack, boolean included, ScriptFunction predicate)
+    {
+        equipment.add(new EquipmentEntry(stack, included, predicate));
     }
 
     public void addPowers(ResourceLocation... ids)
@@ -623,11 +628,21 @@ public class Hero implements Comparable<Hero>
     }
 
     /** An item offered as part of a suit's equipment. */
-    public record EquipmentEntry(ItemStack stack, boolean primary)
+    public record EquipmentEntry(ItemStack stack, boolean primary, ScriptFunction predicate)
     {
+        public EquipmentEntry(ItemStack stack, boolean primary)
+        {
+            this(stack, primary, null);
+        }
+
+        public boolean accepts(ItemStack candidate)
+        {
+            return predicate == null || predicate.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity.JSItem(candidate));
+        }
+
         public EquipmentEntry copy()
         {
-            return new EquipmentEntry(stack.copy(), primary);
+            return new EquipmentEntry(stack.copy(), primary, predicate);
         }
     }
 
