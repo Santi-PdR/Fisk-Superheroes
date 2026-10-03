@@ -112,15 +112,15 @@ public final class Modifiers
                 .addProperty(PowerProperty.CAN_BOOST, true)
                 .addProperty(PowerProperty.CAN_ROLL, false)
                 .addProperty(PowerProperty.DIVE_SPEED_RETENTION, 0.0F)
-                .addProperty(PowerProperty.KNOCKBACK, 0.4F));
+                .addProperty(PowerProperty.KNOCKBACK, 0.4F)).setSoundState(Vars.FLYING);
         PROPELLED_FLIGHT = registry.register(new ModifierControlledFlight(new ResourceLocation(FiskHeroes.MODID, "propelled_flight"))
                 .addProperty(PowerProperty.SPEED, 0.1F)
-                .addProperty(PowerProperty.CAN_BOOST, true));
+                .addProperty(PowerProperty.CAN_BOOST, true)).setSoundState(Vars.JETPACKING);
         SUPER_SPEED = registry.register(new ModifierSuperSpeed(new ResourceLocation(FiskHeroes.MODID, "super_speed"))
                 .addProperty(PowerProperty.SPEED, 1.0F)
-                .addProperty(PowerProperty.CAN_USE_TREADMILL, true));
+                .addProperty(PowerProperty.CAN_USE_TREADMILL, true)).setSoundState(Vars.SPEEDING);
         SLOW_MOTION = registry.register(new ModifierSlowMotion(new ResourceLocation(FiskHeroes.MODID, "slow_motion"))
-                .addProperty(PowerProperty.SPEED, 1.0F));
+                .addProperty(PowerProperty.SPEED, 1.0F)).setSoundState(Vars.SLOW_MOTION);
         WATER_BREATHING = registry.register(new ModifierWaterBreathing(new ResourceLocation(FiskHeroes.MODID, "water_breathing")));
         LEAPING = registry.register(new ModifierLeaping(new ResourceLocation(FiskHeroes.MODID, "leaping"))
                 .addProperty(PowerProperty.CAN_JUMP_ACTIVATE, true));
@@ -156,27 +156,27 @@ public final class Modifiers
         METAL_SKIN = registry.register(new ModifierMetalSkin(new ResourceLocation(FiskHeroes.MODID, "metal_skin"))
                 .addProperty(PowerProperty.FACTOR, 0.5F));
         INVISIBILITY = registry.register(new ModifierInvisibility(new ResourceLocation(FiskHeroes.MODID, "invisibility"))
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.INVISIBLE);
         INTANGIBILITY = registry.register(new ModifierIntangibility(new ResourceLocation(FiskHeroes.MODID, "intangibility"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)
-                .addProperty(PowerProperty.IS_ABSOLUTE, false));
+                .addProperty(PowerProperty.IS_ABSOLUTE, false)).setSoundState(Vars.INTANGIBLE);
         INTANGIBLE = INTANGIBILITY;
         TRANSFORMATION = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "transformation")));
         COOLDOWN = registry.register(new ModifierCooldown(new ResourceLocation(FiskHeroes.MODID, "cooldown")));
         SHIELD = registry.register(new ModifierShield(new ResourceLocation(FiskHeroes.MODID, "shield"))
                 .addProperty(PowerProperty.IS_TOGGLE, false)
-                .addProperty(PowerProperty.KNOCKBACK, 0.2F));
+                .addProperty(PowerProperty.KNOCKBACK, 0.2F)).setSoundState(Vars.SHIELD);
         BLADE = registry.register(new ModifierBlade(new ResourceLocation(FiskHeroes.MODID, "blade"))
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.BLADE);
         ENERGY_PROJECTION = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "energy_projection"))
-                .addProperty(PowerProperty.RANGE, 10.0F));
+                .addProperty(PowerProperty.RANGE, 10.0F)).setSoundState(Vars.ENERGY_PROJECTION);
         CHARGED_BEAM = registry.register(new ModifierChargedBeam(new ResourceLocation(FiskHeroes.MODID, "charged_beam"))
                 .addProperty(PowerProperty.CHARGE_TIME, 20)
                 .addProperty(PowerProperty.DURATION, 40)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 40)
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.RADIUS, 0.1F)
-                .addProperty(PowerProperty.IS_TOGGLE, false));
+                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.BEAM_CHARGING);
         ENERGY_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "energy_blast"))
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 30)
@@ -188,10 +188,10 @@ public final class Modifiers
         ENERGY_MANIPULATION = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "energy_manipulation"))
                 .addProperty(PowerProperty.RANGE, 48.0F)
                 .addProperty(PowerProperty.CHARGE_TIME, 15)
-                .addProperty(PowerProperty.IS_TOGGLE, false));
+                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.ENERGY_CHARGING);
         HEAT_VISION = registry.register(new ModifierHeatVision(new ResourceLocation(FiskHeroes.MODID, "heat_vision"))
                 .addProperty(PowerProperty.RANGE, 32.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 0));
+                .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.HEAT_VISION);
         REPULSOR_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "repulsor_blast"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));
@@ -200,7 +200,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.MAX_SIZE, 1.0F)
                 .addProperty(PowerProperty.IS_TOGGLE, true));
         GLIDING = registry.register(new ModifierGliding(new ResourceLocation(FiskHeroes.MODID, "gliding"))
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.GLIDING);
         TELEPORTATION = registry.register(new ModifierTeleportation(new ResourceLocation(FiskHeroes.MODID, "teleportation"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
@@ -210,16 +210,16 @@ public final class Modifiers
         WEB_ZIP = registry.register(new ModifierGrapple(new ResourceLocation(FiskHeroes.MODID, "web_zip"))
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.SPEED, 1.0F));
-        HOVER = registry.register(new ModifierHover(new ResourceLocation(FiskHeroes.MODID, "hover")));
+        HOVER = registry.register(new ModifierHover(new ResourceLocation(FiskHeroes.MODID, "hover"))).setSoundState(Vars.HOVERING);
         SENTRY_MODE = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "sentry_mode"))
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SUIT_OPEN);
         SHAPESHIFTING = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "shapeshifting"))
                 .addProperty(PowerProperty.IS_TOGGLE, true));
         SHADOWFORM = registry.register(new ModifierShadowform(new ResourceLocation(FiskHeroes.MODID, "shadowform"))
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SHADOWFORM);
         TELEKINESIS = registry.register(new ModifierTelekinesis(new ResourceLocation(FiskHeroes.MODID, "telekinesis"))
-                .addProperty(PowerProperty.RANGE, 16.0F));
-        GRAVITY_MANIPULATION = registry.register(new ModifierGravityManipulation(new ResourceLocation(FiskHeroes.MODID, "gravity_manipulation")));
+                .addProperty(PowerProperty.RANGE, 16.0F)).setSoundState(Vars.TELEKINESIS);
+        GRAVITY_MANIPULATION = registry.register(new ModifierGravityManipulation(new ResourceLocation(FiskHeroes.MODID, "gravity_manipulation"))).setSoundState(Vars.GRAVITY_MANIP);
         FROST_WALKING = registry.register(new ModifierFrostWalking(new ResourceLocation(FiskHeroes.MODID, "frost_walking")));
         FLAME_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "flame_blast"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
@@ -231,7 +231,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
         CRYO_CHARGE = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryo_charge"))
-                .addProperty(PowerProperty.COOLDOWN_TIME, 20));
+                .addProperty(PowerProperty.COOLDOWN_TIME, 20)).setSoundState(Vars.CRYO_CHARGING);
         CRYOBALL = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryoball"))
                 .addProperty(PowerProperty.RADIUS, 1.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
@@ -248,13 +248,13 @@ public final class Modifiers
                 .addProperty(PowerProperty.AMOUNT, 4.0F));
         SONIC_WAVES = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "sonic_waves"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 40));
+                .addProperty(PowerProperty.COOLDOWN_TIME, 40)).setSoundState(Vars.SONIC_WAVES);
         CANARY_CRY = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "canary_cry"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 60));
         CHARGED_PUNCH = registry.register(new ModifierChargedPunch(new ResourceLocation(FiskHeroes.MODID, "charged_punch"))
                 .addProperty(PowerProperty.CHARGE_TIME, 20)
-                .addProperty(PowerProperty.IS_TOGGLE, true));
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.PUNCHMODE);
         EARTHQUAKE = registry.register(new ModifierGriefing(new ResourceLocation(FiskHeroes.MODID, "earthquake"))
                 .addProperty(PowerProperty.RADIUS, 20.0F)
                 .addProperty(PowerProperty.KNOCKBACK, 1.0F)

@@ -23,6 +23,7 @@ public class Modifier
     private final ResourceLocation id;
     private final Map<PowerProperty<?>, Object> defaultProperties = new LinkedHashMap<>();
     private boolean hiddenFromHud;
+    private com.fiskmods.heroes.common.data.var.DataVar<Boolean> soundState;
 
     public Modifier(ResourceLocation id)
     {
@@ -64,6 +65,22 @@ public class Modifier
     public Map<PowerProperty<?>, Object> getDefaultProperties()
     {
         return defaultProperties;
+    }
+
+    /**
+     * The data variable whose value decides whether this modifier is "on". Whenever it changes, the
+     * modifier's {@code soundEvents} dispatch the matching enable/disable (or looping) sound, which
+     * is how the original drove all of its suit audio from the data system.
+     */
+    public Modifier setSoundState(com.fiskmods.heroes.common.data.var.DataVar<Boolean> state)
+    {
+        this.soundState = state;
+        return this;
+    }
+
+    public com.fiskmods.heroes.common.data.var.DataVar<Boolean> getSoundState()
+    {
+        return soundState;
     }
 
     public boolean isHiddenFromHud()

@@ -19,6 +19,7 @@ public class SHPlayerData implements IDataHolder
     private HeroIteration prevHero;
     private int heroChangeTime;
     private final java.util.Set<ResourceLocation> toggles = new java.util.LinkedHashSet<>();
+    private final java.util.Map<ResourceLocation, Boolean> soundStates = new java.util.HashMap<>();
 
     /** Ticks the suit has been unusable (all pieces removed while powers were active). */
     private int suitDisabledTime;
@@ -28,6 +29,22 @@ public class SHPlayerData implements IDataHolder
     public DataContainer getData()
     {
         return data;
+    }
+
+    /** Last seen sound state of a modifier, so transitions can be detected across ticks. */
+    public Boolean getSoundState(ResourceLocation modifier)
+    {
+        return soundStates.get(modifier);
+    }
+
+    public void setSoundState(ResourceLocation modifier, boolean state)
+    {
+        soundStates.put(modifier, state);
+    }
+
+    public java.util.Map<ResourceLocation, Boolean> getSoundStates()
+    {
+        return soundStates;
     }
 
     public HeroIteration getHero()

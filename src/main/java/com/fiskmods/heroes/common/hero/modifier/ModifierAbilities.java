@@ -29,7 +29,7 @@ import net.minecraft.world.phys.Vec3;
  * Toggled/instant suit abilities: transformations, cooldowns, shields, blades, intangibility,
  * size manipulation, teleportation and grappling.
  */
-final class AbilityData
+public final class AbilityData
 {
     /** Resolves a data variable referenced by a power JSON entry such as {@code "toggleData"}. */
     static DataVar<Boolean> toggle(JsonObject json)
@@ -63,7 +63,7 @@ final class AbilityData
         return element != null && element.isJsonObject() ? element.getAsJsonObject() : null;
     }
 
-    static void playSound(LivingEntity entity, ModifierEntry entry, String trigger)
+    public static void playSound(LivingEntity entity, ModifierEntry entry, String trigger)
     {
         JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
 

@@ -47,6 +47,7 @@ public final class ModifierHandler
             {
                 if (integrated)
                 {
+                    dispatchSounds(entity, entry, data);
                     entry.getModifier().tick(entity, entry, data);
                 }
                 else
@@ -58,6 +59,30 @@ public final class ModifierHandler
             {
                 com.fiskmods.heroes.FiskHeroes.LOGGER.error("Error ticking modifier {}", entry.getModifier().getName(), e);
             }
+        }
+    }
+
+    /**
+     * Plays the modifier's enable/disable sound when its state variable flips, and keeps the
+     * looping variant running while the state is on. Mirrors the original's data-driven sound
+     * dispatch (the sound definitions declare which of their entries loop and how they fade).
+     */
+    private static void dispatchSounds(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        com.fiskmods.heroes.common.data.var.DataVar<Boolean> state = entry.getModifier().getSoundState();
+
+        if (state == null)
+        {
+            return;
+        }
+
+        boolean value = data.getData().get(state);
+        Boolean previous = data.getSoundState(entry.getModifier().getId());
+
+        if (previous == null || previous != value)
+        {
+            data.setSoundState(entry.getModifier().getId(), value);
+            com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(entity, entry, value ? "ENABLE" : "DISABLE");
         }
     }
 
