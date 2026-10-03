@@ -8,12 +8,16 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.util.RandomSource;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -37,6 +41,8 @@ public final class ModBlocks
     public static final RegistryObject<Block> PACKED_OLIVINE = register("packed_olivine", 2.0F, 5.0F, false, 1);
     public static final RegistryObject<Block> ETERNIUM_BLOCK = register("eternium_block", 7.5F, 6000.0F, true, 3);
     public static final RegistryObject<Block> SUPERCHARGED_ETERNIUM = registerSuperchargedEternium();
+    public static final RegistryObject<Block> NEXUS_BRICKS = register("nexus_bricks", 3.0F, 100.0F, false, 0);
+    public static final RegistryObject<Block> NEXUS_SOIL = registerNexusSoil();
     public static final RegistryObject<Block> ETERNIUM_STONE = register("eternium_stone", 5.0F, 3000.0F, false, 0);
     public static final RegistryObject<Block> TUTRIDIUM_ORE = ore("tutridium_ore", 3.0F, 5.0F, 2, 3, 7);
     public static final RegistryObject<Block> TITANIUM_ORE = ore("titanium_ore", 4.0F, 100.0F, 2, 0, 0);
@@ -54,6 +60,7 @@ public final class ModBlocks
     public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
             GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, SUPERCHARGED_ETERNIUM, ETERNIUM_STONE,
+            NEXUS_BRICKS, NEXUS_SOIL,
             TUTRIDIUM_ORE, TITANIUM_ORE, DWARF_STAR_ORE, OLIVINE_ORE, ETERNIUM_ORE, TUTRITE_ORE,
             LUNAR_IRON_ORE, LUNAR_TITANIUM_ORE, LUNAR_OLIVINE_ORE, VIBRANIUM_ORE, LUNAR_ROCK, COBBLED_LUNAR_ROCK);
 
@@ -108,6 +115,15 @@ public final class ModBlocks
         return block;
     }
 
+    private static RegistryObject<Block> registerNexusSoil()
+    {
+        RegistryObject<Block> block = REGISTRY.register("nexus_soil", () ->
+                new NexusSoilBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT)
+                        .strength(0.9F).sound(SoundType.GRAVEL).requiresCorrectToolForDrops()));
+        ITEMS.register("nexus_soil", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
     private static RegistryObject<Block> registerTutridiumStone()
     {
         RegistryObject<Block> block = REGISTRY.register("tutridium_stone", () ->
@@ -148,6 +164,48 @@ public final class ModBlocks
         public int getExpDrop(BlockState state, LevelReader level, RandomSource random, BlockPos pos, int fortune, int silkTouch)
         {
             return silkTouch > 0 ? 0 : random.nextInt(3) > 0 ? 1 : 0;
+        }
+    }
+
+    /** Nexus soil's low collision top and entangling/fire response, ported from BlockNexusSoil. */
+    private static final class NexusSoilBlock extends Block
+    {
+        private static final VoxelShape SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 12.0D, 16.0D);
+
+        private NexusSoilBlock(BlockBehaviour.Properties properties)
+        {
+            super(properties);
+        }
+
+        @Override
+        public VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter level,
+                BlockPos pos, CollisionContext context)
+        {
+            return SHAPE;
+        }
+
+        @Override
+        public VoxelShape getCollisionShape(BlockState state, net.minecraft.world.level.BlockGetter level,
+                BlockPos pos, CollisionContext context)
+        {
+            return SHAPE;
+        }
+
+        @Override
+        public void entityInside(BlockState state, net.minecraft.world.level.Level level, BlockPos pos,
+                net.minecraft.world.entity.Entity entity)
+        {
+            RandomSource random = level.getRandom();
+            Vec3 movement = entity.getDeltaMovement();
+            entity.setDeltaMovement(movement.x + (random.nextFloat() * 2.0D - 1.0D) * 0.75D,
+                    movement.y - 100.0D,
+                    movement.z + (random.nextFloat() * 2.0D - 1.0D) * 0.75D);
+            entity.makeStuckInBlock(state, new Vec3(0.25D, 0.05D, 0.25D));
+
+            if (!level.isClientSide && level.isEmptyBlock(pos.above()))
+            {
+                level.setBlock(pos.above(), Blocks.FIRE.defaultBlockState(), 3);
+            }
         }
     }
 
