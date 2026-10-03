@@ -76,10 +76,16 @@ dependencies {
     runLibraries("org.mozilla:rhino:${rhino_version}") { transitive = false }
 }
 
-tasks.matching { it.name == 'runServer' || it.name == 'runClient' || it.name == 'runData' }.configureEach {
-    classpath += configurations.runLibraries
-    doFirst {
-        logger.lifecycle("run classpath: ${classpath.files.findAll { it.name.contains('rhino') }}")
+tasks.matching { it.name == 'runServer' || it.name == 'runClient' || it.name == 'runData' }.configureEach { task ->
+    // Applied at execution time, once ForgeGradle has finished assembling the classpath, so the
+    // dependency cannot be overwritten by the run configuration setup.
+    task.doFirst {
+        classpath = files(classpath, configurations.runLibraries)
+        def entries = classpath.files
+        def file = rootProject.file('.ci/run-classpath.txt')
+        file.parentFile.mkdirs()
+        file.text = entries.collect { it.absolutePath }.join('\n')
+        logger.lifecycle("Game run classpath: ${entries.size()} entries, rhino=${entries.findAll { it.name.contains('rhino') }}")
     }
 }
 
