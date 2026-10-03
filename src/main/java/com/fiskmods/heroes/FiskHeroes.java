@@ -8,6 +8,7 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
 import com.fiskmods.heroes.common.item.ModItems;
+import com.fiskmods.heroes.common.item.ModMenus;
 import com.fiskmods.heroes.common.network.PacketAbility;
 import com.fiskmods.heroes.common.network.PacketSyncData;
 import com.fiskmods.heroes.common.network.PacketSyncSuit;
@@ -58,6 +59,7 @@ public class FiskHeroes
         IEventBus modBus = context.getModEventBus();
 
         ModItems.REGISTRY.register(modBus);
+        ModMenus.REGISTRY.register(modBus);
         SHAttributes.REGISTRY.register(modBus);
         CREATIVE_TABS.register(modBus);
 
