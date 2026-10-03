@@ -7,6 +7,7 @@ import com.fiskmods.heroes.common.config.SHConfig;
 import com.fiskmods.heroes.common.data.DataRegistry;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.entity.ModEntities;
+import com.fiskmods.heroes.common.hero.modifier.ModEffects;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
 import com.fiskmods.heroes.common.world.OreGenerationBiomeModifier;
@@ -73,6 +74,7 @@ public class FiskHeroes
         BIOME_MODIFIER_SERIALIZERS.register(modBus);
         ModMenus.REGISTRY.register(modBus);
         ModEntities.REGISTRY.register(modBus);
+        ModEffects.REGISTRY.register(modBus);
         SHAttributes.REGISTRY.register(modBus);
         CREATIVE_TABS.register(modBus);
 
