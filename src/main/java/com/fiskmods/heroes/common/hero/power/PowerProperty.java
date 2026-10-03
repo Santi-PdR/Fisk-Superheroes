@@ -57,7 +57,6 @@ public class PowerProperty<T>
     public static final PowerProperty<String> DAMAGE_TYPE = create("damageType", "");
     public static final PowerProperty<String> COVERAGE = create("coverage", "");
     public static final PowerProperty<String> COLLISION = create("collision", "");
-    public static final PowerProperty<String> DAMAGE_PROFILE = create("damageProfile", "");
 
     /** Complex values which are interpreted by the owning modifier. */
     public static final PowerProperty<JsonElement> EQUIPMENT = create("equipment", null);
@@ -74,6 +73,7 @@ public class PowerProperty<T>
     public static final PowerProperty<JsonElement> POTION_EFFECTS = create("potionEffects", null);
     public static final PowerProperty<JsonElement> COOLDOWN = create("cooldown", null);
     public static final PowerProperty<JsonElement> DAMAGE_BONUS = create("damageBonus", null);
+    public static final PowerProperty<JsonElement> DAMAGE_PROFILE = create("damageProfile", null);
     public static final PowerProperty<JsonElement> SOUND_EVENTS = create("soundEvents", null);
 
     private final String name;

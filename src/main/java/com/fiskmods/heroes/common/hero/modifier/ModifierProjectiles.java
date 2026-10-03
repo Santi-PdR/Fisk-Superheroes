@@ -15,6 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import com.google.gson.JsonElement;
 
 /**
  * Energy projection family: bolts, blasts, beams and eye lasers. All of them share the same shape
@@ -73,7 +74,8 @@ class ModifierEnergyProjection extends Modifier
     protected void fire(LivingEntity entity, ModifierEntry entry, SHPlayerData data, ServerLevel level, boolean charged)
     {
         float range = entry.getFloat(entity, PowerProperty.RANGE);
-        float damage = entry.getFloat(entity, PowerProperty.AMOUNT);
+        JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+        float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
 
         if (damage <= 0)
         {
@@ -93,7 +95,8 @@ class ModifierEnergyProjection extends Modifier
 
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
         {
-            target.hurt(entity.damageSources().indirectMagic(entity, entity), damage * (charged ? 2.0F : 1.0F));
+            float attackDamage = damage * (charged ? 2.0F : 1.0F);
+            DamageGroups.withDamageProfile(damageProfile, () -> target.hurt(entity.damageSources().indirectMagic(entity, entity), attackDamage));
 
             if (entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE))
             {
@@ -199,7 +202,11 @@ class ModifierHeatVision extends ModifierEnergyProjection
 
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
         {
-            target.hurt(player.damageSources().indirectMagic(player, player), 4.0F);
+            JsonElement damageProfile = entry.get(player, PowerProperty.DAMAGE_PROFILE);
+            float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(player, PowerProperty.AMOUNT));
+            if (damage <= 0.0F) damage = 4.0F;
+            float attackDamage = damage;
+            DamageGroups.withDamageProfile(damageProfile, () -> target.hurt(player.damageSources().indirectMagic(player, player), attackDamage));
             target.setSecondsOnFire(5);
         }
 

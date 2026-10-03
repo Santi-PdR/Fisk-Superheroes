@@ -3,6 +3,8 @@ package com.fiskmods.heroes.common.hero.modifier;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 public final class DamageGroups
 {
@@ -23,6 +25,54 @@ public final class DamageGroups
     public static void clearDamageProfile()
     {
         DAMAGE_PROFILE.remove();
+    }
+
+    /** Executes an attack with the type fractions declared by a power's damageProfile object. */
+    public static void withDamageProfile(JsonElement definition, Runnable attack)
+    {
+        java.util.Map<String, Double> previous = DAMAGE_PROFILE.get();
+        java.util.Map<String, Double> profile = readProfileTypes(definition);
+        useDamageProfile(profile);
+        try
+        {
+            attack.run();
+        }
+        finally
+        {
+            useDamageProfile(previous);
+        }
+    }
+
+    /** Reads the configured damage amount, falling back when the power has no profile amount. */
+    public static float profileDamage(JsonElement definition, float fallback)
+    {
+        if (definition != null && definition.isJsonObject())
+        {
+            JsonElement damage = definition.getAsJsonObject().get("damage");
+            if (damage != null && damage.isJsonPrimitive() && damage.getAsJsonPrimitive().isNumber())
+            {
+                return damage.getAsFloat();
+            }
+        }
+        return fallback;
+    }
+
+    private static java.util.Map<String, Double> readProfileTypes(JsonElement definition)
+    {
+        java.util.Map<String, Double> profile = new java.util.LinkedHashMap<>();
+        if (definition == null || !definition.isJsonObject()) return profile;
+        JsonObject object = definition.getAsJsonObject();
+        JsonElement types = object.get("types");
+        if (types == null || !types.isJsonObject()) return profile;
+        for (java.util.Map.Entry<String, JsonElement> entry : types.getAsJsonObject().entrySet())
+        {
+            JsonElement fraction = entry.getValue();
+            if (fraction != null && fraction.isJsonPrimitive() && fraction.getAsJsonPrimitive().isNumber())
+            {
+                profile.put(entry.getKey().toUpperCase(java.util.Locale.ROOT), Math.max(0.0D, fraction.getAsDouble()));
+            }
+        }
+        return profile;
     }
 
     static Modifiers.DamageGroup groupOf(DamageSource source, String declared)
