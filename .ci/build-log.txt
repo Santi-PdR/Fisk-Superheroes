@@ -1,40 +1,55 @@
-Note: /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/pack/js/JSEntity.java uses or overrides a deprecated API.
-Note: Recompile with -Xlint:deprecation for details.
-Note: Some input files use or override a deprecated API that is marked for removal.
-Note: Recompile with -Xlint:removal for details.
-Note: Some input files use unchecked or unsafe operations.
-Note: Recompile with -Xlint:unchecked for details.
+/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/power/ModifierEntry.java:53: error: no suitable constructor found for JsonPrimitive(value inst[...]alue))
+        setProperty(property, value != null ? new com.google.gson.JsonPrimitive(value instanceof Number n ? n
+                                              ^
+    constructor JsonPrimitive.JsonPrimitive(Boolean) is not applicable
+--
+/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/java/com/fiskmods/heroes/common/hero/modifier/ModifierControlledFlight.java:113: error: cannot find symbol
+        float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
+                                         ^
+  symbol:   variable entity
+> Task :compileJava FAILED
+* What went wrong:
+Execution failed for task ':compileJava'.
+org.gradle.api.tasks.TaskExecutionException: Execution failed for task ':compileJava'.
+Caused by: org.gradle.api.internal.tasks.compile.CompilationFailedException: Compilation failed; see the compiler error output for details.
+BUILD FAILED in 1m 1s
+	at org.gradle.api.internal.tasks.execution.FinalizePropertiesTaskExecuter.execute(FinalizePropertiesTaskExecuter.java:46)
+	at org.gradle.api.internal.tasks.execution.ResolveTaskExecutionModeExecuter.execute(ResolveTaskExecutionModeExecuter.java:51)
+	at org.gradle.api.internal.tasks.execution.SkipTaskWithNoActionsExecuter.execute(SkipTaskWithNoActionsExecuter.java:57)
+	at org.gradle.api.internal.tasks.execution.SkipOnlyIfTaskExecuter.execute(SkipOnlyIfTaskExecuter.java:74)
+	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.executeTask(EventFiringTaskExecuter.java:77)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:55)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter$1.call(EventFiringTaskExecuter.java:52)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
+	at org.gradle.api.internal.tasks.execution.EventFiringTaskExecuter.execute(EventFiringTaskExecuter.java:52)
+	at org.gradle.execution.plan.LocalTaskNodeExecutor.execute(LocalTaskNodeExecutor.java:42)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:331)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$InvokeNodeExecutorsAction.execute(DefaultTaskExecutionGraph.java:318)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.lambda$execute$0(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.internal.operations.CurrentBuildOperationRef.with(CurrentBuildOperationRef.java:80)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:314)
+	at org.gradle.execution.taskgraph.DefaultTaskExecutionGraph$BuildOperationAwareExecutionAction.execute(DefaultTaskExecutionGraph.java:303)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.execute(DefaultPlanExecutor.java:463)
+	at org.gradle.execution.plan.DefaultPlanExecutor$ExecutorWorker.run(DefaultPlanExecutor.java:380)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
 
-> Task :generateModMetadata
-> Task :processResources
-> Task :classes
-> Task :jar
-> Task :downloadMcpConfig
-> Task :extractSrg
-> Task :createMcpToSrg
-> Task :reobfJar
-> Task :jarJar
-> Task :reobfJarJar
-> Task :assemble
-> Task :compileTestJava NO-SOURCE
-> Task :processTestResources NO-SOURCE
-> Task :testClasses UP-TO-DATE
-> Task :test NO-SOURCE
-> Task :check UP-TO-DATE
-> Task :build
 
-> Task :dumpApi
-API dump written to /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/api.txt
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/gradle-1790985101854.json
-
-BUILD SUCCESSFUL in 1m 11s
-11 actionable tasks: 11 executed
+BUILD FAILED in 1m 1s
+7 actionable tasks: 7 executed
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
 
 > Task :dumpApi
 API dump written to /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/api.txt
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790985172094.json
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1790985584103.json
 
-BUILD SUCCESSFUL in 24s
+BUILD SUCCESSFUL in 23s
 1 actionable task: 1 executed
