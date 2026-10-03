@@ -12,16 +12,41 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
       - name: Fetch CFR
         run: curl -sSL -o cfr.jar https://repo1.maven.org/maven2/org/benf/cfr/0.152/cfr-0.152.jar
       - name: Decompile original jar
         run: |
           mkdir -p out
-          java -Xmx3g -jar cfr.jar FiskHeroes-1.7.10-2.4.0.jar --outputdir out --silent true
+          java -Xmx3g -jar cfr.jar FiskHeroes-1.7.10-2.4.0.jar --outputdir out --silent true || true
           echo "java files: $(find out -name '*.java' | wc -l)"
-      - uses: actions/upload-artifact@v4
-        with:
-          name: fisk-decompiled
-          path: out
-          compression-level: 6
+          mkdir -p .ci/reference
+          dump() {
+            name="$1"; shift
+            : > ".ci/reference/$name.txt"
+            for d in "$@"; do
+              if [ -d "$d" ]; then
+                find "$d" -name '*.java' | sort | while read -r f; do
+                  echo "// ==================== ${f#out/} ====================" >> ".ci/reference/$name.txt"
+                  cat "$f" >> ".ci/reference/$name.txt"
+                done
+              fi
+            done
+            wc -c ".ci/reference/$name.txt"
+          }
+          dump common_core com/fiskmods/heroes/common/hero com/fiskmods/heroes/common/data com/fiskmods/heroes/common/spell
+          dump common_world com/fiskmods/heroes/common/entity com/fiskmods/heroes/common/item com/fiskmods/heroes/common/block com/fiskmods/heroes/common/tileentity com/fiskmods/heroes/common/world com/fiskmods/heroes/common/network com/fiskmods/heroes/common/util com/fiskmods/heroes/common/packet
+          dump client_render com/fiskmods/heroes/client/render com/fiskmods/heroes/client/model com/fiskmods/heroes/client/animation com/fiskmods/heroes/client/particle com/fiskmods/heroes/client/texture
+          dump client_misc com/fiskmods/heroes/client/gui com/fiskmods/heroes/client/hud com/fiskmods/heroes/client/keybinds com/fiskmods/heroes/client/sound com/fiskmods/heroes/client/pack com/fiskmods/heroes/client
+          dump api_other com/fiskmods/heroes/pack com/fiskmods/heroes/api com/fiskmods/heroes/util com/fiskmods/heroes
+      - name: Publish reference sources back to the branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/reference
+          git diff --cached --quiet || git commit -m "ci: decompiled reference sources [skip ci]" --no-verify
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
+            git push && break
+            sleep 5
+          done
