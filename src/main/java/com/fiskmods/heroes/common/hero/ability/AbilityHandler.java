@@ -39,6 +39,17 @@ public final class AbilityHandler
         }
 
         Hero hero = iteration.getHero();
+
+        if (index == 0)
+        {
+            if (pressed && !iteration.isMaskDisabled() && hero.hasProperty(player, "MASK_TOGGLE"))
+            {
+                boolean open = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN);
+                data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, !open);
+            }
+            return;
+        }
+
         Set<String> keys = hero.getKeyBindsMatching(index);
 
         for (String key : keys)
@@ -72,31 +83,11 @@ public final class AbilityHandler
 
         boolean toggle = entry.getBoolean(PowerProperty.IS_TOGGLE);
 
-        if (toggle)
-        {
-            if (pressed)
-            {
-                boolean state = !entry.isToggled(player);
-                entry.setToggled(player, state);
-
-                if (state)
-                {
-                    entry.getModifier().onActivate(player, entry, data);
-                }
-                else
-                {
-                    entry.getModifier().onToggle(player, entry, data);
-                }
-            }
-
-            return;
-        }
-
         if (pressed)
         {
             entry.getModifier().onActivate(player, entry, data);
         }
-        else
+        else if (!toggle)
         {
             entry.getModifier().onToggle(player, entry, data);
         }

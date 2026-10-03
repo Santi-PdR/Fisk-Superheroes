@@ -101,24 +101,43 @@ public final class ModifierHandler
             return 0.0F;
         }
 
-        float result = amount;
-
-        for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
+        java.util.Map<String, Double> profile = null;
+        net.minecraft.world.entity.Entity attacker = source.getEntity();
+        if (attacker instanceof Player player && source.getDirectEntity() == attacker)
         {
-            if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))
+            SHPlayerData attackerData = SHDataCapabilities.getPlayer(player);
+            if (attackerData != null && attackerData.getHeroType() != null)
             {
-                continue;
+                profile = attackerData.getHeroType().getMeleeDamageProfile(attacker);
             }
-
-            if (entry.getModifier().isImmuneTo(entity, entry, source, amount))
-            {
-                return 0.0F;
-            }
-
-            result = entry.getModifier().modifyDamage(entity, entry, source, result);
         }
 
-        return Math.max(0.0F, result);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.useDamageProfile(profile);
+        try
+        {
+            float result = amount;
+
+            for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
+            {
+                if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))
+                {
+                    continue;
+                }
+
+                if (entry.getModifier().isImmuneTo(entity, entry, source, amount))
+                {
+                    return 0.0F;
+                }
+
+                result = entry.getModifier().modifyDamage(entity, entry, source, result);
+            }
+
+            return Math.max(0.0F, result);
+        }
+        finally
+        {
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.clearDamageProfile();
+        }
     }
 
     public static void onJump(LivingEntity entity)

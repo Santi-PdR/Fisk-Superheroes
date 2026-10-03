@@ -20,81 +20,6 @@ import net.minecraft.world.phys.Vec3;
  * Compact implementations of the "stateful but simple" modifiers. Keeping them in one file makes it
  * easy to compare their behaviour against the original mod's equivalents.
  */
-final class DamageGroups
-{
-    static Modifiers.DamageGroup groupOf(DamageSource source, String declared)
-    {
-        if (declared != null && !declared.isEmpty())
-        {
-            String name = declared.toLowerCase(java.util.Locale.ROOT);
-
-            if (name.contains("fire") || name.contains("heat"))
-            {
-                return Modifiers.DamageGroup.FIRE;
-            }
-            if (name.contains("cold") || name.contains("ice") || name.contains("cryo"))
-            {
-                return Modifiers.DamageGroup.COLD;
-            }
-            if (name.contains("bullet") || name.contains("projectile") || name.contains("arrow"))
-            {
-                return Modifiers.DamageGroup.PROJECTILE;
-            }
-            if (name.contains("electric") || name.contains("lightning"))
-            {
-                return Modifiers.DamageGroup.ELECTRICITY;
-            }
-            if (name.contains("cosmic"))
-            {
-                return Modifiers.DamageGroup.COSMIC;
-            }
-            if (name.contains("energy"))
-            {
-                return Modifiers.DamageGroup.ENERGY;
-            }
-            if (name.contains("explos"))
-            {
-                return Modifiers.DamageGroup.EXPLOSION;
-            }
-            if (name.contains("magic"))
-            {
-                return Modifiers.DamageGroup.MAGIC;
-            }
-        }
-
-        if (source.is(DamageTypeTags.IS_FIRE))
-        {
-            return Modifiers.DamageGroup.FIRE;
-        }
-        if (source.is(DamageTypeTags.IS_FREEZING))
-        {
-            return Modifiers.DamageGroup.COLD;
-        }
-        if (source.is(DamageTypes.LIGHTNING_BOLT))
-        {
-            return Modifiers.DamageGroup.ELECTRICITY;
-        }
-        if (source.is(DamageTypeTags.IS_PROJECTILE))
-        {
-            return Modifiers.DamageGroup.PROJECTILE;
-        }
-        if (source.is(DamageTypeTags.IS_EXPLOSION))
-        {
-            return Modifiers.DamageGroup.EXPLOSION;
-        }
-        if (source.is(DamageTypeTags.IS_FALL))
-        {
-            return Modifiers.DamageGroup.FALL;
-        }
-        if (source.is(DamageTypeTags.WITCH_RESISTANT_TO))
-        {
-            return Modifiers.DamageGroup.MAGIC;
-        }
-
-        return null;
-    }
-}
-
 /** Full immunity to a damage group (fire immunity, bullet immunity, ...). */
 class ModifierImmunity extends Modifier
 {
@@ -109,7 +34,23 @@ class ModifierImmunity extends Modifier
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
+        float profileFraction = DamageGroups.profileFraction(group);
+        if (profileFraction >= 0.0F)
+        {
+            return profileFraction >= 1.0F;
+        }
         return DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE)) == group;
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        float profileFraction = DamageGroups.profileFraction(group);
+        if (profileFraction > 0.0F && profileFraction < 1.0F)
+        {
+            return amount * (1.0F - profileFraction);
+        }
+        return amount;
     }
 }
 
@@ -128,8 +69,16 @@ class ModifierResistance extends Modifier
     public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
         Modifiers.DamageGroup target = DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE));
+        float profileFraction = DamageGroups.profileFraction(group);
+        if (profileFraction >= 0.0F)
+        {
+            return profileFraction > 0.0F ? amount * (1.0F - entry.getFloat(entity, PowerProperty.FACTOR)) : amount;
+        }
 
-        if (target == group || group == null && target != null)
+        String declared = entry.get(PowerProperty.DAMAGE_TYPE);
+        boolean profileMatch = DamageGroups.profileHasType(declared);
+
+        if (profileMatch || target == group || group == null && target != null)
         {
             return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
@@ -153,6 +102,11 @@ class ModifierWeakness extends Modifier
     public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
         Modifiers.DamageGroup target = DamageGroups.groupOf(source, entry.get(PowerProperty.DAMAGE_TYPE));
+        float profileFraction = DamageGroups.profileFraction(group);
+        if (profileFraction >= 0.0F)
+        {
+            return profileFraction > 0.0F ? amount * entry.getFloat(entity, PowerProperty.FACTOR) : amount;
+        }
 
         if (target == group || group == null && target != null)
         {
@@ -234,6 +188,11 @@ class ModifierDamageImmunity extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
         String declared = entry.get(PowerProperty.DAMAGE_TYPE);
+        float profileFraction = DamageGroups.profileFraction(declared);
+        if (profileFraction >= 0.0F)
+        {
+            return profileFraction >= 1.0F;
+        }
 
         if (declared == null || declared.isEmpty())
         {
@@ -247,6 +206,17 @@ class ModifierDamageImmunity extends Modifier
     private boolean matches(DamageSource source, String declared)
     {
         return source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT).replace("_", ""));
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    {
+        float profileFraction = DamageGroups.profileFraction(entry.get(PowerProperty.DAMAGE_TYPE));
+        if (profileFraction > 0.0F && profileFraction < 1.0F)
+        {
+            return amount * (1.0F - profileFraction);
+        }
+        return amount;
     }
 }
 
@@ -262,6 +232,11 @@ class ModifierDamageResistance extends Modifier
     public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
         String declared = entry.get(PowerProperty.DAMAGE_TYPE);
+        float profileFraction = DamageGroups.profileFraction(declared);
+        if (profileFraction >= 0.0F)
+        {
+            return amount * (1.0F - profileFraction * (1.0F - entry.getFloat(entity, PowerProperty.FACTOR)));
+        }
 
         if (declared == null || declared.isEmpty() || source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT)))
         {

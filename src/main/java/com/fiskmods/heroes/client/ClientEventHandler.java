@@ -26,7 +26,9 @@ public class ClientEventHandler
 {
     /** Ability indices are 1-based to match the pack scripts; 0 is the mask toggle. */
     private static final int[] ABILITY_INDICES = { 1, 2, 3, 4, 5 };
+    private static final boolean[] abilityKeysDown = new boolean[SHKeyBinds.ABILITY_COUNT];
     private static boolean weaponKeyHeld;
+    private static boolean maskKeyDown;
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event)
@@ -46,18 +48,6 @@ public class ClientEventHandler
             return;
         }
 
-        for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
-        {
-            while (SHKeyBinds.ABILITIES[i].consumeClick())
-            {
-                SHNetwork.sendToServer(new PacketAbility(ABILITY_INDICES[i], true));
-            }
-        }
-
-        while (SHKeyBinds.MASK.consumeClick())
-        {
-            SHNetwork.sendToServer(new PacketAbility(0, true));
-        }
     }
 
     @SubscribeEvent
@@ -72,10 +62,29 @@ public class ClientEventHandler
 
         if (player == null)
         {
+            java.util.Arrays.fill(abilityKeysDown, false);
+            maskKeyDown = false;
             return;
         }
 
         Minecraft mc = Minecraft.getInstance();
+        for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
+        {
+            boolean down = mc.screen == null && SHKeyBinds.ABILITIES[i].isDown();
+            if (down != abilityKeysDown[i])
+            {
+                abilityKeysDown[i] = down;
+                SHNetwork.sendToServer(new PacketAbility(ABILITY_INDICES[i], down));
+            }
+        }
+
+        boolean maskDown = mc.screen == null && SHKeyBinds.MASK.isDown();
+        if (maskDown != maskKeyDown)
+        {
+            maskKeyDown = maskDown;
+            SHNetwork.sendToServer(new PacketAbility(0, maskDown));
+        }
+
         if (mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)
         {
             if (!weaponKeyHeld) mc.setScreen(null);

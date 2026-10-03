@@ -111,6 +111,10 @@ public class Modifier
     /** Called when the entity activates this modifier's ability. */
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        if (entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
+        {
+            entry.setToggled(entity, !entry.isToggled(entity));
+        }
     }
 
     /** Called when a toggled ability is switched. */

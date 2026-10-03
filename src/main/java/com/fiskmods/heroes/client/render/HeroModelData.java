@@ -272,7 +272,7 @@ public class HeroModelData
     public ResourceLocation getTexture(int slot, Entity entity)
     {
         String key = resolve(slot == -1 ? defaultTexture : renderLayerTextures.getOrDefault(slot, defaultTexture), entity);
-        return TextureResolver.resolve(key, entity);
+        return resolveResource(key, entity, slot);
     }
 
     /** The emissive (glowing) texture a piece draws for an entity, or null. */
@@ -281,7 +281,19 @@ public class HeroModelData
     {
         JsonElement tree = renderLayerLights.getOrDefault(slot, defaultLights);
         String key = resolve(tree, entity);
-        return TextureResolver.resolve(key, entity);
+        return resolveResource(key, entity, slot);
+    }
+
+    /** Model texture trees name entries in {@code resources}; resolve that indirection first. */
+    @Nullable
+    private ResourceLocation resolveResource(@Nullable String key, Entity entity, int slot)
+    {
+        if (key == null)
+        {
+            return null;
+        }
+
+        return TextureResolver.resolve(resources.getOrDefault(key, key), entity, slot);
     }
 
     /** Whether the given armour slot has an emissive layer at all. */

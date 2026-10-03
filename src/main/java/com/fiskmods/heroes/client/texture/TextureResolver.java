@@ -13,6 +13,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.world.entity.Entity;
 
@@ -44,6 +45,13 @@ public final class TextureResolver
     @Nullable
     public static ResourceLocation resolve(String resource, Entity entity)
     {
+        return resolve(resource, entity, -1);
+    }
+
+    /** Resolves texture aliases, extension-less stitch definitions and layer-specific sprites. */
+    @Nullable
+    public static ResourceLocation resolve(String resource, Entity entity, int armorSlot)
+    {
         if (resource == null || resource.equals("null"))
         {
             return null;
@@ -54,6 +62,30 @@ public final class TextureResolver
         if (id == null)
         {
             return null;
+        }
+
+        if (!id.getPath().endsWith(".tx.json"))
+        {
+            ResourceLocation definition = withPath(id, id.getPath() + ".tx.json");
+            if (resourceExists(texturePath(definition)))
+            {
+                id = definition;
+            }
+            else if (!resourceExists(texturePath(withPath(id, id.getPath() + ".png"))) && armorSlot >= 0)
+            {
+                // Some original model resources are prefixes whose concrete sprite depends on
+                // whether the vanilla armor layer is layer1 or the leggings layer2.
+                String suffix = armorSlot == 2 ? "_layer2" : "_layer1";
+                ResourceLocation variant = withPath(id, id.getPath() + suffix);
+                if (resourceExists(texturePath(withPath(variant, variant.getPath() + ".tx.json"))))
+                {
+                    id = withPath(variant, variant.getPath() + ".tx.json");
+                }
+                else if (resourceExists(texturePath(withPath(variant, variant.getPath() + ".png"))))
+                {
+                    id = variant;
+                }
+            }
         }
 
         if (!id.getPath().endsWith(".tx.json"))
@@ -143,6 +175,21 @@ public final class TextureResolver
     {
         ResourceLocation id = ResourceLocation.tryParse(value);
         return id != null ? id : new ResourceLocation(FiskHeroes.MODID, value);
+    }
+
+    private static ResourceLocation withPath(ResourceLocation id, String path)
+    {
+        return new ResourceLocation(id.getNamespace(), path);
+    }
+
+    private static ResourceLocation texturePath(ResourceLocation id)
+    {
+        return new ResourceLocation(id.getNamespace(), "textures/heroes/" + id.getPath());
+    }
+
+    private static boolean resourceExists(ResourceLocation id)
+    {
+        return Minecraft.getInstance().getResourceManager().getResource(id).isPresent();
     }
 
     /** Evaluates one getter: a data variable, a script expression, or nothing. */

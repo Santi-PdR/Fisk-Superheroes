@@ -126,39 +126,39 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     /** Temporarily hides the parts the given piece must not draw and returns the previous state. */
     private boolean[] hidePartsFor(PlayerModel<AbstractClientPlayer> model, HeroModelData data, int slot)
     {
-        ModelPart[] parts = { model.head, model.hat, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg };
+        ModelPart[] parts = {
+                model.head, model.hat, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg,
+                model.jacket, model.rightSleeve, model.leftSleeve, model.rightPants, model.leftPants
+        };
         String[] names = { "head", "headwear", "body", "rightArm", "leftArm", "rightLeg", "leftLeg" };
         boolean[] previous = new boolean[parts.length];
 
-        for (int i = 0; i < parts.length; ++i)
+        for (int i = 0; i < names.length; ++i)
         {
             previous[i] = parts[i].visible;
             parts[i].visible = previous[i] && data.showsModelPart(slot, names[i]);
         }
 
         // The jacket/sleeve overlays follow the body pieces of the suit
-        model.jacket.visible = model.body.visible;
-        model.rightSleeve.visible = model.rightArm.visible;
-        model.leftSleeve.visible = model.leftArm.visible;
-        model.rightPants.visible = model.rightLeg.visible;
-        model.leftPants.visible = model.leftLeg.visible;
+        parts[7].visible = previous[7] && model.body.visible;
+        parts[8].visible = previous[8] && model.rightArm.visible;
+        parts[9].visible = previous[9] && model.leftArm.visible;
+        parts[10].visible = previous[10] && model.rightLeg.visible;
+        parts[11].visible = previous[11] && model.leftLeg.visible;
 
         return previous;
     }
 
     private void restoreParts(PlayerModel<AbstractClientPlayer> model, boolean[] previous)
     {
-        ModelPart[] parts = { model.head, model.hat, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg };
+        ModelPart[] parts = {
+                model.head, model.hat, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg,
+                model.jacket, model.rightSleeve, model.leftSleeve, model.rightPants, model.leftPants
+        };
 
         for (int i = 0; i < parts.length && i < previous.length; ++i)
         {
             parts[i].visible = previous[i];
         }
-
-        model.jacket.visible = true;
-        model.rightSleeve.visible = true;
-        model.leftSleeve.visible = true;
-        model.rightPants.visible = true;
-        model.leftPants.visible = true;
     }
 }
