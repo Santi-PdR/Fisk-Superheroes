@@ -6,8 +6,12 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
+import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.network.PacketAbility;
+import com.fiskmods.heroes.common.network.PacketSelectArrow;
 import com.fiskmods.heroes.common.network.SHNetwork;
+import com.fiskmods.heroes.common.item.ItemQuiver;
+import com.fiskmods.heroes.common.item.ModItems;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -49,6 +53,28 @@ public class ClientEventHandler
             return;
         }
 
+    }
+
+    @SubscribeEvent
+    public static void onMouseScroll(InputEvent.MouseScrollingEvent event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player == null || mc.screen != null || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get())
+                || ItemQuiver.findQuiver(player).isEmpty()) return;
+
+        com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
+        if (!player.isShiftKeyDown() && (hero == null || !hero.isKeyPressed(player, "QUIVER_CYCLE"))) return;
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null) return;
+
+        int current = Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5;
+        int step = event.getScrollDelta() > 0.0D ? -1 : 1;
+        byte selected = (byte) Math.floorMod(current + step, 5);
+        data.getData().set(Vars.SELECTED_ARROW, selected);
+        SHNetwork.sendToServer(new PacketSelectArrow(selected));
+        event.setCanceled(true);
     }
 
     @SubscribeEvent

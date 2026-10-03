@@ -79,6 +79,8 @@ public final class HeroTracker
             return;
         }
 
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+
         HeroIteration worn = getWornSuit(player);
         HeroIteration current = data.getHero();
 

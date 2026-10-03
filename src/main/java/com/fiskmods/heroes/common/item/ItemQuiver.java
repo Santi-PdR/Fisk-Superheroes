@@ -67,6 +67,32 @@ public class ItemQuiver extends Item
         return ItemStack.EMPTY;
     }
 
+    public static int findQuiverSlot(Player player)
+    {
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++)
+        {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty() && stack.getItem() instanceof ItemQuiver) return slot;
+        }
+        return -1;
+    }
+
+    public static void updatePlayerData(Player player)
+    {
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null) return;
+
+        int quiverSlot = findQuiverSlot(player);
+        ItemStack quiver = quiverSlot >= 0 ? player.getInventory().getItem(quiverSlot) : ItemStack.EMPTY;
+        data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? null : "fiskheroes:quiver");
+        data.getData().set(Vars.EQUIPPED_QUIVER_SLOT, (byte) quiverSlot);
+
+        ItemStack arrow = quiver.isEmpty() ? ItemStack.EMPTY : getSelectedArrow(player);
+        String arrowId = arrow.isEmpty() ? "" : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(arrow.getItem()).toString();
+        data.getData().set(Vars.CURRENT_ARROW, arrowId);
+    }
+
     public static ItemStack getSelectedArrow(Player player)
     {
         ItemStack quiver = findQuiver(player);
