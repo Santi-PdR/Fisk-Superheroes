@@ -221,10 +221,16 @@ public class JSHero
     public void addDamageProfile(String name, Object types)
     {
         Map<String, Double> map = new LinkedHashMap<>();
+        Map<String, Object> definition = JSContext.asMap(types);
+        Object typeValues = definition.get("types");
+        Map<String, Object> values = typeValues == null ? definition : JSContext.asMap(typeValues);
 
-        for (Map.Entry<String, Object> entry : JSContext.asMap(types).entrySet())
+        for (Map.Entry<String, Object> entry : values.entrySet())
         {
-            map.put(entry.getKey(), entry.getValue() instanceof Number n ? n.doubleValue() : 0.0D);
+            if (entry.getValue() instanceof Number n)
+            {
+                map.put(entry.getKey().toUpperCase(java.util.Locale.ROOT), n.doubleValue());
+            }
         }
 
         hero.addDamageProfile(name, map);

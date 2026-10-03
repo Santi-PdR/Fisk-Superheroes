@@ -11,6 +11,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
+import javax.annotation.Nullable;
+
 import com.fiskmods.heroes.common.hero.power.PowerContainer;
 import com.fiskmods.heroes.pack.ScriptFunction;
 import com.google.common.collect.ImmutableList;
@@ -506,7 +508,17 @@ public class Hero implements Comparable<Hero>
 
     public String getDamageProfile(Entity entity)
     {
-        return damageProfileFunc == null ? null : damageProfileFunc.callString(entity);
+        return damageProfileFunc == null ? null : damageProfileFunc.callString(new com.fiskmods.heroes.pack.js.JSEntity(entity));
+    }
+
+    /** Resolves the current melee damage type map selected by this hero's pack callback. */
+    @Nullable
+    public Map<String, Double> getMeleeDamageProfile(Entity entity)
+    {
+        if (damageProfiles.isEmpty()) return null;
+        if (damageProfileFunc == null) return damageProfiles.values().iterator().next();
+        String name = getDamageProfile(entity);
+        return name != null ? damageProfiles.get(name) : null;
     }
 
     public Map<String, Double> getDamageProfile(String name)
