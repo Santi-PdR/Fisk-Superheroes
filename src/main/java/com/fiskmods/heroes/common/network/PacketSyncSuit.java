@@ -7,7 +7,6 @@ import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -63,7 +62,7 @@ public class PacketSyncSuit extends SHPacket
 
     private void handleClient()
     {
-        Entity entity = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getEntity(entityId) : null;
+        Entity entity = ClientEntityLookup.get(entityId);
 
         if (entity == null)
         {

@@ -3,7 +3,6 @@ package com.fiskmods.heroes.common.network;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.Entity;
@@ -47,7 +46,7 @@ public class PacketSyncData extends SHPacket
 
     private void handleClient()
     {
-        Entity entity = Minecraft.getInstance().level != null ? Minecraft.getInstance().level.getEntity(entityId) : null;
+        Entity entity = ClientEntityLookup.get(entityId);
 
         if (entity != null)
         {

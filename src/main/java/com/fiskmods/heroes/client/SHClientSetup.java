@@ -73,6 +73,13 @@ public class SHClientSetup
                 com.fiskmods.heroes.common.sound.SHSounds.getRepository(),
                 com.fiskmods.heroes.common.sound.SHSounds.getRepositoryVersion());
 
+        // Packets run in common code, so the client side of the entity lookup is installed here
+        com.fiskmods.heroes.common.network.ClientEntityLookup.set(id ->
+        {
+            net.minecraft.client.multiplayer.ClientLevel level = net.minecraft.client.Minecraft.getInstance().level;
+            return level != null ? level.getEntity(id) : null;
+        });
+
         event.enqueueWork(() ->
         {
             ClampedItemPropertyFunction function = (stack, level, entity, seed) ->
