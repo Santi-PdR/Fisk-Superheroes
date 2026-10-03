@@ -99,8 +99,9 @@ public class FiskHeroes
         return key != null && key.indexOf(':') == -1 ? MODID + ":" + key : key;
     }
 
+    /** Builds a location, leaving namespaced keys alone (pack scripts pass both forms). */
     public static ResourceLocation id(String path)
     {
-        return new ResourceLocation(MODID, path);
+        return path.indexOf(':') == -1 ? new ResourceLocation(MODID, path) : new ResourceLocation(path);
     }
 }
