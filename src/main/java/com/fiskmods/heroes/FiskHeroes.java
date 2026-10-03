@@ -9,6 +9,7 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.entity.ModEntities;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
+import com.fiskmods.heroes.common.world.OreGenerationBiomeModifier;
 import com.fiskmods.heroes.common.item.ModItems;
 import com.fiskmods.heroes.common.item.ModMenus;
 import com.fiskmods.heroes.common.network.PacketAbility;
@@ -19,6 +20,7 @@ import com.fiskmods.heroes.common.hero.modifier.Modifiers;
 import com.fiskmods.heroes.pack.HeroPackEngine;
 
 import net.minecraft.resources.ResourceLocation;
+import com.mojang.serialization.Codec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -51,6 +53,10 @@ public class FiskHeroes
 
     public static final DeferredRegister<net.minecraft.world.item.CreativeModeTab> CREATIVE_TABS =
             DeferredRegister.create(net.minecraft.core.registries.Registries.CREATIVE_MODE_TAB, MODID);
+    public static final DeferredRegister<Codec<? extends net.minecraftforge.common.world.BiomeModifier>> BIOME_MODIFIER_SERIALIZERS =
+            DeferredRegister.create(net.minecraftforge.registries.ForgeRegistries.Keys.BIOME_MODIFIER_SERIALIZERS, MODID);
+    public static final RegistryObject<Codec<OreGenerationBiomeModifier>> ORE_GENERATION_MODIFIER =
+            BIOME_MODIFIER_SERIALIZERS.register("ore_generation", () -> OreGenerationBiomeModifier.CODEC);
 
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_SUITS = CREATIVE_TABS.register("suits", ModItems::createSuitTab);
     public static final RegistryObject<net.minecraft.world.item.CreativeModeTab> TAB_ITEMS = CREATIVE_TABS.register("items", ModItems::createItemTab);
@@ -64,6 +70,7 @@ public class FiskHeroes
         ModItems.REGISTRY.register(modBus);
         ModBlocks.REGISTRY.register(modBus);
         ModBlocks.ITEMS.register(modBus);
+        BIOME_MODIFIER_SERIALIZERS.register(modBus);
         ModMenus.REGISTRY.register(modBus);
         ModEntities.REGISTRY.register(modBus);
         SHAttributes.REGISTRY.register(modBus);
