@@ -49,7 +49,7 @@ public final class SHTextures
     }
 
     /** Registers a generated image under {@code id} and returns it. */
-    public static ResourceLocation register(ResourceLocation id, net.minecraft.client.renderer.texture.NativeImage image)
+    public static ResourceLocation register(ResourceLocation id, com.mojang.blaze3d.platform.NativeImage image)
     {
         DynamicTexture texture = new DynamicTexture(image);
         texture.setFilter(false, false);
@@ -70,7 +70,7 @@ public final class SHTextures
         return new ResourceLocation(namespace, "textures/heroes/" + path + ".png");
     }
 
-    public static net.minecraft.client.renderer.texture.NativeImage read(ResourceLocation texture) throws java.io.IOException
+    public static com.mojang.blaze3d.platform.NativeImage read(ResourceLocation texture) throws java.io.IOException
     {
         ResourceLocation file = new ResourceLocation(texture.getNamespace(), texture.getPath());
 
@@ -84,7 +84,7 @@ public final class SHTextures
 
         try (InputStream in = resource.open())
         {
-            return net.minecraft.client.renderer.texture.NativeImage.read(in);
+            return com.mojang.blaze3d.platform.NativeImage.read(in);
         }
     }
 
@@ -95,9 +95,9 @@ public final class SHTextures
      * @param stitch the parsed stitch description
      * @return the combined image
      */
-    public static net.minecraft.client.renderer.texture.NativeImage apply(net.minecraft.client.renderer.texture.NativeImage input, JsonObject stitch)
+    public static com.mojang.blaze3d.platform.NativeImage apply(com.mojang.blaze3d.platform.NativeImage input, JsonObject stitch)
     {
-        net.minecraft.client.renderer.texture.NativeImage result = input;
+        com.mojang.blaze3d.platform.NativeImage result = input;
 
         for (JsonElement element : asArray(stitch.get("transform")))
         {
@@ -159,7 +159,7 @@ public final class SHTextures
 
     /* --- Operations --- */
 
-    private static net.minecraft.client.renderer.texture.NativeImage combine(net.minecraft.client.renderer.texture.NativeImage base, String supply,
+    private static com.mojang.blaze3d.platform.NativeImage combine(com.mojang.blaze3d.platform.NativeImage base, String supply,
             java.util.function.IntBinaryOperator operation) throws java.io.IOException
     {
         ResourceLocation sprite = parse(supply);
@@ -169,7 +169,7 @@ public final class SHTextures
             return base;
         }
 
-        net.minecraft.client.renderer.texture.NativeImage overlay = read(sprite);
+        com.mojang.blaze3d.platform.NativeImage overlay = read(sprite);
         int width = base.getWidth();
         int height = base.getHeight();
 
@@ -230,7 +230,7 @@ public final class SHTextures
     }
 
     /** HUE: rotates the hue of a lighting layer, used for the speedster RGB suits. */
-    private static net.minecraft.client.renderer.texture.NativeImage hue(net.minecraft.client.renderer.texture.NativeImage base, int degrees)
+    private static com.mojang.blaze3d.platform.NativeImage hue(com.mojang.blaze3d.platform.NativeImage base, int degrees)
     {
         for (int x = 0; x < base.getWidth(); ++x)
         {
@@ -318,7 +318,7 @@ public final class SHTextures
     }
 
     /** Copies the regions described by a stitcher definition onto a new 64x32 texture. */
-    private static net.minecraft.client.renderer.texture.NativeImage stitch(net.minecraft.client.renderer.texture.NativeImage source, String stitcher) throws java.io.IOException
+    private static com.mojang.blaze3d.platform.NativeImage stitch(com.mojang.blaze3d.platform.NativeImage source, String stitcher) throws java.io.IOException
     {
         ResourceLocation id = parse(stitcher);
 
@@ -338,7 +338,7 @@ public final class SHTextures
         JsonObject json = com.google.gson.JsonParser.parseReader(resource.openAsReader()).getAsJsonObject();
         int width = json.has("dimensions") ? json.getAsJsonArray("dimensions").get(0).getAsInt() : source.getWidth();
         int height = json.has("dimensions") ? json.getAsJsonArray("dimensions").get(1).getAsInt() : source.getHeight();
-        net.minecraft.client.renderer.texture.NativeImage result = new net.minecraft.client.renderer.texture.NativeImage(width, height, true);
+        com.mojang.blaze3d.platform.NativeImage result = new com.mojang.blaze3d.platform.NativeImage(width, height, true);
 
         for (JsonElement element : asArray(json.get("stitch")))
         {

@@ -1,6 +1,7 @@
 package com.fiskmods.heroes.common.hero.modifier;
 
 import com.fiskmods.heroes.FiskHeroes;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierRegistry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;

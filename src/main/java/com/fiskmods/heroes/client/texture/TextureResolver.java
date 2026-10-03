@@ -114,12 +114,12 @@ public final class TextureResolver
                     ? substitute(stitch.get("in").getAsString(), values)
                     : null;
 
-            net.minecraft.client.renderer.texture.NativeImage base = in != null
+            com.mojang.blaze3d.platform.NativeImage base = in != null
                     ? SHTextures.read(SHTextures.sprite(id.getNamespace(), in))
-                    : new net.minecraft.client.renderer.texture.NativeImage(64, 32, true);
+                    : new com.mojang.blaze3d.platform.NativeImage(64, 32, true);
 
             JsonObject resolved = substitute(stitch, values);
-            net.minecraft.client.renderer.texture.NativeImage result = SHTextures.apply(base, resolved);
+            com.mojang.blaze3d.platform.NativeImage result = SHTextures.apply(base, resolved);
 
             if (result != base)
             {
