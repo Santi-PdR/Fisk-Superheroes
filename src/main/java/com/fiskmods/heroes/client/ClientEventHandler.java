@@ -5,6 +5,7 @@ import com.fiskmods.heroes.client.keybinds.SHKeyBinds;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
+import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
 import com.fiskmods.heroes.common.network.PacketAbility;
 import com.fiskmods.heroes.common.network.SHNetwork;
 
@@ -71,6 +72,7 @@ public class ClientEventHandler
         for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
         {
             boolean down = mc.screen == null && SHKeyBinds.ABILITIES[i].isDown();
+            AbilityHandler.setClientKeyState(player, ABILITY_INDICES[i], down);
             if (down != abilityKeysDown[i])
             {
                 abilityKeysDown[i] = down;

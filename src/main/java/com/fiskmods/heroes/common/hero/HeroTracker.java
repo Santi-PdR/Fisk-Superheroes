@@ -90,6 +90,15 @@ public final class HeroTracker
 
     private static void onHeroChanged(Player player, SHPlayerData data, @Nullable HeroIteration previous, @Nullable HeroIteration current)
     {
+        if (player.level().isClientSide)
+        {
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clearClient(player);
+        }
+        else if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
+        {
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(serverPlayer);
+        }
+
         data.setHero(current);
 
         if (previous != null)

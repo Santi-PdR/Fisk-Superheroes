@@ -491,6 +491,12 @@ public class Hero implements Comparable<Hero>
         return keyBindEnabledFunc == null || keyBindEnabledFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), name);
     }
 
+    /** Returns whether one of this hero's ability keys is physically held on the entity's side. */
+    public boolean isKeyPressed(Entity entity, String name)
+    {
+        return com.fiskmods.heroes.common.hero.ability.AbilityHandler.isKeyPressed(entity, name);
+    }
+
     public boolean isModifierEnabled(Entity entity, String modifier)
     {
         return modifierEnabledFunc == null || modifierEnabledFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), modifier);
