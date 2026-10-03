@@ -72,13 +72,14 @@ public final class SHTextures
 
     public static com.mojang.blaze3d.platform.NativeImage read(ResourceLocation texture) throws java.io.IOException
     {
-        ResourceLocation file = new ResourceLocation(texture.getNamespace(), texture.getPath());
+        String path = texture.getPath();
 
-        if (!file.getPath().endsWith(".png"))
+        if (!path.endsWith(".png"))
         {
-            file = new ResourceLocation(file.getNamespace(), file.getPath() + ".png");
+            path = path + ".png";
         }
 
+        ResourceLocation file = new ResourceLocation(texture.getNamespace(), path);
         Resource resource = Minecraft.getInstance().getResourceManager().getResource(file).orElseThrow(
                 () -> new java.io.FileNotFoundException(file.toString()));
 
