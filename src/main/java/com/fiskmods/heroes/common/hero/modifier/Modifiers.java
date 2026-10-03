@@ -274,6 +274,7 @@ public final class Modifiers
         TENTACLES = registry.register(create("tentacles"));
         SHADOWDOME = registry.register(create("shadowdome"));
         PHASING = INTANGIBILITY;
+        registry.register(new ModifierShapeShifting(new ResourceLocation(FiskHeroes.MODID, "shape_shifting")));
         UNREGISTERED_PLACEHOLDERS();
     }
 
