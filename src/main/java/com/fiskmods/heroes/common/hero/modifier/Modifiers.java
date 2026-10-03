@@ -246,7 +246,9 @@ public final class Modifiers
         LIGHTNING_CAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "lightning_cast"))
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 60));
-        ARCHERY = registry.register(create("archery").addProperty(PowerProperty.KEY, "AIM"));
+        ARCHERY = registry.register(new ModifierArchery(new ResourceLocation(FiskHeroes.MODID, "archery"))
+                .addProperty(PowerProperty.KEY, ModifierArchery.KEY_HORIZONTAL)
+                .addProperty(PowerProperty.IS_TOGGLE, false));
         EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment")));
         THORNS = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "thorns"))
                 .addProperty(PowerProperty.AMOUNT, 2.0F));
