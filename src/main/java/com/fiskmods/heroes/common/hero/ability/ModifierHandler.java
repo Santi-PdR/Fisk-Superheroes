@@ -51,6 +51,7 @@ public final class ModifierHandler
 
         for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
         {
+            if ("potion_retention".equals(entry.getModifier().getId().getPath())) continue;
             if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))
             {
                 continue;
@@ -96,6 +97,23 @@ public final class ModifierHandler
         {
             data.setSoundState(entry.getModifier().getId(), value);
             com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(entity, entry, value ? "ENABLE" : "DISABLE");
+        }
+    }
+
+    /** Runs duration-retention modifiers before the living entity ticks its active effects. */
+    public static void tickPotionRetention(Player player)
+    {
+        if (player.level().isClientSide || player.tickCount % 2 == 0) return;
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null || data.getHeroType() == null) return;
+
+        for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
+        {
+            if (entry.isEnabled() && "potion_retention".equals(entry.getModifier().getId().getPath())
+                    && entry.isModifierEnabled(player, data))
+            {
+                entry.getModifier().tick(player, entry, data);
+            }
         }
     }
 

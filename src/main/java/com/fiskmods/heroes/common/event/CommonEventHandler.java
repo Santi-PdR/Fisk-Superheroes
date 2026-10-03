@@ -31,6 +31,12 @@ public class CommonEventHandler
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
+        if (event.phase == TickEvent.Phase.START)
+        {
+            ModifierHandler.tickPotionRetention(event.player);
+            return;
+        }
+
         if (event.phase != TickEvent.Phase.END)
         {
             return;

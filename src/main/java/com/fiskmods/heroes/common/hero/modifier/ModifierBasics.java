@@ -594,6 +594,44 @@ class ModifierEquipment extends Modifier
     }
 }
 
+/** Keeps only the configured potion effects from expiring while this modifier is active. */
+class ModifierPotionRetention extends Modifier
+{
+    ModifierPotionRetention(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.level().isClientSide || entity.tickCount % 2 == 0) return;
+
+        com.google.gson.JsonElement configured = entry.get(entity, PowerProperty.POTION_EFFECTS);
+        if (configured == null || !configured.isJsonArray()) return;
+
+        java.util.Set<net.minecraft.resources.ResourceLocation> retained = new java.util.HashSet<>();
+        for (com.google.gson.JsonElement element : configured.getAsJsonArray())
+        {
+            if (element.isJsonPrimitive())
+            {
+                net.minecraft.resources.ResourceLocation id = net.minecraft.resources.ResourceLocation.tryParse(element.getAsString());
+                if (id != null) retained.add(id);
+            }
+        }
+
+        for (MobEffectInstance effect : new java.util.ArrayList<>(entity.getActiveEffects()))
+        {
+            net.minecraft.resources.ResourceLocation id = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getKey(effect.getEffect());
+            if (id != null && retained.contains(id))
+            {
+                entity.addEffect(new MobEffectInstance(effect.getEffect(), effect.getDuration() + 1, effect.getAmplifier(),
+                        effect.isAmbient(), effect.isVisible(), effect.showIcon()));
+            }
+        }
+    }
+}
+
 /** Adds pack-defined bonus damage to melee hits and consumes any configured uses. */
 class ModifierDamageBonus extends Modifier
 {
