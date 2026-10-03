@@ -275,7 +275,10 @@ public final class Modifiers
         WALL_CRAWLING = registry.register(new ModifierWallCrawling(new ResourceLocation(FiskHeroes.MODID, "wall_crawling")));
         SPIDER_SENSE = registry.register(new ModifierSpiderSense(new ResourceLocation(FiskHeroes.MODID, "spider_sense")));
         TENTACLES = registry.register(create("tentacles"));
-        SHADOWDOME = registry.register(create("shadowdome"));
+        SHADOWDOME = registry.register(new ModifierShadowDome(new ResourceLocation(FiskHeroes.MODID, "shadowdome"))
+                .addProperty(PowerProperty.CHARGE_TIME, 40)
+                .addProperty(PowerProperty.DURATION, 1200)
+                .addProperty(PowerProperty.RADIUS, 24.0F));
         PHASING = INTANGIBILITY;
         registry.register(new ModifierShapeShifting(new ResourceLocation(FiskHeroes.MODID, "shape_shifting")));
         UNREGISTERED_PLACEHOLDERS();

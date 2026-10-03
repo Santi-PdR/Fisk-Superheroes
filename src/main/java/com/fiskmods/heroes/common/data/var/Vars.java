@@ -74,7 +74,7 @@ public final class Vars
     public static final DataVar<Float> JETPACKING_TIMER = register("jetpacking_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> LEVITATE_TIMER = register("levitate_timer", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<Boolean> LIGHTSOUT = register("lightsout", DataType.BOOLEAN, false, false);
-    public static final DataVar<Integer> LIGHTSOUT_ID = register("lightsout_id", DataType.INT, 0, false);
+    public static final DataVar<Integer> LIGHTSOUT_ID = register("lightsout_id", DataType.INT, -1, false);
     public static final DataVar<Float> LIGHTSOUT_TIMER = register("lightsout_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> MASK_OPEN = register("mask_open", DataType.BOOLEAN, false, false);
     public static final DataVar<Byte> MASK_OPEN_TIMER = register("mask_open_timer", DataType.BYTE, (byte) 0, false);
