@@ -53,10 +53,41 @@ public class HeroModelRegistry extends SimplePreparableReloadListener<Map<Resour
         return map;
     }
 
+    private static void resolveParent(HeroModelData model, int depth)
+    {
+        if (depth > 8 || model.getParent() == null)
+        {
+            return;
+        }
+
+        ResourceLocation id = ResourceLocation.tryParse(model.getParent());
+
+        if (id == null)
+        {
+            return;
+        }
+
+        HeroModelData parent = MODELS.get(id);
+
+        if (parent == null)
+        {
+            return;
+        }
+
+        if (parent.getParent() != null)
+        {
+            resolveParent(parent, depth + 1);
+        }
+
+        model.inherit(parent);
+    }
+
     @Override
     protected void apply(Map<ResourceLocation, JsonObject> object, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         MODELS.clear();
+        com.fiskmods.heroes.client.texture.TextureResolver.clear();
+        com.fiskmods.heroes.client.texture.SHTextures.clear();
 
         for (Map.Entry<ResourceLocation, JsonObject> entry : object.entrySet())
         {
@@ -68,6 +99,12 @@ public class HeroModelRegistry extends SimplePreparableReloadListener<Map<Resour
             {
                 FiskHeroes.LOGGER.error("Failed to parse hero model {}", entry.getKey(), e);
             }
+        }
+
+        // Models inherit from their parent; the chain is at most a couple of levels deep
+        for (HeroModelData model : MODELS.values())
+        {
+            resolveParent(model, 0);
         }
 
         FiskHeroes.LOGGER.info("Loaded {} hero suit models", MODELS.size());

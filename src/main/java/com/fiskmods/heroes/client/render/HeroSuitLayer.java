@@ -85,19 +85,34 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 continue;
             }
 
-            ResourceLocation texture = model.getTexture(slot);
+            ResourceLocation texture = model.getTexture(slot, player);
 
-            if (texture == null)
+            if (texture != null)
             {
-                continue;
+                boolean[] hidden = hidePartsFor(playerModel, model, slot);
+                VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                restoreParts(playerModel, hidden);
             }
 
-            boolean[] hidden = hidePartsFor(playerModel, model, slot);
+            // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
+            ResourceLocation lights = model.getLights(slot, player);
 
-            VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
-            playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+            if (lights != null)
+            {
+                boolean[] hidden = hidePartsFor(playerModel, model, slot);
 
-            restoreParts(playerModel, hidden);
+                if (model.shouldFixHatLayer(slot))
+                {
+                    // The hat layer is what draws the second skin layer; the helmet itself is
+                    // already part of the suit texture
+                    playerModel.hat.visible = false;
+                }
+
+                VertexConsumer consumer = buffer.getBuffer(RenderType.eyes(lights));
+                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                restoreParts(playerModel, hidden);
+            }
         }
 
         poseStack.popPose();

@@ -51,6 +51,30 @@ public class JSEntity
         return value != null ? value : var.getDefault();
     }
 
+    /**
+     * Reads a data variable of an entity, or returns {@code null} when the key does not name one
+     * (which is how script-valued properties tell variables and expressions apart).
+     */
+    public static Object read(Entity entity, String key)
+    {
+        DataVar<?> var = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(key);
+
+        if (var == null)
+        {
+            return null;
+        }
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(entity);
+
+        if (data == null)
+        {
+            return var.getDefault();
+        }
+
+        Object value = data.getData().get(var);
+        return value != null ? value : var.getDefault();
+    }
+
     public void setData(String key, Object value)
     {
         DataVar<?> var = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(key);
