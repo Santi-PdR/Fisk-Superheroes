@@ -10,6 +10,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.StairBlock;
+import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.phys.shapes.CollisionContext;
@@ -43,6 +45,9 @@ public final class ModBlocks
     public static final RegistryObject<Block> SUPERCHARGED_ETERNIUM = registerSuperchargedEternium();
     public static final RegistryObject<Block> NEXUS_BRICKS = register("nexus_bricks", 3.0F, 100.0F, false, 0);
     public static final RegistryObject<Block> NEXUS_SOIL = registerNexusSoil();
+    public static final RegistryObject<Block> NEXUS_BRICK_STAIRS = registerNexusBrickStairs();
+    public static final RegistryObject<Block> NEXUS_BRICK_SLAB = registerNexusBrickSlab();
+    public static final RegistryObject<Block> NEXUS_BRICK_DOUBLE_SLAB = register("nexus_brick_double_slab", 3.0F, 100.0F, false, 0);
     public static final RegistryObject<Block> ETERNIUM_STONE = register("eternium_stone", 5.0F, 3000.0F, false, 0);
     public static final RegistryObject<Block> TUTRIDIUM_ORE = ore("tutridium_ore", 3.0F, 5.0F, 2, 3, 7);
     public static final RegistryObject<Block> TITANIUM_ORE = ore("titanium_ore", 4.0F, 100.0F, 2, 0, 0);
@@ -60,7 +65,7 @@ public final class ModBlocks
     public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
             GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, SUPERCHARGED_ETERNIUM, ETERNIUM_STONE,
-            NEXUS_BRICKS, NEXUS_SOIL,
+            NEXUS_BRICKS, NEXUS_SOIL, NEXUS_BRICK_STAIRS, NEXUS_BRICK_SLAB,
             TUTRIDIUM_ORE, TITANIUM_ORE, DWARF_STAR_ORE, OLIVINE_ORE, ETERNIUM_ORE, TUTRITE_ORE,
             LUNAR_IRON_ORE, LUNAR_TITANIUM_ORE, LUNAR_OLIVINE_ORE, VIBRANIUM_ORE, LUNAR_ROCK, COBBLED_LUNAR_ROCK);
 
@@ -121,6 +126,25 @@ public final class ModBlocks
                 new NexusSoilBlock(BlockBehaviour.Properties.of().mapColor(MapColor.DIRT)
                         .strength(0.9F).sound(SoundType.GRAVEL).requiresCorrectToolForDrops()));
         ITEMS.register("nexus_soil", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerNexusBrickStairs()
+    {
+        RegistryObject<Block> block = REGISTRY.register("nexus_brick_stairs", () ->
+                new StairBlock(() -> NEXUS_BRICKS.get().defaultBlockState(),
+                        BlockBehaviour.Properties.of().mapColor(MapColor.STONE)
+                                .strength(3.0F, 100.0F).sound(SoundType.STONE)));
+        ITEMS.register("nexus_brick_stairs", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerNexusBrickSlab()
+    {
+        RegistryObject<Block> block = REGISTRY.register("nexus_brick_slab", () ->
+                new SlabBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)
+                        .strength(3.0F, 100.0F).sound(SoundType.STONE)));
+        ITEMS.register("nexus_brick_slab", () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 
