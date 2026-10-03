@@ -74,6 +74,7 @@ public class ModItems
     public static final RegistryObject<Item> GRAPPLING_GUN = REGISTRY.register("grappling_gun", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> CAPTAIN_AMERICAS_SHIELD = REGISTRY.register("captain_americas_shield", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> QUIVER = REGISTRY.register("quiver", () -> new ItemQuiver(new Item.Properties()));
+    public static final RegistryObject<Item> COMPOUND_BOW = REGISTRY.register("compound_bow", () -> new ItemCompoundBow(new Item.Properties()));
 
     private static <T extends Item> RegistryObject<T> register(String name, Supplier<T> supplier)
     {
@@ -166,6 +167,7 @@ public class ModItems
                     output.accept(GRAPPLING_GUN.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
+                    output.accept(COMPOUND_BOW.get());
                 })
                 .build();
     }

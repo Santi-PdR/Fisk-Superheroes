@@ -5,9 +5,13 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.inventory.ClickType;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.minecraft.world.InteractionHand;
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
 
 /** Five arrow slots followed by the player's inventory. */
 public class QuiverMenu extends AbstractContainerMenu
@@ -52,6 +56,17 @@ public class QuiverMenu extends AbstractContainerMenu
     {
         ItemStack stack = player.getItemInHand(hand);
         return !stack.isEmpty() && stack.getItem() instanceof ItemQuiver;
+    }
+
+    @Override
+    public void clicked(int slotId, int button, ClickType clickType, Player player)
+    {
+        if (slotId >= 0 && slotId < 5)
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(player);
+            if (data != null) data.getData().set(Vars.SELECTED_ARROW, (byte) slotId);
+        }
+        super.clicked(slotId, button, clickType, player);
     }
 
     @Override

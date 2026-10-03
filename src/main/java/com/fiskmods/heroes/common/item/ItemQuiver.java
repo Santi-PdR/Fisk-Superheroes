@@ -9,6 +9,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.network.NetworkHooks;
 
@@ -49,6 +54,37 @@ public class ItemQuiver extends Item
     public static boolean isArrow(ItemStack stack)
     {
         return !stack.isEmpty() && (stack.is(Items.ARROW) || stack.is(Items.TIPPED_ARROW) || stack.is(Items.SPECTRAL_ARROW));
+    }
+
+    public static ItemStack findQuiver(Player player)
+    {
+        Inventory inventory = player.getInventory();
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++)
+        {
+            ItemStack stack = inventory.getItem(slot);
+            if (!stack.isEmpty() && stack.getItem() instanceof ItemQuiver) return stack;
+        }
+        return ItemStack.EMPTY;
+    }
+
+    public static ItemStack getSelectedArrow(Player player)
+    {
+        ItemStack quiver = findQuiver(player);
+        if (quiver.isEmpty()) return ItemStack.EMPTY;
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        int selected = data != null ? Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5 : 0;
+        return createInventory(quiver).getStackInSlot(selected);
+    }
+
+    public static void consumeSelectedArrow(Player player)
+    {
+        ItemStack quiver = findQuiver(player);
+        if (quiver.isEmpty()) return;
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        int selected = data != null ? Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5 : 0;
+        createInventory(quiver).extractItem(selected, 1, false);
     }
 
     @Override
