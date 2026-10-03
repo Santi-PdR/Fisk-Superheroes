@@ -105,7 +105,10 @@ class ModifierWeakness extends Modifier
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction >= 0.0F)
         {
-            return profileFraction > 0.0F ? amount * entry.getFloat(entity, PowerProperty.FACTOR) : amount;
+            // The original weakness multiplier applies only to the matching share of a
+            // mixed DamageProfile; the rest of the hit keeps its normal damage.
+            float multiplier = entry.getFloat(entity, PowerProperty.FACTOR);
+            return amount * (1.0F + profileFraction * (multiplier - 1.0F));
         }
 
         if (target == group || group == null && target != null)
