@@ -4,6 +4,9 @@ on:
   push:
     paths:
       - '.github/ci/decompile'
+permissions:
+  contents: write
+
 jobs:
   decompile:
     runs-on: ubuntu-latest
