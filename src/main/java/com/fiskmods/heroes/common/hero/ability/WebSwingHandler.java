@@ -11,12 +11,15 @@ import com.fiskmods.heroes.common.hero.power.PowerProperty;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
-/** Server-side block anchor and rope constraint for the pack's web-swing interaction. */
+/** Server-side block/entity anchors and rope constraint for the pack's web-swing interaction. */
 public final class WebSwingHandler
 {
     private static final String ANCHOR_TAG = "FiskHeroesWebSwingAnchor";
@@ -24,14 +27,19 @@ public final class WebSwingHandler
     private static final String X = "X";
     private static final String Y = "Y";
     private static final String Z = "Z";
+    private static final String TYPE = "Type";
     private static final String BLOCK = "Block";
+    private static final String ENTITY = "Entity";
+    private static final String OFFSET_X = "OffsetX";
+    private static final String OFFSET_Y = "OffsetY";
+    private static final String OFFSET_Z = "OffsetZ";
     private static final String LENGTH = "Length";
 
     private WebSwingHandler()
     {
     }
 
-    /** Starts a block grapple, or releases the current rope when clicked again. */
+    /** Starts a block/entity grapple, or releases the current rope when clicked again. */
     public static boolean interact(ServerPlayer player)
     {
         if (!player.getMainHandItem().isEmpty()) return false;
@@ -51,21 +59,38 @@ public final class WebSwingHandler
 
         float range = Math.max(1.0F, entry.getFloat(player, PowerProperty.RANGE));
         HitResult hit = player.pick(range, 0.0F, false);
-        if (!(hit instanceof BlockHitResult blockHit) || hit.getType() != HitResult.Type.BLOCK) return false;
-
-        BlockPos blockPos = blockHit.getBlockPos();
-        BlockState state = player.level().getBlockState(blockPos);
-        if (state.isAir() || state.getCollisionShape(player.level(), blockPos).isEmpty()) return false;
-
         Vec3 anchor = hit.getLocation();
-        Vec3 center = player.position().add(0.0D, player.getBbHeight() * 0.5D, 0.0D);
-        double ropeLength = Math.max(2.0D, center.distanceTo(anchor));
         var tag = new net.minecraft.nbt.CompoundTag();
         tag.putString(DIMENSION, player.level().dimension().location().toString());
+
+        if (hit instanceof BlockHitResult blockHit && hit.getType() == HitResult.Type.BLOCK)
+        {
+            BlockPos blockPos = blockHit.getBlockPos();
+            BlockState state = player.level().getBlockState(blockPos);
+            if (state.isAir() || state.getCollisionShape(player.level(), blockPos).isEmpty()) return false;
+            tag.putString(TYPE, "block");
+            tag.putLong(BLOCK, blockPos.asLong());
+        }
+        else if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target
+                && target != player && target.isAlive())
+        {
+            Vec3 offset = anchor.subtract(target.position());
+            tag.putString(TYPE, "entity");
+            tag.putUUID(ENTITY, target.getUUID());
+            tag.putDouble(OFFSET_X, offset.x);
+            tag.putDouble(OFFSET_Y, offset.y);
+            tag.putDouble(OFFSET_Z, offset.z);
+        }
+        else
+        {
+            return false;
+        }
+
+        Vec3 center = player.position().add(0.0D, player.getBbHeight() * 0.5D, 0.0D);
+        double ropeLength = Math.max(2.0D, center.distanceTo(anchor));
         tag.putDouble(X, anchor.x);
         tag.putDouble(Y, anchor.y);
         tag.putDouble(Z, anchor.z);
-        tag.putLong(BLOCK, blockPos.asLong());
         tag.putDouble(LENGTH, ropeLength);
         persistent.put(ANCHOR_TAG, tag);
 
@@ -95,15 +120,39 @@ public final class WebSwingHandler
         }
 
         var tag = persistent.getCompound(ANCHOR_TAG);
-        BlockPos blockPos = BlockPos.of(tag.getLong(BLOCK));
-        BlockState state = player.level().getBlockState(blockPos);
-        if (state.isAir() || state.getCollisionShape(player.level(), blockPos).isEmpty())
+        Vec3 anchor;
+        if (tag.getString(TYPE).equals("entity") && tag.hasUUID(ENTITY))
+        {
+            Entity target = player.serverLevel().getEntity(tag.getUUID(ENTITY));
+            if (!(target instanceof LivingEntity livingTarget) || !livingTarget.isAlive())
+            {
+                release(player, data);
+                return;
+            }
+            anchor = target.position().add(tag.getDouble(OFFSET_X), tag.getDouble(OFFSET_Y), tag.getDouble(OFFSET_Z));
+            tag.putDouble(X, anchor.x);
+            tag.putDouble(Y, anchor.y);
+            tag.putDouble(Z, anchor.z);
+            data.getData().set(Vars.WEB_ANCHOR_X, anchor.x);
+            data.getData().set(Vars.WEB_ANCHOR_Y, anchor.y);
+            data.getData().set(Vars.WEB_ANCHOR_Z, anchor.z);
+        }
+        else if (tag.getString(TYPE).equals("block"))
+        {
+            BlockPos blockPos = BlockPos.of(tag.getLong(BLOCK));
+            BlockState state = player.level().getBlockState(blockPos);
+            if (state.isAir() || state.getCollisionShape(player.level(), blockPos).isEmpty())
+            {
+                release(player, data);
+                return;
+            }
+            anchor = new Vec3(tag.getDouble(X), tag.getDouble(Y), tag.getDouble(Z));
+        }
+        else
         {
             release(player, data);
             return;
         }
-
-        Vec3 anchor = new Vec3(tag.getDouble(X), tag.getDouble(Y), tag.getDouble(Z));
         Vec3 center = player.position().add(0.0D, player.getBbHeight() * 0.5D, 0.0D);
         Vec3 fromAnchor = center.subtract(anchor);
         double distance = fromAnchor.length();

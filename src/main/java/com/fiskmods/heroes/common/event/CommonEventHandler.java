@@ -45,6 +45,19 @@ public class CommonEventHandler
         }
     }
 
+    /** Starts/releases a web tether when the active web-swing mode right-clicks an entity. */
+    @SubscribeEvent
+    public static void onEntityWebSwing(PlayerInteractEvent.EntityInteract event)
+    {
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || !player.getMainHandItem().isEmpty()) return;
+        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player))
+        {
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+            event.setCanceled(true);
+        }
+    }
+
     /** Recruits the cactus column being pointed at while the hero's AIM ability is held. */
     @SubscribeEvent
     public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
