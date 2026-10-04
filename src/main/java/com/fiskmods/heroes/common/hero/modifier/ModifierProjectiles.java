@@ -193,6 +193,55 @@ class ModifierEnergyProjection extends Modifier
     }
 }
 
+/** Sustained Canary scream: the original emits one expanding wave for every held tick. */
+class ModifierSonicWaves extends Modifier
+{
+    ModifierSonicWaves(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.SONIC_WAVES, true);
+        AbilityData.playSound(entity, entry, "SHOOT");
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.SONIC_WAVES, false);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!data.getData().get(Vars.SONIC_WAVES) || !(entity.level() instanceof ServerLevel level))
+        {
+            return;
+        }
+
+        JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+        float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
+        if (damage <= 0.0F) damage = 7.0F;
+
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(entity,
+                damageProfile, damage, entry.getFloat(entity, PowerProperty.KNOCKBACK),
+                entry.getBoolean(entity, PowerProperty.CAN_BREAK_GLASS));
+        level.addFreshEntity(wave);
+
+        // The original scream lifts a falling wearer when aimed steeply down; creative flight is
+        // exempt from this movement assist.
+        if (!(entity instanceof Player player) || !player.getAbilities().instabuild)
+        {
+            float lift = Math.max(0.0F, entity.getXRot() - 45.0F) / 45.0F;
+            entity.fallDistance = Math.max(0.0F, entity.fallDistance - 0.4F * lift);
+            entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, 0.05D * lift, 0.0D));
+        }
+    }
+}
+
 /** Charges the wearer's next melee strike with the power's configured energy damage. */
 class ModifierEnergyManipulation extends Modifier
 {

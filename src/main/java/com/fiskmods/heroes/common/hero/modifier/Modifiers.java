@@ -263,9 +263,9 @@ public final class Modifiers
                 .addProperty(PowerProperty.AMOUNT, 4.0F)
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 5));
-        SONIC_WAVES = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "sonic_waves"))
+        SONIC_WAVES = registry.register(new ModifierSonicWaves(new ResourceLocation(FiskHeroes.MODID, "sonic_waves"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 40)).setSoundState(Vars.SONIC_WAVES);
+                .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.SONIC_WAVES);
         CANARY_CRY = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "canary_cry"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 60));
