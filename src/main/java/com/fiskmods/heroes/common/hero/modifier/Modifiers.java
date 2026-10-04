@@ -277,7 +277,9 @@ public final class Modifiers
                 .addProperty(PowerProperty.RADIUS, 8.0F)
                 .addProperty(PowerProperty.KNOCKBACK, 0.8F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 100));
-        SHIELD_THROWING = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "shield_throwing"))
+        // Shield throwing is triggered by the shield item while this key is held; treating it as
+        // an energy projection fires an unrelated hitscan beam whenever the key is pressed.
+        SHIELD_THROWING = registry.register(new Modifier(new ResourceLocation(FiskHeroes.MODID, "shield_throwing"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));
         SPEED_DISINTEGRATION = registry.register(new ModifierSpeedDisintegration(new ResourceLocation(FiskHeroes.MODID, "speed_disintegration")));
