@@ -106,35 +106,22 @@ public final class AbilityHandler
     /** Runs the default key-down behaviour and returns the started modifier, if any. */
     private static ModifierEntry activate(ServerPlayer player, SHPlayerData data, Hero hero, String key)
     {
-        ModifierEntry entry = findModifier(hero, key);
-
-        // Señor Cactus's pack key invokes the separate spike_burst modifier.
-        if (entry == null && "SHOOT_SPIKES".equals(key))
+        String modifierId = switch (key)
         {
-            entry = findModifier(hero, "spike_burst");
-        }
+            case "SHOOT_SPIKES" -> "spike_burst";
+            case "TELEPORT" -> "teleportation";
+            case "MINIATURIZE_SUIT", "SIZE_MANIPULATION" -> "size_manipulation";
+            default -> key.startsWith("TENTACLE_") ? "tentacles" : null;
+        };
+        boolean miniaturizeOnly = "MINIATURIZE_SUIT".equals(key);
+        ModifierEntry entry = findEnabledModifier(hero, key, modifierId, miniaturizeOnly, player, data);
 
-        // The four Doctor Octopus actions are driven by one power entry. Their key names do not
-        // match the modifier id, so route them through the modifier's action dispatcher.
-        if (entry == null && key.startsWith("TENTACLE_"))
-        {
-            entry = findModifier(hero, "tentacles");
-        }
-
-        if (entry == null)
-        {
-            return null;
-        }
-
-        if (!entry.isEnabled() || !entry.isModifierEnabled(player, data))
-        {
-            return null;
-        }
+        if (entry == null) return null;
 
         int cooldown = entry.getInt(player, PowerProperty.COOLDOWN_TIME);
         if (cooldown > 0)
         {
-            String cooldownKey = entry.getModifier().getId() + ":" + key;
+            String cooldownKey = entry.getCard() + ":" + key;
             long now = player.level().getGameTime();
             Map<String, Long> playerCooldowns = ABILITY_COOLDOWNS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
             if (playerCooldowns.getOrDefault(cooldownKey, 0L) > now)
@@ -152,6 +139,25 @@ public final class AbilityHandler
 
         entry.getModifier().onActivate(player, entry, data);
         return entry;
+    }
+
+    /** Resolves a pack key against enabled modifier cards, including powers with multiple cards. */
+    private static ModifierEntry findEnabledModifier(Hero hero, String key, String modifierId,
+            boolean miniaturizeOnly, ServerPlayer player, SHPlayerData data)
+    {
+        for (ModifierEntry entry : hero.getPowerContainer().getEntries())
+        {
+            String path = entry.getModifier().getId().getPath();
+            String configuredKey = entry.get(PowerProperty.KEY);
+            boolean matches = key.equals(configuredKey)
+                    || key.equalsIgnoreCase(path)
+                    || modifierId != null && modifierId.equals(path);
+            if (!matches) continue;
+
+            if (miniaturizeOnly && entry.getCard() != null && !entry.getCard().endsWith("|small")) continue;
+            if (entry.isEnabled() && entry.isModifierEnabled(player, data)) return entry;
+        }
+        return null;
     }
 
     /** Delivers key-up to the exact entries that accepted the corresponding key-down. */
