@@ -38,6 +38,31 @@ public class ItemHeroArmor extends ArmorItem
         this.slot = slot;
     }
 
+    /**
+     * Suit textures use the player-skin UV layout and are drawn by HeroSuitLayer. The vanilla
+     * armor layer also sees this ArmorItem, but maps the same texture onto armor-model UVs, which
+     * creates a second, visibly scrambled pass over the correctly rendered suit.
+     */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer)
+    {
+        consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions()
+        {
+            @Override
+            public net.minecraft.client.model.HumanoidModel<?> getHumanoidArmorModel(
+                    net.minecraft.world.entity.LivingEntity entity,
+                    ItemStack stack,
+                    EquipmentSlot equipmentSlot,
+                    net.minecraft.client.model.HumanoidModel<?> original)
+            {
+                // Forge resets armor-model visibility before asking for this model, so hiding the
+                // supplied instance here is local to this render pass and does not affect other armor.
+                original.setAllVisible(false);
+                return original;
+            }
+        });
+    }
+
     /** Armour slot index: 0 = helmet, 1 = chestplate, 2 = leggings, 3 = boots. */
     public int getSlot()
     {
