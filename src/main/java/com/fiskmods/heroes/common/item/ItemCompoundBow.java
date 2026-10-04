@@ -13,6 +13,7 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
@@ -33,7 +34,7 @@ public class ItemCompoundBow extends BowItem
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack bow = player.getItemInHand(hand);
-        if (selectedArrow(player).isEmpty())
+        if (selectedArrow(player).isEmpty() && !player.getAbilities().instabuild)
         {
             return InteractionResultHolder.fail(bow);
         }
@@ -48,6 +49,8 @@ public class ItemCompoundBow extends BowItem
         if (!(entity instanceof Player player) || level.isClientSide) return;
 
         ItemStack arrowStack = selectedArrow(player);
+        boolean creativeAmmo = arrowStack.isEmpty() && player.getAbilities().instabuild;
+        if (creativeAmmo) arrowStack = Items.ARROW.getDefaultInstance();
         if (arrowStack.isEmpty() || !(arrowStack.getItem() instanceof ArrowItem arrowItem)) return;
         boolean quiverAmmo = !ItemQuiver.getSelectedArrow(player).isEmpty();
 
