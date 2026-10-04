@@ -137,6 +137,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
         }
 
+        QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, playerModel, model, 1);
+
         poseStack.popPose();
     }
 
