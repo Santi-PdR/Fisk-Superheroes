@@ -76,10 +76,12 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         poseStack.pushPose();
 
-        if (scale != 1.0F)
-        {
-            poseStack.scale(scale, scale, scale);
-        }
+        // The original ModelBipedMultiLayer expanded suit cubes by 0.05 model units so the
+        // costume sat just above the vanilla player skin. The 1.20 layer reuses PlayerModel, so
+        // apply the equivalent small shell expansion here to prevent coplanar suit/skin faces
+        // from flickering or showing through at grazing angles.
+        float renderScale = scale * 1.005F;
+        poseStack.scale(renderScale, renderScale, renderScale);
 
         for (int slot = 0; slot < 4; ++slot)
         {
