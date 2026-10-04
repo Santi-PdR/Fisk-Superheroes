@@ -26,7 +26,8 @@ public class SHKeyBinds
 
     static
     {
-        int[] defaults = { GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_B, GLFW.GLFW_KEY_G, GLFW.GLFW_KEY_H };
+        // Preserve the original 1.7.10 defaults: C, V, B, F and G.
+        int[] defaults = { GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_B, GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_G };
 
         for (int i = 0; i < ABILITY_COUNT; ++i)
         {
