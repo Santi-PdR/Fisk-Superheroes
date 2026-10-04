@@ -94,6 +94,24 @@ public class JSEntity
         return new JSVector(entity.getDeltaMovement());
     }
 
+    /** Original script API: vertical velocity in blocks per tick. */
+    public double motionY()
+    {
+        return entity.getDeltaMovement().y;
+    }
+
+    /** Original script API: world-space position vector. */
+    public JSVector pos()
+    {
+        return new JSVector(entity.position());
+    }
+
+    /** Original script API used by landing checks and world-aware hero scripts. */
+    public JSWorld world()
+    {
+        return new JSWorld(entity.level());
+    }
+
     public float getInterpolatedData(String key)
     {
         DataVar<?> var = com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get(key);
