@@ -201,6 +201,9 @@ public final class AbilityHandler
         if (data != null)
         {
             data.getData().set(Vars.AIMING, false);
+            data.getData().set(Vars.TELEKINESIS, false);
+            data.getData().set(Vars.GRAB_ID, -1);
+            data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
         }
         if (byIndex == null || data == null) return;
 
@@ -221,6 +224,9 @@ public final class AbilityHandler
         if (data != null)
         {
             data.getData().set(Vars.AIMING, false);
+            data.getData().set(Vars.TELEKINESIS, false);
+            data.getData().set(Vars.GRAB_ID, -1);
+            data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
         }
     }
 
@@ -236,6 +242,21 @@ public final class AbilityHandler
             {
                 data.getData().set(Vars.AIMING,
                         iteration != null && shouldAim(entity, iteration.getHero(), pressed));
+            }
+        }
+
+        if (iteration != null && iteration.getHero().getKeyBindsMatching(index).contains("TELEKINESIS"))
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(entity);
+            if (data != null)
+            {
+                boolean active = pressed && iteration.getHero().isKeyBindEnabled(entity, "TELEKINESIS");
+                data.getData().set(Vars.TELEKINESIS, active);
+                if (!active)
+                {
+                    data.getData().set(Vars.GRAB_ID, -1);
+                    data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
+                }
             }
         }
 

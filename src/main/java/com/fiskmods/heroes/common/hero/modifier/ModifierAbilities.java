@@ -19,10 +19,22 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.decoration.HangingEntity;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -439,9 +451,12 @@ class ModifierShadowform extends Modifier
     }
 }
 
-/** Telekinesis: hurls nearby entities away from the wearer. */
+/** Hold-to-grab telekinesis from the original pack: aim at a permitted target, pull it close, release it or crush it. */
 class ModifierTelekinesis extends Modifier
 {
+    private static final String CHICKEN_CRUSH_TICK = "FiskHeroesTelekinesisCrushTick";
+    private static final String GRABBED_BY_TAG = "FiskHeroesGrabbedBy";
+
     ModifierTelekinesis(ResourceLocation id)
     {
         super(id);
@@ -450,17 +465,205 @@ class ModifierTelekinesis extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float range = entry.getFloat(entity, PowerProperty.RANGE);
-
-        for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(range), e -> e != entity))
+        boolean state = entry.getBoolean(entity, PowerProperty.IS_TOGGLE)
+                ? !entry.isToggled(entity) : true;
+        entry.setToggled(entity, state);
+        data.getData().set(Vars.TELEKINESIS, state);
+        if (state)
         {
-            Vec3 delta = target.position().subtract(entity.position()).normalize().scale(1.5D);
-            target.setDeltaMovement(delta.x, Math.max(0.4D, delta.y), delta.z);
-            target.hurtMarked = true;
-            target.hurt(entity.damageSources().magic(), 2.0F);
+            AbilityData.playSound(entity, entry, "GRAB");
+        }
+        else
+        {
+            release(entity, data);
+            AbilityData.playSound(entity, entry, "RELEASE");
+        }
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
+        {
+            entry.setToggled(entity, false);
+            data.getData().set(Vars.TELEKINESIS, false);
+            release(entity, data);
+            AbilityData.playSound(entity, entry, "RELEASE");
+        }
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!data.getData().get(Vars.TELEKINESIS) || entity.level().isClientSide)
+        {
+            return;
         }
 
-        entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.EVOKER_CAST_SPELL, SoundSource.PLAYERS, 1.0F, 0.8F);
+        Level level = entity.level();
+        float range = Math.max(0.1F, entry.getFloat(entity, PowerProperty.RANGE));
+        int grabId = data.getData().get(Vars.GRAB_ID);
+        Entity grabbed = grabId >= 0 ? level.getEntity(grabId) : null;
+
+        if (grabbed != null && (!grabbed.isAlive() || !canGrab(entry, grabbed)
+                || grabbed.getPersistentData().getInt(GRABBED_BY_TAG) != entity.getId()))
+        {
+            releaseTarget(entity, grabbed);
+            grabbed = null;
+        }
+
+        if (grabbed == null)
+        {
+            grabbed = findTarget(entity, entry, range);
+            if (grabbed == null)
+            {
+                data.getData().set(Vars.GRAB_ID, -1);
+                data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
+                return;
+            }
+
+            double distance = entity.getEyePosition().distanceTo(grabbed.position());
+            data.getData().set(Vars.GRAB_DISTANCE,
+                    net.minecraft.util.Mth.clamp((float) Math.max(0.0D, distance - 2.0D) / Math.max(1.0F, range - 2.0F), 0.0F, 1.0F));
+            data.getData().set(Vars.GRAB_ID, grabbed.getId());
+            grabbed.getPersistentData().putInt(GRABBED_BY_TAG, entity.getId());
+        }
+
+        pullTowardPlayer(entity, grabbed, range, data.getData().get(Vars.GRAB_DISTANCE));
+        if (entity.isShiftKeyDown())
+        {
+            crushTarget(entity, grabbed, entry);
+        }
+    }
+
+    private static Entity findTarget(LivingEntity entity, ModifierEntry entry, float range)
+    {
+        Vec3 start = entity.getEyePosition();
+        Vec3 look = entity.getViewVector(1.0F);
+        Vec3 end = start.add(look.scale(range));
+        BlockHitResult block = entity.level().clip(new ClipContext(start, end,
+                ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity));
+        double maxDistance = block.getType() == HitResult.Type.MISS
+                ? range : start.distanceTo(block.getLocation());
+        AABB search = entity.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0D);
+        Entity best = null;
+        double nearest = maxDistance;
+
+        for (Entity candidate : entity.level().getEntities(entity, search,
+                target -> target.isAlive() && canGrab(entry, target)
+                        && (!target.getPersistentData().contains(GRABBED_BY_TAG)
+                                || target.getPersistentData().getInt(GRABBED_BY_TAG) == entity.getId())))
+        {
+            var hit = candidate.getBoundingBox().inflate(0.2D).clip(start, end);
+            if (hit.isEmpty()) continue;
+            double distance = start.distanceTo(hit.get());
+            if (distance < nearest)
+            {
+                nearest = distance;
+                best = candidate;
+            }
+        }
+
+        return best;
+    }
+
+    private static boolean canGrab(ModifierEntry entry, Entity target)
+    {
+        if (target instanceof HangingEntity)
+        {
+            return false;
+        }
+
+        JsonObject permissions = AbilityData.object(entry.get(PowerProperty.CAN_GRAB));
+        if (target instanceof LivingEntity)
+        {
+            return flag(permissions, "mobs", true);
+        }
+        if (target instanceof ItemEntity)
+        {
+            return flag(permissions, "items", true);
+        }
+        if (target instanceof Projectile)
+        {
+            return flag(permissions, "projectiles", true);
+        }
+        return flag(permissions, "inanimates", true);
+    }
+
+    private static boolean flag(JsonObject json, String name, boolean fallback)
+    {
+        return json == null || !json.has(name) ? fallback : json.get(name).getAsBoolean();
+    }
+
+    private static void pullTowardPlayer(LivingEntity entity, Entity grabbed, float range, float normalizedDistance)
+    {
+        double distance = 2.0D + Math.max(0.0D, range - 2.0D) * normalizedDistance;
+        Vec3 center = grabbed.position().add(0.0D, grabbed.getBbHeight() * 0.5D, 0.0D);
+        Vec3 desired = entity.getEyePosition().add(entity.getViewVector(1.0F).scale(distance));
+        Vec3 velocity = grabbed.getDeltaMovement().scale(0.8D).add(desired.subtract(center).scale(0.2D));
+        grabbed.setDeltaMovement(velocity);
+        grabbed.hurtMarked = true;
+        grabbed.fallDistance = 0.0F;
+    }
+
+    private static void crushTarget(LivingEntity entity, Entity target, ModifierEntry entry)
+    {
+        JsonObject permissions = AbilityData.object(entry.get(PowerProperty.TELEKINESIS));
+        if (target instanceof Projectile && flag(permissions, "crushThrowables", true))
+        {
+            target.discard();
+        }
+        else if (target instanceof Creeper creeper && flag(permissions, "explodeCreepers", true))
+        {
+            creeper.ignite();
+        }
+        else if (target instanceof Chicken chicken && flag(permissions, "squeezeChickens", true))
+        {
+            long next = chicken.getPersistentData().getLong(CHICKEN_CRUSH_TICK);
+            if (entity.level().getGameTime() >= next)
+            {
+                chicken.getPersistentData().putLong(CHICKEN_CRUSH_TICK, entity.level().getGameTime() + 20L);
+                chicken.hurt(entity.damageSources().inWall(), 1.0F);
+            }
+        }
+        else if (target instanceof ItemEntity item && flag(permissions, "crushMelons", true)
+                && item.getItem().is(Items.MELON))
+        {
+            int slices = item.getItem().getCount() * 9;
+            while (slices > 0)
+            {
+                int count = Math.min(slices, Items.MELON_SLICE.getMaxStackSize());
+                entity.level().addFreshEntity(new ItemEntity(entity.level(), item.getX(), item.getY(), item.getZ(),
+                        new ItemStack(Items.MELON_SLICE, count)));
+                slices -= count;
+            }
+            target.discard();
+        }
+        else if (!(target instanceof LivingEntity) && !(target instanceof ItemEntity)
+                && flag(permissions, "destroyInanimates", true))
+        {
+            target.hurt(entity.damageSources().inWall(), 1.0F);
+        }
+    }
+
+    private static void release(LivingEntity entity, SHPlayerData data)
+    {
+        int id = data.getData().get(Vars.GRAB_ID);
+        Entity grabbed = id >= 0 ? entity.level().getEntity(id) : null;
+        if (grabbed != null)
+        {
+            releaseTarget(entity, grabbed);
+        }
+        data.getData().set(Vars.GRAB_ID, -1);
+        data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
+    }
+
+    private static void releaseTarget(LivingEntity entity, Entity grabbed)
+    {
+        if (grabbed.getPersistentData().getInt(GRABBED_BY_TAG) == entity.getId())
+        {
+            grabbed.getPersistentData().remove(GRABBED_BY_TAG);
+        }
     }
 }
 

@@ -227,7 +227,8 @@ public final class Modifiers
         SHADOWFORM = registry.register(new ModifierShadowform(new ResourceLocation(FiskHeroes.MODID, "shadowform"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SHADOWFORM);
         TELEKINESIS = registry.register(new ModifierTelekinesis(new ResourceLocation(FiskHeroes.MODID, "telekinesis"))
-                .addProperty(PowerProperty.RANGE, 16.0F)).setSoundState(Vars.TELEKINESIS);
+                .addProperty(PowerProperty.RANGE, 16.0F)
+                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.TELEKINESIS);
         GRAVITY_MANIPULATION = registry.register(new ModifierGravityManipulation(new ResourceLocation(FiskHeroes.MODID, "gravity_manipulation"))).setSoundState(Vars.GRAVITY_MANIP);
         FROST_WALKING = registry.register(new ModifierFrostWalking(new ResourceLocation(FiskHeroes.MODID, "frost_walking")));
         FLAME_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "flame_blast"))

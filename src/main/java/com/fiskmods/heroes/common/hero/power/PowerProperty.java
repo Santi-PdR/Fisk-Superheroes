@@ -76,6 +76,7 @@ public class PowerProperty<T>
     public static final PowerProperty<JsonElement> DAMAGE_BONUS = create("damageBonus", null);
     public static final PowerProperty<JsonElement> DAMAGE_PROFILE = create("damageProfile", null);
     public static final PowerProperty<JsonElement> SOUND_EVENTS = create("soundEvents", null);
+    public static final PowerProperty<JsonElement> CAN_GRAB = create("canGrab", null);
 
     private final String name;
     private final T defaultValue;
