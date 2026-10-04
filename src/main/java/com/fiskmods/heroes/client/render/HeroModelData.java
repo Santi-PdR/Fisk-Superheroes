@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.client.texture.TextureResolver;
+import com.fiskmods.heroes.common.hero.HeroIteration;
+import com.fiskmods.heroes.common.hero.ItemHeroArmor;
 import com.fiskmods.heroes.pack.ScriptFunction;
 import com.fiskmods.heroes.pack.js.JSExpressions;
 import com.fiskmods.heroes.pack.js.JSEntity;
@@ -20,6 +22,9 @@ import com.google.gson.JsonObject;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * A hero's suit model, loaded from {@code assets/<domain>/models/heroes/<hero>.json}.
@@ -432,27 +437,40 @@ public class HeroModelData
         {
             String key = e.getKey();
 
-            if (!key.startsWith("vars:"))
+            if (key.startsWith("vars:"))
             {
-                continue;
-            }
-
-            if (evaluate(key.substring("vars:".length()), entity))
-            {
-                String value = resolve(e.getValue(), entity);
-
-                if (value != null)
+                if (evaluate(key.substring("vars:".length()), entity))
                 {
-                    return value;
+                    String value = resolve(e.getValue(), entity);
+
+                    if (value != null)
+                    {
+                        return value;
+                    }
+                }
+                else if (e.getValue().isJsonObject() && e.getValue().getAsJsonObject().has("false"))
+                {
+                    String value = resolve(e.getValue().getAsJsonObject().get("false"), entity);
+
+                    if (value != null)
+                    {
+                        return value;
+                    }
                 }
             }
-            else if (e.getValue().isJsonObject() && e.getValue().getAsJsonObject().has("false"))
+            else if (e.getValue().isJsonObject())
             {
-                String value = resolve(e.getValue().getAsJsonObject().get("false"), entity);
+                String selected = selectorValue(key, entity);
+                JsonElement branch = selected != null ? e.getValue().getAsJsonObject().get(selected) : null;
 
-                if (value != null)
+                if (branch != null)
                 {
-                    return value;
+                    String value = resolve(branch, entity);
+
+                    if (value != null)
+                    {
+                        return value;
+                    }
                 }
             }
         }
@@ -476,6 +494,33 @@ public class HeroModelData
         }
 
         return null;
+    }
+
+    /** Resolves the data-backed selectors used by the original texture trees. */
+    @Nullable
+    private static String selectorValue(String selector, Entity entity)
+    {
+        if (!(entity instanceof LivingEntity living))
+        {
+            return null;
+        }
+
+        return switch (selector)
+        {
+            case "heldItem" -> net.minecraftforge.registries.ForgeRegistries.ITEMS
+                    .getKey(living.getMainHandItem().getItem()).toString();
+            case "wornHelmet" -> suitType(living.getItemBySlot(EquipmentSlot.HEAD));
+            case "wornChestplate" -> suitType(living.getItemBySlot(EquipmentSlot.CHEST));
+            case "wornLeggings" -> suitType(living.getItemBySlot(EquipmentSlot.LEGS));
+            case "wornBoots" -> suitType(living.getItemBySlot(EquipmentSlot.FEET));
+            default -> null;
+        };
+    }
+
+    private static String suitType(ItemStack stack)
+    {
+        HeroIteration iteration = ItemHeroArmor.getHero(stack);
+        return iteration != null ? iteration.getFullName() : "null";
     }
 
     /** Evaluates a {@code vars:NAME} condition: a model variable, a built-in, or true. */
