@@ -2,6 +2,7 @@ package com.fiskmods.heroes.common.entity;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
+import com.fiskmods.heroes.common.spell.EarthCrackEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.registries.DeferredRegister;
@@ -18,6 +19,10 @@ public final class ModEntities
     public static final RegistryObject<EntityType<CactusMinionEntity>> CACTUS_MINION = REGISTRY.register("cactus_minion",
             () -> EntityType.Builder.<CactusMinionEntity>of(CactusMinionEntity::new, MobCategory.CREATURE)
                     .sized(1.0F, 1.0F).clientTrackingRange(80).updateInterval(1).build("fiskheroes:cactus_minion"));
+    public static final RegistryObject<EntityType<EarthCrackEntity>> EARTH_CRACK = REGISTRY.register("earth_crack",
+            () -> EntityType.Builder.<EarthCrackEntity>of(EarthCrackEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(64).updateInterval(1).fireImmune()
+                    .build("fiskheroes:earth_crack"));
 
     @net.minecraftforge.eventbus.api.SubscribeEvent
     public static void registerAttributes(net.minecraftforge.event.entity.EntityAttributeCreationEvent event)

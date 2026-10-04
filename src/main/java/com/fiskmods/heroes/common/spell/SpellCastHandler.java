@@ -15,6 +15,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -50,6 +51,8 @@ public final class SpellCastHandler
         {
             case "blindness" -> castBlindness(player, spell);
             case "atmospheric" -> castAtmospheric(player, spell);
+            case "earth_swallowing" -> castEarthSwallowing(player, spell);
+            case "whip" -> castWhip(player, spell);
             default ->
             {
                 FiskHeroes.LOGGER.warn("Spell {} is registered but has no 1.20.1 cast implementation yet", spell.id());
@@ -73,7 +76,7 @@ public final class SpellCastHandler
         int duration = Math.max(1, (int) Math.ceil(number(properties, "duration", 400.0D)));
         HitResult hit = caster.pick(range, 0.0F, false);
         if (!(hit instanceof EntityHitResult entityHit) || !(entityHit.getEntity() instanceof LivingEntity target)
-                || target == caster || caster.isAlliedTo(target)) return false;
+                || target == caster) return false;
 
         target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration));
         return true;
@@ -96,7 +99,8 @@ public final class SpellCastHandler
         }
 
         int affected = 0;
-        for (Entity entity : caster.level().getEntities(caster, bounds, candidate -> candidate.isAlive()))
+        for (Entity entity : caster.level().getEntities(caster, bounds,
+                candidate -> candidate != caster && candidate.isAlive()))
         {
             Vec3 targetEye = entity.getEyePosition();
             Vec3 originEye = caster.getEyePosition();
@@ -122,6 +126,74 @@ public final class SpellCastHandler
         }
 
         return affected > 0;
+    }
+
+    /** Ports the original block-ray target collection and delayed Earth Crack attack. */
+    private static boolean castEarthSwallowing(ServerPlayer caster, SpellDefinition spell)
+    {
+        JsonObject properties = spell.properties();
+        double range = number(properties, "range", 48.0D);
+        double radius = Math.max(0.0D, number(properties, "radius", 6.0D));
+        HitResult hit = caster.pick(range, 1.0F, false);
+        if (!(hit instanceof BlockHitResult blockHit)) return false;
+
+        net.minecraft.core.BlockPos impact = blockHit.getBlockPos();
+        AABB bounds = new AABB(impact).inflate(radius);
+        float damage = 14.0F;
+        if (properties.has("damageProfile") && properties.get("damageProfile").isJsonObject())
+        {
+            damage = (float) number(properties.getAsJsonObject("damageProfile"), "damage", damage);
+        }
+
+        int spawned = 0;
+        for (LivingEntity target : caster.level().getEntitiesOfClass(LivingEntity.class, bounds,
+                entity -> entity != caster && entity.isAlive() && !entity.isAlliedTo(caster)
+                        && !entity.isInvulnerable() && !hasEarthCrack(caster, entity)))
+        {
+            var crack = new com.fiskmods.heroes.common.spell.EarthCrackEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.EARTH_CRACK.get(), caster.level(), caster, target, damage);
+            caster.level().addFreshEntity(crack);
+            spawned++;
+        }
+        return spawned > 0;
+    }
+
+    private static boolean hasEarthCrack(ServerPlayer caster, LivingEntity target)
+    {
+        return !caster.level().getEntitiesOfClass(EarthCrackEntity.class, target.getBoundingBox().inflate(2.0D),
+                crack -> crack.getTargetId() == target.getId()).isEmpty();
+    }
+
+    /** Applies the whip's damage and tether pull when its flight path hits a living target. */
+    private static boolean castWhip(ServerPlayer caster, SpellDefinition spell)
+    {
+        HitResult hit = caster.pick(32.0D, 1.0F, false);
+        if (!(hit instanceof EntityHitResult entityHit) || !(entityHit.getEntity() instanceof LivingEntity target)
+                || target == caster || !target.isAlive()) return false;
+
+        JsonObject properties = spell.properties();
+        JsonObject primaryProfile = properties.has("damageProfile") && properties.get("damageProfile").isJsonObject()
+                ? properties.getAsJsonObject("damageProfile") : new JsonObject();
+        double damage = number(primaryProfile, "damage", 5.0D);
+        target.hurt(caster.damageSources().magic(), (float) Math.max(0.0D, damage));
+
+        if (properties.has("whipBurn") && properties.get("whipBurn").isJsonObject())
+        {
+            JsonObject burn = properties.getAsJsonObject("whipBurn");
+            JsonObject burnProfile = burn.has("damageProfile") && burn.get("damageProfile").isJsonObject()
+                    ? burn.getAsJsonObject("damageProfile") : new JsonObject();
+            double burnDamage = number(burnProfile, "damage", 0.0D);
+            if (burnDamage > 0.0D)
+            {
+                target.hurt(caster.damageSources().magic(), (float) burnDamage);
+                target.setSecondsOnFire(Math.max(1, (int) (number(burn, "frequency", 20.0D) / 20.0D)));
+            }
+        }
+
+        Vec3 pull = caster.position().subtract(target.position()).normalize();
+        target.setDeltaMovement(target.getDeltaMovement().add(pull.x * 0.8D, Math.max(0.1D, pull.y * 0.4D), pull.z * 0.8D));
+        target.hasImpulse = true;
+        return true;
     }
 
     private static double number(JsonObject object, String key, double fallback)

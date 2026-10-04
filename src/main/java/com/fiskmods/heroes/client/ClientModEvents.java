@@ -44,5 +44,6 @@ public final class ClientModEvents
     {
         event.registerEntityRenderer(ModEntities.TRICK_ARROW.get(), TrickArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.CACTUS_MINION.get(), CactusMinionRenderer::new);
+        event.registerEntityRenderer(ModEntities.EARTH_CRACK.get(), com.fiskmods.heroes.client.render.EarthCrackRenderer::new);
     }
 }
