@@ -70,7 +70,9 @@ public final class WebSwingHandler
         persistent.put(ANCHOR_TAG, tag);
 
         data.getData().set(Vars.WEB_RAPPEL, true);
-        data.getData().markDirty(Vars.WEB_RAPPEL);
+        data.getData().set(Vars.WEB_ANCHOR_X, anchor.x);
+        data.getData().set(Vars.WEB_ANCHOR_Y, anchor.y);
+        data.getData().set(Vars.WEB_ANCHOR_Z, anchor.z);
         Vec3 towardAnchor = anchor.subtract(center).normalize();
         player.setDeltaMovement(player.getDeltaMovement().add(towardAnchor.scale(0.28D)).add(0.0D, 0.12D, 0.0D));
         player.hasImpulse = true;
@@ -132,9 +134,10 @@ public final class WebSwingHandler
         if (data != null)
         {
             data.getData().set(Vars.WEB_RAPPEL, false);
-            data.getData().markDirty(Vars.WEB_RAPPEL);
+            data.getData().set(Vars.WEB_ANCHOR_X, 0.0D);
+            data.getData().set(Vars.WEB_ANCHOR_Y, 0.0D);
+            data.getData().set(Vars.WEB_ANCHOR_Z, 0.0D);
             data.getData().set(Vars.WEB_ROPE_ID, -1);
-            data.getData().markDirty(Vars.WEB_ROPE_ID);
         }
     }
 

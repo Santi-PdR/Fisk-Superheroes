@@ -208,6 +208,10 @@ public final class Vars
     public static final DataVar<Integer> WEB_ROPE_ID = register("web_rope_id", DataType.INT, -1, false);
     public static final DataVar<Boolean> WEB_SWINGING = register("web_swinging", DataType.BOOLEAN, false, false);
     public static final DataVar<Float> WEB_SWINGING_TIMER = register("web_swinging_timer", DataType.FLOAT, 0.0F, false);
+    // Port-internal render sync: world-space location of the active block web anchor.
+    public static final DataVar<Double> WEB_ANCHOR_X = register("web_anchor_x", DataType.DOUBLE, 0.0D, true);
+    public static final DataVar<Double> WEB_ANCHOR_Y = register("web_anchor_y", DataType.DOUBLE, 0.0D, true);
+    public static final DataVar<Double> WEB_ANCHOR_Z = register("web_anchor_z", DataType.DOUBLE, 0.0D, true);
     public static final DataVar<Float> WING_ANIMATION_TIMER = register("wing_animation_timer", DataType.FLOAT, 0.0F, false);
   /* --- Pack-declared dynamic variables (fiskheroes:dyn/*) --- */
     public static final DataVar<Float> STEELED = register("dyn/steeled", DataType.FLOAT, 0.0F, false);
