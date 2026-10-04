@@ -142,14 +142,13 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         }
         ItemStack core = player.getInventory().armor.get(3 - coreSlot);
         ItemStack[] selected = com.fiskmods.heroes.common.hero.ItemHeroArmor.getWeapons(core);
-        if (selected == null || selected.length == 0 || selected[0] == null || selected[0].isEmpty())
+        if (selected == null || selected.length == 0)
         {
             return;
         }
 
-        // In the 1.7 renderer this effect defaults to primary equipment slot zero. Its items array
-        // holds one or more placements of that same stack (for example, a pair of dual tonfas).
-        ItemStack stack = selected[0];
+        // In the 1.7 renderer each equipped_item placement defaults to equipment slot zero, while
+        // slotIndex selects another configured weapon (for example, Deathstroke's belt weapon).
         for (com.google.gson.JsonElement itemElement : effect.getAsJsonArray("items"))
         {
             if (!itemElement.isJsonObject())
@@ -157,6 +156,12 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 continue;
             }
             com.google.gson.JsonObject item = itemElement.getAsJsonObject();
+            int equipmentSlot = item.has("slotIndex") ? item.get("slotIndex").getAsInt() : 0;
+            if (equipmentSlot < 0 || equipmentSlot >= selected.length || selected[equipmentSlot] == null || selected[equipmentSlot].isEmpty())
+            {
+                continue;
+            }
+            ItemStack stack = selected[equipmentSlot];
             ModelPart anchor = anchor(playerModel, item.has("anchor") ? item.get("anchor").getAsString() : "body");
             if (anchor == null)
             {
