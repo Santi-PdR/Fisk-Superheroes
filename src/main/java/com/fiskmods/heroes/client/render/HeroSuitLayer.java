@@ -117,6 +117,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderOpeningMasks(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
@@ -441,6 +442,119 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                     1.0F, 1.0F, 1.0F, alpha);
             restoreParts(playerModel, hidden);
         }
+    }
+
+    /** Draws animated helmet/hair pieces using the original opening_mask transform curve. */
+    private void renderOpeningMasks(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            int slot, float suitOpacity)
+    {
+        for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
+        {
+            if (!entry.getKey().equals("fiskheroes:opening_mask")
+                    && !entry.getKey().startsWith("fiskheroes:opening_mask|")) continue;
+
+            com.google.gson.JsonObject effect = entry.getValue();
+            if (!appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) continue;
+
+            float progress = net.minecraft.util.Mth.clamp(
+                    model.evaluateRenderData(effect.get("data"), player, 0.0F), 0.0F, 1.0F);
+            if (progress <= 0.001F) continue;
+
+            String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "head";
+            ModelPart anchor = anchor(playerModel, anchorName);
+            if (anchor == null) continue;
+
+            double[] offset = vector(effect.has("translation") ? effect.get("translation") : effect.get("offset"));
+            double[] rotation = vector(effect.get("rotation"));
+            double angle = progress * Math.PI * 0.5D;
+            float sine = (float) Math.sin(angle);
+            float lift = (float) (1.0D - Math.cos(angle));
+            float scale = 1.0F + 0.002F * progress;
+
+            for (int pass = 0; pass < 2; ++pass)
+            {
+                String textureKey = textureForPass(effect.get("texture"), pass);
+                if (textureKey == null || textureKey.equals("null")) continue;
+                ResourceLocation texture = model.resolveCustomTexture(textureKey, player, slot);
+                if (texture == null) continue;
+
+                boolean[] previousVisibility = hidePartsFor(playerModel, model, slot);
+                try
+                {
+                    VertexConsumer consumer = buffer.getBuffer(pass == 0
+                            ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture));
+                    int light = pass == 0 ? packedLight : net.minecraft.client.renderer.LightTexture.FULL_BRIGHT;
+                    poseStack.pushPose();
+                    try
+                    {
+                        // Apply the anchor's original pivot and animation once. Then render its
+                        // cubes at the origin, matching the original postRender/render sequence.
+                        anchor.translateAndRotate(poseStack);
+                        float x = anchor.x, y = anchor.y, z = anchor.z;
+                        float xRot = anchor.xRot, yRot = anchor.yRot, zRot = anchor.zRot;
+                        try
+                        {
+                            anchor.x = anchor.y = anchor.z = 0.0F;
+                            anchor.xRot = anchor.yRot = anchor.zRot = 0.0F;
+                            poseStack.translate(sine * offset[0] / 16.0D, lift * offset[1] / 16.0D,
+                                    sine * offset[2] / 16.0D);
+                            poseStack.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(progress * (float) rotation[2]));
+                            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(progress * (float) rotation[1]));
+                            poseStack.mulPose(com.mojang.math.Axis.XP.rotationDegrees(progress * (float) rotation[0]));
+                            poseStack.scale(scale, scale, scale);
+                            anchor.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY,
+                                    1.0F, 1.0F, 1.0F, suitOpacity);
+                            if (anchor == playerModel.head)
+                            {
+                                renderOpeningMaskHat(poseStack, consumer, light, playerModel.hat, suitOpacity);
+                            }
+                        }
+                        finally
+                        {
+                            anchor.x = x; anchor.y = y; anchor.z = z;
+                            anchor.xRot = xRot; anchor.yRot = yRot; anchor.zRot = zRot;
+                        }
+                    }
+                    finally
+                    {
+                        poseStack.popPose();
+                    }
+                }
+                finally
+                {
+                    restoreParts(playerModel, previousVisibility);
+                }
+            }
+        }
+    }
+
+    private static void renderOpeningMaskHat(PoseStack poseStack, VertexConsumer consumer, int light,
+            ModelPart hat, float opacity)
+    {
+        float x = hat.x, y = hat.y, z = hat.z;
+        float xRot = hat.xRot, yRot = hat.yRot, zRot = hat.zRot;
+        try
+        {
+            hat.x = hat.y = hat.z = 0.0F;
+            hat.xRot = hat.yRot = hat.zRot = 0.0F;
+            hat.render(poseStack, consumer, light, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, opacity);
+        }
+        finally
+        {
+            hat.x = x; hat.y = y; hat.z = z;
+            hat.xRot = xRot; hat.yRot = yRot; hat.zRot = zRot;
+        }
+    }
+
+    private static double[] vector(com.google.gson.JsonElement value)
+    {
+        if (value == null || !value.isJsonArray() || value.getAsJsonArray().size() < 3)
+        {
+            return new double[] {0.0D, 0.0D, 0.0D};
+        }
+        com.google.gson.JsonArray array = value.getAsJsonArray();
+        return new double[] {array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble()};
     }
 
     /** Draws the model's full-bright color pass while a glow effect is active. */
