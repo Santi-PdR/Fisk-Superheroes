@@ -53,6 +53,8 @@ public final class SpellCastHandler
             case "atmospheric" -> castAtmospheric(player, spell);
             case "earth_swallowing" -> castEarthSwallowing(player, spell);
             case "whip" -> castWhip(player, spell);
+            case "duplication" -> castDuplication(player, spell);
+            case "drones" -> castDrones(player, spell);
             default ->
             {
                 FiskHeroes.LOGGER.warn("Spell {} is registered but has no 1.20.1 cast implementation yet", spell.id());
@@ -194,6 +196,64 @@ public final class SpellCastHandler
         target.setDeltaMovement(target.getDeltaMovement().add(pull.x * 0.8D, Math.max(0.1D, pull.y * 0.4D), pull.z * 0.8D));
         target.hasImpulse = true;
         return true;
+    }
+
+    /** Spawns the original number of owner-tracked decoys around the targeted living entity. */
+    private static boolean castDuplication(ServerPlayer caster, SpellDefinition spell)
+    {
+        HitResult hit = caster.pick(32.0D, 1.0F, false);
+        if (!(hit instanceof EntityHitResult entityHit) || !(entityHit.getEntity() instanceof LivingEntity target)
+                || target == caster || !target.isAlive()) return false;
+
+        for (SpellDuplicateEntity existing : caster.level().getEntitiesOfClass(SpellDuplicateEntity.class,
+                caster.getBoundingBox().inflate(128.0D), clone -> clone.getOwner() == caster))
+        {
+            existing.discard();
+        }
+
+        int configured = Math.max(1, (int) Math.ceil(number(spell.properties(), "quantity", 5.0D)));
+        int totalPositions = configured + 1;
+        int spawned = 0;
+        for (int i = 1; i < totalPositions; ++i)
+        {
+            SpellDuplicateEntity duplicate = new SpellDuplicateEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.SPELL_DUPLICATE.get(), caster.level(), caster,
+                    target, 360.0F / totalPositions * i);
+            if (caster.level().addFreshEntity(duplicate)) spawned++;
+        }
+        return spawned > 0;
+    }
+
+    /** Summons the configured number of owner-bound illusion drones around a targeted entity. */
+    private static boolean castDrones(ServerPlayer caster, SpellDefinition spell)
+    {
+        JsonObject properties = spell.properties();
+        double range = number(properties, "range", 24.0D);
+        HitResult hit = caster.pick(range, 1.0F, false);
+        if (!(hit instanceof EntityHitResult entityHit) || !(entityHit.getEntity() instanceof LivingEntity target)
+                || target == caster || !target.isAlive()) return false;
+
+        int quantity = Math.max(1, Math.min(8, (int) Math.ceil(number(properties, "quantity", 2.0D))));
+        double centerDistance = Math.max(0.5D, number(properties, "centerDist", 5.0D));
+        JsonObject profile = properties.has("damageProfile") && properties.get("damageProfile").isJsonObject()
+                ? properties.getAsJsonObject("damageProfile") : new JsonObject();
+        float damage = (float) Math.max(0.0D, number(profile, "damage", 1.5D));
+        Vec3 direction = caster.position().subtract(target.position()).normalize();
+        if (direction.horizontalDistanceSqr() < 1.0E-6D) direction = new Vec3(1.0D, 0.0D, 0.0D);
+
+        int spawned = 0;
+        for (int i = 0; i < quantity; i++)
+        {
+            double angle = Math.PI * 2.0D * i / quantity;
+            double x = direction.x * Math.cos(angle) - direction.z * Math.sin(angle);
+            double z = direction.z * Math.cos(angle) + direction.x * Math.sin(angle);
+            IllusionDroneEntity drone = new IllusionDroneEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.ILLUSION_DRONE.get(), caster.level(), caster,
+                    target, (float) Math.toDegrees(Math.atan2(z, x)), (float) centerDistance, damage);
+            drone.setPos(target.getX() + x * centerDistance, target.getY() + 1.0D, target.getZ() + z * centerDistance);
+            if (caster.level().addFreshEntity(drone)) spawned++;
+        }
+        return spawned > 0;
     }
 
     private static double number(JsonObject object, String key, double fallback)

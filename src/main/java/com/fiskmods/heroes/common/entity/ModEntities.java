@@ -2,6 +2,8 @@ package com.fiskmods.heroes.common.entity;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
+import com.fiskmods.heroes.common.spell.IllusionDroneEntity;
+import com.fiskmods.heroes.common.spell.SpellDuplicateEntity;
 import com.fiskmods.heroes.common.spell.EarthCrackEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -23,11 +25,21 @@ public final class ModEntities
             () -> EntityType.Builder.<EarthCrackEntity>of(EarthCrackEntity::new, MobCategory.MISC)
                     .sized(0.1F, 0.1F).clientTrackingRange(64).updateInterval(1).fireImmune()
                     .build("fiskheroes:earth_crack"));
+    public static final RegistryObject<EntityType<SpellDuplicateEntity>> SPELL_DUPLICATE = REGISTRY.register("spell_duplicate",
+            () -> EntityType.Builder.<SpellDuplicateEntity>of(SpellDuplicateEntity::new, MobCategory.MISC)
+                    .sized(0.6F, 1.8F).clientTrackingRange(64).updateInterval(1).fireImmune()
+                    .build("fiskheroes:spell_duplicate"));
+    public static final RegistryObject<EntityType<IllusionDroneEntity>> ILLUSION_DRONE = REGISTRY.register("illusion_drone",
+            () -> EntityType.Builder.<IllusionDroneEntity>of(IllusionDroneEntity::new, MobCategory.MISC)
+                    .sized(1.0F, 0.75F).clientTrackingRange(80).updateInterval(1).fireImmune()
+                    .build("fiskheroes:illusion_drone"));
 
     @net.minecraftforge.eventbus.api.SubscribeEvent
     public static void registerAttributes(net.minecraftforge.event.entity.EntityAttributeCreationEvent event)
     {
         event.put(CACTUS_MINION.get(), CactusMinionEntity.createAttributes().build());
+        event.put(SPELL_DUPLICATE.get(), SpellDuplicateEntity.createAttributes().build());
+        event.put(ILLUSION_DRONE.get(), IllusionDroneEntity.createAttributes().build());
     }
 
     private ModEntities()

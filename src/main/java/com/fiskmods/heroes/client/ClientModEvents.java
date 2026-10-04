@@ -45,5 +45,14 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.TRICK_ARROW.get(), TrickArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.CACTUS_MINION.get(), CactusMinionRenderer::new);
         event.registerEntityRenderer(ModEntities.EARTH_CRACK.get(), com.fiskmods.heroes.client.render.EarthCrackRenderer::new);
+        event.registerEntityRenderer(ModEntities.SPELL_DUPLICATE.get(), com.fiskmods.heroes.client.render.SpellDuplicateRenderer::new);
+        event.registerEntityRenderer(ModEntities.ILLUSION_DRONE.get(), com.fiskmods.heroes.client.render.IllusionDroneRenderer::new);
+    }
+
+    @SubscribeEvent
+    public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event)
+    {
+        event.registerLayerDefinition(com.fiskmods.heroes.client.render.IllusionDroneModel.LAYER,
+                com.fiskmods.heroes.client.render.IllusionDroneModel::createBodyLayer);
     }
 }
