@@ -99,6 +99,7 @@ public class HeroModelRegistry extends SimplePreparableReloadListener<Map<Resour
     protected void apply(Map<ResourceLocation, JsonObject> object, ResourceManager resourceManager, ProfilerFiller profiler)
     {
         MODELS.clear();
+        TabulaModelCache.clear();
         com.fiskmods.heroes.client.texture.TextureResolver.clear();
         com.fiskmods.heroes.client.texture.SHTextures.clear();
 

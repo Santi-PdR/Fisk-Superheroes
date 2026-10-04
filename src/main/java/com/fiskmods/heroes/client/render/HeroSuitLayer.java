@@ -100,6 +100,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, model, slot);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, model, iteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, model, slot);
+            renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, model, slot);
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
             ResourceLocation lights = model.getLights(slot, player);
@@ -122,6 +123,37 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         }
 
         poseStack.popPose();
+    }
+
+    /** Draws a Tabula model attachment declared by the original suit model JSON. */
+    private void renderAttachedModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:model");
+        if (effect == null || !appliesToSlot(effect, slot) || !effect.has("modelType")) return;
+
+        ModelPart anchor = anchor(playerModel, effect.has("anchor") ? effect.get("anchor").getAsString() : "body");
+        if (anchor == null) return;
+        float opacity = Math.max(0.0F, Math.min(1.0F,
+                model.evaluateRenderData(effect.get("opacity"), player, 1.0F)));
+        if (opacity <= 0.0F) return;
+
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            String key = textureForPass(effect.get("texture"), pass);
+            if (key == null || key.equals("null")) continue;
+            ResourceLocation texture = model.resolveCustomTexture(key, player, slot);
+            if (texture == null) continue;
+
+            poseStack.pushPose();
+            anchor.translateAndRotate(poseStack);
+            if (effect.has("mirror") && effect.get("mirror").getAsBoolean()) poseStack.scale(-1.0F, 1.0F, 1.0F);
+            RenderType renderType = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
+            VertexConsumer vertex = buffer.getBuffer(renderType);
+            TabulaModelCache.render(effect.get("modelType").getAsString(), poseStack, vertex, packedLight,
+                    1.0F, 1.0F, 1.0F, opacity);
+            poseStack.popPose();
+        }
     }
 
     /** Draws the selected primary equipment at the anchors declared in the suit model. */
