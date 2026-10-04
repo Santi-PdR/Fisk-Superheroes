@@ -171,14 +171,16 @@ class ModifierShield extends Modifier
             boolean state = !entry.isToggled(entity);
             entry.setToggled(entity, state);
             data.getData().set(Vars.SHIELD, state);
+            data.getData().set(Vars.SHIELD_BLOCKING, state);
         }
         else
         {
             data.getData().set(Vars.SHIELD, true);
+            data.getData().set(Vars.SHIELD_BLOCKING, true);
             data.getData().set(Vars.SHIELD_COOLDOWN, (short) 10);
         }
 
-        AbilityData.playSound(entity, entry, "ENABLE");
+        AbilityData.playSound(entity, entry, "BLOCK_START");
     }
 
     @Override
@@ -187,6 +189,7 @@ class ModifierShield extends Modifier
         if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             data.getData().set(Vars.SHIELD, false);
+            data.getData().set(Vars.SHIELD_BLOCKING, false);
             data.getData().set(Vars.SHIELD_COOLDOWN, (short) 20);
         }
     }
@@ -224,6 +227,14 @@ class ModifierShield extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        float blocking = data.getData().get(Vars.SHIELD_BLOCKING_TIMER);
+        float nextBlocking = net.minecraft.util.Mth.approach(blocking,
+                data.getData().get(Vars.SHIELD_BLOCKING) ? 1.0F : 0.0F, 0.2F);
+        if (nextBlocking != blocking)
+        {
+            data.getData().set(Vars.SHIELD_BLOCKING_TIMER, nextBlocking);
+        }
+
         JsonObject shield = AbilityData.object(entry.get(PowerProperty.SHIELD));
         int cooldown = shield != null && shield.has("cooldown") ? shield.get("cooldown").getAsInt() : 60;
 
