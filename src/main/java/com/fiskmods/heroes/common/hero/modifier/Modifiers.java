@@ -194,10 +194,10 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 15)
                 .addProperty(PowerProperty.IS_EXPLOSIVE, true));
-        ENERGY_MANIPULATION = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "energy_manipulation"))
-                .addProperty(PowerProperty.RANGE, 48.0F)
+        ENERGY_MANIPULATION = registry.register(new ModifierEnergyManipulation(new ResourceLocation(FiskHeroes.MODID, "energy_manipulation"))
                 .addProperty(PowerProperty.CHARGE_TIME, 15)
-                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.ENERGY_CHARGING);
+                .addProperty(PowerProperty.IS_TOGGLE, false)
+                .addProperty(PowerProperty.KEY, ModifierEnergyManipulation.KEY)).setSoundState(Vars.ENERGY_CHARGING);
         HEAT_VISION = registry.register(new ModifierHeatVision(new ResourceLocation(FiskHeroes.MODID, "heat_vision"))
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.HEAT_VISION);

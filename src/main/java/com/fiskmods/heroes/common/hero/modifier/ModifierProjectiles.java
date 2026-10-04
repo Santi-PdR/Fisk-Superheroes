@@ -115,6 +115,74 @@ class ModifierEnergyProjection extends Modifier
     }
 }
 
+/** Charges the wearer's next melee strike with the power's configured energy damage. */
+class ModifierEnergyManipulation extends Modifier
+{
+    static final String KEY = "CHARGE_ENERGY";
+
+    ModifierEnergyManipulation(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.ENERGY_CHARGING, true);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.ENERGY_CHARGING, false);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        int chargeTime = Math.max(1, entry.getInt(entity, PowerProperty.CHARGE_TIME));
+        boolean charging = data.getData().get(Vars.ENERGY_CHARGING);
+        float charge = data.getData().get(Vars.ENERGY_CHARGE);
+        float step = charging ? 1.0F / chargeTime : 1.0F / (chargeTime * 4.0F);
+        data.getData().set(Vars.ENERGY_CHARGE,
+                net.minecraft.util.Mth.clamp(charge + (charging ? step : -step), 0.0F, 1.0F));
+    }
+
+    @Override
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry,
+            net.minecraft.world.entity.Entity target, net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        if (entity.level().isClientSide || source.getEntity() != entity || source.getDirectEntity() != entity
+                || !source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                        && !source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK))
+        {
+            return amount;
+        }
+
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        if (data == null) return amount;
+
+        float charge = data.getData().get(Vars.ENERGY_CHARGE);
+        if (charge <= 0.0F) return amount;
+
+        JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+        float bonus = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
+        if (bonus <= 0.0F) return amount;
+
+        data.getData().set(Vars.ENERGY_CHARGE, 0.0F);
+        data.getData().set(Vars.ENERGY_CHARGING, false);
+        if (target instanceof LivingEntity victim && entity.level() instanceof ServerLevel level)
+        {
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                    victim.getX(), victim.getY() + victim.getBbHeight() * 0.5D, victim.getZ(),
+                    12, 0.35D, 0.35D, 0.35D, 0.08D);
+            level.playSound(null, victim.blockPosition(), SoundEvents.LIGHTNING_BOLT_IMPACT,
+                    SoundSource.PLAYERS, 0.6F, 1.4F);
+        }
+        return amount + bonus * charge;
+    }
+}
+
 /** Charged beam: a sustained beam that damages everything along its path. */
 class ModifierChargedBeam extends ModifierEnergyProjection
 {
