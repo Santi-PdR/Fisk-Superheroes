@@ -147,7 +147,10 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
             for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : pieceModel.getCustom().entrySet())
             {
-                if (entry.getKey().startsWith("fiskheroes:booster"))
+                if (entry.getKey().startsWith("fiskheroes:arm_overlay"))
+                    ArmOverlaySuitRenderer.render(entry.getKey(), entry.getValue(), poseStack, buffer, packedLight,
+                            player, playerModel, pieceModel, slot, opacity);
+                else if (entry.getKey().startsWith("fiskheroes:booster"))
                     BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, pieceModel, slot, partialTicks);
                 else if (entry.getKey().equals("fiskheroes:wingsuit"))
                     WingsuitRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
@@ -817,7 +820,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         return null;
     }
 
-    private static boolean appliesToSlot(com.google.gson.JsonObject effect, int slot)
+    static boolean appliesToSlot(com.google.gson.JsonObject effect, int slot)
     {
         if (!effect.has("applicable") || !effect.get("applicable").isJsonArray())
         {
@@ -895,7 +898,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         return net.minecraft.util.Mth.clamp(max + (min - max) * data, 0.0F, 1.0F);
     }
 
-    private static boolean passesConditionals(com.google.gson.JsonObject effect, HeroModelData model, AbstractClientPlayer player)
+    static boolean passesConditionals(com.google.gson.JsonObject effect, HeroModelData model, AbstractClientPlayer player)
     {
         if (!effect.has("conditionals") || !effect.get("conditionals").isJsonArray())
         {
