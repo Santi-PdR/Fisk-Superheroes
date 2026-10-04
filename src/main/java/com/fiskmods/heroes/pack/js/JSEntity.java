@@ -419,6 +419,12 @@ public class JSEntity
             return stack.isEmpty();
         }
 
+        /** True for registered firearm items accepted by pack predicates such as {@code isGun()}. */
+        public boolean isGun()
+        {
+            return com.fiskmods.heroes.common.item.ItemGun.isGun(stack);
+        }
+
         public int getCount()
         {
             return stack.getCount();

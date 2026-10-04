@@ -62,6 +62,10 @@ public class ModItems
     public static final RegistryObject<Item> RADIANT_OLIVINE_DUST = REGISTRY.register("radiant_olivine_dust", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> GUN_BASE = REGISTRY.register("gun_base", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> RIFLE_BASE = REGISTRY.register("rifle_base", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> DESERT_EAGLE = REGISTRY.register("desert_eagle",
+            () -> new ItemGun(7, 8, 40, 32.0D, 8.0F, new Item.Properties()));
+    public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
+            () -> new ItemGun(15, 4, 32, 28.0D, 3.5F, new Item.Properties()));
     public static final RegistryObject<Item> SWORD_BLADE = REGISTRY.register("sword_blade", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> HANDLE = REGISTRY.register("handle", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> IRIDESCENT_GOLD = REGISTRY.register("iridescent_gold", () -> new Item(new Item.Properties()));
@@ -200,6 +204,8 @@ public class ModItems
                     output.accept(CHOKUTO.get());
                     output.accept(TACTICAL_TONFA.get());
                     output.accept(GRAPPLING_GUN.get());
+                    output.accept(DESERT_EAGLE.get());
+                    output.accept(BERETTA_93R.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
                     output.accept(COMPOUND_BOW.get());

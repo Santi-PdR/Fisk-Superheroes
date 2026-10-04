@@ -142,6 +142,10 @@ public class CommonEventHandler
             if (data != null)
             {
                 data.getData().updatePrevious();
+                if (entity instanceof net.minecraft.world.entity.player.Player player)
+                {
+                    com.fiskmods.heroes.common.item.ItemGun.tickReload(player, data);
+                }
             }
         }
 

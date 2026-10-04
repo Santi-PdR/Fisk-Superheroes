@@ -94,6 +94,13 @@ public final class AbilityHandler
                 continue;
             }
 
+            if ("GUN_RELOAD".equals(key)
+                    && player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemGun gun)
+            {
+                gun.reload(player, hero);
+                continue;
+            }
+
             ModifierEntry entry = activate(player, data, hero, key);
             if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
             {
