@@ -132,12 +132,21 @@ public final class JSContext
         {
             try
             {
-                if (call.getParameterCount() == 2)
+                Object[] scriptArgs = args.clone();
+                for (int i = 0; i < scriptArgs.length; ++i)
                 {
-                    return call.invoke(value, null, args);
+                    if (scriptArgs[i] instanceof net.minecraft.world.entity.Entity entity)
+                    {
+                        scriptArgs[i] = new JSEntity(entity);
+                    }
                 }
 
-                return call.invoke(value, (Object) args);
+                if (call.getParameterCount() == 2)
+                {
+                    return call.invoke(value, null, scriptArgs);
+                }
+
+                return call.invoke(value, (Object) scriptArgs);
             }
             catch (Exception e)
             {
