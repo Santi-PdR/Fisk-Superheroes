@@ -106,6 +106,12 @@ tasks.withType(JavaCompile).configureEach {
     options.compilerArgs.addAll(['-Xmaxerrs', '2000', '-Xlint:none'])
 }
 
+// `jar` is the artifact users copy into a Forge instance. Keep it production-ready even when
+// invoked directly (rather than only through `build`), so Minecraft runtime references are mapped.
+tasks.named('jar') {
+    finalizedBy 'reobfJar'
+}
+
 // Dumps the public/protected signatures of the vanilla and Forge classes listed in
 // .ci/api-classes.txt. The port needs exact 1.20.1 signatures and the build environment is the
 // only place the mapped game jar is available.
