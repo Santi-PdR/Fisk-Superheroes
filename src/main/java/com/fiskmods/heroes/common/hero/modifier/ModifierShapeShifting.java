@@ -34,6 +34,7 @@ public class ModifierShapeShifting extends Modifier
             if (next != null)
             {
                 data.getData().set(Vars.DISGUISE, next);
+                data.getData().set(Vars.DISGUISE_UUID, data.getData().get(Vars.SHAPE_SHIFTING_TO_UUID));
             }
         }
 

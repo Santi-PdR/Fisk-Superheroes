@@ -61,6 +61,7 @@ public class SHClientSetup
 
             if (renderer instanceof PlayerRenderer playerRenderer)
             {
+                playerRenderer.addLayer(new com.fiskmods.heroes.client.render.HeroDisguiseLayer(playerRenderer));
                 playerRenderer.addLayer(new HeroSuitLayer(playerRenderer));
             }
         }
