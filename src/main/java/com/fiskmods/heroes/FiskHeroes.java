@@ -116,6 +116,8 @@ public class FiskHeroes
                     com.fiskmods.heroes.common.network.PacketCycleUtilityBelt::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketStopSound.class,
                     com.fiskmods.heroes.common.network.PacketStopSound::new, NetworkDirection.PLAY_TO_CLIENT);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketGravityAmount.class,
+                    com.fiskmods.heroes.common.network.PacketGravityAmount::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
             LOGGER.info("Fisk's Superheroes loaded: {} heroes, {} powers, {} data variables",

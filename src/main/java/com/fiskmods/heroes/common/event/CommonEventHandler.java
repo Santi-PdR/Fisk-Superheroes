@@ -193,6 +193,24 @@ public class CommonEventHandler
     }
 
     @SubscribeEvent
+    public static void onLevelTick(TickEvent.LevelTickEvent event)
+    {
+        if (event.phase == TickEvent.Phase.END && event.level instanceof net.minecraft.server.level.ServerLevel level)
+        {
+            com.fiskmods.heroes.common.entity.GravityEffectHandler.tick(level);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onLevelUnload(net.minecraftforge.event.level.LevelEvent.Unload event)
+    {
+        if (event.getLevel() instanceof net.minecraft.server.level.ServerLevel level)
+        {
+            com.fiskmods.heroes.common.entity.GravityEffectHandler.clear(level);
+        }
+    }
+
+    @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event)
     {
         LivingEntity entity = event.getEntity();

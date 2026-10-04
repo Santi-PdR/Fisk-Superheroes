@@ -5,6 +5,9 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
+import com.fiskmods.heroes.common.entity.GravityWaveEntity;
+import com.fiskmods.heroes.common.hero.modifier.AbilityData;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.DamageTypeTags;
@@ -441,6 +444,8 @@ class ModifierFrostWalking extends Modifier
 /** Manipulates the gravity affecting the wearer. */
 class ModifierGravityManipulation extends Modifier
 {
+    private static final String KEY = "GRAVITY_MANIPULATION";
+
     ModifierGravityManipulation(ResourceLocation id)
     {
         super(id);
@@ -449,6 +454,43 @@ class ModifierGravityManipulation extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        boolean active = AbilityHandler.isKeyPressed(entity, KEY);
+        data.getData().set(Vars.GRAVITY_MANIP, active);
+
+        if (!entity.level().isClientSide && active && entity.tickCount % 8 == 0
+                && entry.getFloat(entity, PowerProperty.RADIUS) > 0.0F
+                && entity.level() instanceof net.minecraft.server.level.ServerLevel)
+        {
+            float range = entry.getFloat(entity, PowerProperty.RANGE);
+            net.minecraft.world.phys.HitResult hit = entity.pick(range, 0.0F, false);
+            if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS)
+            {
+                hit = entity.pick(range, 1.0F, false);
+            }
+
+            net.minecraft.world.phys.Vec3 pos = hit.getLocation();
+            int side = -1;
+            if (hit instanceof net.minecraft.world.phys.BlockHitResult blockHit)
+            {
+                side = blockHit.getDirection().get3DDataValue();
+                net.minecraft.core.Direction direction = blockHit.getDirection();
+                pos = pos.add(direction.getStepX() * 0.1D, direction.getStepY() * 0.1D, direction.getStepZ() * 0.1D);
+            }
+            else if (hit instanceof net.minecraft.world.phys.EntityHitResult entityHit)
+            {
+                pos = new net.minecraft.world.phys.Vec3(entityHit.getEntity().getX(), entityHit.getEntity().getY(), entityHit.getEntity().getZ());
+            }
+
+            float amount = data.getData().get(Vars.GRAVITY_AMOUNT);
+            float gravity = amount > 0.0F
+                    ? net.minecraft.util.Mth.lerp(amount, 1.0F, entry.getFloat(entity, PowerProperty.MAX_GRAVITY))
+                    : net.minecraft.util.Mth.lerp(-amount, 1.0F, entry.getFloat(entity, PowerProperty.MIN_GRAVITY));
+            GravityWaveEntity wave = new GravityWaveEntity(entity.level(), entity, pos.x, pos.y, pos.z, side,
+                    entry.getFloat(entity, PowerProperty.RADIUS), gravity, entry.getBoolean(entity, PowerProperty.AFFECTS_USER));
+            entity.level().addFreshEntity(wave);
+            AbilityData.playSound(entity, entry, "WAVE");
+        }
+
         if (!data.getData().get(Vars.NO_GRAVITY))
         {
             return;

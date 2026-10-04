@@ -56,6 +56,7 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.EARTH_CRACK.get(), com.fiskmods.heroes.client.render.EarthCrackRenderer::new);
         event.registerEntityRenderer(ModEntities.SPELL_DUPLICATE.get(), com.fiskmods.heroes.client.render.SpellDuplicateRenderer::new);
         event.registerEntityRenderer(ModEntities.ILLUSION_DRONE.get(), com.fiskmods.heroes.client.render.IllusionDroneRenderer::new);
+        event.registerEntityRenderer(ModEntities.GRAVITY_WAVE.get(), com.fiskmods.heroes.client.render.GravityWaveRenderer::new);
     }
 
     @SubscribeEvent

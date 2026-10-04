@@ -77,6 +77,14 @@ public class ClientEventHandler
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data == null) return;
 
+        if (hero != null && hero.isKeyPressed(player, "GRAVITY_MANIPULATION"))
+        {
+            int direction = event.getScrollDelta() > 0.0D ? 1 : -1;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketGravityAmount(direction));
+            event.setCanceled(true);
+            return;
+        }
+
         if (hero != null && hero.isKeyPressed(player, "UTILITY_BELT")
                 && com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.getUtilityBelt(hero, player, data) != null)
         {

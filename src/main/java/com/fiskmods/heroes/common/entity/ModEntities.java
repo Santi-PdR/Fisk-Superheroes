@@ -63,6 +63,10 @@ public final class ModEntities
             () -> EntityType.Builder.<IllusionDroneEntity>of(IllusionDroneEntity::new, MobCategory.MISC)
                     .sized(1.0F, 0.75F).clientTrackingRange(80).updateInterval(1).fireImmune()
                     .build("fiskheroes:illusion_drone"));
+    public static final RegistryObject<EntityType<GravityWaveEntity>> GRAVITY_WAVE = REGISTRY.register("gravity_wave",
+            () -> EntityType.Builder.<GravityWaveEntity>of(GravityWaveEntity::new, MobCategory.MISC)
+                    .sized(0.1F, 0.1F).clientTrackingRange(64).updateInterval(1)
+                    .build("fiskheroes:gravity_wave"));
 
     @net.minecraftforge.eventbus.api.SubscribeEvent
     public static void registerAttributes(net.minecraftforge.event.entity.EntityAttributeCreationEvent event)
