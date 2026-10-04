@@ -14,6 +14,7 @@ import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.fiskmods.heroes.common.hero.modifier.ModifierTentacles;
 import com.fiskmods.heroes.pack.ScriptFunction;
 
 import net.minecraft.server.level.ServerPlayer;
@@ -106,8 +107,21 @@ public final class AbilityHandler
     {
         ModifierEntry entry = findModifier(hero, key);
 
+        // The four Doctor Octopus actions are driven by one power entry. Their key names do not
+        // match the modifier id, so route them through the modifier's action dispatcher.
+        if (entry == null && key.startsWith("TENTACLE_"))
+        {
+            entry = findModifier(hero, "tentacles");
+        }
+
         if (entry == null)
         {
+            return null;
+        }
+
+        if (entry.getModifier() instanceof ModifierTentacles tentacles)
+        {
+            tentacles.activateKey(player, entry, data, key);
             return null;
         }
 

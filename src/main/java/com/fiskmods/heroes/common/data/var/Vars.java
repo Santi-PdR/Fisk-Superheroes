@@ -233,6 +233,7 @@ public final class Vars
     public static final DataVar<Float> SUPER_BOOST_COOLDOWN = register("dyn/super_boost_cooldown", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> SUPER_BOOST_TIMEOUT = register("dyn/super_boost_timeout", DataType.FLOAT, 0.0F, true);
     public static final DataVar<Float> SPEED_SPRINT_TIMER = register("dyn/speed_sprint_timer", DataType.FLOAT, 0.0F, true);
+    public static final DataVar<Boolean> TENTACLES_ACTIVE = register("dyn/tentacles_active", DataType.BOOLEAN, false, true);
   /* --- Built-in data variables (from the 2.4.0 data mapping) --- */
     public static final DataVar<Boolean> NO_GRAVITY = register("no_gravity", DataType.BOOLEAN, false, false);
     public static final DataVar<Integer> PUNCH_TIMER = register("punch_timer", DataType.INT, 0, false);

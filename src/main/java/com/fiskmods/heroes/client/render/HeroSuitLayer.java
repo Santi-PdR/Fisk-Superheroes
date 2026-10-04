@@ -102,6 +102,11 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, model, iteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, model, slot);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, model, slot);
+            com.google.gson.JsonObject tentacles = model.getCustom().get("fiskheroes:tentacles");
+            if (tentacles != null)
+            {
+                TentacleSuitRenderer.render(tentacles, poseStack, buffer, packedLight, player, playerModel, model, slot);
+            }
             for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
             {
                 if (entry.getKey().startsWith("fiskheroes:booster"))

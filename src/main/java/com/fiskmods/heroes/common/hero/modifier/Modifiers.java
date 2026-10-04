@@ -282,7 +282,8 @@ public final class Modifiers
         SPEED_DISINTEGRATION = registry.register(new ModifierSpeedDisintegration(new ResourceLocation(FiskHeroes.MODID, "speed_disintegration")));
         WALL_CRAWLING = registry.register(new ModifierWallCrawling(new ResourceLocation(FiskHeroes.MODID, "wall_crawling")));
         SPIDER_SENSE = registry.register(new ModifierSpiderSense(new ResourceLocation(FiskHeroes.MODID, "spider_sense")));
-        TENTACLES = registry.register(create("tentacles"));
+        TENTACLES = registry.register(new ModifierTentacles(new ResourceLocation(FiskHeroes.MODID, "tentacles"))
+                .addProperty(PowerProperty.RANGE, 8.0F));
         ETERNIUM_WEAKNESS = registry.register(new ModifierEterniumWeakness(new ResourceLocation(FiskHeroes.MODID, "eternium_weakness"))
                 .addProperty(PowerProperty.RADIUS, 3.0F)
                 .addProperty(PowerProperty.DURATION, 120));

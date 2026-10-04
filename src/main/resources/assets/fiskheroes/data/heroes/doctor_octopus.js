@@ -21,5 +21,5 @@ function init(hero) {
 }
 
 function isKeyBindEnabled(entity, keyBind) {
-    return keyBind == "TENTACLES" || entity.getData("fiskheroes:tentacles") != null;
+    return keyBind == "TENTACLES" || entity.getData("fiskheroes:dyn/tentacles_active");
 }
