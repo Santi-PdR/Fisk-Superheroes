@@ -170,11 +170,16 @@ public final class Modifiers
                 .addProperty(PowerProperty.IS_TOGGLE, true)
                 .addProperty(PowerProperty.IS_ABSOLUTE, false)).setSoundState(Vars.INTANGIBLE);
         INTANGIBLE = INTANGIBILITY;
-        TRANSFORMATION = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "transformation")));
+        TRANSFORMATION = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "transformation"))
+                .addProperty(PowerProperty.KEY, "")
+                .addProperty(PowerProperty.TRANSFORMATION)
+                .addProperty(PowerProperty.IS_TOGGLE, true));
         COOLDOWN = registry.register(new ModifierCooldown(new ResourceLocation(FiskHeroes.MODID, "cooldown")));
         SHIELD = registry.register(new ModifierShield(new ResourceLocation(FiskHeroes.MODID, "shield"))
-                .addProperty(PowerProperty.IS_TOGGLE, false)
-                .addProperty(PowerProperty.KNOCKBACK, 0.2F)).setSoundState(Vars.SHIELD);
+                .addProperty(PowerProperty.SHIELD)
+                .addProperty(PowerProperty.COVERAGE)
+                .addProperty(PowerProperty.KNOCKBACK, 0.2F)
+                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SHIELD);
         BLADE = registry.register(new ModifierBlade(new ResourceLocation(FiskHeroes.MODID, "blade"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.BLADE);
         ENERGY_PROJECTION = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "energy_projection"))

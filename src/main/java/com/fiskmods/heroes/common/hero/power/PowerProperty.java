@@ -56,7 +56,7 @@ public class PowerProperty<T>
 
     public static final PowerProperty<String> KEY = create("key", "");
     public static final PowerProperty<String> DAMAGE_TYPE = create("damageType", "");
-    public static final PowerProperty<String> COVERAGE = create("coverage", "");
+    public static final PowerProperty<JsonElement> COVERAGE = create("coverage", null);
     public static final PowerProperty<String> COLLISION = create("collision", "");
 
     /** Complex values which are interpreted by the owning modifier. */
