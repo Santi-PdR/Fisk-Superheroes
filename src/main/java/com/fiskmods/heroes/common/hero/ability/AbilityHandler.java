@@ -30,6 +30,7 @@ public final class AbilityHandler
     private static final Map<UUID, Map<Integer, List<ModifierEntry>>> HELD_ABILITIES = new HashMap<>();
     private static final Map<UUID, Map<Integer, Set<String>>> SERVER_PRESSED_KEYS = new HashMap<>();
     private static final Map<UUID, Map<Integer, Set<String>>> CLIENT_PRESSED_KEYS = new HashMap<>();
+    private static final Map<UUID, Map<String, Long>> ABILITY_COOLDOWNS = new HashMap<>();
 
     private AbilityHandler()
     {
@@ -107,6 +108,12 @@ public final class AbilityHandler
     {
         ModifierEntry entry = findModifier(hero, key);
 
+        // Señor Cactus's pack key invokes the separate spike_burst modifier.
+        if (entry == null && "SHOOT_SPIKES".equals(key))
+        {
+            entry = findModifier(hero, "spike_burst");
+        }
+
         // The four Doctor Octopus actions are driven by one power entry. Their key names do not
         // match the modifier id, so route them through the modifier's action dispatcher.
         if (entry == null && key.startsWith("TENTACLE_"))
@@ -117,6 +124,24 @@ public final class AbilityHandler
         if (entry == null)
         {
             return null;
+        }
+
+        if (!entry.isEnabled() || !entry.isModifierEnabled(player, data))
+        {
+            return null;
+        }
+
+        int cooldown = entry.getInt(player, PowerProperty.COOLDOWN_TIME);
+        if (cooldown > 0)
+        {
+            String cooldownKey = entry.getModifier().getId() + ":" + key;
+            long now = player.level().getGameTime();
+            Map<String, Long> playerCooldowns = ABILITY_COOLDOWNS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
+            if (playerCooldowns.getOrDefault(cooldownKey, 0L) > now)
+            {
+                return null;
+            }
+            playerCooldowns.put(cooldownKey, now + cooldown);
         }
 
         if (entry.getModifier() instanceof ModifierTentacles tentacles)
@@ -151,6 +176,7 @@ public final class AbilityHandler
     public static void clear(ServerPlayer player)
     {
         SERVER_PRESSED_KEYS.remove(player.getUUID());
+        ABILITY_COOLDOWNS.remove(player.getUUID());
         Map<Integer, List<ModifierEntry>> byIndex = HELD_ABILITIES.remove(player.getUUID());
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (byIndex == null || data == null) return;

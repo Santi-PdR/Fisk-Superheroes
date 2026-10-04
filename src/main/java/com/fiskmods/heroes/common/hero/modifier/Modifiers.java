@@ -257,8 +257,10 @@ public final class Modifiers
         EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment")));
         THORNS = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "thorns"))
                 .addProperty(PowerProperty.AMOUNT, 2.0F));
-        SPIKES = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "spike_burst"))
-                .addProperty(PowerProperty.AMOUNT, 4.0F));
+        SPIKES = registry.register(new ModifierSpikeBurst(new ResourceLocation(FiskHeroes.MODID, "spike_burst"))
+                .addProperty(PowerProperty.AMOUNT, 4.0F)
+                .addProperty(PowerProperty.RANGE, 24.0F)
+                .addProperty(PowerProperty.COOLDOWN_TIME, 5));
         SONIC_WAVES = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "sonic_waves"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 40)).setSoundState(Vars.SONIC_WAVES);
