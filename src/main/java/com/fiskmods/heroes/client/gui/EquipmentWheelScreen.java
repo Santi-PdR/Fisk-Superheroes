@@ -79,6 +79,13 @@ public final class EquipmentWheelScreen extends Screen
     @Override
     public boolean isPauseScreen() { return false; }
 
+    @Override
+    public void removed()
+    {
+        com.fiskmods.heroes.client.ClientEventHandler.onEquipmentWheelClosed();
+        super.removed();
+    }
+
     private int getHovered(double mouseX, double mouseY, int cx, int cy, int radius)
     {
         if (entries.isEmpty()) return -1;

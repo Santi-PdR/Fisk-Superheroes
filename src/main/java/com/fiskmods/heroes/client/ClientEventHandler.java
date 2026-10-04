@@ -40,6 +40,12 @@ public class ClientEventHandler
     private static final StringBuilder spellSequence = new StringBuilder();
     private static boolean spellMenuWasDown;
 
+    /** Prevent a hold-to-open weapon wheel from reopening after it is dismissed. */
+    public static void onEquipmentWheelClosed()
+    {
+        weaponKeyHeld = false;
+    }
+
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event)
     {
