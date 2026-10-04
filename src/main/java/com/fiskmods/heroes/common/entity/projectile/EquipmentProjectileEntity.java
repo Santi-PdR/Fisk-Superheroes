@@ -32,6 +32,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
             EquipmentProjectileEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Boolean> SMOKING = SynchedEntityData.defineId(
             EquipmentProjectileEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Byte> RICOCHET_BOUNCES = SynchedEntityData.defineId(
+            EquipmentProjectileEntity.class, EntityDataSerializers.BYTE);
 
     private int fuseTicks;
     private int smokeTicks;
@@ -49,7 +51,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         setItem(displayItem.copy());
         setPos(owner.getX(), owner.getEyeY() - 0.1D, owner.getZ());
         shootFromRotation(owner, owner.getXRot(), owner.getYRot() + yawOffset, 0.0F,
-                isExplosive(gadget) ? 1.15F : 2.0F, 1.0F);
+                velocityFor(gadget), 1.0F);
         if (isExplosive(gadget))
         {
             fuseTicks = number(config, "fuseTime", 40);
@@ -63,6 +65,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         entityData.define(GADGET, "");
         entityData.define(CONFIG, "{}");
         entityData.define(SMOKING, false);
+        entityData.define(RICOCHET_BOUNCES, (byte) 0);
     }
 
     @Override
@@ -91,6 +94,18 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     private static boolean isExplosive(String gadget)
     {
         return gadget.endsWith(":grenade") || gadget.endsWith(":freeze_grenade");
+    }
+
+    /** Launch speeds match the original projectile classes (EntityBatarang, EntityThrowingStar,
+     * AbstractEntityWeb and EntityGrenade). */
+    private static float velocityFor(String gadget)
+    {
+        if (gadget.endsWith(":batarang")) return 3.5F;
+        if (gadget.endsWith(":throwing_star")) return 2.5F;
+        if (gadget.endsWith(":grenade") || gadget.endsWith(":freeze_grenade")) return 1.75F;
+        if (gadget.endsWith(":sticky_web") || gadget.endsWith(":impact_web")
+                || gadget.endsWith(":rapid_webs") || gadget.endsWith(":ricochet_web")) return 7.5F;
+        return 1.75F;
     }
 
     @Override
@@ -168,7 +183,11 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     protected void onHitBlock(BlockHitResult hit)
     {
         if (level().isClientSide) return;
-        if (isExplosive(gadget()))
+        if (gadget().endsWith(":ricochet_web"))
+        {
+            if (!ricochet(hit)) discard();
+        }
+        else if (isExplosive(gadget()))
         {
             armOnImpact();
         }
@@ -180,6 +199,34 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         {
             discard();
         }
+    }
+
+    /** The original Ricochet Web reflects once from a face with air immediately behind it. */
+    private boolean ricochet(BlockHitResult hit)
+    {
+        if (entityData.get(RICOCHET_BOUNCES) > 0) return false;
+
+        net.minecraft.core.Direction face = hit.getDirection();
+        if (!level().getBlockState(hit.getBlockPos().relative(face)).isAir()) return false;
+
+        Vec3 velocity = getDeltaMovement();
+        double x = face.getStepX() != 0 ? -velocity.x : velocity.x;
+        double y = face.getStepY() != 0 ? -velocity.y : velocity.y;
+        double z = face.getStepZ() != 0 ? -velocity.z : velocity.z;
+        setDeltaMovement(x * 0.6D, y * 0.6D, z * 0.6D);
+        Vec3 point = hit.getLocation().add(face.getStepX() * 0.02D, face.getStepY() * 0.02D, face.getStepZ() * 0.02D);
+        setPos(point.x, point.y, point.z);
+        entityData.set(RICOCHET_BOUNCES, (byte) 1);
+
+        if (level() instanceof ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CLOUD,
+                    point.x, point.y, point.z, 4, 0.08D, 0.08D, 0.08D, 0.01D);
+        }
+        com.fiskmods.heroes.common.sound.SHSounds.play(this,
+                new net.minecraft.resources.ResourceLocation("fiskheroes", "entity_web_bounce"),
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.9F + random.nextFloat() * 0.5F);
+        return true;
     }
 
     private void armOnImpact()
@@ -276,6 +323,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         tag.putString("Config", entityData.get(CONFIG));
         tag.putInt("FuseTicks", fuseTicks);
         tag.putInt("SmokeTicks", smokeTicks);
+        tag.putByte("RicochetBounces", entityData.get(RICOCHET_BOUNCES));
     }
 
     @Override
@@ -286,6 +334,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         entityData.set(CONFIG, tag.getString("Config"));
         fuseTicks = tag.getInt("FuseTicks");
         smokeTicks = tag.getInt("SmokeTicks");
+        entityData.set(RICOCHET_BOUNCES, tag.getByte("RicochetBounces"));
         entityData.set(SMOKING, smokeTicks > 0);
     }
 }
