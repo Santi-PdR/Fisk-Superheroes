@@ -59,6 +59,19 @@ public class ClientEventHandler
 
         LocalPlayer player = mc.player;
 
+        if (player != null && (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
+                || event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE))
+        {
+            for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
+            {
+                if (SHKeyBinds.ABILITIES[i].matches(event.getKey(), event.getScanCode()))
+                {
+                    boolean pressed = event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null;
+                    setAbilityKeyState(player, i, pressed);
+                }
+            }
+        }
+
         if (player == null || mc.screen != null)
         {
             return;
@@ -132,30 +145,7 @@ public class ClientEventHandler
         for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
         {
             boolean down = mc.screen == null && SHKeyBinds.ABILITIES[i].isDown();
-            AbilityHandler.setClientKeyState(player, ABILITY_INDICES[i], down);
-            if (down && !abilityKeysDown[i])
-            {
-                com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
-                if (hero != null)
-                {
-                    int index = ABILITY_INDICES[i];
-                    if (hero.getKeyBinding("SHAPE_SHIFT") == index
-                            && hero.isKeyBindEnabled(player, "SHAPE_SHIFT"))
-                    {
-                        mc.setScreen(new com.fiskmods.heroes.client.gui.ShapeShiftScreen());
-                    }
-                    else if (hero.getKeyBinding("SHAPE_SHIFT_RESET") == index
-                            && hero.isKeyBindEnabled(player, "SHAPE_SHIFT_RESET"))
-                    {
-                        SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketSetDisguise(""));
-                    }
-                }
-            }
-            if (down != abilityKeysDown[i])
-            {
-                abilityKeysDown[i] = down;
-                SHNetwork.sendToServer(new PacketAbility(ABILITY_INDICES[i], down));
-            }
+            setAbilityKeyState(player, i, down);
         }
 
         // In the original mod, key index -1 means the player's primary attack input. Several
@@ -212,6 +202,35 @@ public class ClientEventHandler
         // Interpolate the values the HUD animates
         interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
         interpolate(data, Vars.BOOSTER_TIMER, data.getData().get(Vars.FLYING) ? 1.0F : 0.0F);
+    }
+
+    /** Sends only transitions, including very short presses received between client ticks. */
+    private static void setAbilityKeyState(LocalPlayer player, int ability, boolean down)
+    {
+        if (ability < 0 || ability >= abilityKeysDown.length || abilityKeysDown[ability] == down) return;
+
+        abilityKeysDown[ability] = down;
+        int index = ABILITY_INDICES[ability];
+        AbilityHandler.setClientKeyState(player, index, down);
+        SHNetwork.sendToServer(new PacketAbility(index, down));
+
+        if (down)
+        {
+            com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
+            if (hero != null)
+            {
+                if (hero.getKeyBinding("SHAPE_SHIFT") == index
+                        && hero.isKeyBindEnabled(player, "SHAPE_SHIFT"))
+                {
+                    Minecraft.getInstance().setScreen(new com.fiskmods.heroes.client.gui.ShapeShiftScreen());
+                }
+                else if (hero.getKeyBinding("SHAPE_SHIFT_RESET") == index
+                        && hero.isKeyBindEnabled(player, "SHAPE_SHIFT_RESET"))
+                {
+                    SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketSetDisguise(""));
+                }
+            }
+        }
     }
 
     /** Capture WASD sequences while the spell-menu key is held and request a matching spell. */

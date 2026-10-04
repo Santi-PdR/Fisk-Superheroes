@@ -29,6 +29,8 @@ import net.minecraft.world.item.ItemStack;
  */
 public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>
 {
+    private static final java.util.Set<String> RENDER_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     private static final ResourceLocation[] SLOT_NAMES = {
             new ResourceLocation("fiskheroes", "helmet"),
             new ResourceLocation("fiskheroes", "chestplate"),
@@ -48,6 +50,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         if (data == null)
         {
+            logRenderDiagnostic("missing-player-data", "Suit layer has no player data for {}", player.getGameProfile().getName());
             return;
         }
 
@@ -60,6 +63,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         if (iteration == null)
         {
+            logRenderDiagnostic("missing-suit:" + player.getUUID(), "Suit layer found no equipped hero for {}", player.getGameProfile().getName());
             return;
         }
 
@@ -67,6 +71,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         if (model == null)
         {
+            logRenderDiagnostic("missing-model:" + iteration.getRegistryName(), "No suit model loaded for {}", iteration.getRegistryName());
             return;
         }
 
@@ -98,12 +103,16 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             HeroModelData pieceModel = HeroModelRegistry.get(pieceIteration);
             if (pieceModel == null)
             {
+                logRenderDiagnostic("missing-piece-model:" + pieceIteration.getRegistryName(),
+                        "No suit model loaded for equipped piece {}", pieceIteration.getRegistryName());
                 continue;
             }
 
             float opacity = suitOpacity(pieceModel, player, slot);
             if (opacity <= 0.001F)
             {
+                logRenderDiagnostic("transparent:" + pieceIteration.getRegistryName() + ":" + slot,
+                        "Suit {} slot {} resolved to zero opacity for {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], player.getGameProfile().getName());
                 continue;
             }
 
@@ -111,6 +120,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             if (texture != null)
             {
+                logRenderDiagnostic("rendered:" + pieceIteration.getRegistryName() + ":" + slot,
+                        "Drawing suit {} slot {} from {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], texture);
                 boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
                 VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
                 playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
@@ -121,8 +132,13 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 if (vibration != null)
                 {
                     renderVibration(poseStack, buffer, packedLight, player, playerModel, pieceModel,
-                            vibration, slot, opacity, texture, partialTicks);
+                        vibration, slot, opacity, texture, partialTicks);
                 }
+            }
+            else
+            {
+                logRenderDiagnostic("missing-texture:" + pieceIteration.getRegistryName() + ":" + slot,
+                        "Suit {} slot {} has no resolved texture for {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], player.getGameProfile().getName());
             }
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
@@ -187,6 +203,14 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, playerModel, model, 1);
 
         poseStack.popPose();
+    }
+
+    private static void logRenderDiagnostic(String key, String message, Object... arguments)
+    {
+        if (RENDER_DIAGNOSTICS.add(key))
+        {
+            com.fiskmods.heroes.FiskHeroes.LOGGER.debug(message, arguments);
+        }
     }
 
     /** Draws a Tabula model attachment declared by the original suit model JSON. */

@@ -72,6 +72,14 @@ public final class HeroTracker
             return;
         }
 
+        // The original player tracker restored a neutral scale before suit rendering. SCALE's
+        // data-var default is 0, and the render layer multiplies every suit vertex by this value;
+        // without this initialization the whole costume collapses to a point.
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SCALE) <= 0.0F)
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        }
+
         com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
 
         HeroIteration worn = getWornSuit(player);

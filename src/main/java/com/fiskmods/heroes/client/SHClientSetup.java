@@ -63,6 +63,7 @@ public class SHClientSetup
             {
                 playerRenderer.addLayer(new com.fiskmods.heroes.client.render.HeroDisguiseLayer(playerRenderer));
                 playerRenderer.addLayer(new HeroSuitLayer(playerRenderer));
+                FiskHeroes.LOGGER.debug("Attached hero suit renderer to player skin '{}'", skin);
             }
         }
     }

@@ -72,6 +72,11 @@ public final class AbilityHandler
         }
 
         Set<String> keys = hero.getKeyBindsMatching(index);
+        if (pressed)
+        {
+            com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Ability input from {}: hero={}, index={}, matching={}",
+                    player.getGameProfile().getName(), iteration.getRegistryName(), index, keys);
+        }
         if (hero.getKeyBinding("AIM") == index)
         {
             updateAiming(player, data, hero, pressed);
