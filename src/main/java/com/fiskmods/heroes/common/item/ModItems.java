@@ -169,8 +169,10 @@ public class ModItems
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
                     output.accept(COMPOUND_BOW.get());
-                    output.accept(ItemTrickArrow.createStack(ItemTrickArrow.NORMAL));
-                    output.accept(ItemTrickArrow.createStack(ItemTrickArrow.EXPLOSIVE));
+                    for (String type : ItemTrickArrow.TYPES)
+                    {
+                        output.accept(ItemTrickArrow.createStack(type));
+                    }
                 })
                 .build();
     }

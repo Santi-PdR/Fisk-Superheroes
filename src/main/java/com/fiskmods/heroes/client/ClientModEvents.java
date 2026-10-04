@@ -35,7 +35,7 @@ public final class ClientModEvents
                     (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack
                             ? (float) (stack.getUseDuration() - entity.getUseItemRemainingTicks()) / stack.getUseDuration() : 0.0F);
             ItemProperties.register(ModItems.TRICK_ARROW.get(), FiskHeroes.id("arrow_type"),
-                    (stack, level, entity, seed) -> ItemTrickArrow.EXPLOSIVE.equals(ItemTrickArrow.getType(stack)) ? 1.0F : 0.0F);
+                    (stack, level, entity, seed) -> ItemTrickArrow.getTypeIndex(stack));
         });
     }
 

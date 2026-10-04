@@ -54,7 +54,7 @@ public class TrickArrowEntity extends Arrow
 
     public void setArrowType(String type)
     {
-        entityData.set(ARROW_TYPE, ItemTrickArrow.EXPLOSIVE.equals(type) ? ItemTrickArrow.EXPLOSIVE : ItemTrickArrow.NORMAL);
+        entityData.set(ARROW_TYPE, ItemTrickArrow.normalizeType(type));
     }
 
     private void setExplosionRadius(float radius)
@@ -89,7 +89,9 @@ public class TrickArrowEntity extends Arrow
 
     private void detonateIfExplosive()
     {
-        if (level().isClientSide || !ItemTrickArrow.EXPLOSIVE.equals(getArrowType())) return;
+        String type = getArrowType();
+        if (level().isClientSide || !(ItemTrickArrow.EXPLOSIVE.equals(type)
+                || "explosive_pufferfish".equals(type) || "triple_explosive".equals(type))) return;
         level().explode(getOwner(), getX(), getY(), getZ(), explosionRadius, false, Level.ExplosionInteraction.NONE);
         discard();
     }
