@@ -367,6 +367,8 @@ class ModifierTeleportation extends Modifier
             return;
         }
 
+        data.getData().set(Vars.TELEPORT_TIMER, 1.0F);
+
         float range = entry.getFloat(entity, PowerProperty.RANGE);
         Vec3 look = entity.getLookAngle();
         double x = entity.getX();
@@ -391,6 +393,17 @@ class ModifierTeleportation extends Modifier
 
         entity.teleportTo(x, y, z);
         entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5F, 1.2F);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        float timer = data.getData().get(Vars.TELEPORT_TIMER);
+        if (timer > 0.0F)
+        {
+            data.getData().set(Vars.TELEPORT_TIMER,
+                    net.minecraft.util.Mth.approach(timer, 0.0F, 0.2F));
+        }
     }
 }
 

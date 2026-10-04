@@ -117,6 +117,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
@@ -440,6 +441,51 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                     1.0F, 1.0F, 1.0F, alpha);
             restoreParts(playerModel, hidden);
         }
+    }
+
+    /** Draws the model's full-bright color pass while a glow effect is active. */
+    private void renderGlowerlay(PoseStack poseStack, MultiBufferSource buffer,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            int slot, float suitOpacity)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:glowerlay");
+        if (effect == null || !appliesToSlot(effect, slot) || !passesConditionals(effect, model, player))
+        {
+            return;
+        }
+
+        float activity = model.evaluateRenderData(effect.get("data"), player, 0.0F);
+        float alpha = suitOpacity * net.minecraft.util.Mth.clamp(activity, 0.0F, 1.0F);
+        if (alpha <= 0.001F)
+        {
+            return;
+        }
+
+        ResourceLocation texture = model.getTexture(slot, player);
+        if (texture == null)
+        {
+            return;
+        }
+
+        int color = 0xFFFFFF;
+        if (effect.has("color"))
+        {
+            try
+            {
+                color = (int) Long.decode(effect.get("color").getAsString()).longValue();
+            }
+            catch (NumberFormatException ignored)
+            {
+                // Keep the default white glow for malformed optional model data.
+            }
+        }
+
+        boolean[] hidden = hidePartsFor(playerModel, model, slot);
+        VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+        playerModel.renderToBuffer(poseStack, consumer, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT,
+                OverlayTexture.NO_OVERLAY, (color >> 16 & 255) / 255.0F, (color >> 8 & 255) / 255.0F,
+                (color & 255) / 255.0F, alpha);
+        restoreParts(playerModel, hidden);
     }
 
     private static String textureForPass(com.google.gson.JsonElement textures, int pass)
