@@ -147,7 +147,10 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
             for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : pieceModel.getCustom().entrySet())
             {
-                if (entry.getKey().startsWith("fiskheroes:arm_overlay"))
+                if (entry.getKey().equals("fiskheroes:flames"))
+                    SuitFlamesRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player,
+                            playerModel, pieceModel, slot, partialTicks);
+                else if (entry.getKey().startsWith("fiskheroes:arm_overlay"))
                     ArmOverlaySuitRenderer.render(entry.getKey(), entry.getValue(), poseStack, buffer, packedLight,
                             player, playerModel, pieceModel, slot, opacity);
                 else if (entry.getKey().startsWith("fiskheroes:booster"))
