@@ -93,6 +93,13 @@ public final class SHSoundRepository
             }
 
             ready = !INDEX.isEmpty();
+            Path soundPackDir = root().resolve("pack");
+            if (Files.isDirectory(soundPackDir))
+            {
+                // Rebuild the generated sounds.json from the index so upgrades repair older
+                // cached packs without requiring another download.
+                writeIndex(soundPackDir);
+            }
             FiskHeroes.LOGGER.info("FiskHeroes sound repository: {} cached sounds", INDEX.size());
         }
         catch (IOException e)
