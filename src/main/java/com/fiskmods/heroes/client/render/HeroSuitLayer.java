@@ -114,6 +114,13 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                         1.0F, 1.0F, 1.0F, opacity);
                 restoreParts(playerModel, hidden);
+
+                com.google.gson.JsonObject vibration = pieceModel.getCustom().get("fiskheroes:vibration");
+                if (vibration != null)
+                {
+                    renderVibration(poseStack, buffer, packedLight, player, playerModel, pieceModel,
+                            vibration, slot, opacity, texture, partialTicks);
+                }
             }
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
@@ -831,6 +838,46 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
         }
         return false;
+    }
+
+    /** Replays the suit texture with the low-alpha sinusoidal offsets of the original vibration effect. */
+    private void renderVibration(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            com.google.gson.JsonObject effect, int slot, float suitOpacity, ResourceLocation texture, float partialTicks)
+    {
+        if (!appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) return;
+
+        final int passes = 20;
+        final float step = 0.03F / 2.0F;
+        final float amplitude = 0.075F;
+        final float alpha = suitOpacity / passes;
+        final float age = player.tickCount + partialTicks;
+        boolean[] hidden = hidePartsFor(playerModel, model, slot);
+        try
+        {
+            VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+            for (int i = 0; i < passes; ++i)
+            {
+                float phase = (age - i * step) * 18.0F;
+                double x = Math.sin(phase) * amplitude;
+                double z = Math.cos(phase * 2.0F) * amplitude;
+                poseStack.pushPose();
+                try
+                {
+                    poseStack.translate(x, 0.0D, -z / 2.0D);
+                    playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                            1.0F, 1.0F, 1.0F, alpha);
+                }
+                finally
+                {
+                    poseStack.popPose();
+                }
+            }
+        }
+        finally
+        {
+            restoreParts(playerModel, hidden);
+        }
     }
 
     /** Applies the original model's per-piece invisibility/intangibility opacity curve. */
