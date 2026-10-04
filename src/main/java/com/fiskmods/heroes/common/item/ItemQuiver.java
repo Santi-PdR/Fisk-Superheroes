@@ -100,17 +100,47 @@ public class ItemQuiver extends Item
 
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         int selected = data != null ? Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5 : 0;
-        return createInventory(quiver).getStackInSlot(selected);
+        ItemStackHandler inventory = createInventory(quiver);
+        ItemStack arrow = inventory.getStackInSlot(selected);
+        if (!arrow.isEmpty()) return arrow;
+
+        // Keep the bow usable when the selected slot is empty but another quiver slot has ammo.
+        // The selected slot remains preferred so cycling still chooses the player's intended arrow.
+        for (int slot = 0; slot < inventory.getSlots(); ++slot)
+        {
+            arrow = inventory.getStackInSlot(slot);
+            if (!arrow.isEmpty()) return arrow;
+        }
+        return ItemStack.EMPTY;
     }
 
     public static void consumeSelectedArrow(Player player)
     {
+        consumeArrow(player, getSelectedArrowSlot(player));
+    }
+
+    /** Returns the selected quiver slot, or the first populated slot as a usable fallback. */
+    public static int getSelectedArrowSlot(Player player)
+    {
         ItemStack quiver = findQuiver(player);
-        if (quiver.isEmpty()) return;
+        if (quiver.isEmpty()) return -1;
 
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         int selected = data != null ? Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5 : 0;
-        createInventory(quiver).extractItem(selected, 1, false);
+        ItemStackHandler inventory = createInventory(quiver);
+        if (!inventory.getStackInSlot(selected).isEmpty()) return selected;
+        for (int slot = 0; slot < inventory.getSlots(); ++slot)
+        {
+            if (!inventory.getStackInSlot(slot).isEmpty()) return slot;
+        }
+        return -1;
+    }
+
+    public static void consumeArrow(Player player, int slot)
+    {
+        ItemStack quiver = findQuiver(player);
+        if (quiver.isEmpty() || slot < 0 || slot >= 5) return;
+        createInventory(quiver).extractItem(slot, 1, false);
     }
 
     @Override

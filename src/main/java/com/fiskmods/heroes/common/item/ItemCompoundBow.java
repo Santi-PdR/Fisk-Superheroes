@@ -48,11 +48,12 @@ public class ItemCompoundBow extends BowItem
     {
         if (!(entity instanceof Player player) || level.isClientSide) return;
 
+        int quiverArrowSlot = ItemQuiver.getSelectedArrowSlot(player);
         ItemStack arrowStack = selectedArrow(player);
         boolean creativeAmmo = arrowStack.isEmpty() && player.getAbilities().instabuild;
         if (creativeAmmo) arrowStack = Items.ARROW.getDefaultInstance();
         if (arrowStack.isEmpty() || !(arrowStack.getItem() instanceof ArrowItem arrowItem)) return;
-        boolean quiverAmmo = !ItemQuiver.getSelectedArrow(player).isEmpty();
+        boolean quiverAmmo = quiverArrowSlot >= 0;
 
         int chargeTicks = getUseDuration(bow) - timeLeft;
         float power = BowItem.getPowerForTime(chargeTicks);
@@ -77,7 +78,7 @@ public class ItemCompoundBow extends BowItem
         {
             if (quiverAmmo)
             {
-                ItemQuiver.consumeSelectedArrow(player);
+                ItemQuiver.consumeArrow(player, quiverArrowSlot);
             }
             else if (!player.getAbilities().instabuild
                     && !(arrowStack.is(net.minecraft.world.item.Items.ARROW)
