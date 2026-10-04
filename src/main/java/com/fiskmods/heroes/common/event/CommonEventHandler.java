@@ -150,6 +150,14 @@ public class CommonEventHandler
         }
 
         HeroTracker.update(entity);
+        if (entity instanceof net.minecraft.world.entity.player.Player)
+        {
+            var data = SHDataCapabilities.getPlayer(entity);
+            if (data != null)
+            {
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(entity, data);
+            }
+        }
         ModifierHandler.tick(entity);
 
         if (entity instanceof ServerPlayer serverPlayer)

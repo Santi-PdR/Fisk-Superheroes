@@ -9,6 +9,7 @@ import java.util.UUID;
 
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.HeroTracker;
@@ -59,6 +60,11 @@ public final class AbilityHandler
         }
 
         Hero hero = iteration.getHero();
+
+        if (index == -1)
+        {
+            updateAiming(player, data, hero, pressed);
+        }
 
         if (index == 0)
         {
@@ -192,6 +198,10 @@ public final class AbilityHandler
         ABILITY_COOLDOWNS.remove(player.getUUID());
         Map<Integer, List<ModifierEntry>> byIndex = HELD_ABILITIES.remove(player.getUUID());
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data != null)
+        {
+            data.getData().set(Vars.AIMING, false);
+        }
         if (byIndex == null || data == null) return;
 
         for (List<ModifierEntry> entries : byIndex.values())
@@ -207,12 +217,28 @@ public final class AbilityHandler
     public static void clearClient(Entity entity)
     {
         CLIENT_PRESSED_KEYS.remove(entity.getUUID());
+        SHPlayerData data = SHDataCapabilities.getPlayer(entity);
+        if (data != null)
+        {
+            data.getData().set(Vars.AIMING, false);
+        }
     }
 
     /** Mirrors the physical key state on the client so local render and update hooks can query it. */
     public static void setClientKeyState(Entity entity, int index, boolean pressed)
     {
         HeroIteration iteration = HeroTracker.getHero(entity);
+
+        if (index == -1)
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(entity);
+            if (data != null)
+            {
+                data.getData().set(Vars.AIMING,
+                        iteration != null && shouldAim(entity, iteration.getHero(), pressed));
+            }
+        }
+
         if (iteration == null || !pressed)
         {
             clearPressedIndex(CLIENT_PRESSED_KEYS, entity, index);
@@ -224,6 +250,42 @@ public final class AbilityHandler
         for (String key : hero.getKeyBindsMatching(index))
         {
             setPressedKey(CLIENT_PRESSED_KEYS, entity, index, key, true);
+        }
+    }
+
+    /** Resolves the pack's held AIM key into the synchronized state used by guns and suit poses. */
+    private static void updateAiming(ServerPlayer player, SHPlayerData data, Hero hero, boolean pressed)
+    {
+        data.getData().set(Vars.AIMING, shouldAim(player, hero, pressed));
+    }
+
+    private static boolean shouldAim(Entity entity, Hero hero, boolean pressed)
+    {
+        if (!pressed || !hero.getKeyBindsMatching(-1).contains("AIM") || !hero.isKeyBindEnabled(entity, "AIM"))
+        {
+            return false;
+        }
+
+        ScriptFunction canAim = hero.getFunction("canAim");
+        return canAim == null || canAim.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity));
+    }
+
+    /** Advances the normalized aim animation timer on both logical sides. */
+    public static void tickAiming(Entity entity, SHPlayerData data)
+    {
+        HeroIteration iteration = HeroTracker.getHero(entity);
+        boolean aiming = iteration != null && shouldAim(entity, iteration.getHero(), isKeyPressed(entity, "AIM"));
+        if (data.getData().get(Vars.AIMING) != aiming)
+        {
+            data.getData().set(Vars.AIMING, aiming);
+        }
+
+        float target = data.getData().get(Vars.AIMING) ? 1.0F : 0.0F;
+        float current = data.getData().get(Vars.AIMING_TIMER);
+        float next = net.minecraft.util.Mth.approach(current, target, 0.2F);
+        if (next != current)
+        {
+            data.getData().set(Vars.AIMING_TIMER, next);
         }
     }
 
