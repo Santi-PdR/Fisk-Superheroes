@@ -240,6 +240,7 @@ class ModifierHeatVision extends ModifierEnergyProjection
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        data.getData().set(Vars.HEAT_VISION, true);
         if (entity.level() instanceof ServerLevel level)
         {
             fire(entity, entry, data, level, false);
@@ -247,11 +248,29 @@ class ModifierHeatVision extends ModifierEnergyProjection
     }
 
     @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        data.getData().set(Vars.HEAT_VISION, false);
+    }
+
+    @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entity.tickCount % 10 == 0 && entity.level() instanceof ServerLevel level)
+        boolean active = data.getData().get(Vars.HEAT_VISION);
+        float timer = data.getData().get(Vars.HEAT_VISION_TIMER);
+        float nextTimer = net.minecraft.util.Mth.approach(timer, active ? 1.0F : 0.0F, 0.2F);
+        if (nextTimer != timer)
+        {
+            data.getData().set(Vars.HEAT_VISION_TIMER, nextTimer);
+        }
+
+        if (active && entity.tickCount % 10 == 0 && entity.level() instanceof ServerLevel level)
         {
             fire(entity, entry, data, level, false);
+        }
+        else if (!active && nextTimer == 0.0F && data.getData().get(Vars.HEAT_VISION_LENGTH) != 0.0D)
+        {
+            data.getData().set(Vars.HEAT_VISION_LENGTH, 0.0D);
         }
     }
 
@@ -266,7 +285,19 @@ class ModifierHeatVision extends ModifierEnergyProjection
         float range = entry.getFloat(entity, PowerProperty.RANGE);
         Vec3 start = player.getEyePosition();
         Vec3 direction = player.getLookAngle();
-        HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(player, e -> e != player, range);
+        Vec3 end = start.add(direction.scale(range));
+        HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(
+                player, e -> e != player && e.isAlive() && !player.isAlliedTo(e), range);
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+        if (blockHit.getType() != HitResult.Type.MISS
+                && (hit.getType() == HitResult.Type.MISS
+                        || start.distanceToSqr(blockHit.getLocation()) < start.distanceToSqr(hit.getLocation())))
+        {
+            hit = blockHit;
+        }
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(hit.getLocation()));
 
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
         {
