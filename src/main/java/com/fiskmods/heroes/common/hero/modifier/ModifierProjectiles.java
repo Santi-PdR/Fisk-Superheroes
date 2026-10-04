@@ -134,6 +134,18 @@ class ModifierEnergyProjection extends Modifier
             return;
         }
 
+        if ("canary_cry".equals(entry.getModifier().getId().getPath()))
+        {
+            var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(entity,
+                    damageProfile, damage, entry.getFloat(entity, PowerProperty.KNOCKBACK),
+                    entry.getBoolean(entity, PowerProperty.CAN_BREAK_GLASS));
+            level.addFreshEntity(wave);
+            AbilityData.playSound(entity, entry, "SHOOT");
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.GENERIC_EXPLODE,
+                    SoundSource.PLAYERS, 0.6F, 1.8F);
+            return;
+        }
+
         Vec3 start = entity.getEyePosition();
         Vec3 direction = entity.getLookAngle();
         Vec3 end = start.add(direction.scale(range));

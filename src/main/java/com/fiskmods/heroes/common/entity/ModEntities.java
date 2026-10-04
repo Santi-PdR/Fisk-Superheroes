@@ -7,6 +7,7 @@ import com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity;
 import com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity;
 import com.fiskmods.heroes.common.entity.projectile.IcicleEntity;
 import com.fiskmods.heroes.common.entity.projectile.FireBlastEntity;
+import com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity;
 import com.fiskmods.heroes.common.spell.IllusionDroneEntity;
 import com.fiskmods.heroes.common.spell.SpellDuplicateEntity;
 import com.fiskmods.heroes.common.spell.EarthCrackEntity;
@@ -43,6 +44,10 @@ public final class ModEntities
             () -> EntityType.Builder.<FireBlastEntity>of(FireBlastEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1).fireImmune()
                     .build("fiskheroes:fire_blast"));
+    public static final RegistryObject<EntityType<SonicWaveEntity>> SONIC_WAVE = REGISTRY.register("sonic_wave",
+            () -> EntityType.Builder.<SonicWaveEntity>of(SonicWaveEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1)
+                    .build("fiskheroes:sonic_wave"));
     public static final RegistryObject<EntityType<CactusMinionEntity>> CACTUS_MINION = REGISTRY.register("cactus_minion",
             () -> EntityType.Builder.<CactusMinionEntity>of(CactusMinionEntity::new, MobCategory.CREATURE)
                     .sized(1.0F, 1.0F).clientTrackingRange(80).updateInterval(1).build("fiskheroes:cactus_minion"));
