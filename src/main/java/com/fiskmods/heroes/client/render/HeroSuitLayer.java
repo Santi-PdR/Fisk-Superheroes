@@ -124,6 +124,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderSheath(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             com.google.gson.JsonObject tentacles = pieceModel.getCustom().get("fiskheroes:tentacles");
             if (tentacles != null)
             {
@@ -194,6 +195,44 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             TabulaModelCache.render(effect.get("modelType").getAsString(), poseStack, vertex, packedLight,
                     1.0F, 1.0F, 1.0F, opacity);
             poseStack.popPose();
+        }
+    }
+
+    /** Renders the original Tabula sword sheaths attached to Deadpool and Prometheus suits. */
+    private void renderSheath(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
+    {
+        for (String effectName : new String[] {"fiskheroes:deadpool_sheath", "fiskheroes:prometheus_sheath"})
+        {
+            com.google.gson.JsonObject effect = model.getCustom().get(effectName);
+            if (effect == null || !appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) continue;
+
+            String textureKey = effect.has("texture") ? effect.get("texture").getAsString() : null;
+            String modelType = effect.has("modelType") ? effect.get("modelType").getAsString() : null;
+            if (textureKey == null || modelType == null || textureKey.equals("null")) continue;
+
+            ResourceLocation texture = model.resolveCustomTexture(textureKey, player, slot);
+            ModelPart anchor = anchor(playerModel, effect.has("anchor") ? effect.get("anchor").getAsString() : "body");
+            if (texture == null || anchor == null) continue;
+
+            poseStack.pushPose();
+            try
+            {
+                anchor.translateAndRotate(poseStack);
+                poseStack.scale(0.8F, 0.8F, 0.8F);
+                if (effectName.endsWith("prometheus_sheath"))
+                    poseStack.translate(-0.125D, 1.0D / 16.0D, 0.05D);
+                else
+                    poseStack.translate(0.0D, 0.125D, 0.05D);
+
+                VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+                TabulaModelCache.render(modelType, poseStack, consumer, packedLight, 1.0F, 1.0F, 1.0F, suitOpacity);
+            }
+            finally
+            {
+                poseStack.popPose();
+            }
         }
     }
 
