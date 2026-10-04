@@ -98,6 +98,8 @@ public class FiskHeroes
             SHNetwork.registerPacket(PacketSyncData.class, PacketSyncData::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketSyncSuit.class, PacketSyncSuit::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketAbility.class, PacketAbility::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketSetDisguise.class,
+                    com.fiskmods.heroes.common.network.PacketSetDisguise::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketThrowShield.class,
                     com.fiskmods.heroes.common.network.PacketThrowShield::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketCastSpell.class,

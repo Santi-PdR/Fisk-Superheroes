@@ -14,7 +14,7 @@ import net.minecraft.world.entity.LivingEntity;
  * disguise named by {@code fiskheroes:shape_shifting_to} is applied halfway through, exactly as the
  * original mod did it. The disguise drives which hero the entity renders and behaves as.
  */
-class ModifierShapeShifting extends Modifier
+public class ModifierShapeShifting extends Modifier
 {
     ModifierShapeShifting(ResourceLocation id)
     {
@@ -31,7 +31,7 @@ class ModifierShapeShifting extends Modifier
         {
             String next = data.getData().get(Vars.SHAPE_SHIFTING_TO);
 
-            if (next != null && !next.isEmpty())
+            if (next != null)
             {
                 data.getData().set(Vars.DISGUISE, next);
             }

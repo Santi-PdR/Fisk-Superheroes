@@ -119,6 +119,24 @@ public class ClientEventHandler
         {
             boolean down = mc.screen == null && SHKeyBinds.ABILITIES[i].isDown();
             AbilityHandler.setClientKeyState(player, ABILITY_INDICES[i], down);
+            if (down && !abilityKeysDown[i])
+            {
+                com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
+                if (hero != null)
+                {
+                    int index = ABILITY_INDICES[i];
+                    if (hero.getKeyBinding("SHAPE_SHIFT") == index
+                            && hero.isKeyBindEnabled(player, "SHAPE_SHIFT"))
+                    {
+                        mc.setScreen(new com.fiskmods.heroes.client.gui.ShapeShiftScreen());
+                    }
+                    else if (hero.getKeyBinding("SHAPE_SHIFT_RESET") == index
+                            && hero.isKeyBindEnabled(player, "SHAPE_SHIFT_RESET"))
+                    {
+                        SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketSetDisguise(""));
+                    }
+                }
+            }
             if (down != abilityKeysDown[i])
             {
                 abilityKeysDown[i] = down;
