@@ -1,6 +1,10 @@
 package com.fiskmods.heroes.common.item;
 
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
+import com.fiskmods.heroes.common.hero.Hero;
+import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.hero.power.ModifierEntry;
+import com.fiskmods.heroes.common.hero.power.PowerProperty;
 import com.fiskmods.heroes.common.network.PacketThrowShield;
 import com.fiskmods.heroes.common.network.SHNetwork;
 import net.minecraft.world.item.Rarity;
@@ -25,8 +29,11 @@ public final class ItemCaptainAmericaShield extends ShieldItem
                 && !player.getCooldowns().isOnCooldown(this)
                 && AbilityHandler.isKeyPressed(player, "SHIELD_THROW"))
         {
+            Hero hero = HeroTracker.getHeroType(player);
+            ModifierEntry entry = hero != null ? AbilityHandler.findModifier(hero, "SHIELD_THROW") : null;
+            int cooldown = entry != null ? entry.getInt(PowerProperty.COOLDOWN_TIME) : 10;
             SHNetwork.sendToServer(new PacketThrowShield());
-            player.getCooldowns().addCooldown(this, 10);
+            player.getCooldowns().addCooldown(this, Math.max(1, cooldown));
         }
         return false;
     }
