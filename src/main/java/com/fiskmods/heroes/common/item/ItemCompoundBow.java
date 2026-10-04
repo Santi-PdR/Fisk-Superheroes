@@ -24,9 +24,9 @@ public class ItemCompoundBow extends BowItem
 {
     public ItemCompoundBow(Properties properties)
     {
-        // Make the bow unstackable before setting durability: Item.Properties rejects
-        // damageable items while maxStackSize is greater than one.
-        super(properties.stacksTo(1).durability(1500));
+        // durability() sets the stack size to one. Calling stacksTo() as well makes Forge reject
+        // the properties, even when the explicit stack size is also one.
+        super(properties.durability(1500));
     }
 
     @Override
