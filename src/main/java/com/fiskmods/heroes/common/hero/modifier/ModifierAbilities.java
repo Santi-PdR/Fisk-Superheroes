@@ -298,6 +298,10 @@ class ModifierIntangibility extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        float timer = data.getData().get(Vars.INTANGIBILITY_TIMER);
+        data.getData().set(Vars.INTANGIBILITY_TIMER,
+                net.minecraft.util.Mth.approach(timer, data.getData().get(Vars.INTANGIBLE) ? 1.0F : 0.0F, 0.2F));
+
         if (data.getData().get(Vars.INTANGIBLE))
         {
             entity.noPhysics = true;
@@ -452,6 +456,10 @@ class ModifierShadowform extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        float timer = data.getData().get(Vars.SHADOWFORM_TIMER);
+        data.getData().set(Vars.SHADOWFORM_TIMER,
+                net.minecraft.util.Mth.approach(timer, data.getData().get(Vars.SHADOWFORM) ? 1.0F : 0.0F, 0.2F));
+
         if (data.getData().get(Vars.SHADOWFORM))
         {
             entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 10, 0, true, false, false));

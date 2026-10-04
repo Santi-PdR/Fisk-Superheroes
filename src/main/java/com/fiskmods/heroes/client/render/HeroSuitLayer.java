@@ -99,20 +99,27 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 continue;
             }
 
+            float opacity = suitOpacity(pieceModel, player, slot);
+            if (opacity <= 0.001F)
+            {
+                continue;
+            }
+
             ResourceLocation texture = pieceModel.getTexture(slot, player);
 
             if (texture != null)
             {
                 boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
                 VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
-                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                        1.0F, 1.0F, 1.0F, opacity);
                 restoreParts(playerModel, hidden);
             }
 
-            renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
+            renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
-            renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
-            renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
+            renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             com.google.gson.JsonObject tentacles = pieceModel.getCustom().get("fiskheroes:tentacles");
             if (tentacles != null)
             {
@@ -143,7 +150,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 }
 
                 VertexConsumer consumer = buffer.getBuffer(RenderType.eyes(lights));
-                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                        1.0F, 1.0F, 1.0F, opacity);
                 restoreParts(playerModel, hidden);
             }
         }
@@ -155,14 +163,15 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
     /** Draws a Tabula model attachment declared by the original suit model JSON. */
     private void renderAttachedModel(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
     {
         com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:model");
         if (effect == null || !appliesToSlot(effect, slot) || !effect.has("modelType")) return;
 
         ModelPart anchor = anchor(playerModel, effect.has("anchor") ? effect.get("anchor").getAsString() : "body");
         if (anchor == null) return;
-        float opacity = Math.max(0.0F, Math.min(1.0F,
+        float opacity = suitOpacity * Math.max(0.0F, Math.min(1.0F,
                 model.evaluateRenderData(effect.get("opacity"), player, 1.0F)));
         if (opacity <= 0.0F) return;
 
@@ -287,7 +296,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
     /** Renders the segmented, motion-reactive cape effect declared by the original hero models. */
     private void renderCape(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
     {
         com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:cape");
         if (effect == null || !appliesToSlot(effect, slot))
@@ -331,14 +341,14 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             RenderType type = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
             VertexConsumer consumer = buffer.getBuffer(type);
-            renderCapeMesh(poseStack, consumer, packedLight, player.tickCount, width, length, open);
+            renderCapeMesh(poseStack, consumer, packedLight, player.tickCount, width, length, open, suitOpacity);
             poseStack.popPose();
             restoreParts(playerModel, hidden);
         }
     }
 
     private static void renderCapeMesh(PoseStack poseStack, VertexConsumer consumer, int packedLight,
-            int ticks, float widthPixels, float lengthPixels, float open)
+            int ticks, float widthPixels, float lengthPixels, float open, float opacity)
     {
         final int segments = 24;
         float pixelScale = 1.0F / 16.0F;
@@ -363,25 +373,25 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             poseStack.pushPose();
             poseStack.translate(0.0D, top, bend);
-            vertex(consumer, poseStack, left, 0, 0, u0, topV, packedLight);
-            vertex(consumer, poseStack, right, 0, 0, u1, topV, packedLight);
-            vertex(consumer, poseStack, right, segmentLength, 0, u1, bottomV, packedLight);
-            vertex(consumer, poseStack, left, segmentLength, 0, u0, bottomV, packedLight);
+            vertex(consumer, poseStack, left, 0, 0, u0, topV, packedLight, opacity);
+            vertex(consumer, poseStack, right, 0, 0, u1, topV, packedLight, opacity);
+            vertex(consumer, poseStack, right, segmentLength, 0, u1, bottomV, packedLight, opacity);
+            vertex(consumer, poseStack, left, segmentLength, 0, u0, bottomV, packedLight, opacity);
             // The reverse face uses the back half of the original cape texture region.
-            vertex(consumer, poseStack, left, segmentLength, 0, uWidth, bottomV, packedLight);
-            vertex(consumer, poseStack, right, segmentLength, 0, uWidth * 2.0F, bottomV, packedLight);
-            vertex(consumer, poseStack, right, 0, 0, uWidth * 2.0F, topV, packedLight);
-            vertex(consumer, poseStack, left, 0, 0, uWidth, topV, packedLight);
+            vertex(consumer, poseStack, left, segmentLength, 0, uWidth, bottomV, packedLight, opacity);
+            vertex(consumer, poseStack, right, segmentLength, 0, uWidth * 2.0F, bottomV, packedLight, opacity);
+            vertex(consumer, poseStack, right, 0, 0, uWidth * 2.0F, topV, packedLight, opacity);
+            vertex(consumer, poseStack, left, 0, 0, uWidth, topV, packedLight, opacity);
             poseStack.popPose();
             poseStack.translate(0.0D, segmentLength, 0.0D);
         }
     }
 
     private static void vertex(VertexConsumer consumer, PoseStack poseStack, float x, float y, float z,
-            float u, float v, int packedLight)
+            float u, float v, int packedLight, float opacity)
     {
         consumer.vertex(poseStack.last().pose(), x, y, z)
-                .color(255, 255, 255, 255)
+                .color(255, 255, 255, Math.round(255.0F * opacity))
                 .uv(u, v)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(packedLight)
@@ -391,7 +401,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
     /** Draws the original model's second texture pass for visors, eyes and animated suit details. */
     private void renderOverlay(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot)
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
     {
         com.google.gson.JsonObject overlay = model.getCustom().get("fiskheroes:overlay");
         if (overlay == null || !appliesToSlot(overlay, slot) || !passesConditionals(overlay, model, player))
@@ -401,7 +412,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         float data = model.evaluateRenderData(overlay.get("data"), player, 1.0F);
         float opacity = overlay.has("opacity") ? overlay.get("opacity").getAsFloat() : 1.0F;
-        float alpha = Math.max(0.0F, Math.min(1.0F, data * opacity));
+        float alpha = suitOpacity * Math.max(0.0F, Math.min(1.0F, data * opacity));
         if (alpha <= 0.0F)
         {
             return;
@@ -469,6 +480,21 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
         }
         return false;
+    }
+
+    /** Applies the original model's per-piece invisibility/intangibility opacity curve. */
+    private static float suitOpacity(HeroModelData model, AbstractClientPlayer player, int slot)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:invisibility");
+        if (effect == null || !appliesToSlot(effect, slot))
+        {
+            return 1.0F;
+        }
+
+        float data = model.evaluateRenderData(effect.get("data"), player, 0.0F);
+        float min = effect.has("opacityMin") ? effect.get("opacityMin").getAsFloat() : 0.0F;
+        float max = effect.has("opacityMax") ? effect.get("opacityMax").getAsFloat() : 1.0F;
+        return net.minecraft.util.Mth.clamp(max + (min - max) * data, 0.0F, 1.0F);
     }
 
     private static boolean passesConditionals(com.google.gson.JsonObject effect, HeroModelData model, AbstractClientPlayer player)
