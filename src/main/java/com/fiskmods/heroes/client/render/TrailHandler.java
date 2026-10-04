@@ -13,7 +13,10 @@ import javax.annotation.Nullable;
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.HeroTracker;
-
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.util.Mth;
@@ -49,7 +52,7 @@ public final class TrailHandler
             state = new TrailState(definition);
             STATES.put(player.getUUID(), state);
         }
-        state.tick(player.position(), player.getBbWidth());
+        state.tick(player, player.position(), player.getBbWidth());
     }
 
     public static List<Sample> getSamples(UUID player)
@@ -96,12 +99,16 @@ public final class TrailHandler
         private final float[][] particleOffset;
         private final float[][] previousParticleOffset;
         private final float particleSpeed;
+        private final PoseSnapshot pose;
+        private final float bodyYaw;
         private int age;
 
-        private Sample(Vec3 position, float[] lightningFactor, TrailDefinition definition, float width)
+        private Sample(Player player, Vec3 position, float[] lightningFactor, TrailDefinition definition, float width)
         {
             this.position = position;
             this.lightningFactor = lightningFactor;
+            this.pose = PoseSnapshot.capture(player);
+            this.bodyYaw = player.yBodyRot;
             int density = definition.particles() != null && definition.particles().has("density")
                     ? Math.max(1, definition.particles().get("density").getAsInt()) : 0;
             particleFactor = new float[definition.particles() == null ? 0 : density * 2 + 1];
@@ -141,6 +148,9 @@ public final class TrailHandler
             };
         }
 
+        public PoseSnapshot pose() { return pose; }
+        public float bodyYaw() { return bodyYaw; }
+
         private void tick()
         {
             ++age;
@@ -168,7 +178,7 @@ public final class TrailHandler
             this.definition = definition;
         }
 
-        private void tick(Vec3 position, float width)
+        private void tick(Player player, Vec3 position, float width)
         {
             age();
             if (lastPosition != null)
@@ -176,14 +186,14 @@ public final class TrailHandler
                 distance += position.distanceTo(lastPosition);
                 if (distance >= width * 1.1D)
                 {
-                    add(position, width);
+                    add(player, position, width);
                     distance = 0.0D;
                 }
             }
             lastPosition = position;
         }
 
-        private void add(Vec3 position, float width)
+        private void add(Player player, Vec3 position, float width)
         {
             int density = definition.lightning() != null
                     ? Math.max(0, definition.lightning().has("density") ? definition.lightning().get("density").getAsInt() : 6) : 0;
@@ -192,7 +202,7 @@ public final class TrailHandler
             {
                 factors[i] = (float) ((Math.random() - 0.5D) * width);
             }
-            samples.addLast(new Sample(position, factors, definition, width));
+            samples.addLast(new Sample(player, position, factors, definition, width));
         }
 
         private void age()
@@ -211,5 +221,47 @@ public final class TrailHandler
             }
             samples.removeAll(expired);
         }
+    }
+
+    public static final class PoseSnapshot
+    {
+        private final float[][] parts;
+
+        private PoseSnapshot(float[][] parts)
+        {
+            this.parts = parts;
+        }
+
+        @Nullable
+        private static PoseSnapshot capture(Player player)
+        {
+            Object renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
+            if (!(renderer instanceof PlayerRenderer playerRenderer)) return null;
+            PlayerModel<?> model = playerRenderer.getModel();
+            return new PoseSnapshot(new float[][] { part(model.head), part(model.body), part(model.rightArm),
+                    part(model.leftArm), part(model.rightLeg), part(model.leftLeg) });
+        }
+
+        private static float[] part(ModelPart part)
+        {
+            return new float[] { part.x, part.y, part.z, part.xRot, part.yRot, part.zRot,
+                    part.xScale, part.yScale, part.zScale };
+        }
+
+        public void apply(PlayerModel<?> model)
+        {
+            ModelPart[] targets = { model.head, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg };
+            for (int i = 0; i < targets.length; ++i)
+            {
+                float[] values = parts[i];
+                ModelPart part = targets[i];
+                part.setPos(values[0], values[1], values[2]);
+                part.setRotation(values[3], values[4], values[5]);
+                part.xScale = values[6];
+                part.yScale = values[7];
+                part.zScale = values[8];
+            }
+        }
+
     }
 }

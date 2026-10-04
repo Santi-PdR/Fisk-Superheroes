@@ -10,7 +10,10 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +22,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import com.mojang.math.Axis;
 
 /** Renders the lightning aspect between the movement samples captured by {@link TrailHandler}. */
 @Mod.EventBusSubscriber(modid = FiskHeroes.MODID, value = Dist.CLIENT)
@@ -79,8 +83,7 @@ public final class TrailRenderHandler
                 float alphaStart = fade(startSample, trail, event.getPartialTick()) * opacity;
                 if (start.distanceToSqr(end) > 1.0E-5D)
                 {
-                    drawBolt(consumer, pose, local(start.subtract(current), player.getYRot()),
-                            local(end.subtract(current), player.getYRot()), red, green, blue,
+                    drawBolt(consumer, pose, start.subtract(current), end.subtract(current), red, green, blue,
                             Math.min(alphaStart, alphaEnd));
                 }
             }
@@ -138,16 +141,97 @@ public final class TrailRenderHandler
 
                 Vec3 horizontal = cameraRight.scale(size);
                 Vec3 vertical = cameraUp.scale(size);
-                Vec3 a = local(relative.subtract(horizontal).subtract(vertical), player.getYRot());
-                Vec3 b = local(relative.add(horizontal).subtract(vertical), player.getYRot());
-                Vec3 c = local(relative.add(horizontal).add(vertical), player.getYRot());
-                Vec3 d = local(relative.subtract(horizontal).add(vertical), player.getYRot());
+                Vec3 a = relative.subtract(horizontal).subtract(vertical);
+                Vec3 b = relative.add(horizontal).subtract(vertical);
+                Vec3 c = relative.add(horizontal).add(vertical);
+                Vec3 d = relative.subtract(horizontal).add(vertical);
 
                 texturedVertex(consumer, pose, a, 0, 1, alpha, event.getPackedLight());
                 texturedVertex(consumer, pose, b, 1, 1, alpha, event.getPackedLight());
                 texturedVertex(consumer, pose, c, 1, 0, alpha, event.getPackedLight());
                 texturedVertex(consumer, pose, d, 0, 0, alpha, event.getPackedLight());
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void renderTrailBlur(RenderPlayerEvent.Post event)
+    {
+        Player player = event.getEntity();
+        if (player == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        HeroIterationHolder holder = activeTrail(player);
+        if (holder == null || holder.definition.blur() == null) return;
+
+        var blur = holder.definition.blur();
+        int color = resolveColor(holder.definition, player, event.getPartialTick(), blur.has("color") ? blur.get("color").getAsString() : null);
+        float red = ((color >> 16) & 255) / 255.0F;
+        float green = ((color >> 8) & 255) / 255.0F;
+        float blue = (color & 255) / 255.0F;
+        float opacity = blur.has("opacity") ? blur.get("opacity").getAsFloat() : 0.5F;
+        float scale = player.getBbHeight() / 1.8F * 0.9375F;
+        int fade = holder.definition.fade();
+        List<TrailHandler.Sample> samples = TrailHandler.getSamples(player.getUUID());
+        if (samples.isEmpty()) return;
+        PlayerRenderer renderer = event.getRenderer();
+
+        PlayerModel<?> model = renderer.getModel();
+        ModelPart[] parts = { model.head, model.body, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg };
+        net.minecraft.client.model.geom.PartPose[] originalPoses = java.util.Arrays.stream(parts).map(ModelPart::storePose)
+                .toArray(net.minecraft.client.model.geom.PartPose[]::new);
+        boolean[] visible = { model.hat.visible, model.jacket.visible, model.leftSleeve.visible, model.rightSleeve.visible,
+                model.leftPants.visible, model.rightPants.visible };
+        model.hat.visible = false;
+        model.jacket.visible = false;
+        model.leftSleeve.visible = false;
+        model.rightSleeve.visible = false;
+        model.leftPants.visible = false;
+        model.rightPants.visible = false;
+
+        VertexConsumer consumer = event.getMultiBufferSource().getBuffer(RenderType.entityTranslucent(
+                new ResourceLocation("minecraft", "textures/misc/white.png")));
+        PoseStack poseStack = event.getPoseStack();
+        double px = Mth.lerp(event.getPartialTick(), player.xo, player.getX());
+        double py = Mth.lerp(event.getPartialTick(), player.yo, player.getY());
+        double pz = Mth.lerp(event.getPartialTick(), player.zo, player.getZ());
+
+        try
+        {
+            for (TrailHandler.Sample sample : samples)
+            {
+                TrailHandler.PoseSnapshot snapshot = sample.pose();
+                if (snapshot == null) continue;
+                snapshot.apply(model);
+
+                float alpha = Mth.clamp(1.0F - (sample.age() + event.getPartialTick()) / fade, 0.0F, 1.0F) * opacity;
+                if (alpha <= 0.0F) continue;
+
+                poseStack.pushPose();
+                poseStack.translate(sample.position().x - px, sample.position().y - py, sample.position().z - pz);
+                poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - sample.bodyYaw()));
+                poseStack.scale(-scale, -scale, scale);
+                poseStack.translate(0.0D, -1.501D, 0.0D);
+                try
+                {
+                    model.renderToBuffer(poseStack, consumer, event.getPackedLight(), OverlayTexture.NO_OVERLAY,
+                            red, green, blue, alpha);
+                }
+                finally
+                {
+                    poseStack.popPose();
+                }
+
+                for (int i = 0; i < parts.length; ++i) parts[i].loadPose(originalPoses[i]);
+            }
+        }
+        finally
+        {
+            for (int i = 0; i < parts.length; ++i) parts[i].loadPose(originalPoses[i]);
+            model.hat.visible = visible[0];
+            model.jacket.visible = visible[1];
+            model.leftSleeve.visible = visible[2];
+            model.rightSleeve.visible = visible[3];
+            model.leftPants.visible = visible[4];
+            model.rightPants.visible = visible[5];
         }
     }
 
@@ -197,15 +281,6 @@ public final class TrailRenderHandler
         {
             return 0xFFFFFF;
         }
-    }
-
-    /** Transforms a world-relative delta into the player's post-render local axes. */
-    private static Vec3 local(Vec3 delta, float yaw)
-    {
-        double radians = Math.toRadians(yaw);
-        double cos = Math.cos(radians);
-        double sin = Math.sin(radians);
-        return new Vec3(cos * delta.x + sin * delta.z, -delta.y, sin * delta.x - cos * delta.z);
     }
 
     private static Vec3 fromVector(org.joml.Vector3f vector)
