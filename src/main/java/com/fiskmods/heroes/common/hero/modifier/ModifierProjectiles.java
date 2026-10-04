@@ -111,6 +111,20 @@ class ModifierEnergyProjection extends Modifier
             return;
         }
 
+        if ("icicles".equals(entry.getModifier().getId().getPath()))
+        {
+            int quantity = Math.max(1, Math.min(16, entry.getInt(entity, PowerProperty.QUANTITY)));
+            float spread = entry.getFloat(entity, PowerProperty.SPREAD);
+            for (int i = 0; i < quantity; ++i)
+            {
+                var icicle = new com.fiskmods.heroes.common.entity.projectile.IcicleEntity(entity,
+                        damageProfile, damage, spread);
+                level.addFreshEntity(icicle);
+            }
+            AbilityData.playSound(entity, entry, "SHOOT");
+            return;
+        }
+
         Vec3 start = entity.getEyePosition();
         Vec3 direction = entity.getLookAngle();
         Vec3 end = start.add(direction.scale(range));

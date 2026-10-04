@@ -5,6 +5,7 @@ import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
 import com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity;
 import com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity;
 import com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity;
+import com.fiskmods.heroes.common.entity.projectile.IcicleEntity;
 import com.fiskmods.heroes.common.spell.IllusionDroneEntity;
 import com.fiskmods.heroes.common.spell.SpellDuplicateEntity;
 import com.fiskmods.heroes.common.spell.EarthCrackEntity;
@@ -33,6 +34,10 @@ public final class ModEntities
             () -> EntityType.Builder.<EnergyBoltEntity>of(EnergyBoltEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1).fireImmune()
                     .build("fiskheroes:energy_bolt"));
+    public static final RegistryObject<EntityType<IcicleEntity>> ICICLE = REGISTRY.register("icicle",
+            () -> EntityType.Builder.<IcicleEntity>of(IcicleEntity::new, MobCategory.MISC)
+                    .sized(0.12F, 0.24F).clientTrackingRange(64).updateInterval(1)
+                    .build("fiskheroes:icicle"));
     public static final RegistryObject<EntityType<CactusMinionEntity>> CACTUS_MINION = REGISTRY.register("cactus_minion",
             () -> EntityType.Builder.<CactusMinionEntity>of(CactusMinionEntity::new, MobCategory.CREATURE)
                     .sized(1.0F, 1.0F).clientTrackingRange(80).updateInterval(1).build("fiskheroes:cactus_minion"));
