@@ -124,6 +124,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderShields(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderSheath(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             com.google.gson.JsonObject tentacles = pieceModel.getCustom().get("fiskheroes:tentacles");
             if (tentacles != null)
@@ -233,6 +234,32 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             {
                 poseStack.popPose();
             }
+        }
+    }
+
+    /** Draws each declarative retractable shield, blade or cannon part on its configured anchor. */
+    private void renderShields(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            int slot, float suitOpacity)
+    {
+        for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
+        {
+            if (!entry.getKey().equals("fiskheroes:shield") && !entry.getKey().startsWith("fiskheroes:shield|")) continue;
+            com.google.gson.JsonObject effect = entry.getValue();
+            if (!appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) continue;
+
+            String name = effect.has("anchor") ? effect.get("anchor").getAsString() : "rightArm";
+            ModelPart anchor = anchor(playerModel, name);
+            ModelPart opposite = switch (name.toLowerCase(java.util.Locale.ROOT))
+            {
+                case "rightarm" -> playerModel.leftArm;
+                case "leftarm" -> playerModel.rightArm;
+                case "rightleg" -> playerModel.leftLeg;
+                case "leftleg" -> playerModel.rightLeg;
+                default -> anchor;
+            };
+            ShieldSuitRenderer.render(effect, poseStack, buffer, packedLight, player, model, slot,
+                    anchor, opposite, playerModel.body, suitOpacity);
         }
     }
 
