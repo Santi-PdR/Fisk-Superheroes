@@ -237,7 +237,15 @@ public final class SHSoundRepository
             }
 
             first = false;
-            json.append("  \"").append(event).append("\": { \"sounds\": [ { \"name\": \"").append(e.getValue()).append("\", \"stream\": true } ] }");
+            String soundPath = e.getValue();
+            if (soundPath.endsWith(".ogg"))
+            {
+                soundPath = soundPath.substring(0, soundPath.length() - ".ogg".length());
+            }
+            // Sound names in sounds.json default to the minecraft namespace when unqualified.
+            // The downloaded files live in assets/fiskheroes/sounds, and Minecraft appends .ogg.
+            json.append("  \"").append(event).append("\": { \"sounds\": [ { \"name\": \"")
+                    .append(FiskHeroes.MODID).append(':').append(soundPath).append("\", \"stream\": true } ] }");
         }
 
         json.append("\n}\n");
