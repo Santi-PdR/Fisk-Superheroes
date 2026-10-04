@@ -61,11 +61,6 @@ public final class AbilityHandler
 
         Hero hero = iteration.getHero();
 
-        if (index == -1)
-        {
-            updateAiming(player, data, hero, pressed);
-        }
-
         if (index == 0)
         {
             if (pressed && !iteration.isMaskDisabled() && hero.hasProperty(player, "MASK_TOGGLE"))
@@ -77,6 +72,10 @@ public final class AbilityHandler
         }
 
         Set<String> keys = hero.getKeyBindsMatching(index);
+        if (hero.getKeyBinding("AIM") == index)
+        {
+            updateAiming(player, data, hero, pressed);
+        }
 
         if (!pressed)
         {
@@ -235,7 +234,7 @@ public final class AbilityHandler
     {
         HeroIteration iteration = HeroTracker.getHero(entity);
 
-        if (index == -1)
+        if (iteration != null && iteration.getHero().getKeyBinding("AIM") == index)
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(entity);
             if (data != null)
@@ -282,7 +281,7 @@ public final class AbilityHandler
 
     private static boolean shouldAim(Entity entity, Hero hero, boolean pressed)
     {
-        if (!pressed || !hero.getKeyBindsMatching(-1).contains("AIM") || !hero.isKeyBindEnabled(entity, "AIM"))
+        if (!pressed || !hero.hasKeyBind("AIM") || !hero.isKeyBindEnabled(entity, "AIM"))
         {
             return false;
         }
