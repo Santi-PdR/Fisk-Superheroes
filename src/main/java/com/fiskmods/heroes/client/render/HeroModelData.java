@@ -75,6 +75,27 @@ public class HeroModelData
         return custom;
     }
 
+    /** Resolves this hero's active data-driven speed trail, if its conditions are met. */
+    @Nullable
+    public TrailDefinition getTrail(Entity entity)
+    {
+        JsonObject effect = custom.get("fiskheroes:trail");
+        if (effect == null || !effect.has("type")) return null;
+
+        if (effect.has("conditionals") && effect.get("conditionals").isJsonArray())
+        {
+            for (JsonElement condition : effect.getAsJsonArray("conditionals"))
+            {
+                if (!condition.isJsonPrimitive()) return null;
+                String expression = condition.getAsString();
+                if (expression.startsWith("vars:") && !evaluate(expression.substring("vars:".length()), entity)) return null;
+            }
+        }
+
+        ResourceLocation id = ResourceLocation.tryParse(effect.get("type").getAsString());
+        return id != null ? TrailRegistry.get(id) : null;
+    }
+
     public Map<String, JsonObject> getAnimations()
     {
         return animations;

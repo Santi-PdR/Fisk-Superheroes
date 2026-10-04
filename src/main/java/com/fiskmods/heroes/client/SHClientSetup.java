@@ -39,6 +39,7 @@ public class SHClientSetup
     public static void registerReloadListeners(RegisterClientReloadListenersEvent event)
     {
         event.registerReloadListener(HeroModelRegistry.INSTANCE);
+        event.registerReloadListener(com.fiskmods.heroes.client.render.TrailRegistry.INSTANCE);
     }
 
     /** Mounts the downloaded sound repository as a resource pack. */
