@@ -21,6 +21,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /** Flying Mysterio illusion that orbits its target and fires short bursts of illusion shots. */
 public final class IllusionDroneEntity extends Mob implements Enemy
@@ -31,7 +33,7 @@ public final class IllusionDroneEntity extends Mob implements Enemy
     private static final EntityDataAccessor<Float> ORBIT_RADIUS = SynchedEntityData.defineId(IllusionDroneEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Boolean> SHOOTING = SynchedEntityData.defineId(IllusionDroneEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> TARGETLESS = SynchedEntityData.defineId(IllusionDroneEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Float> DAMAGE = SynchedEntityData.defineId(IllusionDroneEntity.class, EntityDataSerializers.FLOAT);
+    private JsonObject damageProfile = new JsonObject();
     private int cloakTicks;
     private int shootCooldown;
     private int shootTicks;
@@ -45,14 +47,14 @@ public final class IllusionDroneEntity extends Mob implements Enemy
     }
 
     public IllusionDroneEntity(EntityType<? extends IllusionDroneEntity> type, Level level,
-            LivingEntity owner, LivingEntity target, float offset, float radius, float damage)
+            LivingEntity owner, LivingEntity target, float offset, float radius, JsonObject profile)
     {
         this(type, level);
         entityData.set(OWNER_ID, owner.getId());
         entityData.set(TARGET_ID, target.getId());
         entityData.set(ORBIT_OFFSET, offset);
         entityData.set(ORBIT_RADIUS, Math.max(0.5F, radius));
-        entityData.set(DAMAGE, Math.max(0.0F, damage));
+        damageProfile = profile.deepCopy();
         setPos(target.getX(), target.getY() + 1.0D, target.getZ());
     }
 
@@ -72,7 +74,12 @@ public final class IllusionDroneEntity extends Mob implements Enemy
         entityData.define(ORBIT_RADIUS, 5.0F);
         entityData.define(SHOOTING, false);
         entityData.define(TARGETLESS, false);
-        entityData.define(DAMAGE, 1.5F);
+        JsonObject defaultProfile = new JsonObject();
+        defaultProfile.addProperty("damage", 1.5F);
+        JsonObject types = new JsonObject();
+        types.addProperty("BULLET", 1.0F);
+        defaultProfile.add("types", types);
+        damageProfile = defaultProfile;
     }
 
     @Override
@@ -140,7 +147,9 @@ public final class IllusionDroneEntity extends Mob implements Enemy
         if (hit != null && target.invulnerableTime < 15)
         {
             target.invulnerableTime = 0;
-            target.hurt(level().damageSources().mobAttack(owner), entityData.get(DAMAGE));
+            float damage = com.fiskmods.heroes.common.hero.modifier.DamageGroups.profileDamage(damageProfile, 1.5F);
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(damageProfile,
+                    () -> target.hurt(level().damageSources().mobAttack(owner), damage));
             if (level() instanceof ServerLevel server)
             {
                 server.sendParticles(ParticleTypes.CRIT, hit.getLocation().x, hit.getLocation().y,
@@ -182,6 +191,11 @@ public final class IllusionDroneEntity extends Mob implements Enemy
         return entityData.get(TARGETLESS);
     }
 
+    public void setOrbitRadius(float radius)
+    {
+        entityData.set(ORBIT_RADIUS, Math.max(0.5F, radius));
+    }
+
     @Override
     public MobType getMobType()
     {
@@ -217,7 +231,7 @@ public final class IllusionDroneEntity extends Mob implements Enemy
         tag.putInt("TargetId", entityData.get(TARGET_ID));
         tag.putFloat("OrbitOffset", entityData.get(ORBIT_OFFSET));
         tag.putFloat("OrbitRadius", entityData.get(ORBIT_RADIUS));
-        tag.putFloat("Damage", entityData.get(DAMAGE));
+        tag.putString("DamageProfile", damageProfile.toString());
         tag.putInt("ShootCooldown", shootCooldown);
     }
 
@@ -229,7 +243,18 @@ public final class IllusionDroneEntity extends Mob implements Enemy
         entityData.set(TARGET_ID, tag.getInt("TargetId"));
         entityData.set(ORBIT_OFFSET, tag.getFloat("OrbitOffset"));
         entityData.set(ORBIT_RADIUS, Math.max(0.5F, tag.getFloat("OrbitRadius")));
-        entityData.set(DAMAGE, tag.getFloat("Damage"));
+        if (tag.contains("DamageProfile", net.minecraft.nbt.Tag.TAG_STRING))
+        {
+            try
+            {
+                var parsed = JsonParser.parseString(tag.getString("DamageProfile"));
+                if (parsed.isJsonObject()) damageProfile = parsed.getAsJsonObject();
+            }
+            catch (RuntimeException ignored)
+            {
+                // Keep the default bullet profile when saved spell data is malformed.
+            }
+        }
         shootCooldown = tag.getInt("ShootCooldown");
     }
 }

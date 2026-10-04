@@ -233,24 +233,31 @@ public final class SpellCastHandler
         if (!(hit instanceof EntityHitResult entityHit) || !(entityHit.getEntity() instanceof LivingEntity target)
                 || target == caster || !target.isAlive()) return false;
 
-        int quantity = Math.max(1, Math.min(8, (int) Math.ceil(number(properties, "quantity", 2.0D))));
+        int quantity = Math.max(1, (int) Math.ceil(number(properties, "quantity", 2.0D)));
         double centerDistance = Math.max(0.5D, number(properties, "centerDist", 5.0D));
         JsonObject profile = properties.has("damageProfile") && properties.get("damageProfile").isJsonObject()
                 ? properties.getAsJsonObject("damageProfile") : new JsonObject();
-        float damage = (float) Math.max(0.0D, number(profile, "damage", 1.5D));
         Vec3 direction = caster.position().subtract(target.position()).normalize();
         if (direction.horizontalDistanceSqr() < 1.0E-6D) direction = new Vec3(1.0D, 0.0D, 0.0D);
 
         int spawned = 0;
-        for (int i = 0; i < quantity; i++)
+        int positions = quantity + 1;
+        for (int i = 1; i < positions; i++)
         {
-            double angle = Math.PI * 2.0D * i / quantity;
+            double angle = Math.PI * 2.0D * i / positions;
             double x = direction.x * Math.cos(angle) - direction.z * Math.sin(angle);
             double z = direction.z * Math.cos(angle) + direction.x * Math.sin(angle);
+            double radius = centerDistance;
             IllusionDroneEntity drone = new IllusionDroneEntity(
                     com.fiskmods.heroes.common.entity.ModEntities.ILLUSION_DRONE.get(), caster.level(), caster,
-                    target, (float) Math.toDegrees(Math.atan2(z, x)), (float) centerDistance, damage);
-            drone.setPos(target.getX() + x * centerDistance, target.getY() + 1.0D, target.getZ() + z * centerDistance);
+                    target, (float) Math.toDegrees(Math.atan2(z, x)), (float) radius, profile);
+            drone.setPos(target.getX() + x * radius, target.getY() + 1.0D, target.getZ() + z * radius);
+            while (radius > 0.5D && (!caster.level().isEmptyBlock(drone.blockPosition()) || !drone.hasLineOfSight(target)))
+            {
+                radius -= 0.5D;
+                drone.setPos(target.getX() + x * radius, target.getY() + 1.0D, target.getZ() + z * radius);
+            }
+            drone.setOrbitRadius((float) radius);
             if (caster.level().addFreshEntity(drone)) spawned++;
         }
         return spawned > 0;
