@@ -39,7 +39,8 @@ public class PacketAbility extends SHPacket
     {
         ServerPlayer player = context.getSender();
 
-        if (player != null && index >= 0 && index < 16)
+        // -1 is the primary attack input used by hero-pack keybinds for AIM/SHOOT.
+        if (player != null && index >= -1 && index < 16)
         {
             AbilityHandler.onAbilityKey(player, index, pressed);
         }

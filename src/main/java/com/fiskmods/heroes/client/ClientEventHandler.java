@@ -34,6 +34,7 @@ public class ClientEventHandler
     private static final boolean[] abilityKeysDown = new boolean[SHKeyBinds.ABILITY_COUNT];
     private static boolean weaponKeyHeld;
     private static boolean maskKeyDown;
+    private static boolean attackKeyDown;
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event)
@@ -91,6 +92,7 @@ public class ClientEventHandler
         {
             java.util.Arrays.fill(abilityKeysDown, false);
             maskKeyDown = false;
+            attackKeyDown = false;
             return;
         }
 
@@ -104,6 +106,16 @@ public class ClientEventHandler
                 abilityKeysDown[i] = down;
                 SHNetwork.sendToServer(new PacketAbility(ABILITY_INDICES[i], down));
             }
+        }
+
+        // In the original mod, key index -1 means the player's primary attack input. Several
+        // packs bind AIM/SHOOT to this input rather than one of the five suit keys.
+        boolean attackDown = mc.screen == null && mc.options.keyAttack.isDown();
+        AbilityHandler.setClientKeyState(player, -1, attackDown);
+        if (attackDown != attackKeyDown)
+        {
+            attackKeyDown = attackDown;
+            SHNetwork.sendToServer(new PacketAbility(-1, attackDown));
         }
 
         boolean maskDown = mc.screen == null && SHKeyBinds.MASK.isDown();
@@ -155,8 +167,20 @@ public class ClientEventHandler
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseButton event)
     {
-        if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
         Minecraft mc = Minecraft.getInstance();
+
+        if (mc.player != null && mc.options.keyAttack.matchesMouse(event.getButton()))
+        {
+            boolean down = event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null;
+            if (down != attackKeyDown)
+            {
+                attackKeyDown = down;
+                AbilityHandler.setClientKeyState(mc.player, -1, down);
+                SHNetwork.sendToServer(new PacketAbility(-1, down));
+            }
+        }
+
+        if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
         if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
                 && (mc.screen == null || mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)) weaponKeyHeld = true;
         else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE) weaponKeyHeld = false;
