@@ -389,24 +389,16 @@ class ModifierGrapple extends Modifier
         if (hit.getType() != net.minecraft.world.phys.HitResult.Type.MISS)
         {
             Vec3 target = hit.getLocation();
-            Vec3 delta = target.subtract(player.position()).normalize().scale(1.2D);
+            double speed = Math.max(0.1D, entry.getFloat(entity, PowerProperty.SPEED));
+            Vec3 delta = target.subtract(player.position()).normalize().scale(1.2D * speed);
 
             player.setDeltaMovement(delta);
             player.hasImpulse = true;
             player.fallDistance = 0.0F;
-            data.getData().set(Vars.WEB_SWINGING, true);
-            data.getData().set(Vars.WEB_RAPPEL, true);
+            AbilityData.playSound(player, entry, "SHOOT");
         }
     }
 
-    @Override
-    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
-    {
-        if (data.getData().get(Vars.WEB_SWINGING) && entity.onGround())
-        {
-            data.getData().set(Vars.WEB_SWINGING, false);
-        }
-    }
 }
 
 /** Shadow form: the wearer becomes a cloud of shadow particles. */

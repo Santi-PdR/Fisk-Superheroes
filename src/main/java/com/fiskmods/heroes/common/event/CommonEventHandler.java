@@ -35,18 +35,28 @@ public class CommonEventHandler
     @SubscribeEvent
     public static void onEquipmentUse(PlayerInteractEvent.RightClickItem event)
     {
-        if (!(event.getEntity() instanceof ServerPlayer player) || !event.getItemStack().isEmpty()) return;
-        if (!EquipmentHelper.useUtilityBelt(player)) return;
-
-        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
-        event.setCanceled(true);
+        if (!(event.getEntity() instanceof ServerPlayer player) || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || !event.getItemStack().isEmpty()) return;
+        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player)
+                || EquipmentHelper.useUtilityBelt(player))
+        {
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+            event.setCanceled(true);
+        }
     }
 
     /** Recruits the cactus column being pointed at while the hero's AIM ability is held. */
     @SubscribeEvent
     public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
     {
-        if (!(event.getEntity() instanceof ServerPlayer player) || player.isShiftKeyDown()) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
+        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player))
+        {
+            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+            event.setCanceled(true);
+            return;
+        }
+        if (player.isShiftKeyDown()) return;
 
         var iteration = HeroTracker.getHero(player);
         if (iteration == null || !com.fiskmods.heroes.common.hero.ability.AbilityHandler.isKeyPressed(player, "AIM")) return;
@@ -124,6 +134,11 @@ public class CommonEventHandler
 
         HeroTracker.update(entity);
         ModifierHandler.tick(entity);
+
+        if (entity instanceof ServerPlayer serverPlayer)
+        {
+            com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(serverPlayer);
+        }
 
         if (!entity.level().isClientSide)
         {

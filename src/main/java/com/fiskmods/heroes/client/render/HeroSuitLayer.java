@@ -83,48 +83,59 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         for (int slot = 0; slot < 4; ++slot)
         {
-            if (iteration.getArmorType(slot) == null || !hasPiece(player, slot))
+            // Resolve each worn piece independently. The chestplate still identifies the active
+            // hero for powers, but must not lend its texture/model to a helmet or leg piece from
+            // another set (creative inventory and old mixed sets can contain those).
+            ItemStack piece = player.getInventory().armor.get(3 - slot);
+            HeroIteration pieceIteration = com.fiskmods.heroes.common.hero.ItemHeroArmor.getHero(piece);
+            if (pieceIteration == null || pieceIteration.getArmorType(slot) == null)
             {
                 continue;
             }
 
-            ResourceLocation texture = model.getTexture(slot, player);
+            HeroModelData pieceModel = HeroModelRegistry.get(pieceIteration);
+            if (pieceModel == null)
+            {
+                continue;
+            }
+
+            ResourceLocation texture = pieceModel.getTexture(slot, player);
 
             if (texture != null)
             {
-                boolean[] hidden = hidePartsFor(playerModel, model, slot);
+                boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
                 VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
                 playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
                 restoreParts(playerModel, hidden);
             }
 
-            renderOverlay(poseStack, buffer, packedLight, player, playerModel, model, slot);
-            renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, model, iteration, slot);
-            renderCape(poseStack, buffer, packedLight, player, playerModel, model, slot);
-            renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, model, slot);
-            com.google.gson.JsonObject tentacles = model.getCustom().get("fiskheroes:tentacles");
+            renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
+            renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
+            renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
+            renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
+            com.google.gson.JsonObject tentacles = pieceModel.getCustom().get("fiskheroes:tentacles");
             if (tentacles != null)
             {
-                TentacleSuitRenderer.render(tentacles, poseStack, buffer, packedLight, player, playerModel, model, slot);
+                TentacleSuitRenderer.render(tentacles, poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
             }
-            for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
+            for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : pieceModel.getCustom().entrySet())
             {
                 if (entry.getKey().startsWith("fiskheroes:booster"))
-                    BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, model, slot, partialTicks);
+                    BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, pieceModel, slot, partialTicks);
                 else if (entry.getKey().equals("fiskheroes:wingsuit"))
-                    WingsuitRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, model, slot);
+                    WingsuitRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
                 else if (entry.getKey().equals("fiskheroes:wings"))
-                    FalconWingsRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, model, slot, partialTicks);
+                    FalconWingsRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, partialTicks);
             }
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
-            ResourceLocation lights = model.getLights(slot, player);
+            ResourceLocation lights = pieceModel.getLights(slot, player);
 
             if (lights != null)
             {
-                boolean[] hidden = hidePartsFor(playerModel, model, slot);
+                boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
 
-                if (model.shouldFixHatLayer(slot))
+                if (pieceModel.shouldFixHatLayer(slot))
                 {
                     // The hat layer is what draws the second skin layer; the helmet itself is
                     // already part of the suit texture
