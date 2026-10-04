@@ -5,6 +5,7 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierRegistry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.fiskmods.heroes.common.spell.ModifierSpellcasting;
 
 import net.minecraft.resources.ResourceLocation;
 
@@ -99,6 +100,7 @@ public final class Modifiers
     public static Modifier SPIDER_SENSE;
     public static Modifier TENTACLES;
     public static Modifier ETERNIUM_WEAKNESS;
+    public static Modifier SPELLCASTING;
     public static Modifier SHADOWDOME;
     public static Modifier PHASING;
     public static Modifier INTANGIBLE;
@@ -284,6 +286,7 @@ public final class Modifiers
         ETERNIUM_WEAKNESS = registry.register(new ModifierEterniumWeakness(new ResourceLocation(FiskHeroes.MODID, "eternium_weakness"))
                 .addProperty(PowerProperty.RADIUS, 3.0F)
                 .addProperty(PowerProperty.DURATION, 120));
+        SPELLCASTING = registry.register(new ModifierSpellcasting(new ResourceLocation(FiskHeroes.MODID, "spellcasting")));
         SHADOWDOME = registry.register(new ModifierShadowDome(new ResourceLocation(FiskHeroes.MODID, "shadowdome"))
                 .addProperty(PowerProperty.CHARGE_TIME, 40)
                 .addProperty(PowerProperty.DURATION, 1200)
@@ -302,7 +305,7 @@ public final class Modifiers
         for (String id : new String[] {
                 "cactus_physiology", "cactus_recruitment", "energy_manipulation",
                 "heat_vision", "hover", "lightning_cast", "regeneration_dry", "regeneration_wet",
-                "sentry_mode", "spellcasting", "transformation", "web_zip", "cryokinesis", "flame_blast",
+                "sentry_mode", "transformation", "web_zip", "cryokinesis", "flame_blast",
                 "fireball", "icicles", "frost_walking", "gravity_manipulation", "telekinesis", "thorns",
                 "sonic_waves", "charged_punch", "earthquake", "ground_smash", "shield_throwing",
                 "speed_disintegration", "wall_crawling", "absolute_intangibility", "cosmic_physiology",

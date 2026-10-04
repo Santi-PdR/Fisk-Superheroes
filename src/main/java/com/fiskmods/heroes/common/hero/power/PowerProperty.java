@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
+import com.fiskmods.heroes.common.spell.SpellSet;
 
 /**
  * A tunable property of a {@link Modifier}. Power JSON files adjust these per power, e.g.
@@ -61,7 +62,7 @@ public class PowerProperty<T>
     /** Complex values which are interpreted by the owning modifier. */
     public static final PowerProperty<JsonElement> EQUIPMENT = create("equipment", null);
     public static final PowerProperty<JsonElement> SHIELD = create("shield", null);
-    public static final PowerProperty<JsonElement> SPELLS = create("spells", null);
+    public static final PowerProperty<SpellSet> SPELLS = create("spells", SpellSet.EMPTY);
     public static final PowerProperty<JsonElement> TRANSFORMATION = create("transformation", null);
     public static final PowerProperty<JsonElement> TELEKINESIS = create("telekinesis", null);
     public static final PowerProperty<JsonElement> TENTACLES = create("tentacles", null);
@@ -140,6 +141,10 @@ public class PowerProperty<T>
             if (typeClass == JsonElement.class)
             {
                 return (T) json;
+            }
+            if (typeClass == SpellSet.class)
+            {
+                return (T) SpellSet.parse(json);
             }
         }
         catch (Exception e)
@@ -237,6 +242,11 @@ public class PowerProperty<T>
         if (value instanceof String s)
         {
             return new JsonPrimitive(s);
+        }
+
+        if (value instanceof SpellSet spells)
+        {
+            return spells.toJson();
         }
 
         return value instanceof JsonElement e ? e : null;
