@@ -192,6 +192,18 @@ public class JSEntity
         return entity.isAlive();
     }
 
+    /** Original {@code JSPlayer.isUsingItem()} predicate used by flight and web-swing scripts. */
+    public boolean isUsingItem()
+    {
+        return entity instanceof LivingEntity living && living.isUsingItem();
+    }
+
+    /** Original player accessor predicate used by shield and wing animations. */
+    public boolean isBlocking()
+    {
+        return entity instanceof Player player && player.isBlocking();
+    }
+
     public float getHealth()
     {
         return entity instanceof LivingEntity living ? living.getHealth() : 0.0F;
@@ -419,10 +431,94 @@ public class JSEntity
             return stack.isEmpty();
         }
 
+        public boolean matches(JSItem other)
+        {
+            return other != null && ItemStack.matches(stack, other.stack);
+        }
+
+        public int stackSize()
+        {
+            return stack.getCount();
+        }
+
+        public int maxStackSize()
+        {
+            return stack.getMaxStackSize();
+        }
+
+        public int damage()
+        {
+            return stack.getDamageValue();
+        }
+
+        public int maxDamage()
+        {
+            return stack.getMaxDamage();
+        }
+
+        public String displayName()
+        {
+            return stack.getHoverName().getString();
+        }
+
         /** True for registered firearm items accepted by pack predicates such as {@code isGun()}. */
         public boolean isGun()
         {
             return com.fiskmods.heroes.common.item.ItemGun.isGun(stack);
+        }
+
+        public boolean isLaserGun()
+        {
+            if (stack.isEmpty()) return false;
+            net.minecraft.resources.ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem());
+            return id != null && id.getNamespace().equals(com.fiskmods.heroes.FiskHeroes.MODID)
+                    && java.util.Set.of("chronos_rifle", "rip_hunters_gun", "cold_gun", "heat_gun").contains(id.getPath());
+        }
+
+        /** Mirrors the original weapon predicate: any main-hand attack-damage attribute modifier. */
+        public boolean isWeapon()
+        {
+            return !stack.isEmpty() && stack.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND)
+                    .containsKey(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        }
+
+        /** Rifle classification for the bundled weapon set; the original also accepted FiskTag rifles. */
+        public boolean isRifle()
+        {
+            if (stack.isEmpty()) return false;
+            net.minecraft.resources.ResourceLocation id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(stack.getItem());
+            return id != null && id.getNamespace().equals(com.fiskmods.heroes.FiskHeroes.MODID)
+                    && id.getPath().equals("chronos_rifle");
+        }
+
+        /** Whether the held item occupies both hands for the original suit animation predicates. */
+        public boolean doesNeedTwoHands()
+        {
+            return isRifle() || !stack.isEmpty()
+                    && stack.getItem() instanceof com.fiskmods.heroes.common.item.ItemCompoundBow;
+        }
+
+        public boolean isRenamed()
+        {
+            return stack.hasCustomHoverName();
+        }
+
+        public boolean isEnchanted()
+        {
+            return stack.isEnchanted();
+        }
+
+        public int getEnchantmentLevel(int numericId)
+        {
+            net.minecraft.world.item.enchantment.Enchantment enchantment =
+                    net.minecraft.core.registries.BuiltInRegistries.ENCHANTMENT.byId(numericId);
+            return enchantment == null ? 0 : net.minecraft.world.item.enchantment.EnchantmentHelper
+                    .getItemEnchantmentLevel(enchantment, stack);
+        }
+
+        public boolean hasEnchantment(int numericId)
+        {
+            return getEnchantmentLevel(numericId) > 0;
         }
 
         public int getCount()
@@ -439,6 +535,13 @@ public class JSEntity
         public String getHero()
         {
             return ItemHeroArmor.getHeroId(stack) != null ? ItemHeroArmor.getHeroId(stack).toString() : null;
+        }
+
+        /** Original pack scripts use suitType() to choose mixed-set textures and sound variants. */
+        public String suitType()
+        {
+            com.fiskmods.heroes.common.hero.HeroIteration iteration = ItemHeroArmor.getHero(stack);
+            return iteration != null ? iteration.getFullName() : "null";
         }
 
         public ItemStack unwrap()
