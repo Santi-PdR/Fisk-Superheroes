@@ -11,6 +11,7 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -68,6 +69,11 @@ public final class ProjectionBeamRenderHandler
                 continue;
             }
 
+            if (renderModelBeam(event.getPoseStack(), buffers, camera, player, model, event.getPartialTick()))
+            {
+                rendered = true;
+            }
+
             JsonObject effect = model.getCustom().get("fiskheroes:energy_projection");
             if (effect == null)
             {
@@ -117,6 +123,88 @@ public final class ProjectionBeamRenderHandler
         {
             buffers.endBatch(RenderType.lightning());
         }
+    }
+
+    /** Draws component beams such as the articulated glow inside Iron Man's Mk 50 cannon. */
+    private static boolean renderModelBeam(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
+            Vec3 camera, Player player, HeroModelData model, float partialTick)
+    {
+        JsonObject effect = model.getCustom().get("fiskheroes:beam");
+        if (effect == null || !effect.has("componentBeams") || !effect.get("componentBeams").isJsonArray())
+        {
+            return false;
+        }
+
+        float amount = Mth.clamp(model.evaluateRenderData(effect.get("length"), player, 0.0F), 0.0F, 1.0F);
+        if (amount <= 0.001F)
+        {
+            return false;
+        }
+
+        Vec3 direction = player.getLookAngle().normalize();
+        Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
+        if (right.lengthSqr() < 1.0E-6D)
+        {
+            right = new Vec3(1.0D, 0.0D, 0.0D);
+        }
+        else
+        {
+            right = right.normalize();
+        }
+        Vec3 up = right.cross(direction).normalize();
+        Vec3 origin = player.getPosition(partialTick).add(0.0D, player.getBbHeight() * 0.62D, 0.0D)
+                .add(right.scale(0.32D));
+        if (effect.has("offset") && effect.get("offset").isJsonArray()
+                && effect.getAsJsonArray("offset").size() >= 3)
+        {
+            var offset = effect.getAsJsonArray("offset");
+            origin = origin.add(right.scale(-offset.get(0).getAsDouble() / 16.0D))
+                    .add(up.scale(offset.get(1).getAsDouble() / 16.0D))
+                    .add(direction.scale(-offset.get(2).getAsDouble() / 16.0D));
+        }
+
+        int color = parseColor(effect);
+        int alpha = Mth.clamp(Math.round(amount * 230.0F), 0, 230);
+        VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
+        Vec3 startBase = origin.subtract(camera);
+        for (var element : effect.getAsJsonArray("componentBeams"))
+        {
+            if (!element.isJsonObject()) continue;
+            JsonObject component = element.getAsJsonObject();
+            JsonObject beam = component.has("beam") && component.get("beam").isJsonObject()
+                    ? component.getAsJsonObject("beam") : null;
+            if (beam == null || !component.has("direction") || !component.get("direction").isJsonArray()) continue;
+
+            double x = 0.0D, y = 0.0D, z = 0.0D;
+            if (beam.has("offset") && beam.get("offset").isJsonArray()
+                    && beam.getAsJsonArray("offset").size() >= 3)
+            {
+                var offset = beam.getAsJsonArray("offset");
+                x = offset.get(0).getAsDouble();
+                y = offset.get(1).getAsDouble();
+                z = offset.get(2).getAsDouble();
+            }
+            var vector = component.getAsJsonArray("direction");
+            if (vector.size() < 3) continue;
+            Vec3 start = startBase.add(right.scale(x / 16.0D)).add(up.scale(y / 16.0D))
+                    .add(direction.scale(-z / 16.0D));
+            Vec3 end = start.add(right.scale(vector.get(0).getAsDouble() * amount / 16.0D))
+                    .add(up.scale(vector.get(1).getAsDouble() * amount / 16.0D))
+                    .add(direction.scale(-vector.get(2).getAsDouble() * amount / 16.0D));
+            double width = 0.0125D;
+            if (beam.has("size") && beam.get("size").isJsonArray() && !beam.getAsJsonArray("size").isEmpty())
+            {
+                width = Math.max(0.006D, beam.getAsJsonArray("size").get(0).getAsDouble() / 32.0D);
+            }
+
+            Vec3 side = end.subtract(start).cross(up);
+            if (side.lengthSqr() < 1.0E-6D) side = right;
+            else side = side.normalize();
+            poseStack.pushPose();
+            drawRibbon(consumer, poseStack.last(), start, end, side.scale(width), color, alpha);
+            poseStack.popPose();
+        }
+        return true;
     }
 
     private static int parseColor(JsonObject effect)
