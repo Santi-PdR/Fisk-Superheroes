@@ -72,7 +72,7 @@ public class ModItems
     public static final RegistryObject<Item> CHOKUTO = REGISTRY.register("chokuto", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> TACTICAL_TONFA = REGISTRY.register("tactical_tonfa", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> GRAPPLING_GUN = REGISTRY.register("grappling_gun", () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> CAPTAIN_AMERICAS_SHIELD = REGISTRY.register("captain_americas_shield", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> CAPTAIN_AMERICAS_SHIELD = REGISTRY.register("captain_americas_shield", () -> new ItemCaptainAmericaShield(new Item.Properties()));
     public static final RegistryObject<Item> QUIVER = REGISTRY.register("quiver", () -> new ItemQuiver(new Item.Properties()));
     public static final RegistryObject<Item> COMPOUND_BOW = REGISTRY.register("compound_bow", () -> new ItemCompoundBow(new Item.Properties()));
     public static final RegistryObject<Item> TRICK_ARROW = REGISTRY.register("trick_arrow", () -> new ItemTrickArrow(new Item.Properties()));
