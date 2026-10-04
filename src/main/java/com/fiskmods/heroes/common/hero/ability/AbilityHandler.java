@@ -120,6 +120,8 @@ public final class AbilityHandler
     {
         String modifierId = switch (key)
         {
+            case "CHARGE_ENERGY" -> "energy_manipulation";
+            case "CHARGE_ICE" -> "cryo_charge";
             case "SHOOT_SPIKES" -> "spike_burst";
             case "TELEPORT" -> "teleportation";
             case "MINIATURIZE_SUIT", "SIZE_MANIPULATION" -> "size_manipulation";
