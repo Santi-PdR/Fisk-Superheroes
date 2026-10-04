@@ -1,5 +1,5 @@
 function init(hero) {
-    hero.setName("hero.fiskheroes.spider_man_webb.name");
+    hero.setName("hero.fiskheroes.spider_man_ps4.name");
     hero.setVersion("item.superhero_armor.version.ps4");
     hero.setTier(7);
 
