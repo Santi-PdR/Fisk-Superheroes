@@ -63,6 +63,10 @@ public final class SHSoundPack implements PackResources
 
     private static void findPacks(Consumer<Pack> output)
     {
+        // Resource pack discovery runs before Minecraft reads sounds.json. Refresh the generated
+        // index here as well as during client setup, otherwise a cached pack is first loaded with
+        // its stale file and only repaired after the initial resource reload.
+        SHSoundRepository.loadCached();
         Path root = SHSoundRepository.root().resolve("pack");
 
         if (!Files.isDirectory(root.resolve("assets/fiskheroes/sounds")))
