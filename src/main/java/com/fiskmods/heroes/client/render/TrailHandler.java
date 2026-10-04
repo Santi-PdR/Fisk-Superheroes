@@ -6,6 +6,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.annotation.Nullable;
@@ -31,6 +32,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class TrailHandler
 {
     private static final Map<UUID, TrailState> STATES = new HashMap<>();
+    private static final Map<UUID, Deque<FlickerBurst>> FLICKERS = new HashMap<>();
 
     private TrailHandler() {}
 
@@ -61,6 +63,12 @@ public final class TrailHandler
         return state != null ? List.copyOf(state.samples) : List.of();
     }
 
+    public static List<FlickerBurst> getFlickers(UUID player)
+    {
+        Deque<FlickerBurst> bursts = FLICKERS.get(player);
+        return bursts != null ? List.copyOf(bursts) : List.of();
+    }
+
     @Nullable
     public static TrailDefinition getDefinition(UUID player)
     {
@@ -71,12 +79,14 @@ public final class TrailHandler
     public static void clear(UUID player)
     {
         STATES.remove(player);
+        FLICKERS.remove(player);
     }
 
     @SubscribeEvent
     public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event)
     {
         STATES.clear();
+        FLICKERS.clear();
     }
 
     @SubscribeEvent
@@ -87,7 +97,152 @@ public final class TrailHandler
         HeroTracker.update(player);
         HeroIteration iteration = HeroTracker.getHero(player);
         HeroModelData model = iteration != null ? HeroModelRegistry.get(iteration.getHero().getRegistryName()) : null;
-        tick(player, model != null ? model.getTrail(player) : null);
+        TrailDefinition configured = model != null ? model.getTrail(player, false) : null;
+        TrailDefinition active = model != null ? model.getTrail(player) : null;
+        tick(player, active);
+        tickFlicker(player, configured, active != null, iteration != null);
+    }
+
+    private static void tickFlicker(Player player, @Nullable TrailDefinition definition, boolean active, boolean wearingHero)
+    {
+        Deque<FlickerBurst> bursts = FLICKERS.get(player.getUUID());
+        if (bursts != null)
+        {
+            for (FlickerBurst burst : bursts) ++burst.age;
+            bursts.removeIf(burst -> burst.age >= 4);
+            if (bursts.isEmpty()) FLICKERS.remove(player.getUUID());
+        }
+
+        if (definition == null || definition.flicker() == null) return;
+        var flicker = definition.flicker();
+        boolean confined = flicker.has("confined") && flicker.get("confined").getAsBoolean();
+        if (!active && (confined || !wearingHero)) return;
+        float frequency = flicker.has("frequency") ? flicker.get("frequency").getAsFloat() : 0.4F;
+        if (Math.random() >= frequency) return;
+
+        int density = Math.max(0, flicker.has("density") ? flicker.get("density").getAsInt() : 16);
+        float spread = flicker.has("spread") ? flicker.get("spread").getAsFloat() : 1.0F;
+        float length = flicker.has("length") ? flicker.get("length").getAsFloat() : 0.1F;
+        float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
+        float width = player.getBbWidth();
+        float height = player.getBbHeight();
+        Random random = new Random();
+        int color = flickerColor(definition, player);
+        float opacity = flicker.has("opacity") ? flicker.get("opacity").getAsFloat() : 1.0F;
+        for (int i = 0; i < density; ++i)
+        {
+            double x;
+            double y;
+            double z;
+            do
+            {
+                x = player.getRandom().nextFloat() * 2.0F - 1.0F;
+                y = player.getRandom().nextFloat() * 2.0F - 1.0F;
+                z = player.getRandom().nextFloat() * 2.0F - 1.0F;
+            }
+            while (x * x + y * y + z * z < 1.0D);
+
+            Vec3 offset = new Vec3(x * width / 4.0D * spread,
+                    y * spread * scale * height + height / 2.0D,
+                    z * width / 4.0D * spread);
+            LightningNode lightning = createLightning(random, length * scale, scale, color, 0);
+            FLICKERS.computeIfAbsent(player.getUUID(), ignored -> new ArrayDeque<>())
+                    .addLast(new FlickerBurst(offset, lightning, color, opacity));
+        }
+    }
+
+    private static int flickerColor(TrailDefinition trail, Player player)
+    {
+        if (trail.id().getPath().startsWith("builtin/lightning_rgb_"))
+        {
+            int step = 1;
+            try { step = Integer.parseInt(trail.id().getPath().substring("builtin/lightning_rgb_".length())); }
+            catch (NumberFormatException ignored) {}
+            float hue = (player.tickCount * step / 360.0F) % 1.0F;
+            return java.awt.Color.HSBtoRGB(hue, 1.0F, 1.0F) & 0xFFFFFF;
+        }
+        var flicker = trail.flicker();
+        String color = trail.resolveConstant(flicker.has("color") ? flicker.get("color").getAsString() : null);
+        try { return color != null ? Long.decode(color).intValue() & 0xFFFFFF : 0xFFFFFF; }
+        catch (NumberFormatException ignored) { return 0xFFFFFF; }
+    }
+
+    private static LightningNode createLightning(Random random, float length, float scale, int color, int branch)
+    {
+        float nodeLength = random.nextFloat() * length;
+        LightningNode node = new LightningNode(nodeLength, scale, random.nextFloat() * 360.0F,
+                random.nextFloat() * 360.0F, random.nextFloat() * 360.0F, color);
+        branchLightning(node, random, length, scale, branch);
+        return node;
+    }
+
+    private static void branchLightning(LightningNode parent, Random random, float length, float scale, int branch)
+    {
+        LightningNode child = new LightningNode(random.nextFloat() * length, scale,
+                random.nextFloat() * random.nextFloat() * 90.0F,
+                random.nextFloat() * random.nextFloat() * 90.0F,
+                random.nextFloat() * random.nextFloat() * 90.0F, parent.color);
+        parent.children.add(child);
+        if (branch < 10 && random.nextDouble() < 1.0D - branch * 0.1D)
+        {
+            branchLightning(child, random, length, scale, branch + 1);
+        }
+        if (random.nextDouble() < 0.1D)
+        {
+            branchLightning(parent, random, length, scale, 7);
+        }
+    }
+
+    public static final class FlickerBurst
+    {
+        private final Vec3 offset;
+        private final LightningNode lightning;
+        private final int color;
+        private final float opacity;
+        private int age;
+
+        private FlickerBurst(Vec3 offset, LightningNode lightning, int color, float opacity)
+        {
+            this.offset = offset;
+            this.lightning = lightning;
+            this.color = color;
+            this.opacity = opacity;
+        }
+
+        public Vec3 offset() { return offset; }
+        public LightningNode lightning() { return lightning; }
+        public int color() { return color; }
+        public float opacity() { return opacity; }
+        public int age() { return age; }
+    }
+
+    public static final class LightningNode
+    {
+        private final float length;
+        private final float scale;
+        private final float rotateX;
+        private final float rotateY;
+        private final float rotateZ;
+        private final int color;
+        private final List<LightningNode> children = new ArrayList<>();
+
+        private LightningNode(float length, float scale, float rotateX, float rotateY, float rotateZ, int color)
+        {
+            this.length = length;
+            this.scale = scale;
+            this.rotateX = rotateX;
+            this.rotateY = rotateY;
+            this.rotateZ = rotateZ;
+            this.color = color;
+        }
+
+        public float length() { return length; }
+        public float scale() { return scale; }
+        public float rotateX() { return rotateX; }
+        public float rotateY() { return rotateY; }
+        public float rotateZ() { return rotateZ; }
+        public int color() { return color; }
+        public List<LightningNode> children() { return List.copyOf(children); }
     }
 
     public static final class Sample

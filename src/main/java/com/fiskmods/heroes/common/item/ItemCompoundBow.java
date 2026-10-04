@@ -24,7 +24,9 @@ public class ItemCompoundBow extends BowItem
 {
     public ItemCompoundBow(Properties properties)
     {
-        super(properties.durability(1500).stacksTo(1));
+        // durability() already makes damageable items unstackable; calling
+        // stacksTo() afterwards is rejected by 1.20.1 Item.Properties.
+        super(properties.durability(1500));
     }
 
     @Override

@@ -79,10 +79,17 @@ public class HeroModelData
     @Nullable
     public TrailDefinition getTrail(Entity entity)
     {
+        return getTrail(entity, true);
+    }
+
+    /** Resolves the configured resource without applying its movement conditionals. */
+    @Nullable
+    public TrailDefinition getTrail(Entity entity, boolean testConditionals)
+    {
         JsonObject effect = custom.get("fiskheroes:trail");
         if (effect == null || !effect.has("type")) return null;
 
-        if (effect.has("conditionals") && effect.get("conditionals").isJsonArray())
+        if (testConditionals && effect.has("conditionals") && effect.get("conditionals").isJsonArray())
         {
             for (JsonElement condition : effect.getAsJsonArray("conditionals"))
             {

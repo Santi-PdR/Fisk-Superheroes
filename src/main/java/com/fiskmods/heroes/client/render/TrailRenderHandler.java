@@ -235,6 +235,65 @@ public final class TrailRenderHandler
         }
     }
 
+    @SubscribeEvent
+    public static void renderTrailFlickers(RenderPlayerEvent.Post event)
+    {
+        Player player = event.getEntity();
+        if (player == Minecraft.getInstance().player && Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        List<TrailHandler.FlickerBurst> bursts = TrailHandler.getFlickers(player.getUUID());
+        if (bursts.isEmpty()) return;
+
+        VertexConsumer consumer = event.getMultiBufferSource().getBuffer(RenderType.lightning());
+        PoseStack poseStack = event.getPoseStack();
+        float scale = player.getBbHeight() / 1.8F;
+        for (TrailHandler.FlickerBurst burst : bursts)
+        {
+            float progress = Mth.clamp(1.0F - (burst.age() + event.getPartialTick()) / 4.0F, 0.0F, 1.0F);
+            float alpha = progress * burst.opacity();
+            if (alpha <= 0.0F) continue;
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.YP.rotationDegrees(180.0F - player.yBodyRot));
+            poseStack.scale(-1.0F, 1.0F, 1.0F);
+            poseStack.translate(burst.offset().x, burst.offset().y - 0.21D * scale, burst.offset().z);
+            try
+            {
+                renderLightningNode(poseStack, consumer, burst.lightning(), alpha);
+            }
+            finally
+            {
+                poseStack.popPose();
+            }
+        }
+    }
+
+    private static void renderLightningNode(PoseStack poseStack, VertexConsumer consumer,
+            TrailHandler.LightningNode lightning, float alpha)
+    {
+        poseStack.pushPose();
+        try
+        {
+            poseStack.mulPose(Axis.ZP.rotationDegrees(lightning.rotateZ()));
+            poseStack.mulPose(Axis.YP.rotationDegrees(lightning.rotateY()));
+            poseStack.mulPose(Axis.XP.rotationDegrees(lightning.rotateX()));
+
+            int color = lightning.color();
+            drawBolt(consumer, poseStack.last(), Vec3.ZERO, new Vec3(0.0D, lightning.length(), 0.0D),
+                    ((color >> 16) & 255) / 255.0F, ((color >> 8) & 255) / 255.0F,
+                    (color & 255) / 255.0F, alpha, 0.025D * lightning.scale());
+
+            poseStack.translate(0.0D, lightning.length(), 0.0D);
+            for (TrailHandler.LightningNode child : lightning.children())
+            {
+                renderLightningNode(poseStack, consumer, child, alpha);
+            }
+        }
+        finally
+        {
+            poseStack.popPose();
+        }
+    }
+
     private static HeroIterationHolder activeTrail(Player player)
     {
         var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getHero(player);
@@ -303,11 +362,17 @@ public final class TrailRenderHandler
     private static void drawBolt(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end,
             float red, float green, float blue, float alpha)
     {
+        drawBolt(consumer, pose, start, end, red, green, blue, alpha, 0.025D);
+    }
+
+    private static void drawBolt(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end,
+            float red, float green, float blue, float alpha, double width)
+    {
         Vec3 direction = end.subtract(start).normalize();
         Vec3 side = direction.cross(new Vec3(0, 1, 0));
         if (side.lengthSqr() < 1.0E-5D) side = direction.cross(new Vec3(1, 0, 0));
-        side = side.normalize().scale(0.025D);
-        Vec3 up = direction.cross(side).normalize().scale(0.025D);
+        side = side.normalize().scale(width);
+        Vec3 up = direction.cross(side).normalize().scale(width);
         Vec3[] offsets = { side.add(up), side.subtract(up), side.scale(-1).subtract(up), side.scale(-1).add(up) };
 
         // Six faces keep the lightning visible from either side, like the original beam renderer.
