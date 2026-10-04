@@ -104,7 +104,10 @@ public class SHClientSetup
                     return 0.0F;
                 }
 
-                return 0.01F + Math.abs(id.getPath().hashCode() % 9999) / 10000.0F;
+                // The item model overrides are generated from Java's floor-mod mapping.
+                // Math.abs(hash % n) diverges for negative hashes and selects another hero's
+                // armor model (for example Arsenal's index points at a Spider-Man entry).
+                return 0.01F + Math.floorMod(id.getPath().hashCode(), 9999) / 10000.0F;
             };
 
             ItemProperties.register(com.fiskmods.heroes.common.item.ModItems.HELMET.get(), HERO_INDEX, function);
