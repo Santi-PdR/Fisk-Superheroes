@@ -22,13 +22,15 @@ public final class EquipmentWheelScreen extends Screen
 {
     private final List<WeaponList.Entry> entries;
     private final ItemStack[] selected;
+    private final int wheelColor;
     private int hovered = -1;
 
-    public EquipmentWheelScreen(Hero hero, ItemStack[] selected)
+    public EquipmentWheelScreen(Hero hero, ItemStack[] selected, int wheelColor)
     {
         super(Component.translatable("gui.fiskheroes.equipment"));
         this.entries = hero.getWeaponStacks().entries().toList();
         this.selected = selected;
+        this.wheelColor = wheelColor & 0xFFFFFF;
     }
 
     @Override
@@ -46,7 +48,8 @@ public final class EquipmentWheelScreen extends Screen
             int x = cx + (int) (Math.cos(angle) * radius) - 9;
             int y = cy + (int) (Math.sin(angle) * radius) - 9;
             boolean available = i < selected.length && selected[i] != null && !selected[i].isEmpty();
-            int bg = i == hovered ? 0xCC2860A8 : available ? 0xBB27613E : 0xAA303030;
+            int bg = i == hovered ? 0xCC000000 | wheelColor
+                    : available ? 0xAA000000 | darken(wheelColor, 0.48F) : 0xAA303030;
             graphics.fill(x - 4, y - 4, x + 22, y + 22, bg);
             ItemStack icon = available ? selected[i] : entries.get(i).value();
             if (icon != null && !icon.isEmpty()) graphics.renderItem(icon, x, y);
@@ -97,6 +100,33 @@ public final class EquipmentWheelScreen extends Screen
         Hero hero = iteration.getHero();
         if (!WeaponHelper.canEquipWeapon(player, hero)) return null;
         ItemStack[] selected = WeaponHelper.getEquippedWeapons(player, hero);
-        return selected != null ? new EquipmentWheelScreen(hero, selected) : null;
+        return selected != null ? new EquipmentWheelScreen(hero, selected, getWheelColor(iteration)) : null;
+    }
+
+    private static int getWheelColor(HeroIteration iteration)
+    {
+        int fallback = 0x2860A8;
+        com.fiskmods.heroes.client.render.HeroModelData model =
+                com.fiskmods.heroes.client.render.HeroModelRegistry.get(iteration);
+        if (model == null) return fallback;
+        com.google.gson.JsonObject wheel = model.getCustom().get("fiskheroes:equipment_wheel");
+        if (wheel == null || !wheel.has("color")) return fallback;
+        String raw = wheel.get("color").getAsString();
+        try
+        {
+            return Integer.decode(raw) & 0xFFFFFF;
+        }
+        catch (NumberFormatException ignored)
+        {
+            return fallback;
+        }
+    }
+
+    private static int darken(int color, float factor)
+    {
+        int red = Math.round(((color >> 16) & 0xFF) * factor);
+        int green = Math.round(((color >> 8) & 0xFF) * factor);
+        int blue = Math.round((color & 0xFF) * factor);
+        return red << 16 | green << 8 | blue;
     }
 }
