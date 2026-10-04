@@ -1,6 +1,9 @@
 package com.fiskmods.heroes.client.render;
 
 import com.fiskmods.heroes.FiskHeroes;
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.pack.ScriptFunction;
 import com.fiskmods.heroes.pack.js.JSEntity;
 import com.fiskmods.heroes.pack.js.JSExpressions;
@@ -18,6 +21,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.server.packs.resources.Resource;
@@ -58,6 +62,7 @@ final class ParticleEmitterRenderer
         }
 
         Minecraft mc = Minecraft.getInstance();
+        emitTelekinesisChain(player, model, suit, suitScale);
         boolean firstPerson = player == mc.player && mc.options.getCameraType().isFirstPerson();
         for (Map.Entry<String, JsonObject> entry : suit.getCustom().entrySet())
         {
@@ -73,6 +78,56 @@ final class ParticleEmitterRenderer
                 emit(player, model, suitScale, emitter, firstPerson);
             }
         }
+    }
+
+    /** Recreates the original Obsidian shadow-smoke chain between the caster and grabbed target. */
+    private static void emitTelekinesisChain(Player player, PlayerModel<?> model, HeroModelData suit, float scale)
+    {
+        if (!player.level().isClientSide) return;
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null || !data.getData().get(Vars.TELEKINESIS)) return;
+
+        JsonObject effect = suit.getCustom().get("fiskheroes:telekinesis_chain");
+        if (effect == null) return;
+
+        Entity target = player.level().getEntity(data.getData().get(Vars.GRAB_ID));
+        if (target == null || !target.isAlive()) return;
+
+        boolean firstPerson = player == Minecraft.getInstance().player
+                && Minecraft.getInstance().options.getCameraType().isFirstPerson();
+        String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "rightArm";
+        Vec3 offset = effect.has(firstPerson ? "firstPerson" : "offset")
+                ? vector(effect.get(firstPerson ? "firstPerson" : "offset")) : Vec3.ZERO;
+        ModelPart part = anchor(model, anchorName);
+        Vec3 local = anchorOffset(part, offset, scale);
+        Vec3 startOffset = orient(local, player.yBodyRot);
+        Vec3 start = new Vec3(player.getX() + startOffset.x,
+                player.getY() + 1.5D * scale - startOffset.y, player.getZ() + startOffset.z);
+        Vec3 end = target.position().add(0.0D, target.getBbHeight() * 0.55D, 0.0D);
+        Vec3 delta = end.subtract(start);
+        Vec3 bend = new Vec3(0.0D, Math.min(1.5D, delta.length() * 0.12D), 0.0D);
+        Vec3 control1 = start.add(delta.scale(0.33D)).add(bend);
+        Vec3 control2 = start.add(delta.scale(0.66D)).add(bend);
+
+        // A low particle budget keeps this attached effect light even with several players nearby.
+        for (int i = 1; i <= 5; ++i)
+        {
+            double t = i / 6.0D;
+            double inv = 1.0D - t;
+            Vec3 point = start.scale(inv * inv * inv)
+                    .add(control1.scale(3.0D * inv * inv * t))
+                    .add(control2.scale(3.0D * inv * t * t))
+                    .add(end.scale(t * t * t));
+            player.level().addParticle(ParticleTypes.SMOKE, point.x, point.y, point.z,
+                    0.0D, 0.005D, 0.0D);
+        }
+    }
+
+    private static Vec3 vector(JsonElement value)
+    {
+        if (value == null || !value.isJsonArray() || value.getAsJsonArray().size() < 3) return Vec3.ZERO;
+        JsonArray array = value.getAsJsonArray();
+        return new Vec3(array.get(0).getAsDouble(), array.get(1).getAsDouble(), array.get(2).getAsDouble());
     }
 
     private static List<Emitter> load(ResourceLocation id)
