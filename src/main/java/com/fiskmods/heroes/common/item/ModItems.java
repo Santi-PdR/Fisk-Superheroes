@@ -10,6 +10,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.registries.DeferredRegister;
@@ -76,6 +77,39 @@ public class ModItems
     public static final RegistryObject<Item> QUIVER = REGISTRY.register("quiver", () -> new ItemQuiver(new Item.Properties()));
     public static final RegistryObject<Item> COMPOUND_BOW = REGISTRY.register("compound_bow", () -> new ItemCompoundBow(new Item.Properties()));
     public static final RegistryObject<Item> TRICK_ARROW = REGISTRY.register("trick_arrow", () -> new ItemTrickArrow(new Item.Properties()));
+
+    /* Non-craftable visual items carried by pack-defined belt gadgets. */
+    public static final RegistryObject<Item> BATARANG = registerGadget("batarang");
+    public static final RegistryObject<Item> FREEZE_GRENADE = registerGadget("freeze_grenade");
+    public static final RegistryObject<Item> SMOKE_PELLET = registerGadget("smoke_pellet");
+    public static final RegistryObject<Item> THROWING_STAR = registerGadget("throwing_star");
+    public static final RegistryObject<Item> GRENADE = registerGadget("grenade");
+    public static final RegistryObject<Item> STICKY_WEB = registerGadget("sticky_web");
+    public static final RegistryObject<Item> IMPACT_WEB = registerGadget("impact_web");
+    public static final RegistryObject<Item> RAPID_WEBS = registerGadget("rapid_webs");
+    public static final RegistryObject<Item> RICOCHET_WEB = registerGadget("ricochet_web");
+
+    private static RegistryObject<Item> registerGadget(String id)
+    {
+        return REGISTRY.register(id, () -> new Item(new Item.Properties().stacksTo(1)));
+    }
+
+    public static ItemStack equipmentGadget(String path)
+    {
+        return switch (path)
+        {
+            case "batarang" -> new ItemStack(BATARANG.get());
+            case "freeze_grenade" -> new ItemStack(FREEZE_GRENADE.get());
+            case "smoke_pellet" -> new ItemStack(SMOKE_PELLET.get());
+            case "throwing_star" -> new ItemStack(THROWING_STAR.get());
+            case "grenade" -> new ItemStack(GRENADE.get());
+            case "sticky_web" -> new ItemStack(STICKY_WEB.get());
+            case "impact_web" -> new ItemStack(IMPACT_WEB.get());
+            case "rapid_webs" -> new ItemStack(RAPID_WEBS.get());
+            case "ricochet_web" -> new ItemStack(RICOCHET_WEB.get());
+            default -> ItemStack.EMPTY;
+        };
+    }
 
     private static <T extends Item> RegistryObject<T> register(String name, Supplier<T> supplier)
     {

@@ -3,6 +3,7 @@ package com.fiskmods.heroes.common.entity;
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
 import com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity;
+import com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity;
 import com.fiskmods.heroes.common.spell.IllusionDroneEntity;
 import com.fiskmods.heroes.common.spell.SpellDuplicateEntity;
 import com.fiskmods.heroes.common.spell.EarthCrackEntity;
@@ -23,6 +24,10 @@ public final class ModEntities
             () -> EntityType.Builder.<ThrownShieldEntity>of(ThrownShieldEntity::new, MobCategory.MISC)
                     .sized(0.8F, 0.09375F).clientTrackingRange(64).updateInterval(1)
                     .build("fiskheroes:thrown_shield"));
+    public static final RegistryObject<EntityType<EquipmentProjectileEntity>> EQUIPMENT_PROJECTILE = REGISTRY.register("equipment_projectile",
+            () -> EntityType.Builder.<EquipmentProjectileEntity>of(EquipmentProjectileEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1)
+                    .build("fiskheroes:equipment_projectile"));
     public static final RegistryObject<EntityType<CactusMinionEntity>> CACTUS_MINION = REGISTRY.register("cactus_minion",
             () -> EntityType.Builder.<CactusMinionEntity>of(CactusMinionEntity::new, MobCategory.CREATURE)
                     .sized(1.0F, 1.0F).clientTrackingRange(80).updateInterval(1).build("fiskheroes:cactus_minion"));

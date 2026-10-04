@@ -31,6 +31,17 @@ public class CommonEventHandler
 {
     private static final String CACTUS_COOLDOWN_UNTIL = "FiskHeroesCactusSummonUntil";
 
+    /** Uses the selected belt gadget when the player's hand is empty. */
+    @SubscribeEvent
+    public static void onEquipmentUse(PlayerInteractEvent.RightClickItem event)
+    {
+        if (!(event.getEntity() instanceof ServerPlayer player) || !event.getItemStack().isEmpty()) return;
+        if (!EquipmentHelper.useUtilityBelt(player)) return;
+
+        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+        event.setCanceled(true);
+    }
+
     /** Recruits the cactus column being pointed at while the hero's AIM ability is held. */
     @SubscribeEvent
     public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
