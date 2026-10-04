@@ -55,12 +55,7 @@ public class SHKeyBinds
             return MASK;
         }
 
-        if (index == 1)
-        {
-            return WEAPON;
-        }
-
-        int ability = index - 2;
+        int ability = index - 1;
 
         if (ability >= 0 && ability < ABILITY_COUNT)
         {
