@@ -271,6 +271,20 @@ public class ClientEventHandler
     {
         Minecraft mc = Minecraft.getInstance();
 
+        if (mc.player != null && mc.screen == null && event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
+                && mc.options.keyAttack.matchesMouse(event.getButton())
+                && mc.player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                && !mc.player.getCooldowns().isOnCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                && AbilityHandler.isKeyPressed(mc.player, "SHIELD_THROW"))
+        {
+            var hero = com.fiskmods.heroes.common.hero.HeroTracker.getHeroType(mc.player);
+            var entry = hero != null ? AbilityHandler.findModifier(hero, "SHIELD_THROW") : null;
+            int cooldown = entry != null
+                    ? entry.getInt(com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME) : 10;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketThrowShield());
+            mc.player.getCooldowns().addCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, cooldown));
+        }
+
         if (mc.player != null && mc.options.keyAttack.matchesMouse(event.getButton()))
         {
             boolean down = event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null;
