@@ -101,6 +101,11 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, model, iteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, model, slot);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, model, slot);
+            for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
+            {
+                if (entry.getKey().startsWith("fiskheroes:booster"))
+                    BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, model, slot, partialTicks);
+            }
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
             ResourceLocation lights = model.getLights(slot, player);
