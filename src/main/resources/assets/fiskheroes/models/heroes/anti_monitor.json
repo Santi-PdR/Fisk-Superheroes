@@ -1,0 +1,107 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:anti_monitor_layer1",
+    "layer2": "fiskheroes:anti_monitor_layer2",
+    "layer3": "fiskheroes:anti_monitor_layer3",
+    "lights": "fiskheroes:anti_monitor_lights",
+    "tubes": "fiskheroes:anti_monitor_tubes"
+  },
+  "texture": {
+    "renderLayer": {
+      "HELMET": {
+        "wornChestplate": {
+          "fiskheroes:anti_monitor": "layer3"
+        }
+      },
+      "CHESTPLATE": "layer1",
+      "BOOTS": "layer3"
+    },
+    "default": "layer2"
+  },
+  "lights": {
+    "renderLayer": {
+      "CHESTPLATE": "lights"
+    },
+    "default": "null"
+  },
+  "showModel": {
+    "head": ["HELMET", "CHESTPLATE"],
+    "headwear": ["HELMET", "CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"],
+    "leftLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["HELMET", "CHESTPLATE"],
+  "animations": {
+    "BLOCKING": null,
+    "CHARGED_BEAM": null
+  },
+  "custom": {
+    "fiskheroes:model": {
+      "applicable": ["CHESTPLATE"],
+      "modelType": "fiskheroes:anti_monitor_tubes",
+      "texture": ["null", "tubes"],
+      "anchor": "rightArm",
+      "opacity": 1.0,
+      "mirror": true
+    },
+    "fiskheroes:energy_projection": {
+      "color": "0xFF1000",
+      "anchor": "body",
+      "beams": [
+        {
+          "firstPerson": [0.0, 6.0, 0.0],
+          "offset": [0.0, 5.0, -4.0],
+          "size": [4.0, 4.0]
+        }
+      ],
+      "renderer": "fiskheroes:energy_projection",
+      "particleType": "fiskheroes:impact_energy_projection"
+    },
+    "fiskheroes:charged_beam": {
+      "color": "0xFF1000",
+      "anchor": "rightArm",
+      "beams": [
+        {
+          "firstPerson": [-4.5, 3.75, -8.0],
+          "offset": [-0.5, 9.0, 0.0],
+          "size": [3, 3]
+        }
+      ],
+      "renderer": "fiskheroes:energy_projection",
+      "particleType": "fiskheroes:impact_antimatter"
+    },
+    "fiskheroes:arm_animation": {
+      "dataRArmPose": "fiskheroes:beam_charge"
+    },
+    "fiskheroes:trail": {
+      "type": "fiskheroes:anti_monitor",
+      "conditionals": ["vars:GROWING"]
+    },
+    "fiskheroes:invisibility": {
+      "applicable": ["HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"],
+      "opacityMin": 0.0,
+      "opacityMax": 1.0,
+      "data": "fiskheroes:shadowform_timer"
+    },
+    "fiskheroes:particle_cloud": {
+      "particles": "fiskheroes:shadow_smoke",
+      "conditionals": ["vars:SHADOWFORM"]
+    },
+    "fiskheroes:forcefield": {
+      "color": "0xFFD3A8",
+      "rotation": [0.0, 0.0, 0.0],
+      "translation": [0.0, 6.0, 0.0],
+      "scale": [1.25, 1.25, 1.25],
+      "shape": [36, 18],
+      "data": "entity.getInterpolatedData('fiskheroes:shield_blocking_timer') * 0.15"
+    }
+  },
+  "vars": {
+    "GROWING": "entity.getData('fiskheroes:size_state') > 0",
+    "SHADOWFORM": "entity.getData('fiskheroes:shadowform')"
+  }
+}

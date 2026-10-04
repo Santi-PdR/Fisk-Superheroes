@@ -1,0 +1,33 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.marksmanship.name"
+    },
+    "icon": {
+      "texture": "fiskheroes:textures/gui/nodes/marksmanship.png"
+    }
+  },
+  "requirements": [
+    "fiskheroes:ranged2"
+  ],
+  "price": {
+    "IRID_GOLD": 2,
+    "XP_LEVELS": 15
+  },
+  "criteria": {
+    "sniper": {
+      "trigger": "fiskheroes:entity_hurt_by_player",
+      "description": {
+        "translate": "node.fiskheroes.marksmanship.sniper.desc"
+      },
+      "condition": {
+        "variables": {
+          "player": "PLAYER_ATTACKING",
+          "entity": "ENTITY_HURT",
+          "source": "DAMAGE_SOURCE"
+        },
+        "check": "source.name() == 'arrow' && source.isProjectile() && player.pos().distanceTo(entity.pos()) >= 70"
+      }
+    }
+  }
+}

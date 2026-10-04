@@ -1,0 +1,44 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.archery.name"
+    },
+    "icon": {
+      "item": "fiskheroes:compound_bow"
+    }
+  },
+  "requirements": [
+    "fiskheroes:melee",
+    "fiskheroes:ranged2"
+  ],
+  "price": {
+    "IRID_GOLD": 1,
+    "XP_LEVELS": 10
+  },
+  "criteria": {
+    "bow": {
+      "trigger": "fiskheroes:item_crafted",
+      "description": {
+        "translate": "node.fiskheroes.archery.bow.desc"
+      },
+      "condition": {
+        "variables": {
+          "item": "ITEM_BEING_CRAFTED"
+        },
+        "check": "item.name() == 'fiskheroes:compound_bow'"
+      }
+    },
+    "quiver": {
+      "trigger": "fiskheroes:item_crafted",
+      "description": {
+        "translate": "node.fiskheroes.archery.quiver.desc"
+      },
+      "condition": {
+        "variables": {
+          "item": "ITEM_BEING_CRAFTED"
+        },
+        "check": "item.name() == 'fiskheroes:quiver'"
+      }
+    }
+  }
+}

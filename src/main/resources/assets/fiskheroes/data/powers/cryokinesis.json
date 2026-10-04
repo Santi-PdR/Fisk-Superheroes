@@ -1,0 +1,39 @@
+{
+  "name": "power.fiskheroes.cryokinesis.name",
+  "modifiers": {
+    "fiskheroes:cryo_charge": {
+      "soundEvents": {
+        "CHARGE": "fiskheroes:cryo_charge"
+      }
+    },
+    "fiskheroes:damage_bonus": {
+      "amount": 3.0,
+      "damageBonus": {
+        "data": "fiskheroes:cryo_charge",
+        "uses": 5
+      }
+    },
+    "fiskheroes:icicles": {
+      "damageProfile": {
+        "damage": 4.0,
+        "types": {
+          "SHARP": 1.0,
+          "COLD": 0.5
+        },
+        "properties": {
+          "REDUCE_KNOCKBACK": 0.2
+        }
+      },
+      "quantity": 5,
+      "spread": 0.5,
+      "cooldownTime": 5
+    }
+  },
+  "hud": [
+    {
+      "type": "CHARGE",
+      "texture": "fiskheroes:textures/gui/bars/cryo_charge.png",
+      "data": "fiskheroes:cryo_charge"
+    }
+  ]
+}

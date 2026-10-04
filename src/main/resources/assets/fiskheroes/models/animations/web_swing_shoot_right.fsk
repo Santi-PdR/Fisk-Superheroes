@@ -1,0 +1,7 @@
+{data} = animate2({data}, 1, 0, 0.2, 0.3)
+{data} = curve {data}
+{rightArm_posX} -= {data}
+{rightArm_posY} -= {data}
+{rightArm_rotZ} @ {data} -> -pi / 2
+{rightArm_rotX} @ {data} -> 0.1 - pi / 2 - {head_rotY}
+{rightArm_rotY} @ {data} -'> min({head_rotX} + 0.1, pi / 2)

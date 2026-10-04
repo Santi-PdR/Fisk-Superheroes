@@ -1,0 +1,11 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.flight.boost",
+  "condition": {
+    "start": "!entity.isInWater() && entity.isOnGround() && entity.getData('fiskheroes:speed') > 1",
+    "continue": "entity.getData('fiskheroes:speeding') && entity.getData('fiskheroes:moving')"
+  },
+  "volume": "Math.min(0.0 + (entity.getData('fiskheroes:speed') - 1) * 0.5, 1)",
+  "pitch": "1.1 - Math.random() * 0.4",
+  "fadeOut": 10
+}

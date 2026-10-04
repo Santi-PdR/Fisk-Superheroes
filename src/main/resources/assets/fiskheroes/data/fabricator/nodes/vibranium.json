@@ -1,0 +1,41 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.vibranium.name"
+    },
+    "icon": {
+      "item": "fiskheroes:vibranium_ingot"
+    }
+  },
+  "requirements": [ ],
+  "price": {
+    "TUTRIDIUM": 2,
+    "XP_LEVELS": 10
+  },
+  "criteria": {
+    "ore": {
+      "trigger": "fiskheroes:block_broken_by_player",
+      "description": {
+        "translate": "node.fiskheroes.vibranium.ore.desc"
+      },
+      "condition": {
+        "variables": {
+          "block": "BLOCK_BEING_BROKEN"
+        },
+        "check": "block.name() == 'fiskheroes:vibranium_ore'"
+      }
+    },
+    "alloy": {
+      "trigger": "fiskheroes:item_smelted",
+      "description": {
+        "translate": "node.fiskheroes.vibranium.alloy.desc"
+      },
+      "condition": {
+        "variables": {
+          "output": "ITEM_BEING_SMELTED"
+        },
+        "check": "output.name() == 'fiskheroes:vibranium_ingot'"
+      }
+    }
+  }
+}

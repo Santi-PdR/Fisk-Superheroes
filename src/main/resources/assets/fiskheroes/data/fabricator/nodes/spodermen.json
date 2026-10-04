@@ -1,0 +1,29 @@
+{
+  "suit": "fiskheroes:spodermen",
+  "display": {
+    "hideUntilAvailable":  true
+  },
+  "requirements": [
+    "fiskheroes:tier1",
+    "fiskheroes:melee3",
+    "fiskheroes:ranged3",
+    "fiskheroes:defense3",
+    "fiskheroes:regeneration2",
+    "fiskheroes:traversal2"
+  ],
+  "criteria": {
+    "achievement": {
+      "trigger": "fiskheroes:achievement",
+      "description": {
+        "translate": "node.fiskheroes.spodermen.achievement.desc"
+      },
+      "ignoreRequirements": true,
+      "condition": {
+        "variables": {
+          "id": "ACHIEVEMENT_GAINED"
+        },
+        "check": "id == 'achievement.fiskheroes.spodermen'"
+      }
+    }
+  }
+}

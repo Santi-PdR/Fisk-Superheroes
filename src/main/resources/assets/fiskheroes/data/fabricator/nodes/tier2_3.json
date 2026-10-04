@@ -1,0 +1,33 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.tier2_3.name"
+    },
+    "description": {
+      "translate": "node.fiskheroes.tier2_3.desc"
+    },
+    "icon": {
+      "text": "2-3"
+    },
+    "isLevelable": true
+  },
+  "requirements": [ ],
+  "price": {
+    "IRID_GOLD": 2,
+    "XP_LEVELS": 10
+  },
+  "criteria": {
+    "tier": {
+      "trigger": "fiskheroes:suit_tier",
+      "description": {
+        "translate": "node.fiskheroes.tier2_3.tier.desc"
+      },
+      "condition": {
+        "variables": {
+          "max": "MAX_TIER_UNLOCKED"
+        },
+        "check": "max >= 1"
+      }
+    }
+  }
+}

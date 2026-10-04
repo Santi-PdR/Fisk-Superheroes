@@ -1,0 +1,20 @@
+{data} = sin(pi{data})
+{x} = {data}sin(1.5pi{data} - pi)
+
+{head_rotX} @ {data} -> 30'
+{head_rotY} @ {data} -'> 0'
+
+{rightArm_rotX} @ {data} -> -210'
+{rightArm_rotZ} @ {x} -> 20'
+{rightArm_rotY} @ {data} -> 10'
+
+{leftArm_rotX} @ {data} -> -210'
+{leftArm_rotZ} @ {x} -> -20'
+{leftArm_rotY} @ {data} -> -10'
+
+{rightArm_posY} += 1{x}
+{rightArm_posX} -= 0.25{data}
+{rightArm_posZ} -= 1{data}
+{leftArm_posY} += 1{x}
+{leftArm_posX} += 0.25{data}
+{leftArm_posZ} -= 1{data}

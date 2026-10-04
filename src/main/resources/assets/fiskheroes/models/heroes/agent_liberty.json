@@ -1,0 +1,38 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:agent_liberty_layer1",
+    "layer2": "fiskheroes:agent_liberty_layer2",
+    "helmet": "fiskheroes:agent_liberty_helmet",
+    "blade": "fiskheroes:agent_liberty_blade"
+  },
+  "texture": {
+    "renderLayer": {
+      "HELMET": "helmet",
+      "LEGGINGS": "layer2"
+    },
+    "default": "layer1"
+  },
+  "showModel": {
+    "head": ["HELMET", "CHESTPLATE"],
+    "headwear": ["HELMET", "CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["LEGGINGS", "BOOTS"],
+    "leftLeg": ["LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["HELMET", "CHESTPLATE"],
+  "custom": {
+    "fiskheroes:shield": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "blade",
+      "offset": [3.0, 9.0, 0.0],
+      "rotation": [0.0, 0.0, 0.0],
+      "curve": [0.0, 0.0],
+      "mirror": false,
+      "large": false,
+      "data": "fiskheroes:blade_timer"
+    }
+  }
+}

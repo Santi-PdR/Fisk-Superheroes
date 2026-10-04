@@ -1,0 +1,39 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:deathstroke_dceu_layer1",
+    "layer2": "fiskheroes:deathstroke_dceu_layer2",
+    "scabbard": "fiskheroes:deathstroke_dceu_scabbard",
+    "katana": "fiskheroes:deathstroke_dceu_katana",
+    "gun": "fiskheroes:deathstroke_dceu_gun",
+    "ammo_bag": "fiskheroes:deathstroke_dceu_ammo_bag"
+  },
+  "custom": {
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "slotIndex": 0,
+          "anchor": "body",
+          "scale": 0.535,
+          "offset": [-3.05, 0.52, 3.0],
+          "rotation": [-148.0, 90.0, 0.0]
+        },
+        {
+          "slotIndex": 0,
+          "anchor": "body",
+          "scale": 0.535,
+          "offset": [3.05, 0.52, 3.0],
+          "rotation": [-148.0, -90.0, 0.0]
+        },
+        {
+          "slotIndex": 1,
+          "anchor": "rightLeg",
+          "scale": 0.7,
+          "offset": [-2.4, 0.5, 1.25],
+          "rotation": [90.0, 0.0, 0.0]
+        }
+      ]
+    }
+  }
+}

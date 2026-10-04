@@ -1,0 +1,32 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:chronos_layer1",
+    "layer2": "fiskheroes:chronos_layer2",
+    "cape": "fiskheroes:chronos_cape"
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 21
+    },
+    "fiskheroes:energy_bolt": {
+      "color": "0x6EFF00"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 0.7,
+          "offset": [-3.5, 2.0, 3.0],
+          "rotation": [0.0, -90.0, 60.0]
+        }
+      ],
+      "offsetFrom": {
+        "QUIVER": [0.0, 0.0, 3.5]
+      }
+    }
+  }
+}

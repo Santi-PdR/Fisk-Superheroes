@@ -1,0 +1,111 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:mysterio_layer1",
+    "layer2": "fiskheroes:mysterio_layer2",
+    "mask": "fiskheroes:mysterio_mask",
+    "mask_anim": "fiskheroes:mysterio_mask.tx.json",
+    "collar": "fiskheroes:mysterio_collar.tx.json",
+    "lights_layer1": "fiskheroes:mysterio_lights_layer1",
+    "lights_layer2": "fiskheroes:mysterio_lights_layer2",
+    "cape": "fiskheroes:mysterio_cape",
+    "cape_lights": "fiskheroes:mysterio_cape_lights"
+  },
+  "texture": {
+    "renderLayer": {
+      "HELMET": {
+        "vars:MASK_OPEN": {
+          "true": "collar"
+        }
+      },
+      "LEGGINGS": "layer2"
+    },
+    "default": "layer1"
+  },
+  "lights": {
+    "renderLayer": {
+      "HELMET": {
+        "vars:MASK_OPEN": {
+          "false": "mask"
+        }
+      },
+      "LEGGINGS": "lights_layer2"
+    },
+    "default": "lights_layer1"
+  },
+  "animations": {
+    "ENERGY_PROJECTION": null
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["cape", "cape_lights"],
+      "length": 24,
+      "wide": true
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["HELMET"],
+      "texture": ["null", "mask_anim"],
+      "opacity": 1.0,
+      "data": "1 - entity.getInterpolatedData('fiskheroes:mask_open_timer2')",
+      "conditionals": ["vars:MASK_OPEN"]
+    },
+    "fiskheroes:spellcasting": {
+      "colorGeneric": "0x66FF47"
+    },
+    "fiskheroes:arm_animation": {
+      "dataRArmPose": "Math.max(entity.getInterpolatedData('fiskheroes:aiming_timer'), entity.getData('fiskheroes:beam_charging') ? Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 3, 1) : Math.max(entity.getInterpolatedData('fiskheroes:beam_charge') * 5 - 4, 0))",
+      "dataLArmPose": "Math.max(entity.getInterpolatedData('fiskheroes:aiming_timer'), entity.getData('fiskheroes:beam_charging') ? Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 3, 1) : Math.max(entity.getInterpolatedData('fiskheroes:beam_charge') * 5 - 4, 0))"
+    },
+    "fiskheroes:charged_beam": {
+      "color": "0x66FF47",
+      "anchor": "head",
+      "beams": [
+        {
+          "offset": [0.0, 5.0, -22.0],
+          "size": [4.0, 4.0]
+        }
+      ],
+      "renderer": "fiskheroes:mysterio_beam",
+      "particleType": "fiskheroes:impact_charged_beam"
+    },
+    "fiskheroes:energy_projection": {
+      "color": "0x66FF47",
+      "anchor": "rightArm",
+      "beams": [
+        {
+          "firstPerson": [-3.75, 3.0, -8.0],
+          "offset": [-0.5, 12.0, 0.0],
+          "size": [1.5, 1.5]
+        }
+      ],
+      "mirror": true,
+      "renderer": "fiskheroes:mysterio_beam",
+      "particleType": "fiskheroes:impact_energy_projection"
+    },
+    "fiskheroes:spell": {
+      "applicable": ["CHESTPLATE"],
+      "shape": "fiskheroes:mysterio_glyph",
+      "offset": [-1.0, 8.0, 0.0],
+      "rotation": [0.0, 0.0, 10.0],
+      "scale": 0.3,
+      "mirror": true,
+      "color": "0x66FF47",
+      "data": "fiskheroes:aimed_timer"
+    },
+    "fiskheroes:spell|beam": {
+      "applicable": ["HELMET"],
+      "shape": "fiskheroes:mysterio_glyph",
+      "anchor": "head",
+      "offset": [0.0, 0.0, -24.0],
+      "rotation": [-90.0, 0.0, 0.0],
+      "scale": 1.0,
+      "mirror": false,
+      "color": "0x66FF47",
+      "data": "entity.getData('fiskheroes:beam_charging') ? Math.min(entity.getInterpolatedData('fiskheroes:beam_charge') * 3, 1) : Math.max(entity.getInterpolatedData('fiskheroes:beam_charge') * 3 - 2, 0)"
+    }
+  },
+  "vars": {
+    "MASK_OPEN": "entity.getData('fiskheroes:mask_open_timer2') > 0"
+  }
+}

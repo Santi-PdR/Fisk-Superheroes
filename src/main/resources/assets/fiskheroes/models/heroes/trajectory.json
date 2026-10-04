@@ -1,0 +1,26 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:trajectory_layer1",
+    "layer2": "fiskheroes:trajectory_layer2"
+  },
+  "custom": {
+    "fiskheroes:trail": {
+      "type": "fiskheroes:lightning_yellow",
+      "conditionals": ["vars:SPEEDING"]
+    },
+    "fiskheroes:trail|blue": {
+      "type": "fiskheroes:lightning_trajectory",
+      "conditionals": ["vars:BLUE"]
+    },
+    "fiskheroes:chest": {
+      "applicable": ["CHESTPLATE"],
+      "extrude": 1,
+      "offset": 1
+    }
+  },
+  "vars": {
+    "SPEEDING": "entity.getData('fiskheroes:speeding') && entity.getData('fiskheroes:speed') <= 4",
+    "BLUE": "entity.getData('fiskheroes:speeding') && entity.getData('fiskheroes:speed') > 4"
+  }
+}

@@ -1,0 +1,154 @@
+plugins {
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.minecraftforge.gradle' version '[6.0.24,6.2)'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = "${mod_id}-1.20.1"
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+
+minecraft {
+    mappings channel: mapping_channel, version: mapping_version
+    copyIdeResources = true
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        configureEach {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            mods {
+                "${mod_id}" {
+                    source sourceSets.main
+                }
+            }
+        }
+        client {
+            property 'forge.enabledGameTestNamespaces', mod_id
+        }
+        server {
+            property 'forge.enabledGameTestNamespaces', mod_id
+            args '--nogui'
+        }
+        data {
+            args '--mod', mod_id, '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
+        }
+    }
+}
+
+sourceSets.main.resources { srcDir 'src/generated/resources' }
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+
+    // The hero pack is written in JavaScript. The original mod ran it on Nashorn, which the JDK
+    // dropped in Java 15; Forge 1.20.1 ships org.openjdk.nashorn:nashorn-core, so the very same
+    // engine is available in development, on a dedicated server and in production without the mod
+    // having to ship a scripting engine (see JSContext, which also tries the engine factory
+    // directly when the service loader does not find it).
+}
+
+// Prints the classpath the game runs with; the smoke test publishes it so a missing library is
+// visible in the CI log.
+tasks.register('dumpRunClasspath') {
+    def classpath = sourceSets.main.runtimeClasspath
+    doLast {
+        def file = file('.ci/run-classpath.txt')
+        file.parentFile.mkdirs()
+        file.text = classpath.files.collect { it.absolutePath }.join('\n')
+        println "Run classpath entries: ${classpath.files.size()}"
+        println "Nashorn: ${classpath.files.findAll { it.name.contains('nashorn') }}"
+    }
+}
+
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [
+            minecraft_version_range: minecraft_version_range,
+            forge_version_range    : forge_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+sourceSets.main.resources.srcDir generateModMetadata
+sourceSets.main.resources.exclude('.github/**')
+sourceSets.main.resources.exclude('**/*.jar')
+
+tasks.named('processResources', ProcessResources).configure {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 17
+    // Report every error in one run so a single CI round trip can be acted on.
+    options.compilerArgs.addAll(['-Xmaxerrs', '2000', '-Xlint:none'])
+}
+
+// Dumps the public/protected signatures of the vanilla and Forge classes listed in
+// .ci/api-classes.txt. The port needs exact 1.20.1 signatures and the build environment is the
+// only place the mapped game jar is available.
+tasks.register('dumpApi') {
+    def classesFile = file('.ci/api-classes.txt')
+    def outputFile = file('.ci/api.txt')
+    def compileClasspath = sourceSets.main.compileClasspath
+
+    doLast {
+        outputFile.parentFile.mkdirs()
+        def javap = new File(System.getProperty('java.home'), 'bin/javap').absolutePath
+        def names = classesFile.exists()
+                ? classesFile.readLines().collect { it.trim() }.findAll { it && !it.startsWith('#') }
+                : []
+        def builder = new StringBuilder()
+        def classpath = compileClasspath.asPath
+
+        names.each { name ->
+            builder.append('===== ' + name + ' =====\n')
+            def process = [javap, '-classpath', classpath, '-protected', name].execute()
+            process.waitFor()
+            builder.append(process.in.text)
+            def error = process.err.text
+            if (error) {
+                builder.append(error)
+            }
+            builder.append('\n')
+        }
+
+        outputFile.text = builder.toString()
+        println 'API dump written to ' + outputFile
+    }
+}
+
+publishing {
+    publications {
+        register('mavenJava', MavenPublication) {
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            url "file://${project.projectDir}/mcmodsrepo"
+        }
+    }
+}

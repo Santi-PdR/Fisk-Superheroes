@@ -1,0 +1,35 @@
+{vel} = sqrt({motX}^2 + {motZ}^2) + (0.3{motY})^2
+{vel} = 1 - curve min(1.5{vel}, 1)
+{data_0} = {vel}curve({data_0})
+
+{wobble} = 0.2{data_0}sin(2pi{data_1})
+{wobbleZ} = 10{wobble}
+
+{head_rotX} += 5'{wobble}
+{head_rotZ} -= {wobbleZ}'
+
+{x} = {data_0} + {wobble}
+{rightLeg_rotX} += 15'{x}
+{rightLeg_rotY} += 7'{data_0}
+{rightLeg_rotZ} += 3'{data_0}
+{rightLeg_posX} -= 0.15{data_0}
+{rightLeg_posY} -= 0.7{x}
+{rightLeg_posZ} -= 1.5({data_0} + 1.5{wobble})
+
+{leftLeg_rotX} += 5'{data_0} - 15'{wobble}
+{leftLeg_rotY} -= 8'{data_0}
+{leftLeg_rotZ} -= 3'{data_0}
+{leftLeg_posX} += 0.05{data_0}
+{leftLeg_posY} -= 0.5{x}
+{leftLeg_posZ} -= {data_0}
+
+{rightArm_rotX} -= 6'{data_0} + 0.1{wobble}
+{rightArm_rotY} += 10'{data_0}
+{rightArm_rotZ} += 3'{x} - {wobbleZ}'
+
+{leftArm_rotX} += 5'{data_0} + 0.08{wobble}
+{leftArm_rotY} -= 10'{data_0}
+{leftArm_rotZ} -= 4'{x} + {wobbleZ}'
+
+out "pivot" (0, 0.5, 0)
+out "rotate" (0.8{wobbleZ}, 0, 0, 1)
