@@ -74,7 +74,7 @@ public class SHClientSetup
             var iteration = ItemHeroArmor.getHero(stack);
             if (iteration == null) return null;
 
-            var model = HeroModelRegistry.get(iteration.getHero().getRegistryName());
+            var model = HeroModelRegistry.get(iteration);
             if (model == null) return null;
 
             var texture = model.getTexture(armorSlot, entity);

@@ -63,7 +63,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             return;
         }
 
-        HeroModelData model = HeroModelRegistry.get(iteration.getHero().getRegistryName());
+        HeroModelData model = HeroModelRegistry.get(iteration);
 
         if (model == null)
         {

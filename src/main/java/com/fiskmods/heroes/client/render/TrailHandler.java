@@ -96,7 +96,7 @@ public final class TrailHandler
         Player player = event.player;
         HeroTracker.update(player);
         HeroIteration iteration = HeroTracker.getHero(player);
-        HeroModelData model = iteration != null ? HeroModelRegistry.get(iteration.getHero().getRegistryName()) : null;
+        HeroModelData model = HeroModelRegistry.get(iteration);
         TrailDefinition configured = model != null ? model.getTrail(player, false) : null;
         TrailDefinition active = model != null ? model.getTrail(player) : null;
         tick(player, active);

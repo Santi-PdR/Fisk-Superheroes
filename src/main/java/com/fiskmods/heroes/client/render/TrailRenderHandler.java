@@ -298,7 +298,7 @@ public final class TrailRenderHandler
     {
         var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getHero(player);
         if (iteration == null) return null;
-        HeroModelData model = HeroModelRegistry.get(iteration.getHero().getRegistryName());
+        HeroModelData model = HeroModelRegistry.get(iteration);
         TrailDefinition trail = model != null ? model.getTrail(player) : null;
         if (trail == null) trail = TrailHandler.getDefinition(player.getUUID());
         return trail != null ? new HeroIterationHolder(trail) : null;

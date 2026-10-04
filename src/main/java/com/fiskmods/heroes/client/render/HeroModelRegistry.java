@@ -31,6 +31,19 @@ public class HeroModelRegistry extends SimplePreparableReloadListener<Map<Resour
         return MODELS.get(id);
     }
 
+    /** Returns iteration-specific model data, inheriting the base hero model as fallback. */
+    @Nullable
+    public static HeroModelData get(com.fiskmods.heroes.common.hero.HeroIteration iteration)
+    {
+        if (iteration == null)
+        {
+            return null;
+        }
+
+        HeroModelData model = MODELS.get(iteration.getRegistryName());
+        return model != null ? model : MODELS.get(iteration.getHero().getRegistryName());
+    }
+
     @Override
     protected Map<ResourceLocation, JsonObject> prepare(ResourceManager resourceManager, ProfilerFiller profiler)
     {
