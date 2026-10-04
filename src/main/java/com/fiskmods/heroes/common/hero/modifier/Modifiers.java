@@ -240,7 +240,8 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
         CRYO_CHARGE = registry.register(new ModifierCryoCharge(new ResourceLocation(FiskHeroes.MODID, "cryo_charge"))
-                .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.CRYO_CHARGING);
+                .addProperty(PowerProperty.IS_TOGGLE, false)
+                .addProperty(PowerProperty.KEY, ModifierCryoCharge.KEY)).setSoundState(Vars.CRYO_CHARGING);
         CRYOBALL = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "cryoball"))
                 .addProperty(PowerProperty.RADIUS, 1.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));

@@ -704,6 +704,8 @@ class ModifierDamageBonus extends Modifier
 /** Charges the cryogenic punch while its key is held, matching the original 20-tick ramp. */
 class ModifierCryoCharge extends Modifier
 {
+    static final String KEY = "CHARGE_ICE";
+
     ModifierCryoCharge(ResourceLocation id)
     {
         super(id);
