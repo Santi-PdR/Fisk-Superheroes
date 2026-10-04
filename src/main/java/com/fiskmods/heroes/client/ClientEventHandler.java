@@ -65,14 +65,24 @@ public class ClientEventHandler
     {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player == null || mc.screen != null || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get())
-                || ItemQuiver.findQuiver(player).isEmpty()) return;
+        if (player == null || mc.screen != null) return;
 
         com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
-        if (!player.isShiftKeyDown() && (hero == null || !hero.isKeyPressed(player, "QUIVER_CYCLE"))) return;
-
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data == null) return;
+
+        if (hero != null && hero.isKeyPressed(player, "UTILITY_BELT")
+                && com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.getUtilityBelt(hero, player, data) != null)
+        {
+            int direction = event.getScrollDelta() > 0.0D ? 1 : -1;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketCycleUtilityBelt(direction));
+            event.setCanceled(true);
+            return;
+        }
+
+        if (!player.getMainHandItem().is(ModItems.COMPOUND_BOW.get())
+                || ItemQuiver.findQuiver(player).isEmpty()
+                || !player.isShiftKeyDown() && (hero == null || !hero.isKeyPressed(player, "QUIVER_CYCLE"))) return;
 
         int current = Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5;
         int step = event.getScrollDelta() > 0.0D ? -1 : 1;

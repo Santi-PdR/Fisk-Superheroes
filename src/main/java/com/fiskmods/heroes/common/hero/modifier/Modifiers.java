@@ -254,7 +254,8 @@ public final class Modifiers
                 .addProperty(PowerProperty.KEY, ModifierArchery.KEY_HORIZONTAL)
                 .addProperty(PowerProperty.RADIUS, 2.0F)
                 .addProperty(PowerProperty.IS_TOGGLE, false));
-        EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment")));
+        EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment"))
+                .addProperty(PowerProperty.KEY, "UTILITY_BELT"));
         THORNS = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "thorns"))
                 .addProperty(PowerProperty.AMOUNT, 2.0F));
         SPIKES = registry.register(new ModifierSpikeBurst(new ResourceLocation(FiskHeroes.MODID, "spike_burst"))

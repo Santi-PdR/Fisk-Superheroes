@@ -7,6 +7,10 @@ import javax.annotation.Nullable;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.HeroIteration;
+import com.fiskmods.heroes.common.hero.power.ModifierEntry;
+import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -76,5 +80,58 @@ public final class EquipmentHelper
         }
 
         return false;
+    }
+
+    /** Finds the enabled equipment power which owns the hero's utility belt. */
+    @Nullable
+    public static ModifierEntry getUtilityBelt(Hero hero, Player player, SHPlayerData data)
+    {
+        for (ModifierEntry entry : hero.getPowerContainer().getEntries())
+        {
+            if (!"equipment".equals(entry.getModifier().getId().getPath())
+                    || !entry.isEnabled() || !entry.isModifierEnabled(player, data)
+                    || equipmentOptions(entry).size() == 0)
+            {
+                continue;
+            }
+
+            return entry;
+        }
+
+        return null;
+    }
+
+    /** The insertion-ordered option map is the selection order used by the original belt. */
+    public static JsonObject equipmentOptions(ModifierEntry entry)
+    {
+        JsonElement configuration = entry.get(PowerProperty.EQUIPMENT);
+        if (configuration == null || !configuration.isJsonObject()) return new JsonObject();
+
+        JsonElement options = configuration.getAsJsonObject().get("equipment");
+        return options != null && options.isJsonObject() ? options.getAsJsonObject() : new JsonObject();
+    }
+
+    /** Advances the active pack-defined gadget, after validating the selection server-side. */
+    public static boolean cycleUtilityBelt(net.minecraft.server.level.ServerPlayer player, int direction)
+    {
+        if (direction == 0) return false;
+
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        HeroIteration iteration = data != null ? data.getHero() : null;
+        if (iteration == null) return false;
+
+        Hero hero = iteration.getHero();
+        if (!hero.isKeyPressed(player, "UTILITY_BELT")) return false;
+
+        ModifierEntry entry = getUtilityBelt(hero, player, data);
+        if (entry == null) return false;
+
+        int count = equipmentOptions(entry).size();
+        int current = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE);
+        int selected = Math.floorMod(current + Integer.signum(direction), count);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PREV_UTILITY_BELT_TYPE, (byte) current);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) selected);
+        com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "SWITCH");
+        return true;
     }
 }
