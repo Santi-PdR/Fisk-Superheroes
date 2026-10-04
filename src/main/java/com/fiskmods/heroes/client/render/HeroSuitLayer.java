@@ -119,6 +119,12 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderMetalHeat(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderEars(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            com.google.gson.JsonObject antennae = pieceModel.getCustom().get("fiskheroes:antennae");
+            if (antennae != null)
+            {
+                AntennaeSuitRenderer.render(antennae, poseStack, buffer, packedLight, player,
+                        playerModel, pieceModel, slot, opacity);
+            }
             renderOpeningMasks(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderChestEffects(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
