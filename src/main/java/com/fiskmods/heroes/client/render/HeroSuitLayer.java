@@ -117,6 +117,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             }
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderMetalHeat(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderOpeningMasks(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
@@ -440,6 +441,41 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             VertexConsumer consumer = buffer.getBuffer(renderType);
             playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                     1.0F, 1.0F, 1.0F, alpha);
+            restoreParts(playerModel, hidden);
+        }
+    }
+
+    /** Draws the original warm tint over metal texture masks while the suit is heating. */
+    private void renderMetalHeat(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:metal_heat");
+        if (effect == null || !appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)
+                || !effect.has("texture"))
+        {
+            return;
+        }
+
+        String key = effect.get("texture").getAsString();
+        if (key.equals("null")) return;
+
+        float heat = model.evaluateRenderData(effect.get("data"), player, 1.0F);
+        float alpha = suitOpacity * Math.max(0.0F, Math.min(1.0F, heat));
+        if (alpha <= 0.001F) return;
+
+        ResourceLocation texture = model.resolveCustomTexture(key, player, slot);
+        if (texture == null) return;
+
+        boolean[] hidden = hidePartsFor(playerModel, model, slot);
+        try
+        {
+            VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+            playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                    1.0F, 0.75F, 0.5F, alpha);
+        }
+        finally
+        {
             restoreParts(playerModel, hidden);
         }
     }
