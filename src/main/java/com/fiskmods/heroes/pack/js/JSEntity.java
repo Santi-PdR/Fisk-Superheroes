@@ -94,10 +94,22 @@ public class JSEntity
         return new JSVector(entity.getDeltaMovement());
     }
 
+    /** Smoothed velocity used by mesh animation callbacks on the client. */
+    public JSVector motionInterpolated()
+    {
+        return motion();
+    }
+
     /** Original script API: vertical velocity in blocks per tick. */
     public double motionY()
     {
         return entity.getDeltaMovement().y;
+    }
+
+    /** Original script API: entity pitch in degrees. */
+    public double rotPitch()
+    {
+        return entity.getXRot();
     }
 
     /** Original script API: world-space position vector. */
@@ -278,6 +290,16 @@ public class JSEntity
     public void loop(String sound)
     {
         // Looped pack sounds are dispatched by the client sound layer
+    }
+
+    /** Returns the render-time phase of a repeating animation, in the range [0, 1). */
+    public double loop(double ticks)
+    {
+        if (!entity.level().isClientSide || ticks == 0.0D)
+        {
+            return 0.0D;
+        }
+        return (entity.tickCount + com.fiskmods.heroes.common.data.RenderTickInfo.get()) / ticks % 1.0D;
     }
 
     public void playSound(String sound, float volume, float pitch)
