@@ -120,6 +120,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderMetalHeat(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderEars(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderOpeningMasks(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderChestEffects(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
@@ -260,6 +261,25 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             };
             ShieldSuitRenderer.render(effect, poseStack, buffer, packedLight, player, model, slot,
                     anchor, opposite, playerModel.body, suitOpacity);
+        }
+    }
+
+    /** Draws the original extruded chest shell on its configured body or arm anchor. */
+    private void renderChestEffects(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            int slot, float suitOpacity)
+    {
+        for (java.util.Map.Entry<String, com.google.gson.JsonObject> entry : model.getCustom().entrySet())
+        {
+            if (!entry.getKey().equals("fiskheroes:chest") && !entry.getKey().startsWith("fiskheroes:chest|")) continue;
+            com.google.gson.JsonObject effect = entry.getValue();
+            if (!appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) continue;
+
+            String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "body";
+            float extrusion = effect.has("extrude") ? effect.get("extrude").getAsFloat() : 0.0F;
+            float yOffset = effect.has("offset") ? effect.get("offset").getAsFloat() : 0.0F;
+            ChestSuitRenderer.render(poseStack, buffer, packedLight, player, model, slot,
+                    anchor(playerModel, anchorName), extrusion, yOffset, suitOpacity);
         }
     }
 
