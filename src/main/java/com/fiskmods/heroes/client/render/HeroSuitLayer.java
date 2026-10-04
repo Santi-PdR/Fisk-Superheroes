@@ -118,6 +118,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderMetalHeat(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderEars(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderOpeningMasks(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderGlowerlay(poseStack, buffer, player, playerModel, pieceModel, slot, opacity);
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
@@ -477,6 +478,68 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         finally
         {
             restoreParts(playerModel, hidden);
+        }
+    }
+
+    /** Draws the original paired side panels used as speedster and cowl ears. */
+    private void renderEars(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
+            float suitOpacity)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:ears");
+        if (effect == null || !appliesToSlot(effect, slot) || !passesConditionals(effect, model, player)) return;
+
+        ResourceLocation texture = model.getTexture(slot, player);
+        if (texture == null) return;
+        ModelPart anchor = anchor(playerModel, effect.has("anchor") ? effect.get("anchor").getAsString() : "head");
+        if (anchor == null) return;
+
+        float angle = effect.has("angle") ? effect.get("angle").getAsFloat() : 0.0F;
+        float inset = effect.has("inset") ? effect.get("inset").getAsFloat() : 0.0F;
+        VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
+        poseStack.pushPose();
+        try
+        {
+            anchor.translateAndRotate(poseStack);
+            poseStack.pushPose();
+            poseStack.translate(-0.251F + inset, -0.5F, -0.25F);
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-angle));
+            renderEarPlane(poseStack, consumer, packedLight, false, suitOpacity);
+            poseStack.popPose();
+
+            poseStack.pushPose();
+            poseStack.translate(0.251F - inset, -0.5F, -0.25F);
+            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(angle));
+            renderEarPlane(poseStack, consumer, packedLight, true, suitOpacity);
+            poseStack.popPose();
+        }
+        finally
+        {
+            poseStack.popPose();
+        }
+    }
+
+    private static void renderEarPlane(PoseStack poseStack, VertexConsumer consumer, int packedLight,
+            boolean left, float opacity)
+    {
+        float u0 = (left ? 32.0F : 24.0F) / 64.0F;
+        float u1 = u0 + 8.0F / 64.0F;
+        float v0 = 0.0F;
+        float v1 = 8.0F / 64.0F;
+        float unit = 1.0F / 16.0F;
+        if (left)
+        {
+            vertex(consumer, poseStack, 0, 8 * unit, 0, u0, v1, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 8 * unit, 8 * unit, u1, v1, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 0, 8 * unit, u1, v0, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 0, 0, u0, v0, packedLight, opacity);
+        }
+        else
+        {
+            vertex(consumer, poseStack, 0, 0, 8 * unit, u0, v0, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 8 * unit, 8 * unit, u0, v1, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 8 * unit, 0, u1, v1, packedLight, opacity);
+            vertex(consumer, poseStack, 0, 0, 0, u1, v0, packedLight, opacity);
         }
     }
 
