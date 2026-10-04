@@ -48,9 +48,26 @@ class ModifierEnergyProjection extends Modifier
     }
 
     @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        // Instant projections can share an ability key with a charged beam. Only a charged
+        // projection owns these shared values, so an instant one's key-up must leave them alone.
+        if (entry.getInt(entity, PowerProperty.CHARGE_TIME) > 0)
+        {
+            data.getData().set(Vars.BEAM_CHARGING, false);
+            data.getData().set(Vars.BEAM_CHARGE, 0.0F);
+        }
+    }
+
+    @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
         int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
+        if (chargeTime <= 0)
+        {
+            return;
+        }
+
         float charge = data.getData().get(Vars.BEAM_CHARGE);
 
         if (data.getData().get(Vars.BEAM_CHARGING))
@@ -87,11 +104,23 @@ class ModifierEnergyProjection extends Modifier
         Vec3 end = start.add(direction.scale(range));
 
         HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(entity, e -> e != entity && e.isAlive(), range);
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, entity));
+        if (blockHit.getType() != HitResult.Type.MISS
+                && (hit.getType() == HitResult.Type.MISS
+                        || start.distanceToSqr(blockHit.getLocation()) < start.distanceToSqr(hit.getLocation())))
+        {
+            hit = blockHit;
+        }
 
         if (hit.getType() != HitResult.Type.MISS)
         {
             end = hit.getLocation();
         }
+
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(end));
+        data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
 
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
         {
@@ -107,7 +136,8 @@ class ModifierEnergyProjection extends Modifier
         // Visual tracer
         if (entity.level() instanceof ServerLevel serverLevel)
         {
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD, start.x + direction.x, start.y + direction.y, start.z + direction.z, 8, direction.x * 0.2D, direction.y * 0.2D, direction.z * 0.2D, 0.05D);
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD,
+                    end.x, end.y, end.z, 8, direction.x * 0.2D, direction.y * 0.2D, direction.z * 0.2D, 0.05D);
         }
 
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1.0F, charged ? 0.8F : 1.2F);

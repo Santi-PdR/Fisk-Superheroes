@@ -2,6 +2,7 @@ package com.fiskmods.heroes.common.hero.ability;
 
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 
@@ -32,6 +33,13 @@ public final class ModifierHandler
         if (data.getHeroType() == null)
         {
             return;
+        }
+
+        float projectionTimer = data.getData().get(Vars.ENERGY_PROJECTION_TIMER);
+        if (projectionTimer > 0.0F)
+        {
+            data.getData().set(Vars.ENERGY_PROJECTION_TIMER,
+                    net.minecraft.util.Mth.approach(projectionTimer, 0.0F, 0.2F));
         }
 
         boolean integrated = entity.level() instanceof net.minecraft.server.level.ServerLevel;
