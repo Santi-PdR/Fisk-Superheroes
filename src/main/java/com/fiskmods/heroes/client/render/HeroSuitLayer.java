@@ -107,6 +107,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                     BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, model, slot, partialTicks);
                 else if (entry.getKey().equals("fiskheroes:wingsuit"))
                     WingsuitRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, model, slot);
+                else if (entry.getKey().equals("fiskheroes:wings"))
+                    FalconWingsRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, model, slot, partialTicks);
             }
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
