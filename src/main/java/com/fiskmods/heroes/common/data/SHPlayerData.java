@@ -20,6 +20,7 @@ public class SHPlayerData implements IDataHolder
     private int heroChangeTime;
     private final java.util.Set<ResourceLocation> toggles = new java.util.LinkedHashSet<>();
     private final java.util.Map<ResourceLocation, Boolean> soundStates = new java.util.HashMap<>();
+    private final java.util.Map<ResourceLocation, Long> spellCooldowns = new java.util.HashMap<>();
 
     /** Ticks the suit has been unusable (all pieces removed while powers were active). */
     private int suitDisabledTime;
@@ -45,6 +46,23 @@ public class SHPlayerData implements IDataHolder
     public java.util.Map<ResourceLocation, Boolean> getSoundStates()
     {
         return soundStates;
+    }
+
+    public long getSpellCooldownUntil(ResourceLocation spell)
+    {
+        return spellCooldowns.getOrDefault(spell, 0L);
+    }
+
+    public void setSpellCooldownUntil(ResourceLocation spell, long gameTime)
+    {
+        if (gameTime <= 0L)
+        {
+            spellCooldowns.remove(spell);
+        }
+        else
+        {
+            spellCooldowns.put(spell, gameTime);
+        }
     }
 
     public HeroIteration getHero()
@@ -122,6 +140,8 @@ public class SHPlayerData implements IDataHolder
         suitDisabledTime = other.suitDisabledTime;
         toggles.clear();
         toggles.addAll(other.toggles);
+        spellCooldowns.clear();
+        spellCooldowns.putAll(other.spellCooldowns);
     }
 
     public void tick()
@@ -165,6 +185,13 @@ public class SHPlayerData implements IDataHolder
 
             tag.put("Toggles", list);
         }
+
+        if (!spellCooldowns.isEmpty())
+        {
+            CompoundTag cooldowns = new CompoundTag();
+            spellCooldowns.forEach((id, until) -> cooldowns.putLong(id.toString(), until));
+            tag.put("SpellCooldowns", cooldowns);
+        }
     }
 
     public void readFrom(CompoundTag tag)
@@ -201,6 +228,21 @@ public class SHPlayerData implements IDataHolder
                 }
             }
         }
+
+        spellCooldowns.clear();
+        if (tag.contains("SpellCooldowns"))
+        {
+            CompoundTag cooldowns = tag.getCompound("SpellCooldowns");
+            for (String key : cooldowns.getAllKeys())
+            {
+                ResourceLocation id = ResourceLocation.tryParse(key);
+                if (id != null)
+                {
+                    long until = cooldowns.getLong(key);
+                    if (until > 0L) spellCooldowns.put(id, until);
+                }
+            }
+        }
     }
 
     public void reset()
@@ -208,5 +250,7 @@ public class SHPlayerData implements IDataHolder
         hero = null;
         prevHero = null;
         data.resetAll();
+        toggles.clear();
+        spellCooldowns.clear();
     }
 }

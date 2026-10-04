@@ -21,6 +21,7 @@ public class SHKeyBinds
 
     public static final KeyMapping MASK = new KeyMapping("key.openMask", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_X), CATEGORY);
     public static final KeyMapping WEAPON = new KeyMapping("key.equipItem", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_R), CATEGORY);
+    public static final KeyMapping SPELL_MENU = new KeyMapping("key.spellMenu", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_H), CATEGORY);
 
     public static final KeyMapping[] ABILITIES = new KeyMapping[ABILITY_COUNT];
 
@@ -38,10 +39,11 @@ public class SHKeyBinds
 
     public static KeyMapping[] all()
     {
-        KeyMapping[] mappings = new KeyMapping[2 + ABILITY_COUNT];
+        KeyMapping[] mappings = new KeyMapping[3 + ABILITY_COUNT];
         mappings[0] = MASK;
         mappings[1] = WEAPON;
-        System.arraycopy(ABILITIES, 0, mappings, 2, ABILITY_COUNT);
+        mappings[2] = SPELL_MENU;
+        System.arraycopy(ABILITIES, 0, mappings, 3, ABILITY_COUNT);
         return mappings;
     }
 

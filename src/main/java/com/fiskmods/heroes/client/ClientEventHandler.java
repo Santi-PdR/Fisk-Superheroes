@@ -8,6 +8,7 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.network.PacketAbility;
+import com.fiskmods.heroes.common.network.PacketCastSpell;
 import com.fiskmods.heroes.common.network.PacketSelectArrow;
 import com.fiskmods.heroes.common.network.SHNetwork;
 import com.fiskmods.heroes.common.item.ItemQuiver;
@@ -35,6 +36,9 @@ public class ClientEventHandler
     private static boolean weaponKeyHeld;
     private static boolean maskKeyDown;
     private static boolean attackKeyDown;
+    private static final boolean[] spellDirectionDown = new boolean[4];
+    private static final StringBuilder spellSequence = new StringBuilder();
+    private static boolean spellMenuWasDown;
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.Key event)
@@ -93,10 +97,14 @@ public class ClientEventHandler
             java.util.Arrays.fill(abilityKeysDown, false);
             maskKeyDown = false;
             attackKeyDown = false;
+            spellMenuWasDown = false;
+            spellSequence.setLength(0);
+            java.util.Arrays.fill(spellDirectionDown, false);
             return;
         }
 
         Minecraft mc = Minecraft.getInstance();
+        updateSpellInput(mc, player);
         for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
         {
             boolean down = mc.screen == null && SHKeyBinds.ABILITIES[i].isDown();
@@ -162,6 +170,72 @@ public class ClientEventHandler
         // Interpolate the values the HUD animates
         interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
         interpolate(data, Vars.BOOSTER_TIMER, data.getData().get(Vars.FLYING) ? 1.0F : 0.0F);
+    }
+
+    /** Capture WASD sequences while the spell-menu key is held and request a matching spell. */
+    private static void updateSpellInput(Minecraft mc, LocalPlayer player)
+    {
+        boolean menuDown = mc.screen == null && SHKeyBinds.SPELL_MENU.isDown();
+        if (!menuDown)
+        {
+            if (spellMenuWasDown) spellSequence.setLength(0);
+            spellMenuWasDown = false;
+            java.util.Arrays.fill(spellDirectionDown, false);
+            return;
+        }
+
+        if (!spellMenuWasDown) spellSequence.setLength(0);
+        spellMenuWasDown = true;
+
+        boolean[] down = {
+                mc.options.keyUp.isDown(), mc.options.keyLeft.isDown(),
+                mc.options.keyDown.isDown(), mc.options.keyRight.isDown()
+        };
+        char[] letters = { 'w', 'a', 's', 'd' };
+        for (int i = 0; i < down.length; ++i)
+        {
+            if (down[i] && !spellDirectionDown[i])
+            {
+                spellDirectionDown[i] = true;
+                spellSequence.append(letters[i]);
+                matchSpellSequence(player);
+            }
+            else if (!down[i])
+            {
+                spellDirectionDown[i] = false;
+            }
+        }
+    }
+
+    private static void matchSpellSequence(LocalPlayer player)
+    {
+        if (spellSequence.length() > 16)
+        {
+            spellSequence.delete(0, spellSequence.length() - 16);
+        }
+
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        com.fiskmods.heroes.common.hero.HeroIteration iteration = data != null ? data.getHero() : null;
+        com.fiskmods.heroes.common.hero.Hero hero = iteration != null ? iteration.getHero() : null;
+        if (hero == null || data == null) return;
+
+        for (com.fiskmods.heroes.common.hero.power.ModifierEntry entry : hero.getPowerContainer().getEntries())
+        {
+            if (!(entry.getModifier() instanceof com.fiskmods.heroes.common.spell.ModifierSpellcasting)
+                    || !entry.isEnabled() || !entry.isModifierEnabled(player, data)) continue;
+
+            com.fiskmods.heroes.common.spell.SpellSet spells = entry.get(com.fiskmods.heroes.common.hero.power.PowerProperty.SPELLS);
+            for (int i = 0; i < spells.size(); ++i)
+            {
+                com.fiskmods.heroes.common.spell.SpellDefinition spell = spells.get(i);
+                if (spell != null && !spell.sequence().isEmpty() && spell.sequence().contentEquals(spellSequence))
+                {
+                    SHNetwork.sendToServer(new PacketCastSpell(i));
+                    spellSequence.setLength(0);
+                    return;
+                }
+            }
+        }
     }
 
     @SubscribeEvent
