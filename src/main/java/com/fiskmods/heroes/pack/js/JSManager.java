@@ -12,14 +12,54 @@ import net.minecraft.world.entity.Entity;
  */
 public class JSManager
 {
-    public void incrementData(JSEntity entity, String key, float max, boolean flag)
+    /** Increases or decreases a normalized timer using one duration in both directions. */
+    public void incrementData(JSEntity entity, String key, float ticks, boolean condition)
     {
-        incrementData(entity, key, 1.0F, max, flag);
+        incrementData(entity, key, ticks, ticks, condition);
     }
 
-    public void incrementData(JSEntity entity, String key, float amount, float max, boolean flag)
+    /** Changes a normalized timer at independent rates while the supplied conditions hold. */
+    public void incrementData(JSEntity entity, String key, float ticksIncr, float ticksDecr, boolean condition)
     {
-        set(entity.unwrap(), key, current(entity.unwrap(), key) + (flag ? amount : -Math.max(1.0F, amount)), max);
+        incrementData(entity, key, ticksIncr, ticksDecr, condition, !condition);
+    }
+
+    public void incrementData(JSEntity entity, String key, float ticks, boolean incr, boolean decr)
+    {
+        incrementData(entity, key, ticks, ticks, incr, decr);
+    }
+
+    /** Original six-argument helper used by cooldown/boost scripts. Timers stay in [0, 1]. */
+    public void incrementData(JSEntity entity, String key, float ticksIncr, float ticksDecr,
+            boolean incr, boolean decr)
+    {
+        DataVar<?> variable = var(key);
+        if (variable == null)
+        {
+            throw new IllegalArgumentException("Unknown data entry: '" + key + "'");
+        }
+        if (variable.getType() != com.fiskmods.heroes.common.data.DataType.FLOAT
+                && variable.getType() != com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP)
+        {
+            throw new IllegalArgumentException("Cannot increment non-float data variable '" + key + "'");
+        }
+
+        Entity target = entity.unwrap();
+        float value = current(target, key);
+        if (incr && value < 1.0F)
+        {
+            value += 1.0F / safeDuration(ticksIncr);
+        }
+        else if (decr && value > 0.0F)
+        {
+            value -= 1.0F / safeDuration(ticksDecr);
+        }
+        set(target, key, value, 1.0F);
+    }
+
+    private static float safeDuration(float ticks)
+    {
+        return ticks > 0.0F ? ticks : 1.0F;
     }
 
     public void setData(JSEntity entity, String key, Object value)
