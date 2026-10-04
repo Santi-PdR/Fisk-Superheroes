@@ -33,7 +33,7 @@ public class ItemCompoundBow extends BowItem
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack bow = player.getItemInHand(hand);
-        if (ItemQuiver.getSelectedArrow(player).isEmpty())
+        if (selectedArrow(player).isEmpty())
         {
             return InteractionResultHolder.fail(bow);
         }
@@ -47,8 +47,9 @@ public class ItemCompoundBow extends BowItem
     {
         if (!(entity instanceof Player player) || level.isClientSide) return;
 
-        ItemStack arrowStack = ItemQuiver.getSelectedArrow(player);
+        ItemStack arrowStack = selectedArrow(player);
         if (arrowStack.isEmpty() || !(arrowStack.getItem() instanceof ArrowItem arrowItem)) return;
+        boolean quiverAmmo = !ItemQuiver.getSelectedArrow(player).isEmpty();
 
         int chargeTicks = getUseDuration(bow) - timeLeft;
         float power = BowItem.getPowerForTime(chargeTicks);
@@ -71,13 +72,35 @@ public class ItemCompoundBow extends BowItem
 
         if (level.addFreshEntity(arrow))
         {
-            ItemQuiver.consumeSelectedArrow(player);
+            if (quiverAmmo)
+            {
+                ItemQuiver.consumeSelectedArrow(player);
+            }
+            else if (!player.getAbilities().instabuild
+                    && !(arrowStack.is(net.minecraft.world.item.Items.ARROW)
+                            && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0))
+            {
+                arrowStack.shrink(1);
+            }
             bow.hurtAndBreak(1, player, user -> user.broadcastBreakEvent(player.getUsedItemHand()));
             float pitch = 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F;
             player.playSound(SoundEvents.ARROW_SHOOT, 1.0F, pitch);
             player.awardStat(Stats.ITEM_USED.get(this));
             player.gameEvent(GameEvent.PROJECTILE_SHOOT);
         }
+    }
+
+    /** Prefer the selected quiver slot, then support the standard inventory arrow behavior. */
+    private static ItemStack selectedArrow(Player player)
+    {
+        ItemStack quiverArrow = ItemQuiver.getSelectedArrow(player);
+        if (!quiverArrow.isEmpty()) return quiverArrow;
+
+        for (ItemStack stack : player.getInventory().items)
+        {
+            if (ItemQuiver.isArrow(stack)) return stack;
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
