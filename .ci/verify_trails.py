@@ -32,6 +32,30 @@ def inherited_model(key, seen=()):
     return result
 
 
+def merge_json(parent, child):
+    result = dict(parent)
+    for key, value in child.items():
+        if isinstance(value, dict) and isinstance(result.get(key), dict):
+            result[key] = merge_json(result[key], value)
+        else:
+            result[key] = value
+    return result
+
+
+def inherited_trail(key, seen=()):
+    if key in seen:
+        raise ValueError(f"trail parent cycle: {' -> '.join((*seen, key))}")
+    path = ROOT / key.split(':')[0] / "models/trails" / f"{key.split(':')[1]}.json"
+    data = json.loads(path.read_text())
+    result = {}
+    if "parent" in data:
+        parent = data["parent"]
+        if ":" not in parent:
+            parent = f"{key.split(':', 1)[0]}:{parent}"
+        result = inherited_trail(parent, (*seen, key))
+    return merge_json(result, data)
+
+
 errors = []
 checked = 0
 for hero in MODELS:
@@ -62,6 +86,15 @@ for key, data in ((key, json.loads((ROOT / key.split(':')[0] / "models/trails" /
             break
         parent_data = json.loads((ROOT / parent.split(':')[0] / "models/trails" / f"{parent.split(':')[1]}.json").read_text())
         parent = parent_data.get("parent")
+
+for key in TRAILS:
+    trail = inherited_trail(key)
+    texture = trail.get("particles", {}).get("texture")
+    if not texture or texture.startswith('@'):
+        continue
+    namespace, path = texture.split(':', 1) if ':' in texture else (key.split(':', 1)[0], texture)
+    if not (ROOT / namespace / path).is_file():
+        errors.append(f"{key}: trail particle texture {texture!r} is missing")
 
 if errors:
     raise SystemExit("Trail verification failed:\n" + "\n".join(errors))

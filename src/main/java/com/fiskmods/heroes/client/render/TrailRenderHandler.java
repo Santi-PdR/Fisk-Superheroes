@@ -9,6 +9,9 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -84,6 +87,70 @@ public final class TrailRenderHandler
         }
     }
 
+    @SubscribeEvent
+    public static void renderTrailParticles(RenderPlayerEvent.Post event)
+    {
+        Player player = event.getEntity();
+        HeroIterationHolder holder = activeTrail(player);
+        if (holder == null || holder.definition.particles() == null) return;
+
+        TrailDefinition trail = holder.definition;
+        var particles = trail.particles();
+        String textureName = trail.resolveConstant(particles.has("texture") ? particles.get("texture").getAsString() : null);
+        ResourceLocation texture = textureName != null ? ResourceLocation.tryParse(textureName) : null;
+        if (texture == null) return;
+
+        int density = Math.max(1, particles.has("density") ? particles.get("density").getAsInt() : 6);
+        float differ = particles.has("differ") ? particles.get("differ").getAsFloat() : 0.435F;
+        float opacity = particles.has("opacity") ? particles.get("opacity").getAsFloat() : 1.0F;
+        float spriteScale = particles.has("scale") ? particles.get("scale").getAsFloat() : 1.0F;
+        int fade = Math.max(trail.fade(), particles.has("fade") ? particles.get("fade").getAsInt() : 10);
+        List<TrailHandler.Sample> samples = TrailHandler.getSamples(player.getUUID());
+        if (samples.isEmpty()) return;
+
+        double px = Mth.lerp(event.getPartialTick(), player.xo, player.getX());
+        double py = Mth.lerp(event.getPartialTick(), player.yo, player.getY());
+        double pz = Mth.lerp(event.getPartialTick(), player.zo, player.getZ());
+        Vec3 current = new Vec3(px, py, pz);
+        float height = player.getBbHeight();
+        float scale = height / 1.8F;
+        float sideScale = player.getBbWidth() / 0.6F;
+        Vec3 cameraRight = fromVector(Minecraft.getInstance().gameRenderer.getMainCamera().getLeftVector()).scale(-1.0D);
+        Vec3 cameraUp = fromVector(Minecraft.getInstance().gameRenderer.getMainCamera().getUpVector());
+        VertexConsumer consumer = event.getMultiBufferSource().getBuffer(RenderType.entityTranslucent(texture));
+        PoseStack.Pose pose = event.getPoseStack().last();
+
+        for (TrailHandler.Sample sample : samples)
+        {
+            for (int i = 0; i < density; ++i)
+            {
+                double[] drift = sample.particleOffset(i, event.getPartialTick());
+                float randomHeight = sample.particleFactor(i) * differ * scale;
+                double spread = differ / 0.435D * sideScale;
+                Vec3 center = sample.position().add(
+                        sample.particleFactor(i) * spread + drift[0] * sideScale,
+                        drift[1] * sideScale + (double) i * height / density + randomHeight,
+                        sample.particleFactor(i + density) * spread + drift[2] * sideScale);
+                Vec3 relative = center.subtract(current);
+                float size = spriteScale * scale * 2.0F;
+                float alpha = Mth.clamp(1.0F - (sample.age() + event.getPartialTick()) / fade, 0.0F, 1.0F) * opacity;
+                if (alpha <= 0.0F) continue;
+
+                Vec3 horizontal = cameraRight.scale(size);
+                Vec3 vertical = cameraUp.scale(size);
+                Vec3 a = local(relative.subtract(horizontal).subtract(vertical), player.getYRot());
+                Vec3 b = local(relative.add(horizontal).subtract(vertical), player.getYRot());
+                Vec3 c = local(relative.add(horizontal).add(vertical), player.getYRot());
+                Vec3 d = local(relative.subtract(horizontal).add(vertical), player.getYRot());
+
+                texturedVertex(consumer, pose, a, 0, 1, alpha, event.getPackedLight());
+                texturedVertex(consumer, pose, b, 1, 1, alpha, event.getPackedLight());
+                texturedVertex(consumer, pose, c, 1, 0, alpha, event.getPackedLight());
+                texturedVertex(consumer, pose, d, 0, 0, alpha, event.getPackedLight());
+            }
+        }
+    }
+
     private static HeroIterationHolder activeTrail(Player player)
     {
         var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getHero(player);
@@ -139,6 +206,23 @@ public final class TrailRenderHandler
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         return new Vec3(cos * delta.x + sin * delta.z, -delta.y, sin * delta.x - cos * delta.z);
+    }
+
+    private static Vec3 fromVector(org.joml.Vector3f vector)
+    {
+        return new Vec3(vector.x(), vector.y(), vector.z());
+    }
+
+    private static void texturedVertex(VertexConsumer consumer, PoseStack.Pose pose, Vec3 point,
+            float u, float v, float alpha, int packedLight)
+    {
+        consumer.vertex(pose.pose(), (float) point.x, (float) point.y, (float) point.z)
+                .color(1.0F, 1.0F, 1.0F, alpha)
+                .uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY)
+                .uv2(packedLight)
+                .normal(pose.normal(), 0.0F, 1.0F, 0.0F)
+                .endVertex();
     }
 
     private static void drawBolt(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end,

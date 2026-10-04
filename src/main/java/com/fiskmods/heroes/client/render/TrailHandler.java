@@ -16,7 +16,9 @@ import com.fiskmods.heroes.common.hero.HeroTracker;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -69,6 +71,12 @@ public final class TrailHandler
     }
 
     @SubscribeEvent
+    public static void onClientLogout(ClientPlayerNetworkEvent.LoggingOut event)
+    {
+        STATES.clear();
+    }
+
+    @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
         if (event.phase != TickEvent.Phase.END || !event.player.level().isClientSide) return;
@@ -79,17 +87,72 @@ public final class TrailHandler
         tick(player, model != null ? model.getTrail(player) : null);
     }
 
-    public record Sample(Vec3 position, float[] lightningFactor, int age)
+    public static final class Sample
     {
-        public Sample
+        private final Vec3 position;
+        private final float[] lightningFactor;
+        private final float[] particleFactor;
+        private final float[][] particleMotion;
+        private final float[][] particleOffset;
+        private final float[][] previousParticleOffset;
+        private final float particleSpeed;
+        private int age;
+
+        private Sample(Vec3 position, float[] lightningFactor, TrailDefinition definition, float width)
         {
-            lightningFactor = lightningFactor.clone();
+            this.position = position;
+            this.lightningFactor = lightningFactor;
+            int density = definition.particles() != null && definition.particles().has("density")
+                    ? Math.max(1, definition.particles().get("density").getAsInt()) : 0;
+            particleFactor = new float[definition.particles() == null ? 0 : density * 2 + 1];
+            particleMotion = new float[density][3];
+            particleOffset = new float[density][3];
+            previousParticleOffset = new float[density][3];
+            particleSpeed = definition.particles() != null && definition.particles().has("speed")
+                    ? definition.particles().get("speed").getAsFloat() : 1.0F;
+            for (int i = 0; i < particleFactor.length; ++i)
+            {
+                particleFactor[i] = (float) ((Math.random() - 0.5D) * width);
+            }
+            float motion = definition.particles() != null && definition.particles().has("motion")
+                    ? definition.particles().get("motion").getAsFloat() : 0.0F;
+            for (int i = 0; i < particleMotion.length; ++i)
+            {
+                for (int axis = 0; axis < 3; ++axis)
+                {
+                    particleMotion[i][axis] = (float) (Math.random() * 2.0D - 1.0D) * motion;
+                }
+            }
         }
 
-        @Override
-        public float[] lightningFactor()
+        public Vec3 position() { return position; }
+        public int age() { return age; }
+        public float[] lightningFactor() { return lightningFactor; }
+        public int particleDensity() { return particleMotion.length; }
+        public float particleFactor(int index) { return particleFactor[index % particleFactor.length]; }
+
+        public double[] particleOffset(int index, float partialTick)
         {
-            return lightningFactor.clone();
+            int i = Math.floorMod(index, particleOffset.length);
+            return new double[] {
+                    Mth.lerp(partialTick, previousParticleOffset[i][0], particleOffset[i][0]),
+                    Mth.lerp(partialTick, previousParticleOffset[i][1], particleOffset[i][1]),
+                    Mth.lerp(partialTick, previousParticleOffset[i][2], particleOffset[i][2])
+            };
+        }
+
+        private void tick()
+        {
+            ++age;
+            for (int i = 0; i < particleMotion.length; ++i)
+            {
+                for (int axis = 0; axis < 3; ++axis)
+                {
+                    previousParticleOffset[i][axis] = particleOffset[i][axis];
+                    particleOffset[i][axis] += particleMotion[i][axis];
+                    particleMotion[i][axis] *= particleSpeed;
+                }
+            }
         }
     }
 
@@ -129,7 +192,7 @@ public final class TrailHandler
             {
                 factors[i] = (float) ((Math.random() - 0.5D) * width);
             }
-            samples.addLast(new Sample(position, factors, 0));
+            samples.addLast(new Sample(position, factors, definition, width));
         }
 
         private void age()
@@ -140,16 +203,13 @@ public final class TrailHandler
             {
                 fade = Math.max(fade, definition.particles().get("fade").getAsInt());
             }
-            List<Sample> aged = new ArrayList<>(samples.size());
+            List<Sample> expired = new ArrayList<>();
             for (Sample sample : samples)
             {
-                if (sample.age() + 1 < fade)
-                {
-                    aged.add(new Sample(sample.position(), sample.lightningFactor(), sample.age() + 1));
-                }
+                sample.tick();
+                if (sample.age() >= fade) expired.add(sample);
             }
-            samples.clear();
-            samples.addAll(aged);
+            samples.removeAll(expired);
         }
     }
 }
