@@ -66,6 +66,20 @@ public class ModItems
             () -> new ItemGun(7, 8, 40, 32.0D, 8.0F, new Item.Properties()));
     public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
             () -> new ItemGun(15, 4, 32, 28.0D, 3.5F, new Item.Properties()));
+    public static final RegistryObject<Item> CHRONOS_RIFLE = REGISTRY.register("chronos_rifle",
+            () -> new ItemGun(12, 12, 50, 40.0D, 6.0F, false, new Item.Properties()));
+    public static final RegistryObject<Item> COLD_GUN = REGISTRY.register("cold_gun",
+            () -> new ItemGun(1, 8, 0, 24.0D, 1.0F, false, new Item.Properties()));
+    public static final RegistryObject<Item> HEAT_GUN = REGISTRY.register("heat_gun",
+            () -> new ItemGun(1, 8, 0, 24.0D, 2.0F, false, new Item.Properties()));
+    public static final RegistryObject<Item> RIP_HUNTERS_GUN = REGISTRY.register("rip_hunters_gun",
+            () -> new ItemGun(1, 10, 0, 32.0D, 5.0F, false, new Item.Properties()));
+    public static final RegistryObject<Item> BO_STAFF = REGISTRY.register("bo_staff",
+            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 3, -2.4F, new Item.Properties()));
+    public static final RegistryObject<Item> RUPTURES_SCYTHE = REGISTRY.register("ruptures_scythe",
+            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 6, -2.8F, new Item.Properties()));
+    public static final RegistryObject<Item> SCIMITAR = REGISTRY.register("scimitar",
+            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 4, -2.4F, new Item.Properties()));
     public static final RegistryObject<Item> SWORD_BLADE = REGISTRY.register("sword_blade", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> HANDLE = REGISTRY.register("handle", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> IRIDESCENT_GOLD = REGISTRY.register("iridescent_gold", () -> new Item(new Item.Properties()));
@@ -206,6 +220,13 @@ public class ModItems
                     output.accept(GRAPPLING_GUN.get());
                     output.accept(DESERT_EAGLE.get());
                     output.accept(BERETTA_93R.get());
+                    output.accept(CHRONOS_RIFLE.get());
+                    output.accept(COLD_GUN.get());
+                    output.accept(HEAT_GUN.get());
+                    output.accept(RIP_HUNTERS_GUN.get());
+                    output.accept(BO_STAFF.get());
+                    output.accept(RUPTURES_SCYTHE.get());
+                    output.accept(SCIMITAR.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
                     output.accept(COMPOUND_BOW.get());

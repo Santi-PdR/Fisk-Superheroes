@@ -35,8 +35,15 @@ public class ItemGun extends Item
     private final int reloadTicks;
     private final double range;
     private final float damage;
+    private final boolean usesAmmo;
 
     public ItemGun(int magazineSize, int cooldownTicks, int reloadTicks, double range, float damage, Properties properties)
+    {
+        this(magazineSize, cooldownTicks, reloadTicks, range, damage, true, properties);
+    }
+
+    public ItemGun(int magazineSize, int cooldownTicks, int reloadTicks, double range, float damage,
+            boolean usesAmmo, Properties properties)
     {
         super(properties.stacksTo(1));
         this.magazineSize = magazineSize;
@@ -44,6 +51,7 @@ public class ItemGun extends Item
         this.reloadTicks = reloadTicks;
         this.range = range;
         this.damage = damage;
+        this.usesAmmo = usesAmmo;
     }
 
     public boolean isGun()
@@ -53,6 +61,7 @@ public class ItemGun extends Item
 
     public int getAmmo(ItemStack stack)
     {
+        if (!usesAmmo) return Integer.MAX_VALUE;
         return stack.hasTag() && stack.getTag().contains(AMMO_TAG)
                 ? stack.getTag().getInt(AMMO_TAG) : magazineSize;
     }
@@ -77,7 +86,7 @@ public class ItemGun extends Item
         Hero hero = iteration != null ? iteration.getHero() : null;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (hero == null || data == null || !data.getData().get(Vars.AIMING)
-                || !hero.hasPermission(player, "USE_GUN") || data.getData().get(Vars.RELOAD_TIMER) > 0.0F)
+                || !hasPermission(player, hero) || data.getData().get(Vars.RELOAD_TIMER) > 0.0F)
         {
             return InteractionResultHolder.fail(stack);
         }
@@ -96,7 +105,7 @@ public class ItemGun extends Item
             return InteractionResultHolder.consume(stack);
         }
 
-        stack.getOrCreateTag().putInt(AMMO_TAG, ammo - 1);
+        if (usesAmmo) stack.getOrCreateTag().putInt(AMMO_TAG, ammo - 1);
         if (player instanceof ServerPlayer serverPlayer) fire(serverPlayer);
         player.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
         player.awardStat(Stats.ITEM_USED.get(this));
@@ -131,14 +140,30 @@ public class ItemGun extends Item
             }
         }
 
-        if (hit != null) hit.hurt(level.damageSources().playerAttack(shooter), damage);
+        if (hit != null && hit.hurt(level.damageSources().playerAttack(shooter), damage))
+        {
+            String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+            if (id.equals("cold_gun"))
+            {
+                hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 100, hit.getTicksRequiredToFreeze()));
+            }
+            else if (id.equals("heat_gun"))
+            {
+                hit.setSecondsOnFire(5);
+            }
+            else if (id.equals("chronos_rifle"))
+            {
+                hit.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                        net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
+            }
+        }
     }
 
     /** Reload starts from the hero keybind and restores the magazine with a visible reload timer. */
     public void reload(Player player, Hero hero)
     {
         ItemStack stack = player.getMainHandItem();
-        if (stack.getItem() != this || !hero.hasPermission(player, "USE_GUN")
+        if (!usesAmmo || stack.getItem() != this || !hasPermission(player, hero)
                 || getAmmo(stack) >= magazineSize || player.getPersistentData().getLong(RELOAD_END_TAG) > player.level().getGameTime())
         {
             return;
@@ -150,6 +175,20 @@ public class ItemGun extends Item
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data != null) data.getData().set(Vars.RELOAD_TIMER, 1.0F);
         player.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.7F, 1.25F);
+    }
+
+    private boolean hasPermission(Player player, Hero hero)
+    {
+        String path = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+        String permission = switch (path)
+        {
+            case "chronos_rifle" -> "USE_CHRONOS_RIFLE";
+            case "rip_hunters_gun" -> "USE_RIPS_GUN";
+            case "cold_gun" -> "USE_COLD_GUN";
+            case "heat_gun" -> "USE_HEAT_GUN";
+            default -> "USE_GUN";
+        };
+        return hero.hasPermission(player, permission);
     }
 
     public static void tickReload(Player player, SHPlayerData data)
