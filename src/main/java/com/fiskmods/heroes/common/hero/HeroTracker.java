@@ -96,6 +96,14 @@ public final class HeroTracker
 
         data.setHero(current);
 
+        // Pack equipment (for example the compound bow and quiver) belongs to the newly worn
+        // hero. Grant it on suit changes as well as login so choosing an archer after entering a
+        // world doesn't leave the player with a bow power but no bow or ammunition container.
+        if (current != null && !player.level().isClientSide)
+        {
+            com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.grantEquipment(player, data);
+        }
+
         if (previous != null)
         {
             com.fiskmods.heroes.common.hero.attribute.SHAttributes.clearModifiers(player);
