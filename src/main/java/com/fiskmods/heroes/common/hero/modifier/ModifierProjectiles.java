@@ -99,6 +99,18 @@ class ModifierEnergyProjection extends Modifier
             damage = 6.0F;
         }
 
+        if ("energy_bolt".equals(entry.getModifier().getId().getPath()))
+        {
+            var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(entity,
+                    damageProfile, charged ? damage * 1.6F : damage,
+                    entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE));
+            level.addFreshEntity(bolt);
+            AbilityData.playSound(entity, entry, "SHOOT");
+            level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLAZE_SHOOT,
+                    SoundSource.PLAYERS, 1.0F, charged ? 0.8F : 1.2F);
+            return;
+        }
+
         Vec3 start = entity.getEyePosition();
         Vec3 direction = entity.getLookAngle();
         Vec3 end = start.add(direction.scale(range));
