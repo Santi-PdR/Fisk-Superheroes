@@ -75,6 +75,12 @@ public final class ProjectionBeamRenderHandler
             }
             if (effect == null)
             {
+                // Black Lightning and Shazam use the same hitscan ability, but their model
+                // packs describe its visual as lightning_attack instead of energy_projection.
+                effect = model.getCustom().get("fiskheroes:lightning_attack");
+            }
+            if (effect == null)
+            {
                 continue;
             }
 
