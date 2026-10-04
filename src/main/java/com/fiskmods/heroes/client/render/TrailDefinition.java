@@ -26,4 +26,9 @@ public record TrailDefinition(ResourceLocation id, int fade, JsonObject lightnin
         String key = value.substring(1);
         return constants.has(key) ? constants.get(key).getAsString() : value;
     }
+
+    public TrailDefinition withId(ResourceLocation value)
+    {
+        return new TrailDefinition(value, fade, lightning, flicker, particles, blur, constants);
+    }
 }

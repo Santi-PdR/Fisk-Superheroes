@@ -92,7 +92,14 @@ public class HeroModelData
             }
         }
 
-        ResourceLocation id = ResourceLocation.tryParse(effect.get("type").getAsString());
+        String type = effect.get("type").getAsString();
+        if (type.startsWith("builtin/lightning_rgb_"))
+        {
+            ResourceLocation builtinId = new ResourceLocation(FiskHeroes.MODID, type);
+            TrailDefinition base = TrailRegistry.get(FiskHeroes.id("velocity_nine"));
+            return base != null ? base.withId(builtinId) : null;
+        }
+        ResourceLocation id = ResourceLocation.tryParse(type);
         return id != null ? TrailRegistry.get(id) : null;
     }
 
