@@ -68,6 +68,18 @@ public class SHClientSetup
     @SubscribeEvent
     public static void clientSetup(FMLClientSetupEvent event)
     {
+        ItemHeroArmor.setArmorTextureResolver((stack, entity, armorSlot, type) ->
+        {
+            var iteration = ItemHeroArmor.getHero(stack);
+            if (iteration == null) return null;
+
+            var model = HeroModelRegistry.get(iteration.getHero().getRegistryName());
+            if (model == null) return null;
+
+            var texture = model.getTexture(armorSlot, entity);
+            return texture != null ? texture.toString() : null;
+        });
+
         // The original mod downloads its audio on first launch; so does the port.
         com.fiskmods.heroes.client.sound.SHSoundRepository.downloadIfMissing(
                 com.fiskmods.heroes.common.sound.SHSounds.getRepository(),

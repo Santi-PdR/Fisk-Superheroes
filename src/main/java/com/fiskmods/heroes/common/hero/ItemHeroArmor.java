@@ -10,6 +10,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
@@ -28,6 +30,7 @@ public class ItemHeroArmor extends ArmorItem
     public static final String TAG_WEAPONS = "Equipment";
 
     private final int slot;
+    private static volatile ArmorTextureResolver armorTextureResolver;
 
     public ItemHeroArmor(ArmorMaterial material, ArmorItem.Type type, int slot, Properties properties)
     {
@@ -39,6 +42,29 @@ public class ItemHeroArmor extends ArmorItem
     public int getSlot()
     {
         return slot;
+    }
+
+    /**
+     * Installs the client-side texture resolver without adding client references to this common
+     * item class, so dedicated servers can load suit items safely.
+     */
+    public static void setArmorTextureResolver(ArmorTextureResolver resolver)
+    {
+        armorTextureResolver = resolver;
+    }
+
+    @Override
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot equipmentSlot, String type)
+    {
+        ArmorTextureResolver resolver = armorTextureResolver;
+        return resolver != null ? resolver.get(stack, entity, slot, type) : null;
+    }
+
+    @FunctionalInterface
+    public interface ArmorTextureResolver
+    {
+        @Nullable
+        String get(ItemStack stack, Entity entity, int armorSlot, String type);
     }
 
     @Nullable
