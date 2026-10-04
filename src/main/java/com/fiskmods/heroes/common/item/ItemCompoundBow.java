@@ -100,6 +100,11 @@ public class ItemCompoundBow extends BowItem
         {
             if (ItemQuiver.isArrow(stack)) return stack;
         }
+        // Vanilla bows accept ammunition in the offhand too. Returning the live stack lets the
+        // normal release path consume one arrow from that slot when the quiver and main inventory
+        // are empty.
+        ItemStack offhand = player.getOffhandItem();
+        if (ItemQuiver.isArrow(offhand)) return offhand;
         return ItemStack.EMPTY;
     }
 
