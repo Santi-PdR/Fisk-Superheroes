@@ -30,6 +30,12 @@ public class PropertyValue<T>
         this.function = function;
     }
 
+    /** Builds a default value that is already parsed and must not pass through JSON/script parsing. */
+    public static <T> PropertyValue<T> ofLiteral(PowerProperty<T> property, T value)
+    {
+        return new PropertyValue<>(property, value, null);
+    }
+
     public static <T> PropertyValue<T> of(PowerProperty<T> property, JsonElement json)
     {
         if (json == null || json.isJsonNull())

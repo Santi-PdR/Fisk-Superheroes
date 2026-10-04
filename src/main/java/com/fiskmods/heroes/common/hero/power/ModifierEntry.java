@@ -48,24 +48,12 @@ public class ModifierEntry
     }
 
     /** Sets a property from a plain Java value (the modifier's defaults). */
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     public void setProperty(PowerProperty<?> property, Object value)
     {
-        com.google.gson.JsonElement json = null;
-
-        if (value instanceof Number number)
-        {
-            json = new com.google.gson.JsonPrimitive(number);
-        }
-        else if (value instanceof Boolean bool)
-        {
-            json = new com.google.gson.JsonPrimitive(bool);
-        }
-        else if (value != null)
-        {
-            json = new com.google.gson.JsonPrimitive(String.valueOf(value));
-        }
-
-        setProperty(property, json);
+        // Defaults are already typed values. Converting complex defaults (notably SpellSet.EMPTY)
+        // to strings makes PropertyValue parse their Object.toString() as a JS expression.
+        properties.put(property, PropertyValue.ofLiteral((PowerProperty) property, value));
     }
 
     /** Sets a property from the power file; strings may be script expressions. */
