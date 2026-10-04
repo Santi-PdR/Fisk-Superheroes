@@ -42,6 +42,13 @@ public final class ModifierHandler
                     net.minecraft.util.Mth.approach(projectionTimer, 0.0F, 0.2F));
         }
 
+        float teleportTimer = data.getData().get(Vars.TELEPORT_TIMER);
+        if (teleportTimer > 0.0F)
+        {
+            data.getData().set(Vars.TELEPORT_TIMER,
+                    net.minecraft.util.Mth.approach(teleportTimer, 0.0F, 0.2F));
+        }
+
         boolean integrated = entity.level() instanceof net.minecraft.server.level.ServerLevel;
 
         if (integrated && data.getHeroType().getTickHandler() != null)
