@@ -26,22 +26,15 @@ public final class HeroTracker
     @Nullable
     public static HeroIteration getWornSuit(Player player)
     {
-        HeroIteration result = null;
-        int bestSlot = Integer.MAX_VALUE;
-
-        for (int i = 0; i < 4; ++i)
+        // PlayerInventory's armor list is ordered feet, legs, chest, head. The chestplate is
+        // the suit's core piece, so prefer it when a player has accidentally mixed hero sets.
+        for (int armorIndex : new int[] { 2, 3, 1, 0 })
         {
-            ItemStack stack = player.getInventory().armor.get(3 - i);
+            ItemStack stack = player.getInventory().armor.get(armorIndex);
             HeroIteration iteration = ItemHeroArmor.getHero(stack);
-
-            if (iteration != null && i < bestSlot)
-            {
-                bestSlot = i;
-                result = iteration;
-            }
+            if (iteration != null) return iteration;
         }
-
-        return result;
+        return null;
     }
 
     /** The hero currently active for an entity, taken from its player data. */
