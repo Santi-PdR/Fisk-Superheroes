@@ -3,6 +3,7 @@ package com.fiskmods.heroes.client;
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.client.gui.QuiverScreen;
 import com.fiskmods.heroes.client.render.TrickArrowRenderer;
+import com.fiskmods.heroes.client.render.CactusMinionRenderer;
 import com.fiskmods.heroes.common.entity.ModEntities;
 import com.fiskmods.heroes.common.item.ItemTrickArrow;
 import com.fiskmods.heroes.common.item.ModMenus;
@@ -42,5 +43,6 @@ public final class ClientModEvents
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerEntityRenderer(ModEntities.TRICK_ARROW.get(), TrickArrowRenderer::new);
+        event.registerEntityRenderer(ModEntities.CACTUS_MINION.get(), CactusMinionRenderer::new);
     }
 }

@@ -25,6 +25,10 @@ public class SHConfig
     public static ForgeConfigSpec.DoubleValue ABILITY_COOLDOWN_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
 
+    /* Entities */
+    public static ForgeConfigSpec.IntValue CACTUS_HEAL_RATE;
+    public static ForgeConfigSpec.IntValue CACTUS_LIFESPAN;
+
     /* Heroes */
     public static ForgeConfigSpec.BooleanValue LOAD_EXTERNAL_PACKS;
     public static ForgeConfigSpec.BooleanValue LOG_PACK_LOADING;
@@ -59,6 +63,13 @@ public class SHConfig
                 .defineInRange("abilityCooldownMultiplier", 1.0D, 0.0D, 100.0D);
         DAMAGE_MULTIPLIER = builder.comment("Multiplier applied to hero melee damage")
                 .defineInRange("damageMultiplier", 1.0D, 0.0D, 100.0D);
+        builder.pop();
+
+        builder.comment("Entity options").push("entities");
+        CACTUS_HEAL_RATE = builder.comment("Ticks between cactus minion healing while wet")
+                .defineInRange("cactusHealRate", 5, 1, 12000);
+        CACTUS_LIFESPAN = builder.comment("Idle ticks before a cactus minion returns to a cactus block")
+                .defineInRange("cactusLifespan", 600, 1, 120000);
         builder.pop();
 
         builder.comment("Hero pack options").push("heroes");

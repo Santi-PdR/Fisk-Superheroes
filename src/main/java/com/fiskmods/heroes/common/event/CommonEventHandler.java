@@ -19,6 +19,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.server.ServerLifecycleHooks;
 
@@ -28,6 +29,61 @@ import net.minecraftforge.server.ServerLifecycleHooks;
  */
 public class CommonEventHandler
 {
+    private static final String CACTUS_COOLDOWN_UNTIL = "FiskHeroesCactusSummonUntil";
+
+    /** Recruits the cactus column being pointed at while the hero's AIM ability is held. */
+    @SubscribeEvent
+    public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
+    {
+        if (!(event.getEntity() instanceof ServerPlayer player) || player.isShiftKeyDown()) return;
+
+        var iteration = HeroTracker.getHero(player);
+        if (iteration == null || !com.fiskmods.heroes.common.hero.ability.AbilityHandler.isKeyPressed(player, "AIM")) return;
+
+        var hero = iteration.getHero();
+        var data = SHDataCapabilities.getPlayer(player);
+        if (data == null) return;
+
+        com.fiskmods.heroes.common.hero.power.ModifierEntry entry = hero.getPowerContainer().getEntries().stream()
+                .filter(candidate -> candidate.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("cactus_recruitment")))
+                .filter(candidate -> candidate.isEnabled() && candidate.isModifierEnabled(player, data))
+                .findFirst().orElse(null);
+        if (entry == null) return;
+
+        float reach = Math.max(1.0F, entry.getFloat(player, com.fiskmods.heroes.common.hero.power.PowerProperty.RANGE));
+        var hit = player.pick(reach, 0.0F, false);
+        if (!(hit instanceof net.minecraft.world.phys.BlockHitResult blockHit)
+                || !player.level().getBlockState(blockHit.getBlockPos()).is(net.minecraft.world.level.block.Blocks.CACTUS)) return;
+
+        long now = player.level().getGameTime();
+        if (player.getPersistentData().getLong(CACTUS_COOLDOWN_UNTIL) > now) return;
+
+        var level = (net.minecraft.server.level.ServerLevel) player.level();
+        var target = blockHit.getBlockPos();
+        int bottom = target.getY();
+        int top = target.getY();
+        while (level.getBlockState(target.atY(bottom - 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) bottom--;
+        while (level.getBlockState(target.atY(top + 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) top++;
+
+        for (int y = top; y >= bottom; --y)
+        {
+            level.destroyBlock(target.atY(y), false, player);
+        }
+
+        var minion = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
+        if (minion == null) return;
+        minion.setCactusSize(top - bottom + 1);
+        minion.moveTo(target.getX() + 0.5D, bottom, target.getZ() + 0.5D, player.getYRot(), 0.0F);
+        level.addFreshEntity(minion);
+
+        com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "RECRUIT");
+        int cooldown = Math.max(1, Math.round(entry.getInt(player, com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME)
+                * (float) com.fiskmods.heroes.common.config.SHConfig.cooldown(1.0D)));
+        player.getPersistentData().putLong(CACTUS_COOLDOWN_UNTIL, now + cooldown);
+        event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
+        event.setCanceled(true);
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {
