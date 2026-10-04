@@ -611,7 +611,12 @@ public class HeroPackEngine
         {
             for (Map.Entry<String, JsonElement> e : json.getAsJsonObject("modifiers").entrySet())
             {
-                ResourceLocation modifierId = ResourceLocation.tryParse(e.getKey());
+                // The text after '|' identifies a pack-specific card variant (for example
+                // damage_resistance|fire); it is not part of the registered modifier ID.
+                String entryId = e.getKey();
+                int cardSeparator = entryId.indexOf('|');
+                String modifierName = cardSeparator >= 0 ? entryId.substring(0, cardSeparator) : entryId;
+                ResourceLocation modifierId = ResourceLocation.tryParse(modifierName);
 
                 if (modifierId == null)
                 {
@@ -622,7 +627,7 @@ public class HeroPackEngine
 
                 if (modifier == null)
                 {
-                    FiskHeroes.LOGGER.warn("Power {} references unknown modifier {}", id, modifierId);
+                    FiskHeroes.LOGGER.warn("Power {} references unknown modifier {}", id, modifierName);
                     continue;
                 }
 
