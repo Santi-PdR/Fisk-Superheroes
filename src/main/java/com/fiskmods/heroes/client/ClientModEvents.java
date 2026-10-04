@@ -6,6 +6,7 @@ import com.fiskmods.heroes.client.render.TrickArrowRenderer;
 import com.fiskmods.heroes.client.render.CactusMinionRenderer;
 import com.fiskmods.heroes.client.render.EnergyBoltRenderer;
 import com.fiskmods.heroes.client.render.IcicleRenderer;
+import com.fiskmods.heroes.client.render.FireBlastRenderer;
 import com.fiskmods.heroes.common.entity.ModEntities;
 import com.fiskmods.heroes.common.item.ItemTrickArrow;
 import com.fiskmods.heroes.common.item.ModMenus;
@@ -49,6 +50,7 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.EQUIPMENT_PROJECTILE.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.ENERGY_BOLT.get(), EnergyBoltRenderer::new);
         event.registerEntityRenderer(ModEntities.ICICLE.get(), IcicleRenderer::new);
+        event.registerEntityRenderer(ModEntities.FIRE_BLAST.get(), FireBlastRenderer::new);
         event.registerEntityRenderer(ModEntities.CACTUS_MINION.get(), CactusMinionRenderer::new);
         event.registerEntityRenderer(ModEntities.EARTH_CRACK.get(), com.fiskmods.heroes.client.render.EarthCrackRenderer::new);
         event.registerEntityRenderer(ModEntities.SPELL_DUPLICATE.get(), com.fiskmods.heroes.client.render.SpellDuplicateRenderer::new);

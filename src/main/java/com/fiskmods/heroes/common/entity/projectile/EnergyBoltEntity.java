@@ -64,8 +64,8 @@ public final class EnergyBoltEntity extends ThrowableProjectile
             if (hit.getEntity() instanceof LivingEntity target && getOwner() instanceof LivingEntity shooter)
             {
                 JsonElement profile = profile();
-                DamageGroups.withDamageProfile(profile, () -> target.hurt(
-                        shooter.damageSources().indirectMagic(this, shooter), damage));
+                DamageGroups.applyProfileDamage(target, shooter,
+                        shooter.damageSources().indirectMagic(this, shooter), damage, profile);
             }
             impact(serverLevel, hit.getLocation());
         }

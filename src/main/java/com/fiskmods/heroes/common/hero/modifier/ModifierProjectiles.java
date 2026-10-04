@@ -125,6 +125,15 @@ class ModifierEnergyProjection extends Modifier
             return;
         }
 
+        if ("fireball".equals(entry.getModifier().getId().getPath()))
+        {
+            var fireball = new com.fiskmods.heroes.common.entity.projectile.FireBlastEntity(entity,
+                    damageProfile, damage, entry.getFloat(entity, PowerProperty.RADIUS));
+            level.addFreshEntity(fireball);
+            AbilityData.playSound(entity, entry, "SHOOT");
+            return;
+        }
+
         Vec3 start = entity.getEyePosition();
         Vec3 direction = entity.getLookAngle();
         Vec3 end = start.add(direction.scale(range));
@@ -151,7 +160,8 @@ class ModifierEnergyProjection extends Modifier
         if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
         {
             float attackDamage = damage * (charged ? 2.0F : 1.0F);
-            DamageGroups.withDamageProfile(damageProfile, () -> target.hurt(entity.damageSources().indirectMagic(entity, entity), attackDamage));
+            DamageGroups.applyProfileDamage(target, entity, entity.damageSources().indirectMagic(entity, entity),
+                    attackDamage, damageProfile);
 
             if (entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE))
             {
