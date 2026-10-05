@@ -221,6 +221,7 @@ public final class AbilityHandler
             case "CHARGE_ICE" -> "cryo_charge";
             case "SHOOT_SPIKES" -> "spike_burst";
             case "TELEPORT" -> "teleportation";
+            case "HORIZONTAL_BOW" -> "archery";
             case "MINIATURIZE_SUIT", "SIZE_MANIPULATION" -> "size_manipulation";
             default -> key.startsWith("TENTACLE_") ? "tentacles" : null;
         };
