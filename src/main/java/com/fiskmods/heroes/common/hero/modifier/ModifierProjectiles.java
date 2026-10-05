@@ -12,6 +12,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
@@ -38,6 +39,13 @@ class ModifierEnergyProjection extends Modifier
 
         int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
 
+        if ("energy_projection".equals(entry.getModifier().getId().getPath()) && chargeTime <= 0)
+        {
+            data.getData().set(Vars.ENERGY_PROJECTION, true);
+            AbilityData.playSound(entity, entry, "SHOOT");
+            return;
+        }
+
         if (chargeTime > 0 && data.getData().get(Vars.BEAM_CHARGE) < chargeTime)
         {
             data.getData().set(Vars.BEAM_CHARGING, true);
@@ -50,6 +58,11 @@ class ModifierEnergyProjection extends Modifier
     @Override
     public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        if ("energy_projection".equals(entry.getModifier().getId().getPath()))
+        {
+            data.getData().set(Vars.ENERGY_PROJECTION, false);
+        }
+
         // Instant projections can share an ability key with a charged beam. Only a charged
         // projection owns these shared values, so an instant one's key-up must leave them alone.
         if (entry.getInt(entity, PowerProperty.CHARGE_TIME) > 0)
@@ -62,6 +75,14 @@ class ModifierEnergyProjection extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        if ("energy_projection".equals(entry.getModifier().getId().getPath())
+                && data.getData().get(Vars.ENERGY_PROJECTION)
+                && entity.level() instanceof ServerLevel level)
+        {
+            fireSustainedBeam(entity, entry, data, level);
+            return;
+        }
+
         int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
         if (chargeTime <= 0)
         {
@@ -85,6 +106,55 @@ class ModifierEnergyProjection extends Modifier
         {
             data.getData().set(Vars.BEAM_CHARGE, Math.max(0.0F, charge - 2.0F));
         }
+    }
+
+    /** The original energy projection is a held beam that repeatedly damages every target in its path. */
+    private void fireSustainedBeam(LivingEntity entity, ModifierEntry entry, SHPlayerData data, ServerLevel level)
+    {
+        float range = Math.max(0.0F, entry.getFloat(entity, PowerProperty.RANGE));
+        float beamRadius = Math.max(0.15F, entry.getFloat(entity, PowerProperty.RADIUS));
+        Vec3 start = entity.getEyePosition();
+        Vec3 direction = entity.getLookAngle().normalize();
+        Vec3 end = start.add(direction.scale(range));
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, entity));
+
+        if (blockHit.getType() != HitResult.Type.MISS)
+        {
+            end = blockHit.getLocation();
+        }
+
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(end));
+        data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
+
+        double lengthSqr = start.distanceToSqr(end);
+        if (lengthSqr > 0.0D && entity.tickCount % 4 == 0)
+        {
+            AABB search = new AABB(start, end).inflate(beamRadius + 0.75D);
+            for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search,
+                    candidate -> candidate != entity && candidate.isAlive()))
+            {
+                Vec3 relative = target.getBoundingBox().getCenter().subtract(start);
+                double along = net.minecraft.util.Mth.clamp(relative.dot(direction), 0.0D, Math.sqrt(lengthSqr));
+                Vec3 closest = start.add(direction.scale(along));
+                double collisionRadius = beamRadius + Math.max(target.getBbWidth(), target.getBbHeight() * 0.35F);
+                if (target.getBoundingBox().getCenter().distanceToSqr(closest) > collisionRadius * collisionRadius)
+                {
+                    continue;
+                }
+
+                target.invulnerableTime = 0;
+                JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+                float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
+                if (damage <= 0.0F) damage = 6.0F;
+                DamageGroups.applyProfileDamage(target, entity, entity.damageSources().indirectMagic(entity, entity),
+                        damage, damageProfile);
+            }
+        }
+
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.END_ROD,
+                end.x, end.y, end.z, 2, direction.x * 0.08D, direction.y * 0.08D, direction.z * 0.08D, 0.01D);
     }
 
     /** Fires a hitscan energy shot along the entity's look vector. */
