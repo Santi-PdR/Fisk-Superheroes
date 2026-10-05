@@ -28,6 +28,7 @@ public class TrickArrowEntity extends Arrow
     private boolean detonated;
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
+    private ItemStack vialPotion = ItemStack.EMPTY;
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level)
     {
@@ -63,6 +64,11 @@ public class TrickArrowEntity extends Arrow
     public void setArrowType(String type)
     {
         entityData.set(ARROW_TYPE, ItemTrickArrow.normalizeType(type));
+    }
+
+    public void setVialPotion(ItemStack potion)
+    {
+        vialPotion = potion != null ? potion.copy() : ItemStack.EMPTY;
     }
 
     private void setExplosionRadius(float radius)
@@ -154,6 +160,11 @@ public class TrickArrowEntity extends Arrow
         super.onHitBlock(result);
         String type = getArrowType();
         if (level().isClientSide) return;
+
+        if ("vial".equals(type))
+        {
+            applyVial(null);
+        }
 
         if ("detonator".equals(type)) return;
 
@@ -329,12 +340,27 @@ public class TrickArrowEntity extends Arrow
 
     private void applyVial(LivingEntity directHit)
     {
+        java.util.List<MobEffectInstance> effects = net.minecraft.world.item.alchemy.PotionUtils.getMobEffects(vialPotion);
+        if (effects.isEmpty()) return;
+
         for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D, 2.0D, 4.0D)))
         {
             if (target == getOwner() || target.distanceToSqr(this) > 16.0D) continue;
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100));
+            double intensity = target == directHit ? 1.0D : 1.0D - Math.sqrt(target.distanceToSqr(this)) / 4.0D;
+            for (MobEffectInstance effect : effects)
+            {
+                var mobEffect = effect.getEffect();
+                if (mobEffect.isInstantenous())
+                {
+                    mobEffect.applyInstantenousEffect(this, getOwner(), target, effect.getAmplifier(), intensity);
+                }
+                else
+                {
+                    int duration = (int) (effect.getDuration() * intensity + 0.5D);
+                    if (duration > 20) target.addEffect(new MobEffectInstance(mobEffect, duration, effect.getAmplifier()));
+                }
+            }
         }
-        directHit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200));
     }
 
     private void spawnSmokeCloud()
@@ -383,6 +409,7 @@ public class TrickArrowEntity extends Arrow
         tag.putFloat("ExplosionRadius", explosionRadius);
         tag.putBoolean("Detonated", detonated);
         tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
+        if (!vialPotion.isEmpty()) tag.put("VialPotion", vialPotion.save(new CompoundTag()));
     }
 
     @Override
@@ -393,5 +420,7 @@ public class TrickArrowEntity extends Arrow
         setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
         detonated = tag.getBoolean("Detonated");
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
+        vialPotion = tag.contains("VialPotion", CompoundTag.TAG_COMPOUND)
+                ? ItemStack.of(tag.getCompound("VialPotion")) : ItemStack.EMPTY;
     }
 }

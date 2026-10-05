@@ -11,8 +11,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ArrowItem;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import java.util.List;
 
 /** Arrow variants carried in a quiver; the type is stored on each stack. */
@@ -37,7 +41,28 @@ public class ItemTrickArrow extends ArrowItem
     {
         ItemStack stack = new ItemStack(ModItems.TRICK_ARROW.get());
         setType(stack, type);
+        if ("vial".equals(normalizeType(type)))
+        {
+            setAttachedPotion(stack, PotionUtils.setPotion(Items.SPLASH_POTION.getDefaultInstance(), Potions.POISON));
+        }
         return stack;
+    }
+
+    public static void setAttachedPotion(ItemStack arrow, ItemStack potion)
+    {
+        if (potion != null && !potion.isEmpty())
+        {
+            arrow.getOrCreateTag().put("AttachedPotion", potion.save(new CompoundTag()));
+        }
+    }
+
+    public static ItemStack getAttachedPotion(ItemStack arrow)
+    {
+        if (!arrow.hasTag() || !arrow.getTag().contains("AttachedPotion", CompoundTag.TAG_COMPOUND))
+        {
+            return ItemStack.EMPTY;
+        }
+        return ItemStack.of(arrow.getTag().getCompound("AttachedPotion"));
     }
 
     public static void setType(ItemStack stack, String type)
@@ -80,6 +105,13 @@ public class ItemTrickArrow extends ArrowItem
                 if (archery != null) radius = archery.getFloat(shooter, PowerProperty.RADIUS);
             }
         }
-        return new TrickArrowEntity(ModEntities.TRICK_ARROW.get(), level, shooter, type, radius);
+        TrickArrowEntity arrow = new TrickArrowEntity(ModEntities.TRICK_ARROW.get(), level, shooter, type, radius);
+        if ("vial".equals(type))
+        {
+            ItemStack potion = getAttachedPotion(stack);
+            if (potion.isEmpty()) potion = PotionUtils.setPotion(Items.SPLASH_POTION.getDefaultInstance(), Potions.POISON);
+            arrow.setVialPotion(potion);
+        }
+        return arrow;
     }
 }
