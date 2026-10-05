@@ -63,9 +63,9 @@ public class ModItems
     public static final RegistryObject<Item> GUN_BASE = REGISTRY.register("gun_base", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> RIFLE_BASE = REGISTRY.register("rifle_base", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> DESERT_EAGLE = REGISTRY.register("desert_eagle",
-            () -> new ItemGun(7, 8, 40, 32.0D, 8.0F, new Item.Properties()));
+            () -> new ItemGun(8, 8, 16, 75.0D, 8.0F, new Item.Properties()));
     public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
-            () -> new ItemGun(15, 4, 32, 28.0D, 3.5F, new Item.Properties()));
+            () -> new ItemGun(15, 20, 16, 75.0D, 3.5F, new Item.Properties()));
     public static final RegistryObject<Item> CHRONOS_RIFLE = REGISTRY.register("chronos_rifle",
             () -> new ItemGun(12, 12, 50, 40.0D, 6.0F, false, new Item.Properties()));
     public static final RegistryObject<Item> COLD_GUN = REGISTRY.register("cold_gun",
@@ -87,10 +87,15 @@ public class ModItems
     /* --- Equipment --- */
     public static final RegistryObject<Item> FLASH_RING = REGISTRY.register("flash_ring", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> MINI_SUIT = REGISTRY.register("mini_suit", () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> KATANA = REGISTRY.register("katana", () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> CHOKUTO = REGISTRY.register("chokuto", () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> TACTICAL_TONFA = REGISTRY.register("tactical_tonfa", () -> new Item(new Item.Properties().stacksTo(1)));
-    public static final RegistryObject<Item> GRAPPLING_GUN = REGISTRY.register("grappling_gun", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> KATANA = REGISTRY.register("katana",
+            () -> new ItemDualSword(new Item.Properties()));
+    public static final RegistryObject<Item> CHOKUTO = REGISTRY.register("chokuto",
+            () -> new ItemDualSword(new Item.Properties()));
+    public static final RegistryObject<Item> TACTICAL_TONFA = REGISTRY.register("tactical_tonfa",
+            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 2, -2.4F,
+                    new Item.Properties().durability(600)));
+    public static final RegistryObject<Item> GRAPPLING_GUN = REGISTRY.register("grappling_gun",
+            () -> new ItemGrapplingGun(new Item.Properties().durability(256)));
     public static final RegistryObject<Item> CAPTAIN_AMERICAS_SHIELD = REGISTRY.register("captain_americas_shield", () -> new ItemCaptainAmericaShield(new Item.Properties()));
     public static final RegistryObject<Item> QUIVER = REGISTRY.register("quiver", () -> new ItemQuiver(new Item.Properties()));
     public static final RegistryObject<Item> COMPOUND_BOW = REGISTRY.register("compound_bow", () -> new ItemCompoundBow(new Item.Properties()));
@@ -215,11 +220,15 @@ public class ModItems
                     output.accept(FLASH_RING.get());
                     output.accept(MINI_SUIT.get());
                     output.accept(KATANA.get());
+                    output.accept(ItemDualSword.setDual(new ItemStack(KATANA.get())));
                     output.accept(CHOKUTO.get());
+                    output.accept(ItemDualSword.setDual(new ItemStack(CHOKUTO.get())));
                     output.accept(TACTICAL_TONFA.get());
                     output.accept(GRAPPLING_GUN.get());
                     output.accept(DESERT_EAGLE.get());
+                    output.accept(dualItem(DESERT_EAGLE.get()));
                     output.accept(BERETTA_93R.get());
+                    output.accept(dualItem(BERETTA_93R.get()));
                     output.accept(CHRONOS_RIFLE.get());
                     output.accept(COLD_GUN.get());
                     output.accept(HEAT_GUN.get());
@@ -236,5 +245,12 @@ public class ModItems
                     }
                 })
                 .build();
+    }
+
+    private static ItemStack dualItem(Item item)
+    {
+        ItemStack stack = new ItemStack(item);
+        stack.getOrCreateTag().putBoolean("Dual", true);
+        return stack;
     }
 }

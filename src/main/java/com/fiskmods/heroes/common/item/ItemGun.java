@@ -16,6 +16,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -28,6 +29,7 @@ public class ItemGun extends Item
 {
     private static final String AMMO_TAG = "Ammo";
     private static final String NEXT_SHOT_TAG = "NextShotTick";
+    private static final String NEXT_NOTICE_TAG = "FiskHeroesGunNoticeTick";
     public static final String RELOAD_END_TAG = "fiskheroes_gun_reload_end";
     private static final String RELOAD_DURATION_TAG = "fiskheroes_gun_reload_duration";
     private final int magazineSize;
@@ -63,12 +65,28 @@ public class ItemGun extends Item
     {
         if (!usesAmmo) return Integer.MAX_VALUE;
         return stack.hasTag() && stack.getTag().contains(AMMO_TAG)
-                ? stack.getTag().getInt(AMMO_TAG) : magazineSize;
+                ? Math.min(stack.getTag().getInt(AMMO_TAG), getMagazineSize(stack)) : getMagazineSize(stack);
     }
 
     public int getMagazineSize()
     {
         return magazineSize;
+    }
+
+    public int getMagazineSize(ItemStack stack)
+    {
+        return magazineSize * (isDual(stack) ? 2 : 1);
+    }
+
+    /** Client-side cadence for repeated primary-attack input; the server revalidates every shot. */
+    public int getShotCooldownTicks(ItemStack stack)
+    {
+        return isDual(stack) ? Math.round(cooldownTicks * 1.2F) : cooldownTicks;
+    }
+
+    public static boolean isDual(ItemStack stack)
+    {
+        return stack.hasTag() && stack.getTag().getBoolean("Dual");
     }
 
     public static boolean isGun(ItemStack stack)
@@ -77,39 +95,90 @@ public class ItemGun extends Item
     }
 
     @Override
+    public Component getName(ItemStack stack)
+    {
+        if (!isDual(stack)) return super.getName(stack);
+        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+        return Component.translatable("item.fiskheroes." + id + ".dual");
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack stack = player.getItemInHand(hand);
-        if (level.isClientSide) return InteractionResultHolder.consume(stack);
+        if (level.isClientSide) return InteractionResultHolder.sidedSuccess(stack, true);
+
+        fireFromAttack(player, stack);
+        return InteractionResultHolder.consume(stack);
+    }
+
+    /** Server-authoritative shot requested by primary attack input or item use. */
+    public boolean fireFromAttack(Player player, ItemStack stack)
+    {
+        Level level = player.level();
+        if (level.isClientSide || stack.isEmpty() || stack.getItem() != this
+                || player.getMainHandItem() != stack)
+        {
+            return false;
+        }
 
         HeroIteration iteration = HeroTracker.getHero(player);
         Hero hero = iteration != null ? iteration.getHero() : null;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
-        if (hero == null || data == null || !data.getData().get(Vars.AIMING)
-                || !hasPermission(player, hero) || data.getData().get(Vars.RELOAD_TIMER) > 0.0F)
+        // AIM is a presentation/input state, not a prerequisite for firing. Several pack heroes
+        // bind AIM to the primary attack key, which leaves ordinary right-click use otherwise
+        // silently doing nothing unless the player holds two different mouse buttons at once.
+        if (hero == null || data == null)
         {
-            return InteractionResultHolder.fail(stack);
+            showUseNotice(player, "message.fiskheroes.gun.requires_suit");
+            return false;
+        }
+        if (!hasPermission(player, hero))
+        {
+            showUseNotice(player, "message.fiskheroes.gun.not_permitted");
+            return false;
+        }
+        if (data.getData().get(Vars.RELOAD_TIMER) > 0.0F)
+        {
+            return false;
         }
 
         long now = level.getGameTime();
+        int shotCooldown = getShotCooldownTicks(stack);
         if (stack.getOrCreateTag().getLong(NEXT_SHOT_TAG) > now)
         {
-            return InteractionResultHolder.consume(stack);
+            return false;
         }
-        stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, now + cooldownTicks);
+        stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, now + shotCooldown);
 
         int ammo = getAmmo(stack);
         if (ammo <= 0)
         {
             player.playSound(SoundEvents.DISPENSER_FAIL, 0.8F, 0.8F + level.random.nextFloat() * 0.3F);
-            return InteractionResultHolder.consume(stack);
+            showUseNotice(player, "message.fiskheroes.gun.empty");
+            return false;
         }
 
+        // Dual models represent two pistols, but the original alternates the hand/shot; it does
+        // not discharge both rounds at once. Keep the larger combined magazine and cadence while
+        // consuming one round per attack.
         if (usesAmmo) stack.getOrCreateTag().putInt(AMMO_TAG, ammo - 1);
-        if (player instanceof ServerPlayer serverPlayer) fire(serverPlayer);
+        if (player instanceof ServerPlayer serverPlayer)
+        {
+            fire(serverPlayer);
+        }
         player.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
         player.awardStat(Stats.ITEM_USED.get(this));
-        return InteractionResultHolder.consume(stack);
+        return true;
+    }
+
+    /** Explain the common silent failure cases without spamming while primary attack is held. */
+    private static void showUseNotice(Player player, String translationKey)
+    {
+        long now = player.level().getGameTime();
+        if (player.getPersistentData().getLong(NEXT_NOTICE_TAG) > now) return;
+        player.getPersistentData().putLong(NEXT_NOTICE_TAG, now + 20L);
+        player.displayClientMessage(Component.translatable(translationKey), true);
     }
 
     private void fire(ServerPlayer shooter)
@@ -121,6 +190,24 @@ public class ItemGun extends Item
         BlockHitResult block = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE, shooter));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
+
+        // The original guns render a moving bullet ray/trail. The 1.20 port resolves damage on
+        // the server, so show a short, server-synchronized tracer along that same clipped ray;
+        // otherwise a valid miss looks exactly like a broken weapon to the player.
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            net.minecraft.core.particles.ParticleOptions tracer = net.minecraftforge.registries.ForgeRegistries.ITEMS
+                    .getKey(this).getPath().equals("cold_gun")
+                    ? net.minecraft.core.particles.ParticleTypes.SNOWFLAKE
+                    : new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
+            double distance = start.distanceTo(end);
+            int points = Math.min(16, Math.max(1, (int) Math.ceil(distance / 4.0D)));
+            for (int i = 1; i <= points; ++i)
+            {
+                Vec3 point = start.lerp(end, i / (double) (points + 1));
+                serverLevel.sendParticles(tracer, point.x, point.y, point.z, 1, 0.015D, 0.015D, 0.015D, 0.0D);
+            }
+        }
 
         AABB search = shooter.getBoundingBox().expandTowards(direction.scale(range)).inflate(1.0D);
         LivingEntity hit = null;
@@ -140,9 +227,20 @@ public class ItemGun extends Item
             }
         }
 
+        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+        if (id.equals("cold_gun"))
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
+            if (data != null)
+            {
+                double length = hit != null ? Math.sqrt(nearest) : start.distanceTo(end);
+                data.getData().set(Vars.HEAT_VISION_LENGTH, Math.min(range, length));
+                data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
+            }
+        }
+
         if (hit != null && hit.hurt(level.damageSources().playerAttack(shooter), damage))
         {
-            String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
             if (id.equals("cold_gun"))
             {
                 hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 100, hit.getTicksRequiredToFreeze()));
@@ -163,13 +261,14 @@ public class ItemGun extends Item
     public void reload(Player player, Hero hero)
     {
         ItemStack stack = player.getMainHandItem();
+        int magazine = getMagazineSize(stack);
         if (!usesAmmo || stack.getItem() != this || !hasPermission(player, hero)
-                || getAmmo(stack) >= magazineSize || player.getPersistentData().getLong(RELOAD_END_TAG) > player.level().getGameTime())
+                || getAmmo(stack) >= magazine || player.getPersistentData().getLong(RELOAD_END_TAG) > player.level().getGameTime())
         {
             return;
         }
 
-        stack.getOrCreateTag().putInt(AMMO_TAG, magazineSize);
+        stack.getOrCreateTag().putInt(AMMO_TAG, magazine);
         player.getPersistentData().putLong(RELOAD_END_TAG, player.level().getGameTime() + reloadTicks);
         player.getPersistentData().putInt(RELOAD_DURATION_TAG, reloadTicks);
         SHPlayerData data = SHDataCapabilities.getPlayer(player);

@@ -40,7 +40,7 @@ public final class PacketGravityAmount extends SHPacket
         var iteration = HeroTracker.getHero(player);
         var data = SHDataCapabilities.getPlayer(player);
         if (iteration == null || data == null) return;
-        ModifierEntry entry = AbilityHandler.findModifier(iteration.getHero(), "GRAVITY_MANIPULATION");
+        ModifierEntry entry = AbilityHandler.findModifier(iteration.getHero(), "GRAVITY_MANIPULATION", player);
         if (entry == null || !entry.isEnabled() || !entry.isModifierEnabled(player, data)) return;
 
         float amount = net.minecraft.util.Mth.clamp(data.getData().get(Vars.GRAVITY_AMOUNT) + direction / 3.0F, -1.0F, 1.0F);

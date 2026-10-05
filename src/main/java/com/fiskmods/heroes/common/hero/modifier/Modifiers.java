@@ -225,7 +225,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.SPEED, 1.0F));
         HOVER = registry.register(new ModifierHover(new ResourceLocation(FiskHeroes.MODID, "hover"))).setSoundState(Vars.HOVERING);
-        SENTRY_MODE = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "sentry_mode"))
+        SENTRY_MODE = registry.register(new ModifierSentryMode(new ResourceLocation(FiskHeroes.MODID, "sentry_mode"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.SUIT_OPEN);
         SHAPESHIFTING = registry.register(new ModifierTransformation(new ResourceLocation(FiskHeroes.MODID, "shapeshifting"))
                 .addProperty(PowerProperty.IS_TOGGLE, true));
@@ -288,7 +288,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.COOLDOWN_TIME, 100));
         // Shield throwing is triggered by the shield item while this key is held; treating it as
         // an energy projection fires an unrelated hitscan beam whenever the key is pressed.
-        SHIELD_THROWING = registry.register(new Modifier(new ResourceLocation(FiskHeroes.MODID, "shield_throwing"))
+        SHIELD_THROWING = registry.register(new ModifierShieldThrowing(new ResourceLocation(FiskHeroes.MODID, "shield_throwing"))
                 .addProperty(PowerProperty.KEY, "SHIELD_THROW")
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));

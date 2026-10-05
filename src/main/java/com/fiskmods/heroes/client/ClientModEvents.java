@@ -52,6 +52,7 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.ICICLE.get(), IcicleRenderer::new);
         event.registerEntityRenderer(ModEntities.FIRE_BLAST.get(), FireBlastRenderer::new);
         event.registerEntityRenderer(ModEntities.SONIC_WAVE.get(), com.fiskmods.heroes.client.render.SonicWaveRenderer::new);
+        event.registerEntityRenderer(ModEntities.GRAPPLING_HOOK.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.CACTUS_MINION.get(), CactusMinionRenderer::new);
         event.registerEntityRenderer(ModEntities.EARTH_CRACK.get(), com.fiskmods.heroes.client.render.EarthCrackRenderer::new);
         event.registerEntityRenderer(ModEntities.SPELL_DUPLICATE.get(), com.fiskmods.heroes.client.render.SpellDuplicateRenderer::new);

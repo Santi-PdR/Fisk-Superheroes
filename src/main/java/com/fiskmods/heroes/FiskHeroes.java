@@ -97,7 +97,11 @@ public class FiskHeroes
             int packets = 0;
             SHNetwork.registerPacket(PacketSyncData.class, PacketSyncData::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketSyncSuit.class, PacketSyncSuit::new, NetworkDirection.PLAY_TO_CLIENT);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketSyncToggles.class,
+                    com.fiskmods.heroes.common.network.PacketSyncToggles::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(PacketAbility.class, PacketAbility::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketGunFire.class,
+                    com.fiskmods.heroes.common.network.PacketGunFire::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketSetDisguise.class,
                     com.fiskmods.heroes.common.network.PacketSetDisguise::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketThrowShield.class,

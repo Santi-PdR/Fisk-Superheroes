@@ -16,6 +16,9 @@ import net.minecraft.world.phys.Vec3;
 /** Server-side controller for Doctor Octopus's mechanical-arm power. */
 public final class ModifierTentacles extends Modifier
 {
+    private static final String STRIKE_START_TICK = "FiskHeroesTentacleStrikeStart";
+    private static final String STRIKE_CHARGED_SOUND = "FiskHeroesTentacleStrikeChargedSound";
+
     public ModifierTentacles(ResourceLocation id)
     {
         super(id);
@@ -48,12 +51,47 @@ public final class ModifierTentacles extends Modifier
         case "TENTACLE_GRAB" -> grab(entity, entry);
         case "TENTACLE_STRIKE" ->
         {
-            JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
-            JsonElement profile = strike != null ? strike.get("damageProfile") : null;
-            attack(entity, entry, profile, entry.getFloat(PowerProperty.RANGE), "STRIKE_START");
+            if (entity instanceof Player player)
+            {
+                player.getPersistentData().putLong(STRIKE_START_TICK, player.level().getGameTime());
+                player.getPersistentData().remove(STRIKE_CHARGED_SOUND);
+                AbilityData.playSound(entity, entry, "STRIKE_START");
+            }
         }
         default -> { }
         }
+    }
+
+    /** The original strike charges while held and launches when the key is released. */
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!(entity instanceof Player player)) return;
+
+        var persistent = player.getPersistentData();
+        if (!persistent.contains(STRIKE_START_TICK)) return;
+
+        long started = persistent.getLong(STRIKE_START_TICK);
+        persistent.remove(STRIKE_START_TICK);
+        persistent.remove(STRIKE_CHARGED_SOUND);
+
+        JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
+        if (strike == null) return;
+
+        int chargeTime = Math.max(1, strike.has("chargeTime") ? strike.get("chargeTime").getAsInt() : 20);
+        float charge = net.minecraft.util.Mth.clamp((player.level().getGameTime() - started) / (float) chargeTime, 0.0F, 1.0F);
+        float damageScale = charge * charge;
+        // The source only releases the attack after the tentacle's squared charge exceeds 0.3.
+        if (damageScale <= 0.3F) return;
+
+        LivingEntity target = findTarget(player, entry.getFloat(PowerProperty.RANGE));
+        if (target == null) return;
+
+        JsonElement profile = strike.get("damageProfile");
+        float damage = DamageGroups.profileDamage(profile, 17.0F) * damageScale;
+        DamageGroups.withDamageProfile(profile,
+                () -> target.hurt(player.damageSources().playerAttack(player), damage));
+        AbilityData.playSound(entity, entry, "STRIKE_IMPACT");
     }
 
     private static void setDeployed(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean deployed)
@@ -68,6 +106,21 @@ public final class ModifierTentacles extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        if (!entity.level().isClientSide && entity instanceof Player player)
+        {
+            var persistent = player.getPersistentData();
+            long started = persistent.getLong(STRIKE_START_TICK);
+            JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
+            int chargeTime = strike != null && strike.has("chargeTime")
+                    ? Math.max(1, strike.get("chargeTime").getAsInt()) : 20;
+            if (started > 0L && !persistent.getBoolean(STRIKE_CHARGED_SOUND)
+                    && player.level().getGameTime() - started >= chargeTime)
+            {
+                persistent.putBoolean(STRIKE_CHARGED_SOUND, true);
+                AbilityData.playSound(player, entry, "STRIKE_CHARGED");
+            }
+        }
+
         boolean deployed = data.getData().get(Vars.TENTACLES_ACTIVE);
         float timer = data.getData().get(Vars.TENTACLE_EXTEND_TIMER);
         float next = deployed ? Math.min(20.0F, timer + 1.0F) : Math.max(0.0F, timer - 1.0F);

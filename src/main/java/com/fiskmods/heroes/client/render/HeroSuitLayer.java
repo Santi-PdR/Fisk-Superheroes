@@ -30,6 +30,7 @@ import net.minecraft.world.item.ItemStack;
 public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>
 {
     private static final java.util.Set<String> RENDER_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private static PlayerModel<AbstractClientPlayer> classicSuitModel;
 
     private static final ResourceLocation[] SLOT_NAMES = {
             new ResourceLocation("fiskheroes", "helmet"),
@@ -79,6 +80,11 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
         ParticleEmitterRenderer.tick(player, playerModel, model, scale);
 
+        ModelPart[] animatedParts = { playerModel.head, playerModel.rightArm, playerModel.leftArm };
+        net.minecraft.client.model.geom.PartPose[] originalPoses = java.util.Arrays.stream(animatedParts)
+                .map(ModelPart::storePose).toArray(net.minecraft.client.model.geom.PartPose[]::new);
+        SuitArmAnimationRenderer.apply(model, playerModel, player, limbSwingAmount);
+
         poseStack.pushPose();
 
         // The original ModelBipedMultiLayer expanded suit cubes by 0.05 model units so the
@@ -124,7 +130,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                         "Drawing suit {} slot {} from {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], texture);
                 boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
                 VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
-                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                renderSuitModel(player, playerModel, poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                         1.0F, 1.0F, 1.0F, opacity);
                 restoreParts(playerModel, hidden);
 
@@ -156,6 +162,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             renderEquippedItems(poseStack, buffer, packedLight, player, playerModel, pieceModel, pieceIteration, slot);
             renderCape(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderAttachedModel(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            renderMantapack(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity, partialTicks);
             renderShields(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderSheath(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             com.google.gson.JsonObject tentacles = pieceModel.getCustom().get("fiskheroes:tentacles");
@@ -177,6 +184,14 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                     WingsuitRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, pieceModel, slot);
                 else if (entry.getKey().equals("fiskheroes:wings"))
                     FalconWingsRenderer.render(entry.getValue(), poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, partialTicks);
+                else if (entry.getKey().startsWith("fiskheroes:spell") || entry.getKey().startsWith("fiskheroes:lines"))
+                {
+                    if (appliesToSlot(entry.getValue(), slot) && passesConditionals(entry.getValue(), pieceModel, player))
+                    {
+                        ShapeSuitRenderer.render(entry.getKey(), entry.getValue(), poseStack, buffer, player,
+                                playerModel, pieceModel, slot, opacity);
+                    }
+                }
             }
 
             // The glowing parts of the suit (reactor, lights, visor) are a second emissive pass
@@ -194,13 +209,18 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 }
 
                 VertexConsumer consumer = buffer.getBuffer(RenderType.eyes(lights));
-                playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                renderSuitModel(player, playerModel, poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                         1.0F, 1.0F, 1.0F, opacity);
                 restoreParts(playerModel, hidden);
             }
         }
 
         QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, playerModel, model, 1);
+
+        for (int i = 0; i < animatedParts.length; ++i)
+        {
+            animatedParts[i].loadPose(originalPoses[i]);
+        }
 
         poseStack.popPose();
     }
@@ -243,6 +263,48 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                     1.0F, 1.0F, 1.0F, opacity);
             poseStack.popPose();
         }
+    }
+
+    /** Draws Black Manta's original Tabula jetpack model and emissive panel texture. */
+    private void renderMantapack(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
+            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
+            int slot, float suitOpacity, float partialTick)
+    {
+        com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:mantapack");
+        if (effect == null || !appliesToSlot(effect, slot)) return;
+
+        ModelPart anchor = anchor(playerModel, "body");
+        float opacity = suitOpacity * Math.max(0.0F, Math.min(1.0F,
+                model.evaluateRenderData(effect.get("opacity"), player, 1.0F)));
+        if (anchor == null || opacity <= 0.0F) return;
+
+        for (int pass = 0; pass < 2; ++pass)
+        {
+            String key = textureForPass(effect.get("texture"), pass);
+            if (key == null || key.equals("null")) continue;
+            ResourceLocation texture = model.resolveCustomTexture(key, player, slot);
+            if (texture == null) continue;
+
+            poseStack.pushPose();
+            anchor.translateAndRotate(poseStack);
+            VertexConsumer vertex = buffer.getBuffer(pass == 0
+                    ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture));
+            TabulaModelCache.render("fiskheroes:black_manta_jetpack", poseStack, vertex, packedLight,
+                    1.0F, 1.0F, 1.0F, opacity);
+            poseStack.popPose();
+        }
+
+        // The source model puts the two exhausts at mirrored x=-3.7/+3.7, y=3.6, z=3.5
+        // relative to its body anchor. Reuse the pack's animated fire atlas at those nozzle tips.
+        com.google.gson.JsonObject flames = effect.deepCopy();
+        flames.addProperty("anchor", "body");
+        flames.addProperty("mirror", true);
+        com.google.gson.JsonArray nozzle = new com.google.gson.JsonArray();
+        nozzle.add(3.7F);
+        nozzle.add(4.6F);
+        nozzle.add(3.5F);
+        flames.add("offset", nozzle);
+        BoosterFlameRenderer.render(flames, poseStack, buffer, player, playerModel, model, slot, partialTick);
     }
 
     /** Renders the original Tabula sword sheaths attached to Deadpool and Prometheus suits. */
@@ -571,7 +633,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             boolean[] hidden = hidePartsFor(playerModel, model, slot);
             RenderType renderType = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
             VertexConsumer consumer = buffer.getBuffer(renderType);
-            playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+            renderSuitModel(player, playerModel, poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                     1.0F, 1.0F, 1.0F, alpha);
             restoreParts(playerModel, hidden);
         }
@@ -603,7 +665,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         try
         {
             VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
-            playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+            renderSuitModel(player, playerModel, poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                     1.0F, 0.75F, 0.5F, alpha);
         }
         finally
@@ -826,7 +888,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         boolean[] hidden = hidePartsFor(playerModel, model, slot);
         VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));
-        playerModel.renderToBuffer(poseStack, consumer, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT,
+        renderSuitModel(player, playerModel, poseStack, consumer, net.minecraft.client.renderer.LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY, (color >> 16 & 255) / 255.0F, (color >> 8 & 255) / 255.0F,
                 (color & 255) / 255.0F, alpha);
         restoreParts(playerModel, hidden);
@@ -897,7 +959,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 try
                 {
                     poseStack.translate(x, 0.0D, -z / 2.0D);
-                    playerModel.renderToBuffer(poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
+                    renderSuitModel(player, playerModel, poseStack, consumer, packedLight, OverlayTexture.NO_OVERLAY,
                             1.0F, 1.0F, 1.0F, alpha);
                 }
                 finally
@@ -990,5 +1052,56 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         {
             parts[i].visible = previous[i];
         }
+    }
+
+    /**
+     * Suit textures use the classic four-pixel arm UV layout. Drawing them through the Alex/slim
+     * model stretches those UVs over three-pixel cubes and makes suit seams vary with skin type.
+     * For slim players, render a classic player mesh with the same pose and visibility instead.
+     */
+    private static void renderSuitModel(AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> model,
+            PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay,
+            float red, float green, float blue, float alpha)
+    {
+        if (!"slim".equals(player.getModelName()))
+        {
+            model.renderToBuffer(poseStack, consumer, packedLight, packedOverlay, red, green, blue, alpha);
+            return;
+        }
+
+        if (classicSuitModel == null)
+        {
+            ModelPart root = Minecraft.getInstance().getEntityModels().bakeLayer(net.minecraft.client.model.geom.ModelLayers.PLAYER);
+            classicSuitModel = new PlayerModel<>(root, false);
+        }
+
+        copyPart(model.head, classicSuitModel.head);
+        copyPart(model.hat, classicSuitModel.hat);
+        copyPart(model.body, classicSuitModel.body);
+        copyPart(model.rightArm, classicSuitModel.rightArm);
+        copyPart(model.leftArm, classicSuitModel.leftArm);
+        copyPart(model.rightLeg, classicSuitModel.rightLeg);
+        copyPart(model.leftLeg, classicSuitModel.leftLeg);
+        copyPart(model.jacket, classicSuitModel.jacket);
+        copyPart(model.rightSleeve, classicSuitModel.rightSleeve);
+        copyPart(model.leftSleeve, classicSuitModel.leftSleeve);
+        copyPart(model.rightPants, classicSuitModel.rightPants);
+        copyPart(model.leftPants, classicSuitModel.leftPants);
+        classicSuitModel.renderToBuffer(poseStack, consumer, packedLight, packedOverlay, red, green, blue, alpha);
+    }
+
+    private static void copyPart(ModelPart source, ModelPart target)
+    {
+        target.x = source.x;
+        target.y = source.y;
+        target.z = source.z;
+        target.xRot = source.xRot;
+        target.yRot = source.yRot;
+        target.zRot = source.zRot;
+        target.xScale = source.xScale;
+        target.yScale = source.yScale;
+        target.zScale = source.zScale;
+        target.visible = source.visible;
+        target.skipDraw = source.skipDraw;
     }
 }

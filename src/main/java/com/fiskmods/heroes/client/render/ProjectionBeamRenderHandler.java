@@ -85,6 +85,9 @@ public final class ProjectionBeamRenderHandler
                 // packs describe its visual as lightning_attack instead of energy_projection.
                 effect = model.getCustom().get("fiskheroes:lightning_attack");
             }
+            if (effect == null) effect = model.getCustom().get("fiskheroes:cold_gun");
+            if (effect == null) effect = model.getCustom().get("fiskheroes:repulsor_blast");
+            if (effect == null) effect = model.getCustom().get("fiskheroes:energy_manipulation");
             if (effect == null)
             {
                 continue;
@@ -258,10 +261,13 @@ public final class ProjectionBeamRenderHandler
                 && !effect.getAsJsonArray("beams").isEmpty())
         {
             JsonObject beam = effect.getAsJsonArray("beams").get(0).getAsJsonObject();
-            if (beam.has("offset") && beam.get("offset").isJsonArray()
-                    && beam.getAsJsonArray("offset").size() >= 3)
+            boolean firstPerson = player == Minecraft.getInstance().player
+                    && Minecraft.getInstance().options.getCameraType().isFirstPerson();
+            String offsetKey = firstPerson && beam.has("firstPerson") ? "firstPerson" : "offset";
+            if (beam.has(offsetKey) && beam.get(offsetKey).isJsonArray()
+                    && beam.getAsJsonArray(offsetKey).size() >= 3)
             {
-                var offset = beam.getAsJsonArray("offset");
+                var offset = beam.getAsJsonArray(offsetKey);
                 origin = origin.add(right.scale(offset.get(0).getAsDouble() / 16.0D))
                         .add(up.scale(offset.get(1).getAsDouble() / 16.0D))
                         .add(direction.scale(-offset.get(2).getAsDouble() / 16.0D));

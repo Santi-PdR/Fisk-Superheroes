@@ -33,12 +33,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /** Client side execution of the original data driven suit particle emitters. */
 final class ParticleEmitterRenderer
 {
     private static final Map<ResourceLocation, List<Emitter>> EMITTERS = new HashMap<>();
+    private static final Map<ResourceLocation, JsonObject> CLOUDS = new HashMap<>();
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_TICK = new HashMap<>();
 
@@ -47,6 +49,7 @@ final class ParticleEmitterRenderer
     static void clear()
     {
         EMITTERS.clear();
+        CLOUDS.clear();
         CONDITIONS.clear();
         LAST_TICK.clear();
     }
@@ -62,6 +65,7 @@ final class ParticleEmitterRenderer
         }
 
         Minecraft mc = Minecraft.getInstance();
+        emitCloud(player, suit);
         emitTelekinesisChain(player, model, suit, suitScale);
         boolean firstPerson = player == mc.player && mc.options.getCameraType().isFirstPerson();
         for (Map.Entry<String, JsonObject> entry : suit.getCustom().entrySet())
@@ -78,6 +82,178 @@ final class ParticleEmitterRenderer
                 emit(player, model, suitScale, emitter, firstPerson);
             }
         }
+    }
+
+    /** Executes the original particle_cloud and teleportation cloud directives. */
+    private static void emitCloud(Player player, HeroModelData suit)
+    {
+        JsonObject effect = suit.getCustom().get("fiskheroes:particle_cloud");
+        if (effect != null && passesConditionals(effect, suit, player)) emitCloud(player, effect);
+
+        effect = suit.getCustom().get("fiskheroes:teleportation");
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (effect != null && data != null && data.getData().get(Vars.TELEPORT_TIMER) > 0.0F)
+        {
+            emitCloud(player, effect);
+        }
+
+        // The Monitor binds its telekinesis cloud directly to the modifier state instead of
+        // declaring it as particle_cloud. Keep it active only while the server-synced grab power
+        // is held, matching the original renderer helper's condition.
+        effect = suit.getCustom().get("fiskheroes:telekinesis");
+        if (effect != null && data != null && data.getData().get(Vars.TELEKINESIS))
+        {
+            emitCloud(player, effect);
+        }
+    }
+
+    private static void emitCloud(Player player, JsonObject effect)
+    {
+        if (!effect.has("particles") || !effect.get("particles").isJsonPrimitive()) return;
+        ResourceLocation id = ResourceLocation.tryParse(effect.get("particles").getAsString());
+        if (id == null) return;
+        JsonObject definition = CLOUDS.computeIfAbsent(id, ParticleEmitterRenderer::loadCloud);
+        if (definition == null) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        boolean firstPerson = player == mc.player && mc.options.getCameraType().isFirstPerson();
+        int amount = firstPerson ? 1 : 4;
+        double spread = firstPerson ? 1.2D : 0.2D;
+        double motionFactor = firstPerson ? -0.5D : 1.0D;
+        Random random = new Random();
+        float[] color = cloudColor(definition, random);
+        var particle = new DustParticleOptions(new Vector3f(color[0], color[1], color[2]), 1.0F);
+        Vec3 velocity = player.getDeltaMovement().scale(motionFactor);
+        Level level = player.level();
+        for (int i = 0; i < amount; ++i)
+        {
+            level.addParticle(particle,
+                    player.getX() + randomOffset(random, spread),
+                    player.getY() + player.getBbHeight() * 0.5D + randomOffset(random, spread),
+                    player.getZ() + randomOffset(random, spread),
+                    velocity.x, velocity.y, velocity.z);
+        }
+    }
+
+    private static JsonObject loadCloud(ResourceLocation id)
+    {
+        ResourceLocation path = new ResourceLocation(id.getNamespace(), "models/clouds/" + id.getPath() + ".json");
+        try
+        {
+            Resource resource = Minecraft.getInstance().getResourceManager().getResource(path).orElseThrow();
+            try (InputStreamReader reader = new InputStreamReader(resource.open(), StandardCharsets.UTF_8))
+            {
+                return JsonParser.parseReader(reader).getAsJsonObject();
+            }
+        }
+        catch (Exception e)
+        {
+            FiskHeroes.LOGGER.warn("Could not load particle cloud {}: {}", path, e.toString());
+            return null;
+        }
+    }
+
+    /** Samples the pack's base/rand/start/end RGB values using its shared-channel rules. */
+    private static float[] cloudColor(JsonObject definition, Random random)
+    {
+        float[] randoms = { random.nextFloat(), random.nextFloat(), random.nextFloat() };
+        JsonObject channels = definition.has("color") && definition.get("color").isJsonObject()
+                ? definition.getAsJsonObject("color") : new JsonObject();
+        JsonElement[] specs = new JsonElement[3];
+        int[] links = { 0, 1, 2 };
+        String[] names = { "red", "green", "blue" };
+        for (var entry : channels.entrySet())
+        {
+            String[] shared = entry.getKey().split(",");
+            int first = channelIndex(shared[0].trim());
+            if (first < 0) continue;
+            for (String name : shared)
+            {
+                int channel = channelIndex(name.trim());
+                if (channel >= 0)
+                {
+                    specs[channel] = entry.getValue();
+                    links[channel] = first;
+                }
+            }
+        }
+        float[] result = new float[3];
+        for (int i = 0; i < result.length; ++i)
+        {
+            result[i] = Mth.clamp(sampleCloudChannel(specs[i], i, links[i], specs, links, randoms), 0.0F, 1.0F);
+        }
+        return result;
+    }
+
+    private static float sampleCloudChannel(JsonElement spec, int channel, int link,
+            JsonElement[] specs, int[] links, float[] randoms)
+    {
+        if (spec == null || spec.isJsonNull()) return 0.5F;
+        if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isNumber()) return spec.getAsFloat();
+        if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isString())
+        {
+            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                    .compile("(red|green|blue)\\s*([+*/-])\\s*([0-9.]+)").matcher(spec.getAsString());
+            if (!matcher.matches()) return 0.5F;
+            int source = channelIndex(matcher.group(1));
+            float value = source >= 0 && source != channel
+                    ? sampleCloudChannel(specs[source], source, links[source], specs, links, randoms)
+                    : channelBase(spec, link, randoms);
+            float operand = Float.parseFloat(matcher.group(3));
+            return switch (matcher.group(2))
+            {
+                case "+" -> value + operand;
+                case "-" -> value - operand;
+                case "*" -> value * operand;
+                case "/" -> operand == 0.0F ? value : value / operand;
+                default -> value;
+            };
+        }
+        if (!spec.isJsonObject()) return 0.5F;
+        JsonObject object = spec.getAsJsonObject();
+        if (object.has("start") || object.has("end"))
+        {
+            float start = sampleCloudEndpoint(object.get("start"), link, randoms);
+            float end = sampleCloudEndpoint(object.get("end"), link, randoms);
+            return start + (end - start) * 0.5F;
+        }
+        return sampleCloudEndpoint(spec, link, randoms);
+    }
+
+    private static float channelBase(JsonElement spec, int link, float[] randoms)
+    {
+        if (spec != null && spec.isJsonObject()) return sampleCloudEndpoint(spec, link, randoms);
+        return 0.5F;
+    }
+
+    private static float sampleCloudEndpoint(JsonElement endpoint, int link, float[] randoms)
+    {
+        if (endpoint == null || endpoint.isJsonNull()) return 0.5F;
+        if (endpoint.isJsonPrimitive() && endpoint.getAsJsonPrimitive().isNumber()) return endpoint.getAsFloat();
+        if (endpoint.isJsonObject())
+        {
+            JsonObject values = endpoint.getAsJsonObject();
+            float base = values.has("base") ? values.get("base").getAsFloat() : 0.0F;
+            float range = values.has("rand") ? values.get("rand").getAsFloat() : 0.0F;
+            return base + range * randoms[Math.max(0, Math.min(2, link))];
+        }
+        return 0.5F;
+    }
+
+    private static int channelIndex(String name)
+    {
+        return switch (name)
+        {
+            case "red" -> 0;
+            case "green" -> 1;
+            case "blue" -> 2;
+            default -> -1;
+        };
+    }
+
+    private static double randomOffset(Random random, double spread)
+    {
+        return (random.nextDouble() * 2.0D - 1.0D) * spread;
     }
 
     /** Recreates the original Obsidian shadow-smoke chain between the caster and grabbed target. */

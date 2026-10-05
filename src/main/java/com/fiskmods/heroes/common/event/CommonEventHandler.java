@@ -284,6 +284,16 @@ public class CommonEventHandler
     }
 
     @SubscribeEvent
+    public static void onPlayerStartTracking(PlayerEvent.StartTracking event)
+    {
+        if (event.getEntity() instanceof ServerPlayer tracker
+                && event.getTarget() instanceof ServerPlayer subject)
+        {
+            DataSyncer.sendTogglesTo(tracker, subject);
+        }
+    }
+
+    @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event)
     {
         if (event.getEntity() instanceof ServerPlayer player)

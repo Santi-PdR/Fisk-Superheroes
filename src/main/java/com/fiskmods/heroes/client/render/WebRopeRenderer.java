@@ -3,6 +3,7 @@ package com.fiskmods.heroes.client.render;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
+import com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -53,6 +54,17 @@ public final class WebRopeRenderer
                     data.getData().get(Vars.WEB_ANCHOR_Y), data.getData().get(Vars.WEB_ANCHOR_Z));
             if (start.distanceToSqr(end) < 0.04D) continue;
 
+            drawRope(consumer, pose, start, end);
+            rendered = true;
+        }
+
+        for (net.minecraft.world.entity.Entity entity : level.entitiesForRendering())
+        {
+            if (!(entity instanceof GrapplingHookEntity hook) || !hook.isAttached()
+                    || !(hook.getOwner() instanceof Player owner)) continue;
+            Vec3 start = owner.getPosition(event.getPartialTick()).add(0.0D, owner.getBbHeight() * 0.78D, 0.0D);
+            Vec3 end = hook.getPosition(event.getPartialTick());
+            if (start.distanceToSqr(end) < 0.04D) continue;
             drawRope(consumer, pose, start, end);
             rendered = true;
         }

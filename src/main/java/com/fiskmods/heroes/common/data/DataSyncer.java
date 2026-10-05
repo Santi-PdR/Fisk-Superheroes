@@ -8,9 +8,11 @@ import com.fiskmods.heroes.common.data.var.DataContainer;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.network.PacketSyncData;
 import com.fiskmods.heroes.common.network.PacketSyncSuit;
+import com.fiskmods.heroes.common.network.PacketSyncToggles;
 import com.fiskmods.heroes.common.network.SHNetwork;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
@@ -20,6 +22,7 @@ import net.minecraft.server.level.ServerPlayer;
 public final class DataSyncer
 {
     private static final Map<UUID, Integer> LAST_HERO = new HashMap<>();
+    private static final Map<UUID, java.util.Set<ResourceLocation>> LAST_TOGGLES = new HashMap<>();
 
     private DataSyncer()
     {
@@ -55,6 +58,13 @@ public final class DataSyncer
             LAST_HERO.put(player.getUUID(), heroHash);
             SHNetwork.sendToTracking(new PacketSyncSuit(player.getId(), data.getHero()), player);
         }
+
+        java.util.Set<ResourceLocation> toggles = data.getEnabledToggles();
+        java.util.Set<ResourceLocation> previousToggles = LAST_TOGGLES.put(player.getUUID(), toggles);
+        if (!toggles.equals(previousToggles))
+        {
+            sendTogglesToTracking(player, toggles);
+        }
     }
 
     public static void sendFullSync(ServerPlayer player)
@@ -67,12 +77,37 @@ public final class DataSyncer
             data.getData().writeTo(tag);
             SHNetwork.sendToPlayer(new PacketSyncData(player.getId(), tag), player);
             SHNetwork.sendToPlayer(new PacketSyncSuit(player.getId(), data.getHero()), player);
+            SHNetwork.sendToPlayer(new PacketSyncToggles(player.getId(), data.getEnabledToggles()), player);
         }
+    }
+
+    public static void sendTogglesToTracking(ServerPlayer subject)
+    {
+        SHPlayerData data = SHDataCapabilities.getPlayer(subject);
+        if (data != null)
+        {
+            sendTogglesToTracking(subject, data.getEnabledToggles());
+        }
+    }
+
+    public static void sendTogglesTo(ServerPlayer recipient, ServerPlayer subject)
+    {
+        SHPlayerData data = SHDataCapabilities.getPlayer(subject);
+        if (data != null)
+        {
+            SHNetwork.sendToPlayer(new PacketSyncToggles(subject.getId(), data.getEnabledToggles()), recipient);
+        }
+    }
+
+    private static void sendTogglesToTracking(ServerPlayer subject, java.util.Set<ResourceLocation> toggles)
+    {
+        SHNetwork.sendToTracking(new PacketSyncToggles(subject.getId(), toggles), subject);
     }
 
     public static void onPlayerLogout(ServerPlayer player)
     {
         LAST_HERO.remove(player.getUUID());
+        LAST_TOGGLES.remove(player.getUUID());
     }
 
     public static void onPlayerLogin(ServerPlayer player)

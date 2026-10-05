@@ -8,6 +8,7 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.network.PacketAbility;
+import com.fiskmods.heroes.common.network.PacketGunFire;
 import com.fiskmods.heroes.common.network.PacketCastSpell;
 import com.fiskmods.heroes.common.network.PacketSelectArrow;
 import com.fiskmods.heroes.common.network.SHNetwork;
@@ -36,6 +37,8 @@ public class ClientEventHandler
     private static boolean weaponKeyHeld;
     private static boolean maskKeyDown;
     private static boolean attackKeyDown;
+    private static long nextGunShotTick = Long.MIN_VALUE;
+    private static int hudAbilityHeld = Integer.MIN_VALUE;
     private static final boolean[] spellDirectionDown = new boolean[4];
     private static final StringBuilder spellSequence = new StringBuilder();
     private static boolean spellMenuWasDown;
@@ -69,6 +72,12 @@ public class ClientEventHandler
                     boolean pressed = event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null;
                     setAbilityKeyState(player, i, pressed);
                 }
+            }
+
+            if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null
+                    && mc.options.keyAttack.matches(event.getKey(), event.getScanCode()))
+            {
+                requestGunShot(player);
             }
         }
 
@@ -134,6 +143,8 @@ public class ClientEventHandler
             java.util.Arrays.fill(abilityKeysDown, false);
             maskKeyDown = false;
             attackKeyDown = false;
+            nextGunShotTick = Long.MIN_VALUE;
+            hudAbilityHeld = Integer.MIN_VALUE;
             spellMenuWasDown = false;
             spellSequence.setLength(0);
             java.util.Arrays.fill(spellDirectionDown, false);
@@ -156,6 +167,18 @@ public class ClientEventHandler
         {
             attackKeyDown = attackDown;
             SHNetwork.sendToServer(new PacketAbility(-1, attackDown));
+
+        }
+
+        // Firearms shoot from primary attack input. Send an explicit request so the server can
+        // validate the held item, hero permission, ammunition, reload state and cadence.
+        if (attackDown)
+        {
+            requestGunShot(player);
+        }
+        else
+        {
+            nextGunShotTick = Long.MIN_VALUE;
         }
 
         boolean maskDown = mc.screen == null && SHKeyBinds.MASK.isDown();
@@ -211,6 +234,12 @@ public class ClientEventHandler
 
         abilityKeysDown[ability] = down;
         int index = ABILITY_INDICES[ability];
+        setAbilityInput(player, index, down);
+    }
+
+    /** Keeps keyboard input and clickable HUD controls on the same local and network path. */
+    private static void setAbilityInput(LocalPlayer player, int index, boolean down)
+    {
         AbilityHandler.setClientKeyState(player, index, down);
         SHNetwork.sendToServer(new PacketAbility(index, down));
 
@@ -236,7 +265,14 @@ public class ClientEventHandler
     /** Capture WASD sequences while the spell-menu key is held and request a matching spell. */
     private static void updateSpellInput(Minecraft mc, LocalPlayer player)
     {
-        boolean menuDown = mc.screen == null && SHKeyBinds.SPELL_MENU.isDown();
+        com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
+        int spellMenuIndex = hero != null ? hero.getKeyBinding("SPELL_MENU") : Integer.MIN_VALUE;
+        boolean hasHeroSpellBinding = hero != null && hero.getKeyBind("SPELL_MENU") != null;
+        boolean menuBindingEnabled = !hasHeroSpellBinding || hero.isKeyBindEnabled(player, "SPELL_MENU");
+        boolean menuKeyDown = hasHeroSpellBinding && spellMenuIndex >= 1 && spellMenuIndex <= SHKeyBinds.ABILITY_COUNT
+                ? SHKeyBinds.ABILITIES[spellMenuIndex - 1].isDown() || hudAbilityHeld == spellMenuIndex
+                : SHKeyBinds.SPELL_MENU.isDown();
+        boolean menuDown = mc.screen == null && menuBindingEnabled && menuKeyDown;
         if (!menuDown)
         {
             if (spellMenuWasDown) spellSequence.setLength(0);
@@ -300,22 +336,35 @@ public class ClientEventHandler
     }
 
     @SubscribeEvent
-    public static void onMouseInput(InputEvent.MouseButton event)
+    public static void onMouseInput(InputEvent.MouseButton.Pre event)
     {
         Minecraft mc = Minecraft.getInstance();
 
-        if (mc.player != null && mc.screen == null && event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
-                && mc.options.keyAttack.matchesMouse(event.getButton())
-                && mc.player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
-                && !mc.player.getCooldowns().isOnCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
-                && AbilityHandler.isKeyPressed(mc.player, "SHIELD_THROW"))
+        // The original HUD presents these rows as controls. Let a click on a row trigger the same
+        // server-validated keybind as its displayed keyboard key, including AIM (-1).
+        if (mc.player != null && event.getButton() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1)
         {
-            var hero = com.fiskmods.heroes.common.hero.HeroTracker.getHeroType(mc.player);
-            var entry = hero != null ? AbilityHandler.findModifier(hero, "SHIELD_THROW") : null;
-            int cooldown = entry != null
-                    ? entry.getInt(com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME) : 10;
-            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketThrowShield());
-            mc.player.getCooldowns().addCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, cooldown));
+            if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null)
+            {
+                double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
+                double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
+                int index = SuitHud.findKeyBindAt(x, y);
+                if (index != Integer.MIN_VALUE && index >= -1 && index < 16)
+                {
+                    hudAbilityHeld = index;
+                    setAbilityInput(mc.player, index, true);
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+            else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE && hudAbilityHeld != Integer.MIN_VALUE)
+            {
+                int index = hudAbilityHeld;
+                hudAbilityHeld = Integer.MIN_VALUE;
+                setAbilityInput(mc.player, index, false);
+                event.setCanceled(true);
+                return;
+            }
         }
 
         if (mc.player != null && mc.options.keyAttack.matchesMouse(event.getButton()))
@@ -327,6 +376,7 @@ public class ClientEventHandler
                 AbilityHandler.setClientKeyState(mc.player, -1, down);
                 SHNetwork.sendToServer(new PacketAbility(-1, down));
             }
+            if (down) requestGunShot(mc.player);
         }
 
         if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
@@ -339,6 +389,25 @@ public class ClientEventHandler
     {
         float value = data.getData().get(var);
         data.getData().set(var, value + (target - value) * 0.15F);
+    }
+
+    /** Sends one rate-limited shot for both quick presses and held primary-attack input. */
+    private static void requestGunShot(LocalPlayer player)
+    {
+        if (!com.fiskmods.heroes.common.item.ItemGun.isGun(player.getMainHandItem()))
+        {
+            return;
+        }
+
+        long now = player.level().getGameTime();
+        if (now < nextGunShotTick)
+        {
+            return;
+        }
+
+        var gun = (com.fiskmods.heroes.common.item.ItemGun) player.getMainHandItem().getItem();
+        SHNetwork.sendToServer(new PacketGunFire());
+        nextGunShotTick = now + gun.getShotCooldownTicks(player.getMainHandItem());
     }
 
     /** The current frame's partial tick, kept by the render events. */

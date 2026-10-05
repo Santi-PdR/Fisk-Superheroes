@@ -120,6 +120,17 @@ public class SHPlayerData implements IDataHolder
         return toggles.contains(id);
     }
 
+    public java.util.Set<ResourceLocation> getEnabledToggles()
+    {
+        return java.util.Set.copyOf(toggles);
+    }
+
+    public void replaceEnabledToggles(java.util.Set<ResourceLocation> enabled)
+    {
+        toggles.clear();
+        toggles.addAll(enabled);
+    }
+
     public void setToggleEnabled(ResourceLocation id, boolean state)
     {
         if (state)

@@ -1,6 +1,8 @@
 package com.fiskmods.heroes.client.render;
 
 import com.fiskmods.heroes.common.entity.GravityWaveEntity;
+import com.fiskmods.heroes.common.hero.HeroIteration;
+import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -11,6 +13,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 
 /** Draws the short expanding ring emitted by the gravity manipulation ability. */
 public final class GravityWaveRenderer extends EntityRenderer<GravityWaveEntity>
@@ -29,23 +32,49 @@ public final class GravityWaveRenderer extends EntityRenderer<GravityWaveEntity>
         if (side == 2 || side == 3) poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
         else if (side == 4 || side == 5) poseStack.mulPose(Axis.YP.rotationDegrees(90.0F));
 
-        float radius = wave.getRadius() * wave.getProgress(partialTick);
-        int alpha = Mth.clamp((int) ((1.0F - wave.getProgress(partialTick)) * 210.0F), 0, 210);
+        float progress = Mth.clamp(wave.getProgress(partialTick), 0.0F, 1.0F);
+        float radius = wave.getRadius() * 0.5F * progress;
+        int alpha = Mth.clamp((int) ((1.0F - progress) * 127.5F), 0, 128);
+        int color = color(wave);
         VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
         PoseStack.Pose pose = poseStack.last();
-        for (int ring = 0; ring < 2; ++ring)
+        // The original renderer draws a single annulus with the hero's configured color and
+        // fades its outer edge to transparent. Keeping that gradient also avoids the fixed
+        // cyan rings that made every hero's gravity effect look the same.
+        float innerRadius = radius / 1.5F;
+        for (int segment = 0; segment < 36; ++segment)
         {
-            float ringRadius = radius * (ring == 0 ? 0.94F : 1.0F);
-            int color = ring == 0 ? 0xA8F8FF : 0x36BDF2;
-            for (int segment = 0; segment < 32; ++segment)
-            {
-                double a0 = Math.PI * 2.0D * segment / 32.0D;
-                double a1 = Math.PI * 2.0D * (segment + 1) / 32.0D;
-                vertex(consumer, pose, ringRadius * Math.cos(a0), ringRadius * Math.sin(a0), 0.0D, color, alpha);
-                vertex(consumer, pose, ringRadius * Math.cos(a1), ringRadius * Math.sin(a1), 0.0D, color, alpha);
-            }
+            double a0 = Math.PI * 2.0D * segment / 36.0D;
+            double a1 = Math.PI * 2.0D * (segment + 1) / 36.0D;
+            vertex(consumer, pose, innerRadius * Math.cos(a0), innerRadius * Math.sin(a0), 0.0D, color, alpha);
+            vertex(consumer, pose, radius * Math.cos(a0), radius * Math.sin(a0), 0.0D, color, 0);
+            vertex(consumer, pose, radius * Math.cos(a1), radius * Math.sin(a1), 0.0D, color, 0);
+            vertex(consumer, pose, innerRadius * Math.cos(a1), innerRadius * Math.sin(a1), 0.0D, color, alpha);
         }
         super.render(wave, yaw, partialTick, poseStack, buffers, packedLight);
+    }
+
+    private static int color(GravityWaveEntity wave)
+    {
+        if (wave.getCaster() instanceof Player player)
+        {
+            HeroIteration iteration = HeroTracker.getHero(player);
+            HeroModelData model = HeroModelRegistry.get(iteration);
+            com.google.gson.JsonObject effect = model != null
+                    ? model.getCustom().get("fiskheroes:gravity_manipulation") : null;
+            if (effect != null && effect.has("color"))
+            {
+                try
+                {
+                    return (int) Long.decode(effect.get("color").getAsString()).longValue() & 0xFFFFFF;
+                }
+                catch (NumberFormatException ignored)
+                {
+                    // Fall through to the original renderer's blue default.
+                }
+            }
+        }
+        return 0x32E0FF;
     }
 
     private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, double x, double y, double z,

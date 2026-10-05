@@ -111,6 +111,17 @@ public final class AbilityHandler
                 continue;
             }
 
+            if ("QUIVER_CYCLE".equals(key)
+                    && player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get())
+                    && !com.fiskmods.heroes.common.item.ItemQuiver.findQuiver(player).isEmpty())
+            {
+                int selected = Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5;
+                data.getData().set(Vars.SELECTED_ARROW, (byte) ((selected + 1) % 5));
+                com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+                player.playSound(net.minecraft.sounds.SoundEvents.UI_BUTTON_CLICK.value(), 0.5F, 1.2F);
+                continue;
+            }
+
             ModifierEntry entry = activate(player, data, hero, key);
             if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
             {
@@ -153,7 +164,8 @@ public final class AbilityHandler
         if (entry.getModifier() instanceof ModifierTentacles tentacles)
         {
             tentacles.activateKey(player, entry, data, key);
-            return null;
+            // Strike charge is completed by ModifierTentacles.onToggle when this key is released.
+            return "TENTACLE_STRIKE".equals(key) ? entry : null;
         }
 
         entry.getModifier().onActivate(player, entry, data);
@@ -167,16 +179,26 @@ public final class AbilityHandler
         for (ModifierEntry entry : hero.getPowerContainer().getEntries())
         {
             String path = entry.getModifier().getId().getPath();
-            String configuredKey = entry.get(PowerProperty.KEY);
+            // Some pack-defined keys are expressed through the entity's script state. Resolve
+            // them for this player instead of comparing only the literal/default value.
+            String configuredKey = entry.get(player, PowerProperty.KEY);
             boolean matches = key.equals(configuredKey)
-                    || key.equalsIgnoreCase(path)
-                    || modifierId != null && modifierId.equals(path);
+                    || sameAbilityName(key, configuredKey)
+                    || sameAbilityName(key, path)
+                    || modifierId != null && sameAbilityName(modifierId, path);
             if (!matches) continue;
 
             if (miniaturizeOnly && entry.getCard() != null && !entry.getCard().endsWith("|small")) continue;
             if (entry.isEnabled() && entry.isModifierEnabled(player, data)) return entry;
         }
         return null;
+    }
+
+    /** Compares pack key names such as SHADOWDOME with modifier ids such as shadow_dome. */
+    private static boolean sameAbilityName(String first, String second)
+    {
+        return first != null && second != null
+                && first.replaceAll("[^A-Za-z0-9]", "").equalsIgnoreCase(second.replaceAll("[^A-Za-z0-9]", ""));
     }
 
     /** Delivers key-up to the exact entries that accepted the corresponding key-down. */
@@ -354,11 +376,18 @@ public final class AbilityHandler
     /** Finds the modifier of a hero whose {@code key} property matches the ability name. */
     public static ModifierEntry findModifier(Hero hero, String key)
     {
+        return findModifier(hero, key, null);
+    }
+
+    /** Resolves script-valued keys for the current wearer before matching the modifier. */
+    public static ModifierEntry findModifier(Hero hero, String key, Entity entity)
+    {
         for (ModifierEntry entry : hero.getPowerContainer().getEntries())
         {
-            String property = entry.get(PowerProperty.KEY);
+            String property = entry.get(entity, PowerProperty.KEY);
 
-            if (key.equals(property) || key.equalsIgnoreCase(entry.getModifier().getId().getPath()))
+            if (key.equals(property) || sameAbilityName(key, property)
+                    || sameAbilityName(key, entry.getModifier().getId().getPath()))
             {
                 return entry;
             }

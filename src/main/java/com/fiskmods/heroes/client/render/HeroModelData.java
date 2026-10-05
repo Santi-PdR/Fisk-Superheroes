@@ -48,7 +48,7 @@ public class HeroModelData
     private final Map<String, Set<String>> showModel = new LinkedHashMap<>();
     private final List<String> fixHatLayer = new ArrayList<>();
     private final Map<String, JsonObject> custom = new LinkedHashMap<>();
-    private final Map<String, JsonObject> animations = new LinkedHashMap<>();
+    private final Map<String, JsonElement> animations = new LinkedHashMap<>();
     private final Map<String, String> vars = new LinkedHashMap<>();
     private final Map<String, String> itemIcons = new LinkedHashMap<>();
     private final Map<String, ScriptFunction> renderExpressions = new HashMap<>();
@@ -115,7 +115,7 @@ public class HeroModelData
         return id != null ? TrailRegistry.get(id) : null;
     }
 
-    public Map<String, JsonObject> getAnimations()
+    public Map<String, JsonElement> getAnimations()
     {
         return animations;
     }
@@ -207,10 +207,9 @@ public class HeroModelData
         {
             for (Map.Entry<String, JsonElement> e : json.getAsJsonObject("animations").entrySet())
             {
-                if (e.getValue().isJsonObject())
-                {
-                    data.animations.put(e.getKey(), e.getValue().getAsJsonObject());
-                }
+                // Animation references are strings (or arrays for randomized animation states);
+                // null is also meaningful because it disables an inherited animation.
+                data.animations.put(e.getKey(), e.getValue());
             }
         }
 

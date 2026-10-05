@@ -38,7 +38,7 @@ public final class PacketThrowShield extends SHPacket
         Hero hero = HeroTracker.getHeroType(player);
         if (data == null || hero == null) return;
 
-        ModifierEntry entry = AbilityHandler.findModifier(hero, "SHIELD_THROW");
+        ModifierEntry entry = AbilityHandler.findModifier(hero, "SHIELD_THROW", player);
         if (entry == null || !entry.isEnabled() || !entry.isModifierEnabled(player, data)) return;
 
         ItemStack shield = player.getMainHandItem().copy();
@@ -50,7 +50,7 @@ public final class PacketThrowShield extends SHPacket
         projectile.setDeltaMovement(projectile.getDeltaMovement().add(player.getDeltaMovement().scale(0.5D)));
         player.level().addFreshEntity(projectile);
         player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        player.getCooldowns().addCooldown(ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, entry.getInt(
+        player.getCooldowns().addCooldown(ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, entry.getInt(player,
                 com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME)));
     }
 }
