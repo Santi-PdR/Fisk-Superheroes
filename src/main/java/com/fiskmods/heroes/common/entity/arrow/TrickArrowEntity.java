@@ -200,6 +200,34 @@ public class TrickArrowEntity extends Arrow
         super.playerTouch(player);
     }
 
+    /** Handles the original arrow-catching modifier's special interaction with trick arrows. */
+    public boolean onCaught(LivingEntity catcher)
+    {
+        String type = getArrowType();
+        if ("excessive".equals(type) || !catcher.getMainHandItem().isEmpty()) return false;
+
+        if (ItemTrickArrow.EXPLOSIVE.equals(type) || "triple_explosive".equals(type))
+        {
+            detonate(explosionRadius, false);
+            return true;
+        }
+        if ("firework".equals(type) || "fireball".equals(type))
+        {
+            detonate(1.5F, false);
+            return true;
+        }
+        if ("smoke_bomb".equals(type))
+        {
+            spawnSmokeCloud();
+            discard();
+            return true;
+        }
+
+        catcher.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, getPickupItem().copy());
+        discard();
+        return true;
+    }
+
     private void detonateIfExplosive()
     {
         String type = getArrowType();

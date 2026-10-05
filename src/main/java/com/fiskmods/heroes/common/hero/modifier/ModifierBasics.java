@@ -159,7 +159,9 @@ class ModifierArrowCatching extends Modifier
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
-        return source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow;
+        if (!(source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow)
+                || !canCatch(entity, arrow)) return false;
+        return catchArrow(entity, arrow);
     }
 
     @Override
@@ -172,18 +174,37 @@ class ModifierArrowCatching extends Modifier
 
         for (net.minecraft.world.entity.Entity projectile : entity.level().getEntities(entity, entity.getBoundingBox().inflate(1.5D)))
         {
-            if (projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && !arrow.isRemoved())
+            if (projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && canCatch(entity, arrow))
             {
-                if (arrow.isOnFire())
-                {
-                    arrow.clearFire();
-                }
-
-                arrow.setDeltaMovement(Vec3.ZERO);
-                arrow.discard();
-                entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ITEM_PICKUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.6F, 1.4F);
+                if (catchArrow(entity, arrow))
+                    entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ITEM_PICKUP,
+                            net.minecraft.sounds.SoundSource.PLAYERS, 0.6F, 1.4F);
             }
         }
+    }
+
+    private static boolean canCatch(LivingEntity entity, net.minecraft.world.entity.projectile.AbstractArrow arrow)
+    {
+        if (arrow.isRemoved() || !entity.getMainHandItem().isEmpty()) return false;
+        if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick
+                && "excessive".equals(trick.getArrowType())) return false;
+        Vec3 toArrow = arrow.position().add(0.0D, arrow.getBbHeight() * 0.5D, 0.0D).subtract(entity.getEyePosition());
+        return toArrow.lengthSqr() < 1.0E-6D || entity.getLookAngle().dot(toArrow.normalize()) >= 0.8D;
+    }
+
+    private static boolean catchArrow(LivingEntity catcher, net.minecraft.world.entity.projectile.AbstractArrow arrow)
+    {
+        if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
+        {
+            return trick.onCaught(catcher);
+        }
+        if (!catcher.getMainHandItem().isEmpty()) return false;
+        catcher.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
+                net.minecraft.world.item.Items.ARROW.getDefaultInstance());
+        if (arrow.isOnFire()) arrow.clearFire();
+        arrow.setDeltaMovement(Vec3.ZERO);
+        arrow.discard();
+        return true;
     }
 }
 
