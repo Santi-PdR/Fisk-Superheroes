@@ -771,9 +771,19 @@ class ModifierGriefing extends Modifier
     {
         float radius = Math.min(entry.getFloat(entity, PowerProperty.RADIUS), 16.0F);
         float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
+        JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+        float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
 
         for (LivingEntity target : entity.level().getEntitiesOfClass(LivingEntity.class, entity.getBoundingBox().inflate(radius), e -> e != entity))
         {
+            if (target.distanceToSqr(entity) > radius * radius) continue;
+
+            if (damage > 0.0F)
+            {
+                DamageGroups.applyProfileDamage(target, entity,
+                        entity.damageSources().explosion(entity, entity), damage, damageProfile);
+            }
+
             Vec3 delta = target.position().subtract(entity.position()).normalize().scale(Math.max(0.4F, knockback));
             target.setDeltaMovement(delta.x, 0.4D, delta.z);
             target.hurtMarked = true;
