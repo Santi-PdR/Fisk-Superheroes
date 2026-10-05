@@ -457,7 +457,41 @@ class ModifierShadowform extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-        return data != null && data.getData().get(Vars.SHADOWFORM);
+        if (data == null || !data.getData().get(Vars.SHADOWFORM)
+                || entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get())) return false;
+
+        // Shadowform's reference behavior only blocks attacks when its absolute variant is
+        // enabled. Ordinary fall damage is amplified while shadowed; melee and projectiles are
+        // not accidentally converted into blanket immunity.
+        if (source.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL)) return true;
+        return entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE)
+                && (isMeleeAttack(source) || source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                        || source.is(net.minecraft.tags.DamageTypeTags.IS_EXPLOSION));
+    }
+
+    @Override
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry,
+            net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        return data != null && data.getData().get(Vars.SHADOWFORM)
+                && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get())
+                && source.is(net.minecraft.tags.DamageTypeTags.IS_FALL) ? amount * 2.0F : amount;
+    }
+
+    @Override
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry, Entity target,
+            net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        return data != null && data.getData().get(Vars.SHADOWFORM)
+                && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get()) && isMeleeAttack(source) ? 0.0F : amount;
+    }
+
+    private static boolean isMeleeAttack(net.minecraft.world.damagesource.DamageSource source)
+    {
+        return source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK);
     }
 
     @Override
@@ -470,9 +504,7 @@ class ModifierShadowform extends Modifier
         if (data.getData().get(Vars.SHADOWFORM))
         {
             entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 10, 0, true, false, false));
-            Vec3 motion = entity.getDeltaMovement();
-            entity.setDeltaMovement(motion.x, Math.max(motion.y, -0.08D), motion.z);
-            entity.fallDistance = 0.0F;
+            entity.clearFire();
         }
     }
 }
