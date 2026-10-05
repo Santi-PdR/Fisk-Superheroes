@@ -239,7 +239,22 @@ public class ItemGun extends Item
             }
         }
 
-        if (hit != null && hit.hurt(level.damageSources().playerAttack(shooter), damage))
+        boolean acceptedHit = false;
+        if (hit != null)
+        {
+            // Hitscan bullets still need projectile damage semantics: hero immunities and
+            // resistances inspect both the DamageType tags and the active original profile.
+            var damageType = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                    .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.ARROW);
+            var source = new net.minecraft.world.damagesource.DamageSource(damageType, shooter, shooter);
+            LivingEntity target = hit;
+            final boolean[] applied = { false };
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                    java.util.Map.of("BULLET", 1.0D), () -> applied[0] = target.hurt(source, damage));
+            acceptedHit = applied[0];
+        }
+
+        if (acceptedHit)
         {
             if (id.equals("cold_gun"))
             {

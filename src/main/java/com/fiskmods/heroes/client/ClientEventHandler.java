@@ -346,8 +346,11 @@ public class ClientEventHandler
         {
             if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null)
             {
-                double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
-                double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
+                // MouseHandler reports GLFW window coordinates, while the HUD uses GUI-scaled
+                // coordinates. Scale by the window's logical size (not framebuffer pixels),
+                // otherwise clicks drift on HiDPI / OS-scaled displays.
+                double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth();
+                double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight();
                 int index = SuitHud.findKeyBindAt(x, y);
                 if (index != Integer.MIN_VALUE && index >= -1 && index < 16)
                 {

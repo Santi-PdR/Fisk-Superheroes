@@ -46,6 +46,21 @@ public final class DamageGroups
         }
     }
 
+    /** Executes a native weapon hit with its original Fisk damage-type fractions. */
+    public static void withDamageProfile(java.util.Map<String, Double> profile, Runnable attack)
+    {
+        java.util.Map<String, Double> previous = DAMAGE_PROFILE.get();
+        useDamageProfile(profile);
+        try
+        {
+            attack.run();
+        }
+        finally
+        {
+            useDamageProfile(previous);
+        }
+    }
+
     /** Applies a typed damage profile and its entity side effects, matching the original damage properties. */
     public static boolean applyProfileDamage(net.minecraft.world.entity.LivingEntity target,
             net.minecraft.world.entity.LivingEntity attacker, DamageSource source, float amount, JsonElement definition)
