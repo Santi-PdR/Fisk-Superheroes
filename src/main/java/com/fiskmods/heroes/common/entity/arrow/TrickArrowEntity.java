@@ -1,6 +1,7 @@
 package com.fiskmods.heroes.common.entity.arrow;
 
 import com.fiskmods.heroes.common.item.ItemTrickArrow;
+import com.fiskmods.heroes.common.item.ModItems;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -26,6 +27,7 @@ public class TrickArrowEntity extends Arrow
     private static final EntityDataAccessor<String> ARROW_TYPE = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.STRING);
     private float explosionRadius = DEFAULT_EXPLOSION_RADIUS;
     private boolean detonated;
+    private boolean grappleSnapped;
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
     private ItemStack vialPotion = ItemStack.EMPTY;
@@ -80,6 +82,7 @@ public class TrickArrowEntity extends Arrow
     public void tick()
     {
         super.tick();
+        tickGrapple();
         if ("detonator".equals(getArrowType()) && inGround && level().hasNeighborSignal(blockPosition()))
         {
             detonate(4.0F, true, Level.ExplosionInteraction.BLOCK);
@@ -114,7 +117,8 @@ public class TrickArrowEntity extends Arrow
         {
             case "ender_pearl" -> teleportShooter();
             case "carrot" -> target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200));
-            case "fire_charge", "fireball", "blaze" -> target.setSecondsOnFire(5);
+            case "fire_charge", "blaze" -> target.setSecondsOnFire(5);
+            case "fireball" -> target.setSecondsOnFire(3);
             case "boxing_glove" ->
             {
                 Vec3 velocity = getDeltaMovement();
@@ -185,14 +189,8 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("grappling_hook".equals(type) || "vine".equals(type))
         {
-            // Keep the arrow anchored; the shooter is reeled to its hit point while this key is held.
-            LivingEntity owner = getOwner() instanceof LivingEntity living ? living : null;
-            if (owner != null)
-            {
-                Vec3 pull = position().subtract(owner.position()).normalize().scale(1.2D);
-                owner.setDeltaMovement(owner.getDeltaMovement().add(pull));
-                owner.hurtMarked = true;
-            }
+            // Pulling is applied each server tick while the arrow is anchored and the bow is held,
+            // matching the original grapple arrow instead of giving a single weak impact impulse.
         }
         else if ("smoke_bomb".equals(type))
         {
@@ -277,6 +275,29 @@ public class TrickArrowEntity extends Arrow
         {
             pufferfishFuseTicks = 30;
         }
+    }
+
+    private void tickGrapple()
+    {
+        String type = getArrowType();
+        if (level().isClientSide || !inGround || grappleSnapped
+                || !("grappling_hook".equals(type) || "vine".equals(type))) return;
+
+        if (!(getOwner() instanceof Player player) || !player.isAlive()
+                || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get()) || player.hurtTime > 0)
+        {
+            grappleSnapped = true;
+            return;
+        }
+
+        Vec3 offset = position().subtract(player.position());
+        double distance = offset.length();
+        if (distance < 1.0D) return;
+
+        Vec3 pull = offset.normalize().scale(Math.min(distance / 4.0D, 1.0D) * 0.35D);
+        player.setDeltaMovement(player.getDeltaMovement().scale(0.9D).add(pull));
+        player.hasImpulse = true;
+        if (pull.y >= 0.0D || player.getDeltaMovement().y >= 0.0D) player.fallDistance = 0.0F;
     }
 
     private void detonate(float radius, boolean causesFire)
@@ -408,6 +429,7 @@ public class TrickArrowEntity extends Arrow
         tag.putString("ArrowType", getArrowType());
         tag.putFloat("ExplosionRadius", explosionRadius);
         tag.putBoolean("Detonated", detonated);
+        tag.putBoolean("GrappleSnapped", grappleSnapped);
         tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
         if (!vialPotion.isEmpty()) tag.put("VialPotion", vialPotion.save(new CompoundTag()));
     }
@@ -419,6 +441,7 @@ public class TrickArrowEntity extends Arrow
         setArrowType(tag.getString("ArrowType"));
         setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
         detonated = tag.getBoolean("Detonated");
+        grappleSnapped = tag.getBoolean("GrappleSnapped");
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
         vialPotion = tag.contains("VialPotion", CompoundTag.TAG_COMPOUND)
                 ? ItemStack.of(tag.getCompound("VialPotion")) : ItemStack.EMPTY;
