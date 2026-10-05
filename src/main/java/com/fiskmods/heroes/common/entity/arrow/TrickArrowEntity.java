@@ -110,6 +110,11 @@ public class TrickArrowEntity extends Arrow
             startPufferfishFuse();
         }
 
+        if ("sponge".equals(getArrowType()))
+        {
+            absorbWater(result.getEntity().blockPosition());
+        }
+
         super.onHitEntity(result);
         if (level().isClientSide || !(result.getEntity() instanceof LivingEntity target)) return;
 
@@ -141,7 +146,12 @@ public class TrickArrowEntity extends Arrow
             default -> { }
         }
         detonateIfExplosive();
-        if ("firework".equals(getArrowType()) || "fireball".equals(getArrowType()))
+        if ("firework".equals(getArrowType()))
+        {
+            spawnFlashbang();
+            discard();
+        }
+        else if ("fireball".equals(getArrowType()))
         {
             detonate(1.5F, false);
         }
@@ -168,6 +178,11 @@ public class TrickArrowEntity extends Arrow
         if ("vial".equals(type))
         {
             applyVial(null);
+        }
+
+        if ("sponge".equals(type))
+        {
+            absorbWater(result.getBlockPos());
         }
 
         if ("detonator".equals(type)) return;
@@ -197,7 +212,12 @@ public class TrickArrowEntity extends Arrow
             spawnSmokeCloud();
             discard();
         }
-        else if ("firework".equals(type) || "fireball".equals(type))
+        else if ("firework".equals(type))
+        {
+            spawnFlashbang();
+            discard();
+        }
+        else if ("fireball".equals(type))
         {
             detonate(1.5F, false);
         }
@@ -395,6 +415,49 @@ public class TrickArrowEntity extends Arrow
         cloud.setParticle(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE);
         cloud.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 80));
         serverLevel.addFreshEntity(cloud);
+    }
+
+    /** Firework arrows flash nearby targets instead of behaving like explosive arrows. */
+    private void spawnFlashbang()
+    {
+        if (level().isClientSide) return;
+        var area = getBoundingBox().inflate(4.0D);
+        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, area,
+                candidate -> candidate != getOwner() && candidate.isAlive()
+                        && candidate.distanceToSqr(this) <= 16.0D))
+        {
+            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 120, 0, false, true));
+        }
+        level().playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_BLAST,
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.FLASH,
+                    getX(), getY(), getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
+        }
+    }
+
+    /** Absorbs nearby source water, matching the utility effect implied by a sponge-tipped arrow. */
+    private void absorbWater(net.minecraft.core.BlockPos center)
+    {
+        if (level().isClientSide || !level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return;
+        int absorbed = 0;
+        for (net.minecraft.core.BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(
+                center.offset(-3, -2, -3), center.offset(3, 2, 3)))
+        {
+            if (absorbed >= 64) break;
+            if (level().getBlockState(pos).is(Blocks.WATER))
+            {
+                level().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                ++absorbed;
+            }
+        }
+        if (absorbed > 0 && level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.SPLASH,
+                    center.getX() + 0.5D, center.getY() + 0.5D, center.getZ() + 0.5D,
+                    Math.min(24, absorbed), 0.5D, 0.5D, 0.5D, 0.02D);
+        }
     }
 
     private void spawnCactusSpikes()

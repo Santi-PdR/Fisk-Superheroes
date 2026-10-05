@@ -119,6 +119,7 @@ public class ItemCompoundBow extends BowItem
             if ("boxing_glove".equals(type)) trick.setBaseDamage(0.4D);
             else if ("carrot".equals(type) || "pufferfish".equals(type) || "slime".equals(type))
                 trick.setBaseDamage(1.0D);
+            else if ("firework".equals(type)) trick.setBaseDamage(0.0D);
             else if ("excessive".equals(type)) trick.setBaseDamage(8.0D);
         }
     }
