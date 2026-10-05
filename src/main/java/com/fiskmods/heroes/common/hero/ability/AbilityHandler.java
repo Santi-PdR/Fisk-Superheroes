@@ -222,6 +222,7 @@ public final class AbilityHandler
             case "SHOOT_SPIKES" -> "spike_burst";
             case "TELEPORT" -> "teleportation";
             case "HORIZONTAL_BOW" -> "archery";
+            case "SHIELD_THROW" -> "shield_throwing";
             case "MINIATURIZE_SUIT", "SIZE_MANIPULATION" -> "size_manipulation";
             default -> key.startsWith("TENTACLE_") ? "tentacles" : null;
         };

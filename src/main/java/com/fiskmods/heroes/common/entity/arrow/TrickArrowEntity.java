@@ -26,6 +26,8 @@ public class TrickArrowEntity extends Arrow
     private static final EntityDataAccessor<String> ARROW_TYPE = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.STRING);
     private float explosionRadius = DEFAULT_EXPLOSION_RADIUS;
     private boolean detonated;
+    /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
+    private int pufferfishFuseTicks = -1;
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level)
     {
@@ -80,7 +82,8 @@ public class TrickArrowEntity extends Arrow
         {
             detonate(1.5F, false);
         }
-        else if ("explosive_pufferfish".equals(getArrowType()) && inGround && tickCount % 20 == 0)
+        else if ("explosive_pufferfish".equals(getArrowType()) && pufferfishFuseTicks >= 0
+                && --pufferfishFuseTicks <= 0)
         {
             detonate(1.5F, false);
         }
@@ -92,6 +95,11 @@ public class TrickArrowEntity extends Arrow
         // Detonator arrows are remote mines: the reference arrow passes through entities without
         // dealing damage and only explodes after sticking to a powered block.
         if ("detonator".equals(getArrowType())) return;
+
+        if ("explosive_pufferfish".equals(getArrowType()))
+        {
+            startPufferfishFuse();
+        }
 
         super.onHitEntity(result);
         if (level().isClientSide || !(result.getEntity() instanceof LivingEntity target)) return;
@@ -132,6 +140,17 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected void onHitBlock(BlockHitResult result)
     {
+        // The original glitch arrow is non-solid: block impacts do not stop or embed it.
+        if ("glitch".equals(getArrowType()))
+        {
+            return;
+        }
+
+        if ("explosive_pufferfish".equals(getArrowType()))
+        {
+            startPufferfishFuse();
+        }
+
         super.onHitBlock(result);
         String type = getArrowType();
         if (level().isClientSide) return;
@@ -168,6 +187,10 @@ public class TrickArrowEntity extends Arrow
         {
             spawnSmokeCloud();
             discard();
+        }
+        else if ("firework".equals(type) || "fireball".equals(type))
+        {
+            detonate(1.5F, false);
         }
         else if ("cactus".equals(type))
         {
@@ -231,10 +254,17 @@ public class TrickArrowEntity extends Arrow
     private void detonateIfExplosive()
     {
         String type = getArrowType();
-        if (ItemTrickArrow.EXPLOSIVE.equals(type) || "explosive_pufferfish".equals(type)
-                || "triple_explosive".equals(type))
+        if (ItemTrickArrow.EXPLOSIVE.equals(type) || "triple_explosive".equals(type))
         {
             detonate("explosive_pufferfish".equals(type) ? 1.5F : explosionRadius, false);
+        }
+    }
+
+    private void startPufferfishFuse()
+    {
+        if (pufferfishFuseTicks < 0)
+        {
+            pufferfishFuseTicks = 30;
         }
     }
 
@@ -323,7 +353,9 @@ public class TrickArrowEntity extends Arrow
     private void spawnCactusSpikes()
     {
         if (!(level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
-        for (int i = 0; i < 8; ++i)
+        // The reference arrow bursts into twenty or twenty-one cactus spikes.
+        int count = 20 + random.nextInt(2);
+        for (int i = 0; i < count; ++i)
         {
             Arrow spike = new Arrow(level(), getOwner() instanceof LivingEntity owner ? owner : null);
             spike.setPos(getX(), getY(), getZ());
@@ -350,6 +382,7 @@ public class TrickArrowEntity extends Arrow
         tag.putString("ArrowType", getArrowType());
         tag.putFloat("ExplosionRadius", explosionRadius);
         tag.putBoolean("Detonated", detonated);
+        tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
     }
 
     @Override
@@ -359,5 +392,6 @@ public class TrickArrowEntity extends Arrow
         setArrowType(tag.getString("ArrowType"));
         setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
         detonated = tag.getBoolean("Detonated");
+        pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
     }
 }
