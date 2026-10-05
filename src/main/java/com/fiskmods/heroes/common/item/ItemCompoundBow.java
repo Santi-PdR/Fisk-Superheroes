@@ -66,16 +66,25 @@ public class ItemCompoundBow extends BowItem
         float velocity = horizontal ? 2.25F : 3.0F;
         float inaccuracy = horizontal ? 0.5F : 1.0F;
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity * power, inaccuracy);
-        if (power >= 1.0F) arrow.setCritArrow(true);
-
-        int damage = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, bow);
-        if (damage > 0) arrow.setBaseDamage(arrow.getBaseDamage() + damage * 0.5D + 0.5D);
-        int knockback = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, bow);
-        if (knockback > 0) arrow.setKnockback(knockback);
-        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, bow) > 0) arrow.setSecondsOnFire(100);
+        prepareArrow(arrow, bow, power);
 
         if (level.addFreshEntity(arrow))
         {
+            if (arrowStack.getItem() instanceof ItemTrickArrow trickArrow
+                    && ("triple".equals(ItemTrickArrow.getType(arrowStack))
+                            || "triple_explosive".equals(ItemTrickArrow.getType(arrowStack))))
+            {
+                // The original triple arrows consume one item and emit three projectiles: the
+                // center arrow follows the aim and two arrows fan out on either side.
+                for (float offset : new float[] { -8.0F, 8.0F })
+                {
+                    AbstractArrow extra = trickArrow.createArrow(level, arrowStack.copy(), player);
+                    extra.shootFromRotation(player, player.getXRot(), player.getYRot() + offset, 0.0F,
+                            velocity * power, inaccuracy * 1.5F);
+                    prepareArrow(extra, bow, power);
+                    level.addFreshEntity(extra);
+                }
+            }
             if (quiverAmmo)
             {
                 ItemQuiver.consumeArrow(player, quiverArrowSlot);
@@ -91,6 +100,26 @@ public class ItemCompoundBow extends BowItem
             player.playSound(SoundEvents.ARROW_SHOOT, 1.0F, pitch);
             player.awardStat(Stats.ITEM_USED.get(this));
             player.gameEvent(GameEvent.PROJECTILE_SHOOT);
+        }
+    }
+
+    private static void prepareArrow(AbstractArrow arrow, ItemStack bow, float power)
+    {
+        if (power >= 1.0F) arrow.setCritArrow(true);
+
+        int damage = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.POWER_ARROWS, bow);
+        if (damage > 0) arrow.setBaseDamage(arrow.getBaseDamage() + damage * 0.5D + 0.5D);
+        int knockback = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.PUNCH_ARROWS, bow);
+        if (knockback > 0) arrow.setKnockback(knockback);
+        if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, bow) > 0) arrow.setSecondsOnFire(100);
+
+        if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
+        {
+            String type = trick.getArrowType();
+            if ("boxing_glove".equals(type)) trick.setBaseDamage(0.4D);
+            else if ("carrot".equals(type) || "pufferfish".equals(type) || "slime".equals(type))
+                trick.setBaseDamage(1.0D);
+            else if ("excessive".equals(type)) trick.setBaseDamage(8.0D);
         }
     }
 

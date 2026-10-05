@@ -162,6 +162,7 @@ public class CommonEventHandler
 
         if (entity instanceof ServerPlayer serverPlayer)
         {
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(serverPlayer);
             com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(serverPlayer);
         }
 

@@ -67,6 +67,22 @@ public final class SHTextures
 
     public static ResourceLocation sprite(String namespace, String path)
     {
+        // Texture selectors in original .tx.json files may contain a fully-qualified
+        // resource name (for example "fiskheroes:generated/mysterio_mask_1"). Treat its
+        // namespace and path separately before placing it under textures/heroes; appending
+        // the whole selector to that directory creates an invalid ResourceLocation and can
+        // crash entity rendering.
+        ResourceLocation qualified = ResourceLocation.tryParse(path);
+        if (qualified != null && path.indexOf(':') >= 0)
+        {
+            namespace = qualified.getNamespace();
+            path = qualified.getPath();
+        }
+
+        if (path.endsWith(".png"))
+        {
+            path = path.substring(0, path.length() - 4);
+        }
         return new ResourceLocation(namespace, "textures/heroes/" + path + ".png");
     }
 

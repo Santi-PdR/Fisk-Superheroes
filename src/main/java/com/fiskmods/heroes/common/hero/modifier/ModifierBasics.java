@@ -136,6 +136,11 @@ class ModifierProjectileImmunity extends Modifier
     {
         if (source.is(DamageTypeTags.IS_PROJECTILE))
         {
+            if (source.getDirectEntity() instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity arrow
+                    && "vibranium".equals(arrow.getArrowType()))
+            {
+                return false;
+            }
             return true;
         }
 

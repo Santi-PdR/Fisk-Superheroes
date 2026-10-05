@@ -31,6 +31,8 @@ public final class AbilityHandler
     private static final Map<UUID, Map<Integer, List<ModifierEntry>>> HELD_ABILITIES = new HashMap<>();
     private static final Map<UUID, Map<Integer, Set<String>>> SERVER_PRESSED_KEYS = new HashMap<>();
     private static final Map<UUID, Map<Integer, Set<String>>> CLIENT_PRESSED_KEYS = new HashMap<>();
+    /** Aim-gated powers sharing the AIM key are retried until aim settles or the key is released. */
+    private static final Map<UUID, Map<Integer, Set<String>>> PENDING_AIM_ABILITIES = new HashMap<>();
     private static final Map<UUID, Map<String, Long>> ABILITY_COOLDOWNS = new HashMap<>();
 
     private AbilityHandler()
@@ -46,10 +48,21 @@ public final class AbilityHandler
             return;
         }
 
+        if (pressed && player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get()))
+        {
+            return;
+        }
+
         HeroIteration iteration = data.getHero();
+
+        if (pressed && isServerIndexPressed(player, index))
+        {
+            return;
+        }
 
         if (!pressed)
         {
+            activatePendingAimAbilities(player, data, iteration, index);
             release(player, data, index);
             if (index == 0) return;
         }
@@ -89,12 +102,19 @@ public final class AbilityHandler
 
         for (String key : keys)
         {
+            // Record the physical press even while a keybind is temporarily gated. Mysterio's
+            // ENERGY_PROJECTION shares AIM's key and becomes enabled only after the aim animation
+            // settles; a transition-only packet otherwise loses that shot permanently.
+            setPressedKey(SERVER_PRESSED_KEYS, player, index, key, true);
             if (!hero.isKeyBindEnabled(player, key))
             {
+                if (isAimGatedAbility(hero, index, key))
+                {
+                    PENDING_AIM_ABILITIES.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>())
+                            .computeIfAbsent(index, ignored -> new java.util.LinkedHashSet<>()).add(key);
+                }
                 continue;
             }
-
-            setPressedKey(SERVER_PRESSED_KEYS, player, index, key, true);
 
             ScriptFunction function = hero.getKeyBindFuncs().get(key);
 
@@ -129,6 +149,67 @@ public final class AbilityHandler
                         .computeIfAbsent(index, ignored -> new ArrayList<>()).add(entry);
             }
         }
+    }
+
+    /** Retries an aim-gated shared-key ability after the aim state has had time to settle. */
+    public static void tickHeldAbilities(ServerPlayer player)
+    {
+        Map<Integer, Set<String>> byIndex = PENDING_AIM_ABILITIES.get(player.getUUID());
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        HeroIteration iteration = data != null ? data.getHero() : null;
+        if (byIndex == null) return;
+        if (iteration == null)
+        {
+            PENDING_AIM_ABILITIES.remove(player.getUUID());
+            return;
+        }
+
+        Hero hero = iteration.getHero();
+        for (Map.Entry<Integer, Set<String>> pending : new HashMap<>(byIndex).entrySet())
+        {
+            for (String key : new java.util.ArrayList<>(pending.getValue()))
+            {
+                if (!hero.isKeyBindEnabled(player, key)) continue;
+                pending.getValue().remove(key);
+                startAbility(player, data, hero, pending.getKey(), key);
+            }
+            if (pending.getValue().isEmpty()) byIndex.remove(pending.getKey());
+        }
+        if (byIndex.isEmpty()) PENDING_AIM_ABILITIES.remove(player.getUUID());
+    }
+
+    /** A short HUD click should still perform the shared-key shot when aim has not settled yet. */
+    private static void activatePendingAimAbilities(ServerPlayer player, SHPlayerData data,
+            HeroIteration iteration, int index)
+    {
+        Map<Integer, Set<String>> byIndex = PENDING_AIM_ABILITIES.get(player.getUUID());
+        Set<String> pending = byIndex != null ? byIndex.remove(index) : null;
+        if (byIndex != null && byIndex.isEmpty()) PENDING_AIM_ABILITIES.remove(player.getUUID());
+        if (pending == null || iteration == null
+                || player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get())) return;
+        Hero hero = iteration.getHero();
+        for (String key : pending) startAbility(player, data, hero, index, key);
+    }
+
+    private static void startAbility(ServerPlayer player, SHPlayerData data, Hero hero, int index, String key)
+    {
+        ModifierEntry entry = activate(player, data, hero, key);
+        if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
+        {
+            HELD_ABILITIES.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>())
+                    .computeIfAbsent(index, ignored -> new ArrayList<>()).add(entry);
+        }
+    }
+
+    private static boolean isAimGatedAbility(Hero hero, int index, String key)
+    {
+        return "ENERGY_PROJECTION".equals(key) && hero.getKeyBinding("AIM") == index;
+    }
+
+    private static boolean isServerIndexPressed(ServerPlayer player, int index)
+    {
+        Map<Integer, Set<String>> byIndex = SERVER_PRESSED_KEYS.get(player.getUUID());
+        return byIndex != null && byIndex.containsKey(index);
     }
 
     /** Runs the default key-down behaviour and returns the started modifier, if any. */
@@ -223,6 +304,7 @@ public final class AbilityHandler
     public static void clear(ServerPlayer player)
     {
         SERVER_PRESSED_KEYS.remove(player.getUUID());
+        PENDING_AIM_ABILITIES.remove(player.getUUID());
         ABILITY_COOLDOWNS.remove(player.getUUID());
         Map<Integer, List<ModifierEntry>> byIndex = HELD_ABILITIES.remove(player.getUUID());
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
@@ -341,6 +423,8 @@ public final class AbilityHandler
     /** Resolves whether the named ability key is currently held on this logical side. */
     public static boolean isKeyPressed(Entity entity, String key)
     {
+        if (entity instanceof net.minecraft.world.entity.LivingEntity living
+                && living.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get())) return false;
         HeroIteration iteration = HeroTracker.getHero(entity);
         if (iteration == null || !iteration.getHero().hasKeyBind(key)
                 || !iteration.getHero().isKeyBindEnabled(entity, key))

@@ -292,17 +292,21 @@ class ModifierIntangibility extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-        return data != null && data.getData().get(Vars.INTANGIBLE) && !entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE);
+        return data != null && data.getData().get(Vars.INTANGIBLE)
+                && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get())
+                && !entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE);
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        boolean active = data.getData().get(Vars.INTANGIBLE)
+                && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get());
         float timer = data.getData().get(Vars.INTANGIBILITY_TIMER);
         data.getData().set(Vars.INTANGIBILITY_TIMER,
-                net.minecraft.util.Mth.approach(timer, data.getData().get(Vars.INTANGIBLE) ? 1.0F : 0.0F, 0.2F));
+                net.minecraft.util.Mth.approach(timer, active ? 1.0F : 0.0F, 0.2F));
 
-        if (data.getData().get(Vars.INTANGIBLE))
+        if (active)
         {
             entity.noPhysics = true;
             entity.fallDistance = 0.0F;
