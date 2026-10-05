@@ -171,13 +171,33 @@ class ModifierEnergyProjection extends Modifier
 
         if ("energy_bolt".equals(entry.getModifier().getId().getPath()))
         {
+            float speed = entry.getFloat(entity, PowerProperty.SPEED);
+            if (speed <= 0.0F) speed = 4.0F;
             var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(entity,
                     damageProfile, charged ? damage * 1.6F : damage,
-                    entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE));
+                    entry.getBoolean(entity, PowerProperty.IS_EXPLOSIVE), speed,
+                    entry.getFloat(entity, PowerProperty.SPREAD));
             level.addFreshEntity(bolt);
             AbilityData.playSound(entity, entry, "SHOOT");
             level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLAZE_SHOOT,
                     SoundSource.PLAYERS, 1.0F, charged ? 0.8F : 1.2F);
+            return;
+        }
+
+        if ("repulsor_blast".equals(entry.getModifier().getId().getPath()))
+        {
+            float speed = entry.getFloat(entity, PowerProperty.SPEED);
+            var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(entity,
+                    damageProfile, damage, false, speed > 0.0F ? speed : 20.0F,
+                    entry.getFloat(entity, PowerProperty.SPREAD));
+            level.addFreshEntity(bolt);
+            AbilityData.playSound(entity, entry, "SHOOT");
+            return;
+        }
+
+        if ("lightning_cast".equals(entry.getModifier().getId().getPath()))
+        {
+            fireLightningCast(entity, entry, data, level, range, damage, damageProfile);
             return;
         }
 
@@ -260,6 +280,119 @@ class ModifierEnergyProjection extends Modifier
 
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1.0F, charged ? 0.8F : 1.2F);
         AbilityData.playSound(entity, entry, "SHOOT");
+    }
+
+    private void fireLightningCast(LivingEntity entity, ModifierEntry entry, SHPlayerData data,
+            ServerLevel level, float range, float damage, JsonElement damageProfile)
+    {
+        Vec3 start = entity.getEyePosition();
+        Vec3 direction = entity.getLookAngle().normalize();
+        Vec3 end = start.add(direction.scale(range));
+        HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(
+                entity, candidate -> candidate != entity && candidate.isAlive(), range);
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, entity));
+        if (blockHit.getType() != HitResult.Type.MISS
+                && (hit.getType() == HitResult.Type.MISS
+                        || start.distanceToSqr(blockHit.getLocation()) < start.distanceToSqr(hit.getLocation())))
+        {
+            hit = blockHit;
+        }
+        if (hit.getType() != HitResult.Type.MISS) end = hit.getLocation();
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(end));
+        data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
+
+        if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity first)
+        {
+            DamageGroups.applyProfileDamage(first, entity, entity.damageSources().indirectMagic(entity, entity),
+                    damage, damageProfile);
+            double radius = Math.max(0.0F, entry.getFloat(entity, PowerProperty.CHAIN_RADIUS));
+            if (radius > 0.0D)
+            {
+                for (LivingEntity chained : level.getEntitiesOfClass(LivingEntity.class,
+                        first.getBoundingBox().inflate(radius), candidate -> candidate != entity && candidate != first
+                                && candidate.isAlive()))
+                {
+                    if (chained.distanceToSqr(first) <= radius * radius)
+                    {
+                        DamageGroups.applyProfileDamage(chained, entity,
+                                chained.damageSources().indirectMagic(entity, entity), damage, damageProfile);
+                        level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                                chained.getX(), chained.getY() + chained.getBbHeight() * 0.5D,
+                                chained.getZ(), 12, 0.15D, 0.2D, 0.15D, 0.02D);
+                    }
+                }
+            }
+        }
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK,
+                end.x, end.y, end.z, 20, 0.25D, 0.25D, 0.25D, 0.04D);
+        AbilityData.playSound(entity, entry, "SHOOT");
+    }
+}
+
+/** Continuous flame projection, matching the source power's aim-held behavior. */
+class ModifierFlameBlast extends Modifier
+{
+    ModifierFlameBlast(ResourceLocation id)
+    {
+        super(id);
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!(entity.level() instanceof ServerLevel level) || !data.getData().get(Vars.AIMING)) return;
+
+        float range = Math.max(0.0F, entry.getFloat(entity, PowerProperty.RANGE));
+        Vec3 start = entity.getEyePosition();
+        Vec3 direction = entity.getLookAngle().normalize();
+        Vec3 end = start.add(direction.scale(range));
+        HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(
+                entity, candidate -> candidate != entity && candidate.isAlive(), range);
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, entity));
+        if (blockHit.getType() != HitResult.Type.MISS
+                && (hit.getType() == HitResult.Type.MISS
+                        || start.distanceToSqr(blockHit.getLocation()) < start.distanceToSqr(hit.getLocation())))
+        {
+            hit = blockHit;
+        }
+        if (hit.getType() != HitResult.Type.MISS) end = hit.getLocation();
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(end));
+        data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
+
+        if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
+        {
+            if (entity.tickCount % 4 == 0)
+            {
+                target.invulnerableTime = 0;
+                JsonElement profile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+                float damage = DamageGroups.profileDamage(profile, entry.getFloat(entity, PowerProperty.AMOUNT));
+                if (damage <= 0.0F) damage = 5.0F;
+                boolean applied = DamageGroups.applyProfileDamage(target, entity,
+                        entity.damageSources().indirectMagic(entity, entity), damage, profile);
+                if (applied)
+                {
+                    Vec3 away = target.position().subtract(entity.position()).multiply(1.0D, 0.0D, 1.0D);
+                    if (away.lengthSqr() > 1.0E-6D)
+                    {
+                        Vec3 push = away.normalize();
+                        target.knockback(0.08F, -push.x, -push.z);
+                    }
+                }
+            }
+        }
+
+        int particles = Math.max(1, (int) (start.distanceTo(end) * 2.5D));
+        for (int i = 0; i < particles; ++i)
+        {
+            double t = (i + 0.5D) / particles;
+            Vec3 point = start.lerp(end, t);
+            level.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME,
+                    point.x, point.y, point.z, 1, 0.08D, 0.08D, 0.08D, 0.005D);
+        }
     }
 }
 

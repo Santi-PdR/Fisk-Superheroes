@@ -236,7 +236,7 @@ public final class Modifiers
                 .addProperty(PowerProperty.IS_TOGGLE, false)).setSoundState(Vars.TELEKINESIS);
         GRAVITY_MANIPULATION = registry.register(new ModifierGravityManipulation(new ResourceLocation(FiskHeroes.MODID, "gravity_manipulation"))).setSoundState(Vars.GRAVITY_MANIP);
         FROST_WALKING = registry.register(new ModifierFrostWalking(new ResourceLocation(FiskHeroes.MODID, "frost_walking")));
-        FLAME_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "flame_blast"))
+        FLAME_BLAST = registry.register(new ModifierFlameBlast(new ResourceLocation(FiskHeroes.MODID, "flame_blast"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
         FIREBALL = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "fireball"))
@@ -254,8 +254,9 @@ public final class Modifiers
         ICICLES = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "icicles"))
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));
         LIGHTNING_CAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "lightning_cast"))
-                .addProperty(PowerProperty.RANGE, 32.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 60));
+                .addProperty(PowerProperty.RANGE, 48.0F)
+                .addProperty(PowerProperty.CHAIN_RADIUS, 2.5F)
+                .addProperty(PowerProperty.COOLDOWN_TIME, 20));
         ARCHERY = registry.register(new ModifierArchery(new ResourceLocation(FiskHeroes.MODID, "archery"))
                 .addProperty(PowerProperty.KEY, ModifierArchery.KEY_HORIZONTAL)
                 .addProperty(PowerProperty.RADIUS, 2.0F)

@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -22,20 +21,24 @@ public final class EnergyBoltEntity extends ThrowableProjectile
     private String damageProfile = "{}";
     private float damage = 6.0F;
     private boolean explosive;
+    private float knockback;
 
     public EnergyBoltEntity(EntityType<? extends EnergyBoltEntity> type, Level level)
     {
         super(type, level);
     }
 
-    public EnergyBoltEntity(LivingEntity shooter, JsonElement profile, float damage, boolean explosive)
+    public EnergyBoltEntity(LivingEntity shooter, JsonElement profile, float damage, boolean explosive,
+            float speed, float spread)
     {
         super(ModEntities.ENERGY_BOLT.get(), shooter, shooter.level());
         this.damageProfile = profile == null ? "{}" : profile.toString();
         this.damage = Math.max(0.0F, damage);
         this.explosive = explosive;
+        this.knockback = readKnockback(profile);
         setPos(shooter.getX(), shooter.getEyeY() - 0.1D, shooter.getZ());
-        shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0F, 4.0F, 0.0F);
+        shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0F,
+                Math.max(0.1F, speed), Math.max(0.0F, spread));
     }
 
     @Override
@@ -66,6 +69,11 @@ public final class EnergyBoltEntity extends ThrowableProjectile
                 JsonElement profile = profile();
                 DamageGroups.applyProfileDamage(target, shooter,
                         shooter.damageSources().indirectMagic(this, shooter), damage, profile);
+                if (knockback > 0.0F)
+                {
+                    net.minecraft.world.phys.Vec3 motion = getDeltaMovement().normalize();
+                    target.knockback(knockback, -motion.x, -motion.z);
+                }
             }
             impact(serverLevel, hit.getLocation());
         }
@@ -105,6 +113,23 @@ public final class EnergyBoltEntity extends ThrowableProjectile
         }
     }
 
+    private static float readKnockback(JsonElement profile)
+    {
+        if (profile != null && profile.isJsonObject())
+        {
+            JsonElement properties = profile.getAsJsonObject().get("properties");
+            if (properties != null && properties.isJsonObject())
+            {
+                JsonElement value = properties.getAsJsonObject().get("ADD_KNOCKBACK");
+                if (value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber())
+                {
+                    return Math.max(0.0F, value.getAsFloat());
+                }
+            }
+        }
+        return 0.0F;
+    }
+
     @Override
     protected void addAdditionalSaveData(CompoundTag tag)
     {
@@ -112,6 +137,7 @@ public final class EnergyBoltEntity extends ThrowableProjectile
         tag.putString("DamageProfile", damageProfile);
         tag.putFloat("Damage", damage);
         tag.putBoolean("Explosive", explosive);
+        tag.putFloat("Knockback", knockback);
     }
 
     @Override
@@ -121,5 +147,6 @@ public final class EnergyBoltEntity extends ThrowableProjectile
         damageProfile = tag.getString("DamageProfile");
         damage = tag.contains("Damage") ? tag.getFloat("Damage") : 6.0F;
         explosive = tag.getBoolean("Explosive");
+        knockback = Math.max(0.0F, tag.getFloat("Knockback"));
     }
 }
