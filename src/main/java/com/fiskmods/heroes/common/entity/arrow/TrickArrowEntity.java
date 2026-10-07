@@ -389,23 +389,6 @@ public class TrickArrowEntity extends Arrow
             return;
         }
 
-        // Pulse arrows activate redstone controls instead of simply behaving like a normal arrow.
-        // Use the block's normal interaction to preserve its sound, power state, and reset tick.
-        if ("pulse".equals(getArrowType()))
-        {
-            if (!level().isClientSide && getOwner() instanceof Player player)
-            {
-                net.minecraft.world.level.block.state.BlockState state = level().getBlockState(result.getBlockPos());
-                if (state.getBlock() instanceof net.minecraft.world.level.block.ButtonBlock
-                        || state.getBlock() instanceof net.minecraft.world.level.block.LeverBlock)
-                {
-                    state.use(level(), player, net.minecraft.world.InteractionHand.MAIN_HAND, result);
-                }
-                discard();
-            }
-            return;
-        }
-
         if ("explosive_pufferfish".equals(getArrowType()))
         {
             startPufferfishFuse();
@@ -474,8 +457,17 @@ public class TrickArrowEntity extends Arrow
         {
             var pos = result.getBlockPos();
             var state = level().getBlockState(pos);
+            // The original pulse arrow leaves an embedded arrow and updates redstone around
+            // the impact, instead of disappearing after only toggling buttons and levers.
+            if (getOwner() instanceof Player player
+                    && (state.getBlock() instanceof net.minecraft.world.level.block.ButtonBlock
+                            || state.getBlock() instanceof net.minecraft.world.level.block.LeverBlock))
+            {
+                state.use(level(), player, net.minecraft.world.InteractionHand.MAIN_HAND, result);
+            }
             level().updateNeighborsAt(pos, state.getBlock());
-            level().updateNeighborsAt(pos.relative(result.getDirection()), state.getBlock());
+            var adjacent = pos.relative(result.getDirection());
+            level().updateNeighborsAt(adjacent, level().getBlockState(adjacent).getBlock());
         }
         detonateIfExplosive();
     }
