@@ -42,6 +42,11 @@ public class PacketAbility extends SHPacket
         // -1 is the primary attack input used by hero-pack keybinds for AIM/SHOOT.
         if (player != null && index >= -1 && index < 16)
         {
+            if (pressed)
+            {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                        "Ability packet received: player={}, index={}", player.getGameProfile().getName(), index);
+            }
             AbilityHandler.onAbilityKey(player, index, pressed);
         }
     }

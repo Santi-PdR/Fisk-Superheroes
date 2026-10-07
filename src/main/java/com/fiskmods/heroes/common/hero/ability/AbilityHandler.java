@@ -45,6 +45,12 @@ public final class AbilityHandler
 
         if (data == null)
         {
+            if (pressed)
+            {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.warn(
+                        "Ability input ignored: player={}, index={}, reason=no_player_data",
+                        player.getGameProfile().getName(), index);
+            }
             return;
         }
 
@@ -69,6 +75,12 @@ public final class AbilityHandler
 
         if (iteration == null)
         {
+            if (pressed)
+            {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                        "Ability input ignored: player={}, index={}, reason=no_active_suit",
+                        player.getGameProfile().getName(), index);
+            }
             return;
         }
 
