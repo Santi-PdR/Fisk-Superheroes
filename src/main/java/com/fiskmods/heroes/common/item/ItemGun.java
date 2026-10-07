@@ -134,6 +134,10 @@ public class ItemGun extends Item
             return false;
         }
 
+        // A gun can be used directly from the item action, before the next player-tick has
+        // resolved a suit that was just equipped. Refresh at the server authority boundary, as
+        // ability input does, so valid shots do not fail with stale hero data.
+        HeroTracker.update(player);
         HeroIteration iteration = HeroTracker.getHero(player);
         Hero hero = iteration != null ? iteration.getHero() : null;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
