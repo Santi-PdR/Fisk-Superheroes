@@ -20,6 +20,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.resources.ResourceLocation;
 
 /** Server-authoritative special arrow projectile. */
 public class TrickArrowEntity extends Arrow
@@ -36,6 +38,11 @@ public class TrickArrowEntity extends Arrow
     private boolean detonated;
     private boolean grappleSnapped;
     private int vineUseTicks;
+    private float grappleFireSpread;
+    private static final ResourceLocation GRAPPLE_DISCONNECT_SOUND = new ResourceLocation(
+            "fiskheroes", "entity.arrow.grapple.disconnect");
+    private static final ResourceLocation VINE_SNAP_SOUND = new ResourceLocation(
+            "fiskheroes", "entity.arrow.vine.snap");
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
     private ItemStack vialPotion = ItemStack.EMPTY;
@@ -264,6 +271,21 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected void onHitEntity(EntityHitResult result)
     {
+        if ("grappling_hook".equals(getArrowType()) || "vine".equals(getArrowType()))
+        {
+            if (!level().isClientSide)
+            {
+                net.minecraft.world.entity.Entity target = result.getEntity();
+                boolean canTarget = !(target instanceof net.minecraft.world.entity.monster.EnderMan);
+                if (isOnFire() && canTarget) target.setSecondsOnFire(5);
+                if (target instanceof LivingEntity living && canTarget) doPostHurtEffects(living);
+                playSound(net.minecraft.sounds.SoundEvents.ARROW_HIT, 1.0F,
+                        1.2F / (random.nextFloat() * 0.2F + 0.9F));
+                if (canTarget) discard();
+            }
+            return;
+        }
+
         // Detonator arrows are remote mines and torch arrows only place a torch on blocks; both
         // pass through entities without dealing damage in the reference mod.
         if ("detonator".equals(getArrowType()) || "torch".equals(getArrowType())) return;
@@ -557,8 +579,22 @@ public class TrickArrowEntity extends Arrow
         if (!(getOwner() instanceof Player player) || !player.isAlive()
                 || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get()) || player.hurtTime > 0)
         {
-            snapGrapple();
+            snapGrapple(playerOrNull(), GRAPPLE_DISCONNECT_SOUND);
             return;
+        }
+
+        // The original cable slowly burns through while a flaming arrow is attached, then snaps.
+        if (isOnFire() || grappleFireSpread > 0.0F)
+        {
+            if (grappleFireSpread < 1.0F)
+            {
+                grappleFireSpread = Math.min(grappleFireSpread + 0.025F, 1.0F);
+            }
+            else
+            {
+                snapGrapple(player, null);
+                return;
+            }
         }
 
         // The original vine cable can snap while it is pulling. Its failure rate rises over
@@ -566,10 +602,7 @@ public class TrickArrowEntity extends Arrow
         if ("vine".equals(type)
                 && random.nextInt(Math.max(100 - ++vineUseTicks, 10)) == 0)
         {
-            snapGrapple();
-            level().playSound(null, blockPosition(),
-                    net.minecraft.sounds.SoundEvents.LEASH_KNOT_BREAK,
-                    net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.9F);
+            snapGrapple(player, VINE_SNAP_SOUND);
             return;
         }
 
@@ -583,10 +616,20 @@ public class TrickArrowEntity extends Arrow
         if (pull.y >= 0.0D || player.getDeltaMovement().y >= 0.0D) player.fallDistance = 0.0F;
     }
 
-    private void snapGrapple()
+    private Player playerOrNull()
     {
+        return getOwner() instanceof Player player ? player : null;
+    }
+
+    private void snapGrapple(Player player, ResourceLocation sound)
+    {
+        if (grappleSnapped) return;
         grappleSnapped = true;
         entityData.set(GRAPPLE_SNAPPED, true);
+        if (player != null && sound != null)
+        {
+            com.fiskmods.heroes.common.sound.SHSounds.play(player, sound, SoundSource.PLAYERS, 1.0F, 0.8F);
+        }
     }
 
     private void detonate(float radius, boolean causesFire)
@@ -880,6 +923,7 @@ public class TrickArrowEntity extends Arrow
         tag.putBoolean("Detonated", detonated);
         tag.putBoolean("GrappleSnapped", grappleSnapped);
         tag.putInt("VineUseTicks", vineUseTicks);
+        tag.putFloat("GrappleFireSpread", grappleFireSpread);
         tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
         tag.putBoolean("PufferfishFusing", entityData.get(PUFFERFISH_FUSING));
         if (!fireworkStack.isEmpty()) tag.put("FireworkStack", fireworkStack.save(new CompoundTag()));
@@ -900,6 +944,7 @@ public class TrickArrowEntity extends Arrow
         grappleSnapped = tag.getBoolean("GrappleSnapped");
         entityData.set(GRAPPLE_SNAPPED, grappleSnapped);
         vineUseTicks = Math.max(0, tag.getInt("VineUseTicks"));
+        grappleFireSpread = net.minecraft.util.Mth.clamp(tag.getFloat("GrappleFireSpread"), 0.0F, 1.0F);
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
         entityData.set(PUFFERFISH_FUSING, tag.getBoolean("PufferfishFusing") || pufferfishFuseTicks >= 0);
         fireworkStack = tag.contains("FireworkStack", CompoundTag.TAG_COMPOUND)
