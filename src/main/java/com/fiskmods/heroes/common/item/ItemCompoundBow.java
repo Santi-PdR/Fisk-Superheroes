@@ -116,10 +116,8 @@ public class ItemCompoundBow extends BowItem
         if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
         {
             // The original ArrowType applies these factors to the projectile itself. Applying
-            // them after the vanilla bow launch keeps draw strength and enchantments intact while
-            // making special arrows observably different in flight and on impact.
-            trick.setDeltaMovement(trick.getDeltaMovement().scale(trick.getVelocityFactor()));
-            trick.setBaseDamage(trick.getBaseDamage() * trick.getDamageMultiplier());
+            // Both type-specific launch speed and damage are handled by TrickArrowEntity, so
+            // special arrows behave the same when launched by vanilla bows.
         }
     }
 

@@ -41,6 +41,9 @@ public final class AbilityHandler
 
     public static void onAbilityKey(ServerPlayer player, int index, boolean pressed)
     {
+        // Inventory/armor packets can be observed between player-tick updates. Resolve the worn
+        // suit at the authoritative input boundary so a just-equipped suit is usable immediately.
+        HeroTracker.update(player);
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
 
         if (data == null)

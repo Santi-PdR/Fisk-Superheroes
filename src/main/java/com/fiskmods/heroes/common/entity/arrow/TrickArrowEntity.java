@@ -121,9 +121,29 @@ public class TrickArrowEntity extends Arrow
         return getPhysics().velocity();
     }
 
+    /** Apply the arrow type's launch speed even when it is fired with a vanilla bow. */
+    @Override
+    public void shoot(double x, double y, double z, float velocity, float inaccuracy)
+    {
+        super.shoot(x, y, z, velocity * getVelocityFactor(), inaccuracy);
+    }
+
     public float getDamageMultiplier()
     {
         return getPhysics().damage();
+    }
+
+    /** Keep type damage modifiers active regardless of which bow launched the arrow. */
+    @Override
+    public double getBaseDamage()
+    {
+        return super.getBaseDamage() * getDamageMultiplier();
+    }
+
+    @Override
+    public void setBaseDamage(double damage)
+    {
+        super.setBaseDamage(damage / getDamageMultiplier());
     }
 
     private record ArrowPhysics(float velocity, float gravity, float damage)
