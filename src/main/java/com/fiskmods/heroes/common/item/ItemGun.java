@@ -196,6 +196,28 @@ public class ItemGun extends Item
     private void fire(ServerPlayer shooter)
     {
         Level level = shooter.level();
+        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+
+        // These two weapons are projectile launchers in the original pack, not hitscan guns.
+        // Keep their energy bolt collision, impact and explosion behavior on the registered
+        // projectile path; aiming the Chronos Rifle grants the original scoped damage bonus.
+        if (id.equals("chronos_rifle") || id.equals("rip_hunters_gun"))
+        {
+            com.google.gson.JsonObject profile = new com.google.gson.JsonObject();
+            profile.addProperty("damage", damage);
+            com.google.gson.JsonObject types = new com.google.gson.JsonObject();
+            types.addProperty("BULLET", 1.0D);
+            profile.add("types", types);
+
+            SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
+            boolean scoped = id.equals("chronos_rifle") && data != null
+                    && data.getData().get(Vars.AIMING);
+            var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                    shooter, profile, damage * (scoped ? 1.6F : 1.0F), id.equals("chronos_rifle"), 4.0F, 0.0F);
+            level.addFreshEntity(bolt);
+            return;
+        }
+
         Vec3 start = shooter.getEyePosition();
         Vec3 direction = shooter.getViewVector(1.0F);
         Vec3 end = start.add(direction.scale(range));
@@ -239,7 +261,6 @@ public class ItemGun extends Item
             }
         }
 
-        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
         if (id.equals("cold_gun"))
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
