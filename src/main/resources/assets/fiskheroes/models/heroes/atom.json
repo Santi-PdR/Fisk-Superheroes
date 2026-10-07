@@ -44,6 +44,30 @@
       "opacity": 0.7,
       "mirror": true,
       "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:lines|shrink_body": {
+      "applicable": ["CHESTPLATE"],
+      "shape": "fiskheroes:atom_shrink_body",
+      "anchor": "body",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
+    },
+    "fiskheroes:lines|shrink_arm": {
+      "applicable": ["CHESTPLATE"],
+      "shape": "fiskheroes:atom_shrink_arm",
+      "anchor": "rightArm",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
+    },
+    "fiskheroes:lines|shrink_legs": {
+      "applicable": ["LEGGINGS"],
+      "shape": "fiskheroes:atom_shrink_legs",
+      "anchor": "rightLeg",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
     }
   },
   "vars": {
