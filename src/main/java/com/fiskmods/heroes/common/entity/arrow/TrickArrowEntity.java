@@ -252,9 +252,9 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected void onHitEntity(EntityHitResult result)
     {
-        // Detonator arrows are remote mines: the reference arrow passes through entities without
-        // dealing damage and only explodes after sticking to a powered block.
-        if ("detonator".equals(getArrowType())) return;
+        // Detonator arrows are remote mines and torch arrows only place a torch on blocks; both
+        // pass through entities without dealing damage in the reference mod.
+        if ("detonator".equals(getArrowType()) || "torch".equals(getArrowType())) return;
 
         // Smoke bombs detonate at the actual impact point and never deal the vanilla arrow hit.
         if ("smoke_bomb".equals(getArrowType()))
@@ -270,10 +270,8 @@ public class TrickArrowEntity extends Arrow
         // Pulse arrows are a remote redstone trigger, not a damaging projectile.
         if ("pulse".equals(getArrowType()))
         {
-            if (!level().isClientSide)
-            {
-                discard();
-            }
+            // The original pulse arrow has no entity impact handler. Let it pass through
+            // entities so its redstone pulse is produced only when it reaches a block.
             return;
         }
 
