@@ -189,7 +189,8 @@ public class ItemHeroArmor extends ArmorItem
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(TAG_WEAPONS, Tag.TAG_COMPOUND))
         {
-            result[0] = ItemStack.of(tag.getCompound(TAG_WEAPONS));
+            ItemStack choice = ItemStack.of(tag.getCompound(TAG_WEAPONS));
+            result[0] = weapons.isValid(0, choice) ? choice : ItemStack.EMPTY;
             return result;
         }
         if (tag != null && tag.contains(TAG_WEAPONS, Tag.TAG_LIST))
@@ -201,7 +202,8 @@ public class ItemHeroArmor extends ArmorItem
                 int index = choice.getByte("Index") & 0xFF;
                 if (index < result.length && choice.contains("Item", Tag.TAG_COMPOUND))
                 {
-                    result[index] = ItemStack.of(choice.getCompound("Item"));
+                    ItemStack selected = ItemStack.of(choice.getCompound("Item"));
+                    result[index] = weapons.isValid(index, selected) ? selected : ItemStack.EMPTY;
                 }
             }
             return result;
