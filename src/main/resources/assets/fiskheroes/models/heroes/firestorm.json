@@ -2,9 +2,24 @@
   "parent": "fiskheroes:hero_basic",
   "resources": {
     "layer1": "fiskheroes:firestorm_layer1",
-    "layer2": "fiskheroes:firestorm_layer2"
+    "layer2": "fiskheroes:firestorm_layer2",
+    "lights": "fiskheroes:firestorm_lights",
+    "eyes": "fiskheroes:eyes_white"
+  },
+  "lights": {
+    "renderLayer": {
+      "CHESTPLATE": "lights"
+    },
+    "default": "null"
   },
   "custom": {
+    "fiskheroes:overlay": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "eyes",
+      "opacity": 1.0,
+      "data": 1.0,
+      "conditionals": ["vars:FULL_SUIT"]
+    },
     "fiskheroes:flames": {
       "applicable": ["CHESTPLATE"],
       "requiresFullSuit": true,
@@ -17,6 +32,7 @@
     }
   },
   "vars": {
+    "FULL_SUIT": "entity.isWearingFullSuit()",
     "FLYING": "entity.getData('fiskheroes:jetpacking')"
   }
 }
