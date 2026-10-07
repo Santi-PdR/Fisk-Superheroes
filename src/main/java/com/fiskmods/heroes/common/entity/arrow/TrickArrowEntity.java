@@ -31,6 +31,7 @@ public class TrickArrowEntity extends Arrow
     private static final EntityDataAccessor<ItemStack> VIAL_POTION = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<ItemStack> FIREWORK_STACK = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> PUFFERFISH_FUSING = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> GRAPPLE_SNAPPED = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.BOOLEAN);
     private float explosionRadius = DEFAULT_EXPLOSION_RADIUS;
     private boolean detonated;
     private boolean grappleSnapped;
@@ -71,6 +72,7 @@ public class TrickArrowEntity extends Arrow
         entityData.define(VIAL_POTION, ItemStack.EMPTY);
         entityData.define(FIREWORK_STACK, ItemStack.EMPTY);
         entityData.define(PUFFERFISH_FUSING, false);
+        entityData.define(GRAPPLE_SNAPPED, false);
     }
 
     public String getArrowType()
@@ -81,6 +83,16 @@ public class TrickArrowEntity extends Arrow
     public void setArrowType(String type)
     {
         entityData.set(ARROW_TYPE, ItemTrickArrow.normalizeType(type));
+    }
+
+    public boolean isGrappleSnapped()
+    {
+        return entityData.get(GRAPPLE_SNAPPED);
+    }
+
+    public boolean isAnchored()
+    {
+        return inGround;
     }
 
     /** Whether this arrow bypasses projectile durability defenses for the specified target. */
@@ -473,6 +485,8 @@ public class TrickArrowEntity extends Arrow
     @Override
     public void playerTouch(Player player)
     {
+        if (("grappling_hook".equals(getArrowType()) || "vine".equals(getArrowType()))
+                && !isGrappleSnapped()) return;
         if ("detonator".equals(getArrowType()) && player != getOwner()) return;
         if (ItemTrickArrow.EXPLOSIVE.equals(getArrowType()) && inGround)
         {
@@ -543,7 +557,7 @@ public class TrickArrowEntity extends Arrow
         if (!(getOwner() instanceof Player player) || !player.isAlive()
                 || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get()) || player.hurtTime > 0)
         {
-            grappleSnapped = true;
+            snapGrapple();
             return;
         }
 
@@ -552,7 +566,7 @@ public class TrickArrowEntity extends Arrow
         if ("vine".equals(type)
                 && random.nextInt(Math.max(100 - ++vineUseTicks, 10)) == 0)
         {
-            grappleSnapped = true;
+            snapGrapple();
             level().playSound(null, blockPosition(),
                     net.minecraft.sounds.SoundEvents.LEASH_KNOT_BREAK,
                     net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.9F);
@@ -567,6 +581,12 @@ public class TrickArrowEntity extends Arrow
         player.setDeltaMovement(player.getDeltaMovement().scale(0.9D).add(pull));
         player.hasImpulse = true;
         if (pull.y >= 0.0D || player.getDeltaMovement().y >= 0.0D) player.fallDistance = 0.0F;
+    }
+
+    private void snapGrapple()
+    {
+        grappleSnapped = true;
+        entityData.set(GRAPPLE_SNAPPED, true);
     }
 
     private void detonate(float radius, boolean causesFire)
@@ -878,6 +898,7 @@ public class TrickArrowEntity extends Arrow
         setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
         detonated = tag.getBoolean("Detonated");
         grappleSnapped = tag.getBoolean("GrappleSnapped");
+        entityData.set(GRAPPLE_SNAPPED, grappleSnapped);
         vineUseTicks = Math.max(0, tag.getInt("VineUseTicks"));
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
         entityData.set(PUFFERFISH_FUSING, tag.getBoolean("PufferfishFusing") || pufferfishFuseTicks >= 0);

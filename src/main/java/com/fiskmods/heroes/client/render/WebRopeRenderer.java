@@ -4,6 +4,7 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity;
+import com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 
@@ -60,19 +61,42 @@ public final class WebRopeRenderer
 
         for (net.minecraft.world.entity.Entity entity : level.entitiesForRendering())
         {
-            if (!(entity instanceof GrapplingHookEntity hook) || !hook.isAttached()
-                    || !(hook.getOwner() instanceof Player owner)) continue;
-            Vec3 start = owner.getPosition(event.getPartialTick()).add(0.0D, owner.getBbHeight() * 0.78D, 0.0D);
-            Vec3 end = hook.getPosition(event.getPartialTick());
-            if (start.distanceToSqr(end) < 0.04D) continue;
-            drawRope(consumer, pose, start, end);
-            rendered = true;
+            if (entity instanceof GrapplingHookEntity hook && hook.isAttached()
+                    && hook.getOwner() instanceof Player owner)
+            {
+                Vec3 start = owner.getPosition(event.getPartialTick()).add(0.0D, owner.getBbHeight() * 0.78D, 0.0D);
+                Vec3 end = hook.getPosition(event.getPartialTick());
+                if (start.distanceToSqr(end) >= 0.04D)
+                {
+                    drawRope(consumer, pose, start, end);
+                    rendered = true;
+                }
+            }
+            else if (entity instanceof TrickArrowEntity arrow && arrow.isAnchored()
+                    && !arrow.isGrappleSnapped()
+                    && ("grappling_hook".equals(arrow.getArrowType()) || "vine".equals(arrow.getArrowType()))
+                    && arrow.getOwner() instanceof Player owner)
+            {
+                Vec3 start = owner.getPosition(event.getPartialTick()).add(0.0D, owner.getBbHeight() * 0.78D, 0.0D);
+                Vec3 end = arrow.getPosition(event.getPartialTick());
+                if (start.distanceToSqr(end) >= 0.04D)
+                {
+                    int tint = "vine".equals(arrow.getArrowType()) ? 0x365A2B : 0xFFFFFF;
+                    drawRope(consumer, pose, start, end, tint);
+                    rendered = true;
+                }
+            }
         }
 
         if (rendered) buffers.endBatch(renderType);
     }
 
     private static void drawRope(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end)
+    {
+        drawRope(consumer, pose, start, end, 0xFFFFFF);
+    }
+
+    private static void drawRope(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end, int tint)
     {
         double sag = Math.min(0.75D, start.distanceTo(end) * 0.018D);
         Vec3 control = start.add(end).scale(0.5D).add(0.0D, -sag, 0.0D);
@@ -88,14 +112,14 @@ public final class WebRopeRenderer
                     .add(control.scale(2.0D * oneMinusT * t))
                     .add(end.scale(t * t));
             double segmentLength = previous.distanceTo(current);
-            drawSegment(consumer, pose, previous, current, textureV, segmentLength);
+            drawSegment(consumer, pose, previous, current, textureV, segmentLength, tint);
             textureV = (textureV + segmentLength * 2.0D) % 1.0D;
             previous = current;
         }
     }
 
     private static void drawSegment(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start, Vec3 end,
-            double textureV, double length)
+            double textureV, double length, int tint)
     {
         Vec3 direction = end.subtract(start).normalize();
         Vec3 reference = Math.abs(direction.y) > 0.96D ? new Vec3(1.0D, 0.0D, 0.0D) : new Vec3(0.0D, 1.0D, 0.0D);
@@ -109,17 +133,18 @@ public final class WebRopeRenderer
             Vec3 normal = corners[face].add(corners[nextFace]).normalize();
             double minU = face * 0.25D;
             double maxU = (face + 1) * 0.25D;
-            vertex(consumer, pose, start.add(corners[face]), normal, minU, textureV);
-            vertex(consumer, pose, start.add(corners[nextFace]), normal, maxU, textureV);
-            vertex(consumer, pose, end.add(corners[nextFace]), normal, maxU, maxV);
-            vertex(consumer, pose, end.add(corners[face]), normal, minU, maxV);
+            vertex(consumer, pose, start.add(corners[face]), normal, minU, textureV, tint);
+            vertex(consumer, pose, start.add(corners[nextFace]), normal, maxU, textureV, tint);
+            vertex(consumer, pose, end.add(corners[nextFace]), normal, maxU, maxV, tint);
+            vertex(consumer, pose, end.add(corners[face]), normal, minU, maxV, tint);
         }
     }
 
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, Vec3 point, Vec3 normal, double u, double v)
+    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, Vec3 point, Vec3 normal,
+            double u, double v, int tint)
     {
         consumer.vertex(pose.pose(), (float) point.x, (float) point.y, (float) point.z)
-                .color(255, 255, 255, 255)
+                .color((tint >> 16) & 0xFF, (tint >> 8) & 0xFF, tint & 0xFF, 255)
                 .uv((float) u, (float) v)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(LightTexture.FULL_BRIGHT)
