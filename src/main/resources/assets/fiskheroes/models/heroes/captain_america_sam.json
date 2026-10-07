@@ -61,7 +61,8 @@
       "opacity": 1.0,
       "mirror": true,
       "data": "fiskheroes:jetpacking_timer"
-    }
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":0.75},{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:dyn/flight_super_boost_timer')","intensity":0.75},{"factor":"entity.isSprinting() && entity.getData('fiskheroes:flying') ? 0.15 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:flight_boost_timer')) : 0","intensity":0.05},{"factor":"entity.getData('fiskheroes:dyn/flight_super_boost') > 0 ? 0.15 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:dyn/flight_super_boost_timer')) : 0","intensity":0.05}]}
   },
   "vars": {
     "BOOSTING": "entity.getData('fiskheroes:jetpacking_timer') > 0"

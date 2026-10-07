@@ -205,7 +205,8 @@
       "opacity": 1.0,
       "mirror": true,
       "data": "entity.getData('fiskheroes:hovering') ? entity.getInterpolatedData('fiskheroes:jetpacking_timer') : 0"
-    }
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":1.5},{"factor":"entity.isSprinting() && entity.getData('fiskheroes:flying') ? 0.3 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:flight_boost_timer')) : 0","intensity":0.05}]}
   },
   "vars": {
     "ANIM": "entity.getInterpolatedData('fiskheroes:dyn/nanite_timer') < 1",

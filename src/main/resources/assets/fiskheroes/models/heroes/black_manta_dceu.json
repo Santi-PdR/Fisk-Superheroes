@@ -81,7 +81,8 @@
       "mirror": false,
       "large": false,
       "data": "fiskheroes:blade_timer"
-    }
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":1.5}]}
   },
   "vars": {
     "FLYING": "entity.getData('fiskheroes:jetpacking') || entity.getData('fiskheroes:hovering')",

@@ -29,7 +29,8 @@
     "fiskheroes:particles": {
       "particleType": "fiskheroes:firestorm",
       "conditionals": ["vars:FLYING"]
-    }
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":1.5}]}
   },
   "vars": {
     "FULL_SUIT": "entity.isWearingFullSuit()",

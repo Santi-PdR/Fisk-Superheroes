@@ -17,7 +17,8 @@
       "applicable": ["CHESTPLATE"],
       "extrude": 1,
       "offset": 1
-    }
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"entity.getData('fiskheroes:speed') > 1 && entity.isSprinting() && entity.getData('fiskheroes:speed_sprinting') ? (Math.log(entity.getData('fiskheroes:speed') - 1) + 1) * 0.5 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:dyn/speed_sprint_timer')) : 0","intensity":0.05}]}
   },
   "vars": {
     "SPEEDING": "entity.getData('fiskheroes:speeding') && entity.getData('fiskheroes:speed') <= 4",
