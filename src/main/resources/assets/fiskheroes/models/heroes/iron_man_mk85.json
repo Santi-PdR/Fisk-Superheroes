@@ -13,7 +13,10 @@
     "shield_handle_lights": "fiskheroes:iron_man_mk85_shield_handle_lights",
     "blade": "fiskheroes:iron_man_mk85_blade",
     "blade_lights": "fiskheroes:iron_man_mk85_blade_lights",
-    "backpack": "fiskheroes:iron_man_mk85_backpack"
+    "backpack": "fiskheroes:iron_man_mk85_backpack",
+    "repulsor": "fiskheroes:iron_man_repulsor",
+    "repulsor_left": "fiskheroes:iron_man_repulsor_left",
+    "repulsor_boots": "fiskheroes:iron_man_repulsor_boots"
   },
   "texture": {
     "vars:MASK_OPEN" : {
@@ -55,6 +58,21 @@
   },
   "fixHatLayer": ["CHESTPLATE"],
   "custom": {
+    "fiskheroes:overlay|repulsor_right": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_r_timer')"
+    },
+    "fiskheroes:overlay|repulsor_left": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor_left"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_l_timer')"
+    },
+    "fiskheroes:overlay|repulsor_boots": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor_boots"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_timer')"
+    },
     "fiskheroes:metal_heat": {
       "applicable": ["CHESTPLATE"],
       "includeEffects": ["fiskheroes:shield|blade", "fiskheroes:shield|shield_handle", "fiskheroes:shield|backpack1", "fiskheroes:shield|backpack2", "fiskheroes:shield|backpack3"],

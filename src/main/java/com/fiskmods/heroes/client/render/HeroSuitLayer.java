@@ -147,7 +147,14 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                         "Suit {} slot {} has no resolved texture for {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], player.getGameProfile().getName());
             }
 
-            renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
+            for (java.util.Map.Entry<String, com.google.gson.JsonObject> overlay : pieceModel.getCustom().entrySet())
+            {
+                if (overlay.getKey().equals("fiskheroes:overlay") || overlay.getKey().startsWith("fiskheroes:overlay|"))
+                {
+                    renderOverlay(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity,
+                            overlay.getValue());
+                }
+            }
             renderMetalHeat(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             renderEars(poseStack, buffer, packedLight, player, playerModel, pieceModel, slot, opacity);
             com.google.gson.JsonObject antennae = pieceModel.getCustom().get("fiskheroes:antennae");
@@ -614,10 +621,9 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     /** Draws the original model's second texture pass for visors, eyes and animated suit details. */
     private void renderOverlay(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
             AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model, int slot,
-            float suitOpacity)
+            float suitOpacity, com.google.gson.JsonObject overlay)
     {
-        com.google.gson.JsonObject overlay = model.getCustom().get("fiskheroes:overlay");
-        if (overlay == null || !appliesToSlot(overlay, slot) || !passesConditionals(overlay, model, player))
+        if (!appliesToSlot(overlay, slot) || !passesConditionals(overlay, model, player))
         {
             return;
         }

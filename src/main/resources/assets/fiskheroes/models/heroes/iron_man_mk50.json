@@ -16,7 +16,10 @@
     "cannon2": "fiskheroes:iron_man_mk50_cannon2",
     "cannon1_lights": "fiskheroes:iron_man_mk50_cannon1_lights",
     "cannon2_lights": "fiskheroes:iron_man_mk50_cannon2_lights",
-    "cannon_inner": "fiskheroes:iron_man_mk50_cannon_inner"
+    "cannon_inner": "fiskheroes:iron_man_mk50_cannon_inner",
+    "repulsor": "fiskheroes:iron_man_repulsor",
+    "repulsor_left": "fiskheroes:iron_man_repulsor_left",
+    "repulsor_boots": "fiskheroes:iron_man_repulsor_boots"
   },
   "texture": {
     "vars:MASK_OPEN" : {
@@ -61,6 +64,21 @@
     "AIMING": "fiskheroes:aiming_fpcorr"
   },
   "custom": {
+    "fiskheroes:overlay|repulsor_right": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_r_timer')"
+    },
+    "fiskheroes:overlay|repulsor_left": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor_left"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_l_timer')"
+    },
+    "fiskheroes:overlay|repulsor_boots": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "repulsor_boots"],
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/booster_timer')"
+    },
     "fiskheroes:metal_heat": {
       "applicable": ["CHESTPLATE"],
       "includeEffects": ["fiskheroes:shield|blade", "fiskheroes:shield|shield", "fiskheroes:shield|cannon1", "fiskheroes:shield|cannon2"],
