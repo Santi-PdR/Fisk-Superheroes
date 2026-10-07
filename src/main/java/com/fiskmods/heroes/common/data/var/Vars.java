@@ -58,7 +58,7 @@ public final class Vars
     public static final DataVar<Float> GRAVITY_AMOUNT = register("gravity_amount", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> GRAVITY_MANIP = register("gravity_manip", DataType.BOOLEAN, false, false);
     public static final DataVar<Float> GUN_SHOOTING_TIMER = register("gun_shooting_timer", DataType.FLOAT, 0.0F, false);
-    public static final DataVar<Float> HAT_TIP = register("hat_tip", DataType.FLOAT_INTERP, 0.0F, false);
+    public static final DataVar<Float> HAT_TIP = register("hat_tip", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> HEAT_VISION = register("heat_vision", DataType.BOOLEAN, false, false);
     public static final DataVar<Double> HEAT_VISION_LENGTH = register("heat_vision_length", DataType.DOUBLE, 0.0D, false);
     public static final DataVar<Float> HEAT_VISION_TIMER = register("heat_vision_timer", DataType.FLOAT, 0.0F, false);

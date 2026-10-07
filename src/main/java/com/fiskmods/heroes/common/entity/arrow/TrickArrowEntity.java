@@ -26,6 +26,26 @@ import net.minecraft.resources.ResourceLocation;
 /** Server-authoritative special arrow projectile. */
 public class TrickArrowEntity extends Arrow
 {
+    /** Per-type projectile tuning copied from ArrowTypeManager in the 1.7.10 reference. */
+    private static final java.util.Map<String, ArrowPhysics> ARROW_PHYSICS = java.util.Map.ofEntries(
+            java.util.Map.entry("explosive", new ArrowPhysics(1.0F, 0.05F, 1.0F)),
+            java.util.Map.entry("carrot", new ArrowPhysics(1.5F, 0.05F, 0.2F)),
+            java.util.Map.entry("fire_charge", new ArrowPhysics(1.5F, 0.05F, 0.75F)),
+            java.util.Map.entry("cactus", new ArrowPhysics(0.75F, 0.05F, 1.0F)),
+            java.util.Map.entry("boxing_glove", new ArrowPhysics(1.0F, 0.05F, 0.5F)),
+            java.util.Map.entry("vial", new ArrowPhysics(1.0F, 0.075F, 1.0F)),
+            java.util.Map.entry("vibranium", new ArrowPhysics(1.5F, 0.075F, 1.0F)),
+            java.util.Map.entry("phantom", new ArrowPhysics(1.0F, 0.05F, 0.5F)),
+            java.util.Map.entry("pufferfish", new ArrowPhysics(0.75F, 0.05F, 0.6F)),
+            java.util.Map.entry("explosive_pufferfish", new ArrowPhysics(0.75F, 0.05F, 0.6F)),
+            java.util.Map.entry("smoke_bomb", new ArrowPhysics(1.0F, 0.05F, 1.0F)),
+            java.util.Map.entry("slime", new ArrowPhysics(0.75F, 0.05F, 0.3F)),
+            java.util.Map.entry("ender_pearl", new ArrowPhysics(0.25F, 0.02F, 0.5F)),
+            java.util.Map.entry("tutridium", new ArrowPhysics(1.5F, 0.075F, 0.8F)),
+            java.util.Map.entry("excessive", new ArrowPhysics(0.4F, 0.05F, 1.2F)),
+            java.util.Map.entry("gross", new ArrowPhysics(1.5F, 0.05F, 0.75F)),
+            java.util.Map.entry("detonator", new ArrowPhysics(1.0F, 0.05F, 1.0F)),
+            java.util.Map.entry("fireball", new ArrowPhysics(1.0F, 0.05F, 1.0F)));
     private static final float DEFAULT_EXPLOSION_RADIUS = 2.0F;
     private static final float FIREBALL_ARROW_RADIUS = 2.5F;
     private static final float FIREBALL_ARROW_DAMAGE = 6.0F;
@@ -89,6 +109,26 @@ public class TrickArrowEntity extends Arrow
     public String getArrowType()
     {
         return entityData.get(ARROW_TYPE);
+    }
+
+    private ArrowPhysics getPhysics()
+    {
+        return ARROW_PHYSICS.getOrDefault(getArrowType(), ArrowPhysics.DEFAULT);
+    }
+
+    public float getVelocityFactor()
+    {
+        return getPhysics().velocity();
+    }
+
+    public float getDamageMultiplier()
+    {
+        return getPhysics().damage();
+    }
+
+    private record ArrowPhysics(float velocity, float gravity, float damage)
+    {
+        private static final ArrowPhysics DEFAULT = new ArrowPhysics(1.5F, 0.05F, 1.0F);
     }
 
     public void setArrowType(String type)
@@ -180,6 +220,12 @@ public class TrickArrowEntity extends Arrow
         // enabled so they can still strike entities. Entity.noPhysics disables both kinds of hit
         // detection in 1.20.1, unlike the original arrow's block-only no-clip behavior.
         noPhysics = "explosive_pufferfish".equals(getArrowType()) && entityData.get(PUFFERFISH_FUSING);
+        // AbstractArrow hard-codes vanilla gravity (0.05) in this Minecraft version. Compensate
+        // immediately before its tick so each variant receives the original ArrowType gravity.
+        if (!isNoGravity() && !inGround)
+        {
+            setDeltaMovement(getDeltaMovement().add(0.0D, 0.05D - getPhysics().gravity(), 0.0D));
+        }
         super.tick();
         spawnTypeParticles();
         tickGrapple();

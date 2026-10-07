@@ -115,12 +115,11 @@ public class ItemCompoundBow extends BowItem
 
         if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
         {
-            String type = trick.getArrowType();
-            if ("boxing_glove".equals(type)) trick.setBaseDamage(0.4D);
-            else if ("carrot".equals(type) || "pufferfish".equals(type) || "slime".equals(type))
-                trick.setBaseDamage(1.0D);
-            else if ("firework".equals(type)) trick.setBaseDamage(0.0D);
-            else if ("excessive".equals(type)) trick.setBaseDamage(8.0D);
+            // The original ArrowType applies these factors to the projectile itself. Applying
+            // them after the vanilla bow launch keeps draw strength and enchantments intact while
+            // making special arrows observably different in flight and on impact.
+            trick.setDeltaMovement(trick.getDeltaMovement().scale(trick.getVelocityFactor()));
+            trick.setBaseDamage(trick.getBaseDamage() * trick.getDamageMultiplier());
         }
     }
 
