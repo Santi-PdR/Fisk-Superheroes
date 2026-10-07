@@ -43,6 +43,10 @@ public class TrickArrowEntity extends Arrow
             "fiskheroes", "entity.arrow.grapple.disconnect");
     private static final ResourceLocation VINE_SNAP_SOUND = new ResourceLocation(
             "fiskheroes", "entity.arrow.vine.snap");
+    private static final ResourceLocation PUFFERFISH_FLOP_SOUND = new ResourceLocation(
+            "fiskheroes", "entity.arrow.pufferfish.flop");
+    private static final ResourceLocation PUFFERFISH_PRIMED_SOUND = new ResourceLocation(
+            "fiskheroes", "entity.arrow.pufferfish.primed");
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
     private ItemStack vialPotion = ItemStack.EMPTY;
@@ -263,6 +267,14 @@ public class TrickArrowEntity extends Arrow
                         (random.nextDouble() - 0.5D) * 0.06D,
                         (random.nextDouble() - 0.5D) * 0.06D,
                         (random.nextDouble() - 0.5D) * 0.06D);
+            }
+            case "explosive_pufferfish" ->
+            {
+                if (entityData.get(PUFFERFISH_FUSING))
+                {
+                    level().addParticle(net.minecraft.core.particles.ParticleTypes.SMOKE,
+                            getX(), getY() + 0.05D, getZ(), 0.0D, 0.015D, 0.0D);
+                }
             }
             default -> { }
         }
@@ -567,6 +579,11 @@ public class TrickArrowEntity extends Arrow
         {
             pufferfishFuseTicks = 30;
             entityData.set(PUFFERFISH_FUSING, true);
+            if (!level().isClientSide)
+            {
+                com.fiskmods.heroes.common.sound.SHSounds.play(this, PUFFERFISH_PRIMED_SOUND,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
         }
     }
 
@@ -763,11 +780,16 @@ public class TrickArrowEntity extends Arrow
             Vec3 impact = hit.getLocation();
             serverLevel.sendParticles(particles, impact.x, impact.y, impact.z,
                     20, 0.2D, 0.2D, 0.2D, 0.1D);
-            serverLevel.playSound(null, pos,
-                    "slime".equals(getArrowType())
-                            ? net.minecraft.sounds.SoundEvents.SLIME_BLOCK_HIT
-                            : net.minecraft.sounds.SoundEvents.PUFFER_FISH_FLOP,
-                    net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+            if ("slime".equals(getArrowType()))
+            {
+                serverLevel.playSound(null, pos, net.minecraft.sounds.SoundEvents.SLIME_BLOCK_HIT,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
+            else
+            {
+                com.fiskmods.heroes.common.sound.SHSounds.play(this, PUFFERFISH_FLOP_SOUND,
+                        net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+            }
         }
     }
 
