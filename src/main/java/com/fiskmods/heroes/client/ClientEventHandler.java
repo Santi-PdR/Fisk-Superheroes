@@ -58,8 +58,18 @@ public class ClientEventHandler
                 && SHKeyBinds.ABILITY_CLICK_MODE.matches(event.getKey(), event.getScanCode()))
         {
             abilityClickMode = !abilityClickMode;
-            if (abilityClickMode) mc.mouseHandler.releaseMouse();
-            else mc.mouseHandler.grabMouse();
+            if (abilityClickMode)
+            {
+                mc.mouseHandler.releaseMouse();
+                mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.translatable(
+                        "hud.fiskheroes.ability_click_mode.enabled"), false);
+            }
+            else
+            {
+                mc.mouseHandler.grabMouse();
+                mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.translatable(
+                        "hud.fiskheroes.ability_click_mode.disabled"), false);
+            }
             event.setCanceled(true);
             return;
         }
