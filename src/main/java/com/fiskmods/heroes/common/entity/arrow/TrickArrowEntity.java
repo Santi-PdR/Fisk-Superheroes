@@ -349,6 +349,13 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected void onHitEntity(EntityHitResult result)
     {
+        // The original boxing-glove arrow bounces off the target and loses its glove payload,
+        // becoming a normal arrow. Give the vanilla hit handler temporary piercing so a successful
+        // hit does not discard the projectile before we can apply that state transition.
+        boolean boxingGlove = "boxing_glove".equals(getArrowType());
+        Vec3 incomingMotion = getDeltaMovement();
+        if (boxingGlove) setPierceLevel((byte) 1);
+
         if ("grappling_hook".equals(getArrowType()) || "vine".equals(getArrowType()))
         {
             if (!level().isClientSide)
@@ -427,6 +434,7 @@ public class TrickArrowEntity extends Arrow
         }
         if (!(result.getEntity() instanceof LivingEntity target))
         {
+            if (boxingGlove) finishBoxingGloveHit(incomingMotion);
             if ("fireball".equals(getArrowType()) && !level().isClientSide)
             {
                 spawnFireballBurst(result.getLocation(), result.getEntity());
@@ -449,6 +457,7 @@ public class TrickArrowEntity extends Arrow
             {
                 Vec3 velocity = getDeltaMovement();
                 target.knockback(1.2F, -velocity.x, -velocity.z);
+                finishBoxingGloveHit(incomingMotion);
             }
             case "pufferfish", "explosive_pufferfish" ->
             {
@@ -488,6 +497,21 @@ public class TrickArrowEntity extends Arrow
         {
             spawnFireballBurst(result.getLocation(), target);
         }
+    }
+
+    /** Restores the reusable, bouncing normal arrow state after a boxing-glove impact. */
+    private void finishBoxingGloveHit(Vec3 incomingMotion)
+    {
+        setArrowType(ItemTrickArrow.NORMAL);
+        setPierceLevel((byte) 0);
+        Vec3 motion = getDeltaMovement();
+        // Vanilla already reverses the projectile when the target rejects damage. Preserve that
+        // bounce instead of reversing it a second time; successful hits still need the -0.1 bounce.
+        if (motion.dot(incomingMotion) > 0.0D) motion = motion.scale(-0.1D);
+        setDeltaMovement(motion);
+        setYRot(getYRot() + 180.0F);
+        yRotO += 180.0F;
+        setCritArrow(false);
     }
 
     @Override
