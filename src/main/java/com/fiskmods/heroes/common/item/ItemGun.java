@@ -179,9 +179,27 @@ public class ItemGun extends Item
         {
             fire(serverPlayer);
         }
-        player.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
+        playShotSound(player, level);
         player.awardStat(Stats.ITEM_USED.get(this));
         return true;
+    }
+
+    /** Plays the weapon-specific fire sound, preserving the legacy Deagle pack event. */
+    private void playShotSound(Player player, Level level)
+    {
+        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+        if ("desert_eagle".equals(id))
+        {
+            float pitch = 1.0F / (level.random.nextFloat() * 0.3F + 0.7F);
+            com.fiskmods.heroes.common.sound.SHSounds.play(player,
+                    new net.minecraft.resources.ResourceLocation("fiskheroes", "item.gun.deagle.shoot"),
+                    net.minecraft.sounds.SoundSource.PLAYERS, 4.0F, pitch);
+        }
+        else
+        {
+            player.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F,
+                    0.9F + level.random.nextFloat() * 0.2F);
+        }
     }
 
     /** Explain the common silent failure cases without spamming while primary attack is held. */
