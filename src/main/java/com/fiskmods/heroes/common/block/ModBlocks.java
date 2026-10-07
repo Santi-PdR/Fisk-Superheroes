@@ -61,6 +61,10 @@ public final class ModBlocks
     public static final RegistryObject<Block> VIBRANIUM_ORE = registerVibraniumOre();
     public static final RegistryObject<Block> LUNAR_ROCK = register("lunar_rock", 1.5F, 10.0F, false, 0);
     public static final RegistryObject<Block> COBBLED_LUNAR_ROCK = register("cobbled_lunar_rock", 2.0F, 10.0F, false, 0);
+    /** Invisible, short-lived redstone source used by trick pulse arrows. */
+    public static final RegistryObject<Block> PULSE_SIGNAL = REGISTRY.register("pulse_signal", () ->
+            new PulseSignalBlock(BlockBehaviour.Properties.of().strength(-1.0F, 3600000.0F)
+                    .noLootTable().noOcclusion().noCollission()));
 
     public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
