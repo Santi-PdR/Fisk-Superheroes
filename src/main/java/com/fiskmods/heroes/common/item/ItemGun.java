@@ -17,12 +17,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import java.util.List;
 
 /** Basic magazine firearm used by the bundled firearm heroes. */
 public class ItemGun extends Item
@@ -76,6 +78,16 @@ public class ItemGun extends Item
     public int getMagazineSize(ItemStack stack)
     {
         return magazineSize * (isDual(stack) ? 2 : 1);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag)
+    {
+        super.appendHoverText(stack, level, tooltip, flag);
+        if (usesAmmo)
+        {
+            tooltip.add(Component.translatable("tooltip.gun.ammo", getAmmo(stack), getMagazineSize(stack)));
+        }
     }
 
     /** Client-side cadence for repeated primary-attack input; the server revalidates every shot. */

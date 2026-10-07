@@ -41,6 +41,21 @@ public class ItemTrickArrow extends ArrowItem
     {
         ItemStack stack = new ItemStack(ModItems.TRICK_ARROW.get());
         setType(stack, type);
+        if ("firework".equals(normalizeType(type)))
+        {
+            ItemStack firework = new ItemStack(Items.FIREWORK_ROCKET);
+            CompoundTag fireworks = new CompoundTag();
+            fireworks.putByte("Flight", (byte) 3);
+            net.minecraft.nbt.ListTag explosions = new net.minecraft.nbt.ListTag();
+            CompoundTag explosion = new CompoundTag();
+            explosion.putByte("Type", (byte) 0);
+            net.minecraft.nbt.IntArrayTag colors = new net.minecraft.nbt.IntArrayTag(new int[] { 15790320, 11743532 });
+            explosion.put("Colors", colors);
+            explosions.add(explosion);
+            fireworks.put("Explosions", explosions);
+            firework.getOrCreateTag().put("Fireworks", fireworks);
+            setAttachedItem(stack, firework);
+        }
         if ("vial".equals(normalizeType(type)))
         {
             setAttachedPotion(stack, PotionUtils.setPotion(Items.SPLASH_POTION.getDefaultInstance(), Potions.POISON));
@@ -63,6 +78,23 @@ public class ItemTrickArrow extends ArrowItem
             return ItemStack.EMPTY;
         }
         return ItemStack.of(arrow.getTag().getCompound("AttachedPotion"));
+    }
+
+    public static void setAttachedItem(ItemStack arrow, ItemStack item)
+    {
+        if (item != null && !item.isEmpty())
+        {
+            arrow.getOrCreateTag().put("AttachedItem", item.save(new CompoundTag()));
+        }
+    }
+
+    public static ItemStack getAttachedItem(ItemStack arrow)
+    {
+        if (!arrow.hasTag() || !arrow.getTag().contains("AttachedItem", CompoundTag.TAG_COMPOUND))
+        {
+            return ItemStack.EMPTY;
+        }
+        return ItemStack.of(arrow.getTag().getCompound("AttachedItem"));
     }
 
     public static void setType(ItemStack stack, String type)
@@ -106,6 +138,12 @@ public class ItemTrickArrow extends ArrowItem
             }
         }
         TrickArrowEntity arrow = new TrickArrowEntity(ModEntities.TRICK_ARROW.get(), level, shooter, type, radius);
+        if ("firework".equals(type))
+        {
+            ItemStack firework = getAttachedItem(stack);
+            if (firework.isEmpty()) firework = getAttachedItem(createStack("firework"));
+            arrow.setFireworkStack(firework);
+        }
         if ("vial".equals(type))
         {
             ItemStack potion = getAttachedPotion(stack);

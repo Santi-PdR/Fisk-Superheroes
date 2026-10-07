@@ -97,8 +97,7 @@ public final class DamageGroups
                 int transfer = Math.max(0, heat.getAsInt());
                 if (data != null && data.getData().get(Vars.METAL_SKIN) && transfer > 0)
                 {
-                    float current = data.getData().get(Vars.METAL_HEAT);
-                    data.getData().set(Vars.METAL_HEAT, Math.min(100.0F, current + transfer));
+                    MetalSkinHeat.add(target, transfer / 100.0F);
                 }
             }
         }

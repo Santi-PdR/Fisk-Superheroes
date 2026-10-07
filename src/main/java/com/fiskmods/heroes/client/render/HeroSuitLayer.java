@@ -259,8 +259,23 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             if (effect.has("mirror") && effect.get("mirror").getAsBoolean()) poseStack.scale(-1.0F, 1.0F, 1.0F);
             RenderType renderType = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
             VertexConsumer vertex = buffer.getBuffer(renderType);
+            float hatTip = 0.0F;
+            if (effect.has("animations") && effect.get("animations").isJsonArray())
+            {
+                for (com.google.gson.JsonElement element : effect.getAsJsonArray("animations"))
+                {
+                    if (!element.isJsonObject()) continue;
+                    com.google.gson.JsonObject animation = element.getAsJsonObject();
+                    if (animation.has("animation")
+                            && "fiskheroes:hat_tip_sombrero".equals(animation.get("animation").getAsString()))
+                    {
+                        hatTip = model.evaluateRenderData(animation.get("data"), player, 0.0F);
+                        break;
+                    }
+                }
+            }
             TabulaModelCache.render(effect.get("modelType").getAsString(), poseStack, vertex, packedLight,
-                    1.0F, 1.0F, 1.0F, opacity);
+                    1.0F, 1.0F, 1.0F, opacity, hatTip);
             poseStack.popPose();
         }
     }

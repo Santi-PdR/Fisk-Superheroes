@@ -87,8 +87,10 @@ public final class AbilityHandler
         Set<String> keys = hero.getKeyBindsMatching(index);
         if (pressed)
         {
-            com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Ability input from {}: hero={}, index={}, matching={}",
-                    player.getGameProfile().getName(), iteration.getRegistryName(), index, keys);
+            // Keep this at INFO while the port's ability path is being validated: the server log
+            // must distinguish a delivered input from a key that was never mapped by the client.
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Ability input accepted: hero={}, index={}, matching={}",
+                    iteration.getRegistryName(), index, keys);
         }
         if (hero.getKeyBinding("AIM") == index)
         {
@@ -108,6 +110,9 @@ public final class AbilityHandler
             setPressedKey(SERVER_PRESSED_KEYS, player, index, key, true);
             if (!hero.isKeyBindEnabled(player, key))
             {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                        "Ability not activated: hero={}, key={}, reason=hero_condition",
+                        iteration.getRegistryName(), key);
                 if (isAimGatedAbility(hero, index, key))
                 {
                     PENDING_AIM_ABILITIES.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>())
@@ -121,6 +126,8 @@ public final class AbilityHandler
             if (function != null)
             {
                 function.call(new com.fiskmods.heroes.pack.js.JSEntity(player), new com.fiskmods.heroes.pack.js.JSManager());
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                        "Ability callback executed: hero={}, key={}", iteration.getRegistryName(), key);
                 continue;
             }
 
@@ -229,7 +236,16 @@ public final class AbilityHandler
         boolean miniaturizeOnly = "MINIATURIZE_SUIT".equals(key);
         ModifierEntry entry = findEnabledModifier(hero, key, modifierId, miniaturizeOnly, player, data);
 
-        if (entry == null) return null;
+        if (entry == null)
+        {
+            if (!"AIM".equals(key) && !"SHAPE_SHIFT".equals(key)
+                    && !"SHAPE_SHIFT_RESET".equals(key) && !"SPELL_MENU".equals(key))
+            {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.warn(
+                        "Ability has no enabled modifier: hero={}, key={}", hero.getName(), key);
+            }
+            return null;
+        }
 
         int cooldown = entry.getInt(player, PowerProperty.COOLDOWN_TIME);
         if (cooldown > 0)
@@ -239,6 +255,9 @@ public final class AbilityHandler
             Map<String, Long> playerCooldowns = ABILITY_COOLDOWNS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
             if (playerCooldowns.getOrDefault(cooldownKey, 0L) > now)
             {
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                        "Ability not activated: hero={}, key={}, reason=cooldown",
+                        hero.getName(), key);
                 return null;
             }
             playerCooldowns.put(cooldownKey, now + cooldown);
@@ -247,11 +266,17 @@ public final class AbilityHandler
         if (entry.getModifier() instanceof ModifierTentacles tentacles)
         {
             tentacles.activateKey(player, entry, data, key);
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                    "Ability modifier executed: hero={}, key={}, modifier={}",
+                    hero.getName(), key, entry.getModifier().getId());
             // Strike charge is completed by ModifierTentacles.onToggle when this key is released.
             return "TENTACLE_STRIKE".equals(key) ? entry : null;
         }
 
         entry.getModifier().onActivate(player, entry, data);
+        com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                "Ability modifier executed: hero={}, key={}, modifier={}",
+                hero.getName(), key, entry.getModifier().getId());
         return entry;
     }
 
@@ -352,8 +377,9 @@ public final class AbilityHandler
             SHPlayerData data = SHDataCapabilities.getPlayer(entity);
             if (data != null)
             {
-                data.getData().set(Vars.AIMING,
-                        iteration != null && shouldAim(entity, iteration.getHero(), pressed));
+                boolean aiming = shouldAim(entity, iteration.getHero(), pressed);
+                data.getData().set(Vars.AIMING, aiming);
+                updateHatTip(data, iteration.getHero(), aiming);
             }
         }
 
@@ -389,7 +415,18 @@ public final class AbilityHandler
     /** Resolves the pack's held AIM key into the synchronized state used by guns and suit poses. */
     private static void updateAiming(ServerPlayer player, SHPlayerData data, Hero hero, boolean pressed)
     {
-        data.getData().set(Vars.AIMING, shouldAim(player, hero, pressed));
+        boolean aiming = shouldAim(player, hero, pressed);
+        data.getData().set(Vars.AIMING, aiming);
+        updateHatTip(data, hero, aiming);
+    }
+
+    private static void updateHatTip(SHPlayerData data, Hero hero, boolean aiming)
+    {
+        if (hero.getRegistryName().equals(new net.minecraft.resources.ResourceLocation("fiskheroes", "senor_cactus")))
+        {
+            // Señor Cactus's point key drives both the arm and sombrero FSK animation.
+            data.getData().set(Vars.HAT_TIP, aiming ? 0.5F : 0.0F);
+        }
     }
 
     private static boolean shouldAim(Entity entity, Hero hero, boolean pressed)
@@ -411,6 +448,14 @@ public final class AbilityHandler
         if (data.getData().get(Vars.AIMING) != aiming)
         {
             data.getData().set(Vars.AIMING, aiming);
+        }
+
+        float hatTip = iteration != null
+                && iteration.getHero().getRegistryName().equals(new net.minecraft.resources.ResourceLocation("fiskheroes", "senor_cactus"))
+                && aiming ? 0.5F : 0.0F;
+        if (data.getData().get(Vars.HAT_TIP) != hatTip)
+        {
+            data.getData().set(Vars.HAT_TIP, hatTip);
         }
 
         float target = data.getData().get(Vars.AIMING) ? 1.0F : 0.0F;

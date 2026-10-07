@@ -43,11 +43,38 @@ final class TabulaModelCache
     static void render(String modelType, PoseStack pose, VertexConsumer vertex, int light,
             float red, float green, float blue, float alpha)
     {
+        render(modelType, pose, vertex, light, red, green, blue, alpha, 0.0F);
+    }
+
+    static void render(String modelType, PoseStack pose, VertexConsumer vertex, int light,
+            float red, float green, float blue, float alpha, float hatTip)
+    {
         ResourceLocation id = ResourceLocation.tryParse(modelType);
         if (id == null) id = FiskHeroes.id(modelType);
         ModelPart model = MODELS.computeIfAbsent(id, TabulaModelCache::load);
-        if (model != null) model.render(pose, vertex, light,
-                net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, red, green, blue, alpha);
+        if (model != null)
+        {
+            model.getAllParts().forEach(ModelPart::resetPose);
+            if (id.equals(FiskHeroes.id("sombrero")) && Float.isFinite(hatTip))
+            {
+                float progress = net.minecraft.util.Mth.clamp(hatTip, 0.0F, 1.0F);
+                progress = net.minecraft.util.Mth.sin((float) Math.PI * (1.0F - progress));
+                float rotation = progress * progress * progress * progress * progress * 0.17F;
+                for (int ring = 1; ring <= 7; ++ring)
+                {
+                    try
+                    {
+                        model.getChild("ring" + ring + "_1_root_" + (ring - 1)).xRot += rotation;
+                    }
+                    catch (java.util.NoSuchElementException ignored)
+                    {
+                        // Some model revisions may omit a ring; animate the parts they provide.
+                    }
+                }
+            }
+            model.render(pose, vertex, light,
+                    net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, red, green, blue, alpha);
+        }
     }
 
     private static ModelPart load(ResourceLocation id)

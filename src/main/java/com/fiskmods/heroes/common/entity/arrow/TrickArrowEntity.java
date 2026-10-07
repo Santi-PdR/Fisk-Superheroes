@@ -2,6 +2,7 @@ package com.fiskmods.heroes.common.entity.arrow;
 
 import com.fiskmods.heroes.common.item.ItemTrickArrow;
 import com.fiskmods.heroes.common.item.ModItems;
+import com.google.gson.JsonObject;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -24,13 +25,24 @@ import net.minecraft.world.phys.EntityHitResult;
 public class TrickArrowEntity extends Arrow
 {
     private static final float DEFAULT_EXPLOSION_RADIUS = 2.0F;
+    private static final float FIREBALL_ARROW_RADIUS = 2.5F;
+    private static final float FIREBALL_ARROW_DAMAGE = 6.0F;
     private static final EntityDataAccessor<String> ARROW_TYPE = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<ItemStack> VIAL_POTION = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<ItemStack> FIREWORK_STACK = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Boolean> PUFFERFISH_FUSING = SynchedEntityData.defineId(TrickArrowEntity.class, EntityDataSerializers.BOOLEAN);
     private float explosionRadius = DEFAULT_EXPLOSION_RADIUS;
     private boolean detonated;
     private boolean grappleSnapped;
+    private int vineUseTicks;
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
     private ItemStack vialPotion = ItemStack.EMPTY;
+    private ItemStack fireworkStack = ItemStack.EMPTY;
+    private int fireworkAge;
+    private int fireworkLifetime = -1;
+    private int fireworkStrength = 120;
+    private float fireworkRadius;
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level)
     {
@@ -56,6 +68,9 @@ public class TrickArrowEntity extends Arrow
     {
         super.defineSynchedData();
         entityData.define(ARROW_TYPE, ItemTrickArrow.NORMAL);
+        entityData.define(VIAL_POTION, ItemStack.EMPTY);
+        entityData.define(FIREWORK_STACK, ItemStack.EMPTY);
+        entityData.define(PUFFERFISH_FUSING, false);
     }
 
     public String getArrowType()
@@ -68,9 +83,66 @@ public class TrickArrowEntity extends Arrow
         entityData.set(ARROW_TYPE, ItemTrickArrow.normalizeType(type));
     }
 
+    /** Whether this arrow bypasses projectile durability defenses for the specified target. */
+    public boolean canPierceDurability(LivingEntity target)
+    {
+        // Both material-tip arrows bypass armor durability in the original mod. Tutridium's
+        // poison effect is only useful if the projectile can get through the suit defense too.
+        if ("vibranium".equals(getArrowType()) || "tutridium".equals(getArrowType())) return true;
+        if (!"blaze".equals(getArrowType())) return false;
+
+        com.fiskmods.heroes.common.data.SHPlayerData targetData =
+                com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        return targetData != null && targetData.getData().get(
+                com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN);
+    }
+
     public void setVialPotion(ItemStack potion)
     {
         vialPotion = potion != null ? potion.copy() : ItemStack.EMPTY;
+        entityData.set(VIAL_POTION, vialPotion.copy());
+    }
+
+    public ItemStack getVialPotion()
+    {
+        return entityData.get(VIAL_POTION).copy();
+    }
+
+    public ItemStack getFireworkStack()
+    {
+        return entityData.get(FIREWORK_STACK).copy();
+    }
+
+    /** Stores the original firework payload and derives the arrow's fuse and flash radius from it. */
+    public void setFireworkStack(ItemStack stack)
+    {
+        fireworkStack = stack != null ? stack.copy() : ItemStack.EMPTY;
+        entityData.set(FIREWORK_STACK, fireworkStack.copy());
+        fireworkAge = 0;
+        fireworkStrength = 120;
+        fireworkRadius = 0.0F;
+
+        CompoundTag fireworks = fireworkStack.hasTag() ? fireworkStack.getTag().getCompound("Fireworks") : new CompoundTag();
+        int flight = 1 + Byte.toUnsignedInt(fireworks.getByte("Flight"));
+        fireworkLifetime = (10 * flight + random.nextInt(6) + random.nextInt(7)) / 2;
+        net.minecraft.nbt.ListTag explosions = fireworks.getList("Explosions", CompoundTag.TAG_COMPOUND);
+        for (int i = 0; i < explosions.size(); ++i)
+        {
+            CompoundTag explosion = explosions.getCompound(i);
+            if (explosion.getBoolean("Flicker")) fireworkStrength += 20;
+            if (explosion.getBoolean("Trail")) fireworkStrength += 30;
+            switch (Byte.toUnsignedInt(explosion.getByte("Type")))
+            {
+                case 1 -> fireworkRadius = Math.max(fireworkRadius, 8.0F);
+                case 2 -> fireworkRadius = Math.max(fireworkRadius, 5.0F);
+                case 4 ->
+                {
+                    fireworkStrength += 20;
+                    fireworkRadius = Math.max(fireworkRadius, 3.0F);
+                }
+                default -> fireworkRadius = Math.max(fireworkRadius, 4.0F);
+            }
+        }
     }
 
     private void setExplosionRadius(float radius)
@@ -81,20 +153,99 @@ public class TrickArrowEntity extends Arrow
     @Override
     public void tick()
     {
+        // Glitch arrows ignore block impacts in onHitBlock, but must keep projectile collision
+        // enabled so they can still strike entities. Entity.noPhysics disables both kinds of hit
+        // detection in 1.20.1, unlike the original arrow's block-only no-clip behavior.
+        noPhysics = "explosive_pufferfish".equals(getArrowType()) && entityData.get(PUFFERFISH_FUSING);
         super.tick();
+        spawnTypeParticles();
         tickGrapple();
         if ("detonator".equals(getArrowType()) && inGround && level().hasNeighborSignal(blockPosition()))
         {
             detonate(4.0F, true, Level.ExplosionInteraction.BLOCK);
         }
-        else if ("firework".equals(getArrowType()) && tickCount >= 40)
+        else if ("firework".equals(getArrowType()) && !level().isClientSide
+                && ++fireworkAge > fireworkLifetime)
         {
-            detonate(1.5F, false);
+            // Firework arrows are flashbangs in the original mod; they must never fall back
+            // to the explosive-arrow blast just because they travelled without hitting anything.
+            spawnFlashbang();
+            discard();
         }
         else if ("explosive_pufferfish".equals(getArrowType()) && pufferfishFuseTicks >= 0
                 && --pufferfishFuseTicks <= 0)
         {
             detonate(1.5F, false);
+        }
+    }
+
+    /** Preserve the type-specific trails used by the original fire and pulse arrows. */
+    private void spawnTypeParticles()
+    {
+        if (!level().isClientSide) return;
+
+        switch (getArrowType())
+        {
+            case "blaze", "fire_charge", "fireball" ->
+            {
+                for (int i = 0; i < 3; ++i)
+                {
+                    level().addParticle(net.minecraft.core.particles.ParticleTypes.FLAME,
+                            getX() + (random.nextDouble() - 0.5D) * 0.1D,
+                            getY() + (random.nextDouble() - 0.5D) * 0.1D,
+                            getZ() + (random.nextDouble() - 0.5D) * 0.1D,
+                            (random.nextDouble() - 0.5D) * 0.1D,
+                            (random.nextDouble() - 0.5D) * 0.1D,
+                            (random.nextDouble() - 0.5D) * 0.1D);
+                }
+            }
+            case "pulse" ->
+            {
+                if (random.nextBoolean())
+                {
+                    level().addParticle(new net.minecraft.core.particles.DustParticleOptions(
+                                    new org.joml.Vector3f(1.0F, 0.0F, 0.0F), 1.0F),
+                            getX() + (random.nextDouble() - 0.5D) * 0.05D,
+                            getY() + (random.nextDouble() - 0.5D) * 0.05D,
+                            getZ() + (random.nextDouble() - 0.5D) * 0.05D,
+                            0.0D, 0.0D, 0.0D);
+                }
+            }
+            case "slime" ->
+            {
+                if (random.nextFloat() < Math.min(1.0F, (float) getDeltaMovement().length()))
+                {
+                    level().addParticle(new net.minecraft.core.particles.ItemParticleOption(
+                                    net.minecraft.core.particles.ParticleTypes.ITEM,
+                                    new ItemStack(net.minecraft.world.item.Items.SLIME_BALL)),
+                            getX(), getY(), getZ(),
+                            (random.nextDouble() - 0.5D) * 0.1D,
+                            (random.nextDouble() - 0.5D) * 0.1D,
+                            (random.nextDouble() - 0.5D) * 0.1D);
+                }
+            }
+            case "ender_pearl" ->
+            {
+                for (int i = 0; i < 5; ++i)
+                {
+                    level().addParticle(net.minecraft.core.particles.ParticleTypes.PORTAL,
+                            getX(), getY(), getZ(),
+                            (random.nextDouble() - 0.5D) * 0.2D,
+                            (random.nextDouble() - 0.5D) * 0.2D,
+                            (random.nextDouble() - 0.5D) * 0.2D);
+                }
+            }
+            case "torch" ->
+            {
+                var particle = random.nextBoolean()
+                        ? net.minecraft.core.particles.ParticleTypes.SMOKE
+                        : net.minecraft.core.particles.ParticleTypes.FLAME;
+                level().addParticle(particle, getX(), getY(), getZ(),
+                        (random.nextDouble() - 0.5D) * 0.06D,
+                        (random.nextDouble() - 0.5D) * 0.06D,
+                        (random.nextDouble() - 0.5D) * 0.06D);
+            }
+            default -> { }
         }
     }
 
@@ -105,9 +256,33 @@ public class TrickArrowEntity extends Arrow
         // dealing damage and only explodes after sticking to a powered block.
         if ("detonator".equals(getArrowType())) return;
 
+        // Smoke bombs detonate at the actual impact point and never deal the vanilla arrow hit.
+        if ("smoke_bomb".equals(getArrowType()))
+        {
+            if (!level().isClientSide)
+            {
+                spawnSmokeCloud(result.getLocation());
+                discard();
+            }
+            return;
+        }
+
+        // Pulse arrows are a remote redstone trigger, not a damaging projectile.
+        if ("pulse".equals(getArrowType()))
+        {
+            if (!level().isClientSide)
+            {
+                discard();
+            }
+            return;
+        }
+
         if ("explosive_pufferfish".equals(getArrowType()))
         {
             startPufferfishFuse();
+            // Vanilla 1.20 discards a non-piercing arrow as soon as it hits a living target.
+            // The original arrow embeds in the target and stays alive until its fuse expires.
+            setPierceLevel((byte) Math.max(1, getPierceLevel()));
         }
 
         if ("sponge".equals(getArrowType()))
@@ -115,12 +290,48 @@ public class TrickArrowEntity extends Arrow
             absorbWater(result.getEntity().blockPosition());
         }
 
-        super.onHitEntity(result);
-        if (level().isClientSide || !(result.getEntity() instanceof LivingEntity target)) return;
+        if ("fireball".equals(getArrowType()))
+        {
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                    fireballDamageProfile(), () -> super.onHitEntity(result));
+        }
+        else if ("blaze".equals(getArrowType()))
+        {
+            // The original Blaze Arrow's DamageSource is explicitly fire damage. Keep that
+            // classification through suit resistances instead of treating it as a plain arrow.
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                    blazeDamageProfile(), () -> super.onHitEntity(result));
+        }
+        else
+        {
+            super.onHitEntity(result);
+        }
+        if ("explosive_pufferfish".equals(getArrowType()))
+        {
+            // Keep the projectile at the impact point while its fuse ticks; otherwise the
+            // piercing-arrow path would continue through the target and carry the blast away.
+            Vec3 impact = result.getLocation();
+            setPos(impact.x, impact.y, impact.z);
+            setDeltaMovement(Vec3.ZERO);
+            setNoGravity(true);
+        }
+        if (!(result.getEntity() instanceof LivingEntity target))
+        {
+            if ("fireball".equals(getArrowType()) && !level().isClientSide)
+            {
+                spawnFireballBurst(result.getLocation(), result.getEntity());
+            }
+            return;
+        }
+        if (level().isClientSide) return;
 
         switch (getArrowType())
         {
-            case "ender_pearl" -> teleportShooter();
+            case "ender_pearl" ->
+            {
+                teleportShooter();
+                setArrowType(ItemTrickArrow.NORMAL);
+            }
             case "carrot" -> target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200));
             case "fire_charge", "blaze" -> target.setSecondsOnFire(5);
             case "fireball" -> target.setSecondsOnFire(3);
@@ -129,21 +340,33 @@ public class TrickArrowEntity extends Arrow
                 Vec3 velocity = getDeltaMovement();
                 target.knockback(1.2F, -velocity.x, -velocity.z);
             }
-            case "pufferfish" ->
+            case "pufferfish", "explosive_pufferfish" ->
             {
                 if (random.nextInt(3) == 0) target.addEffect(new MobEffectInstance(MobEffects.POISON, 80));
             }
             case "slime" ->
             {
+                // The reference slime arrow applies Slowness for 3 seconds with a 3/4 chance.
                 if (random.nextInt(4) != 0) target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60));
             }
             case "phantom" -> target.addEffect(new MobEffectInstance(
                     com.fiskmods.heroes.common.hero.modifier.ModEffects.PHASE_SUPPRESSANT.get(), 100, 0, false, false, true));
             case "tutridium" -> target.addEffect(new MobEffectInstance(
                     com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get(), 200, 0, false, false, true));
-            case "gross" -> target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 160));
+            case "gross" -> target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 180));
             case "vial" -> applyVial(target);
             default -> { }
+        }
+        if ("blaze".equals(getArrowType()))
+        {
+            com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(target, 0.1F);
+        }
+        if ("cactus".equals(getArrowType()))
+        {
+            // The original cactus arrow bursts on every impact, including living targets.
+            spawnCactusSpikes();
+            detonate(2.0F, false);
+            return;
         }
         detonateIfExplosive();
         if ("firework".equals(getArrowType()))
@@ -153,7 +376,7 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("fireball".equals(getArrowType()))
         {
-            detonate(1.5F, false);
+            spawnFireballBurst(result.getLocation(), target);
         }
     }
 
@@ -163,6 +386,23 @@ public class TrickArrowEntity extends Arrow
         // The original glitch arrow is non-solid: block impacts do not stop or embed it.
         if ("glitch".equals(getArrowType()))
         {
+            return;
+        }
+
+        // Pulse arrows activate redstone controls instead of simply behaving like a normal arrow.
+        // Use the block's normal interaction to preserve its sound, power state, and reset tick.
+        if ("pulse".equals(getArrowType()))
+        {
+            if (!level().isClientSide && getOwner() instanceof Player player)
+            {
+                net.minecraft.world.level.block.state.BlockState state = level().getBlockState(result.getBlockPos());
+                if (state.getBlock() instanceof net.minecraft.world.level.block.ButtonBlock
+                        || state.getBlock() instanceof net.minecraft.world.level.block.LeverBlock)
+                {
+                    state.use(level(), player, net.minecraft.world.InteractionHand.MAIN_HAND, result);
+                }
+                discard();
+            }
             return;
         }
 
@@ -209,7 +449,7 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("smoke_bomb".equals(type))
         {
-            spawnSmokeCloud();
+            spawnSmokeCloud(result.getLocation());
             discard();
         }
         else if ("firework".equals(type))
@@ -219,7 +459,7 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("fireball".equals(type))
         {
-            detonate(1.5F, false);
+            spawnFireballBurst(result.getLocation(), null);
         }
         else if ("cactus".equals(type))
         {
@@ -263,14 +503,20 @@ public class TrickArrowEntity extends Arrow
             detonate(explosionRadius, false);
             return true;
         }
-        if ("firework".equals(type) || "fireball".equals(type))
+        if ("firework".equals(type))
         {
-            detonate(1.5F, false);
+            spawnFlashbang();
+            discard();
+            return true;
+        }
+        if ("fireball".equals(type))
+        {
+            spawnFireballBurst(position(), null);
             return true;
         }
         if ("smoke_bomb".equals(type))
         {
-            spawnSmokeCloud();
+            spawnSmokeCloud(position());
             discard();
             return true;
         }
@@ -294,6 +540,7 @@ public class TrickArrowEntity extends Arrow
         if (pufferfishFuseTicks < 0)
         {
             pufferfishFuseTicks = 30;
+            entityData.set(PUFFERFISH_FUSING, true);
         }
     }
 
@@ -307,6 +554,18 @@ public class TrickArrowEntity extends Arrow
                 || !player.getMainHandItem().is(ModItems.COMPOUND_BOW.get()) || player.hurtTime > 0)
         {
             grappleSnapped = true;
+            return;
+        }
+
+        // The original vine cable can snap while it is pulling. Its failure rate rises over
+        // time (roughly 1/100 per early tick, then at least 1/10 once it has run for a while).
+        if ("vine".equals(type)
+                && random.nextInt(Math.max(100 - ++vineUseTicks, 10)) == 0)
+        {
+            grappleSnapped = true;
+            level().playSound(null, blockPosition(),
+                    net.minecraft.sounds.SoundEvents.LEASH_KNOT_BREAK,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 0.9F);
             return;
         }
 
@@ -331,6 +590,68 @@ public class TrickArrowEntity extends Arrow
         detonated = true;
         level().explode(getOwner(), getX(), getY(), getZ(), radius, causesFire, interaction);
         discard();
+    }
+
+    /** The original fireball arrow deals distance-scaled fire damage without terrain explosion. */
+    private void spawnFireballBurst(Vec3 center, net.minecraft.world.entity.Entity directHit)
+    {
+        if (level().isClientSide || detonated) return;
+        detonated = true;
+
+        JsonObject profile = fireballDamageProfile();
+        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class,
+                new net.minecraft.world.phys.AABB(center.x - FIREBALL_ARROW_RADIUS,
+                        center.y - FIREBALL_ARROW_RADIUS, center.z - FIREBALL_ARROW_RADIUS,
+                        center.x + FIREBALL_ARROW_RADIUS, center.y + FIREBALL_ARROW_RADIUS,
+                        center.z + FIREBALL_ARROW_RADIUS),
+                entity -> entity != getOwner() && entity != directHit && entity.isAlive()))
+        {
+            Vec3 targetCenter = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
+            double distance = targetCenter.distanceTo(center);
+            if (distance > FIREBALL_ARROW_RADIUS) continue;
+
+            float damage = Math.max(1.0F,
+                    FIREBALL_ARROW_DAMAGE * (1.0F - (float) distance / FIREBALL_ARROW_RADIUS));
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target,
+                    getOwner() instanceof LivingEntity owner ? owner : null,
+                    level().damageSources().magic(), damage, profile);
+        }
+
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION,
+                    center.x, center.y, center.z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.FLAME,
+                    center.x, center.y, center.z, 48, 0.5D, 0.35D, 0.5D, 0.08D);
+        }
+        level().playSound(null, center.x, center.y, center.z,
+                net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_BLAST,
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.9F);
+        discard();
+    }
+
+    private static JsonObject fireballDamageProfile()
+    {
+        JsonObject profile = new JsonObject();
+        profile.addProperty("damage", FIREBALL_ARROW_DAMAGE);
+        JsonObject types = new JsonObject();
+        types.addProperty("FIRE", 1.0D);
+        profile.add("types", types);
+        JsonObject properties = new JsonObject();
+        properties.addProperty("COOK_ENTITY", true);
+        properties.addProperty("HEAT_TRANSFER", 20);
+        properties.addProperty("IGNITE", 3);
+        profile.add("properties", properties);
+        return profile;
+    }
+
+    private static JsonObject blazeDamageProfile()
+    {
+        JsonObject profile = new JsonObject();
+        JsonObject types = new JsonObject();
+        types.addProperty("FIRE", 1.0D);
+        profile.add("types", types);
+        return profile;
     }
 
     private void teleportShooter()
@@ -377,6 +698,24 @@ public class TrickArrowEntity extends Arrow
                 getZ() + hit.getDirection().getStepZ() * 0.05D);
         inGround = false;
         shakeTime = 0;
+
+        net.minecraft.world.item.Item particleItem = "slime".equals(getArrowType())
+                ? net.minecraft.world.item.Items.SLIME_BALL
+                : net.minecraft.world.item.Items.PUFFERFISH;
+        net.minecraft.core.particles.ItemParticleOption particles = new net.minecraft.core.particles.ItemParticleOption(
+                net.minecraft.core.particles.ParticleTypes.ITEM, particleItem.getDefaultInstance());
+        net.minecraft.core.BlockPos pos = hit.getBlockPos();
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            Vec3 impact = hit.getLocation();
+            serverLevel.sendParticles(particles, impact.x, impact.y, impact.z,
+                    20, 0.2D, 0.2D, 0.2D, 0.1D);
+            serverLevel.playSound(null, pos,
+                    "slime".equals(getArrowType())
+                            ? net.minecraft.sounds.SoundEvents.SLIME_BLOCK_HIT
+                            : net.minecraft.sounds.SoundEvents.PUFFER_FISH_FLOP,
+                    net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
     }
 
     private void applyVial(LivingEntity directHit)
@@ -406,27 +745,56 @@ public class TrickArrowEntity extends Arrow
 
     private void spawnSmokeCloud()
     {
-        if (!(level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
-        var cloud = new net.minecraft.world.entity.AreaEffectCloud(level(), getX(), getY(), getZ());
-        cloud.setOwner(getOwner() instanceof LivingEntity owner ? owner : null);
-        cloud.setRadius(2.5F);
-        cloud.setDuration(100);
-        cloud.setRadiusPerTick(-0.025F);
-        cloud.setParticle(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE);
-        cloud.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 80));
-        serverLevel.addFreshEntity(cloud);
+        spawnSmokeCloud(position());
+    }
+
+    /** Applies the original smoke bomb's temporary stealth to nearby suited heroes. */
+    private void spawnSmokeCloud(Vec3 center)
+    {
+        if (level().isClientSide) return;
+
+        final double radius = 2.5D;
+        var bounds = new net.minecraft.world.phys.AABB(center.x - radius, center.y - radius / 2.0D,
+                center.z - radius, center.x + radius, center.y + radius / 2.0D, center.z + radius);
+        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, bounds))
+        {
+            if (!com.fiskmods.heroes.common.hero.HeroTracker.hasHero(target)) continue;
+            double dx = target.getX() - center.x;
+            double dy = (target.getY() + target.getBbHeight() / 2.0D - center.y) * 2.0D;
+            double dz = target.getZ() - center.z;
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz) / radius;
+            if (distance <= 1.0D)
+            {
+                int duration = (int) Math.ceil(100.0D + distance * 60.0D);
+                target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, duration));
+            }
+        }
+
+        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE,
+                    center.x, center.y, center.z, 300, 0.3D, 0.15D, 0.3D, 0.0D);
+        }
+        level().playSound(null, center.x, center.y, center.z,
+                net.minecraft.sounds.SoundEvents.GENERIC_EXTINGUISH_FIRE,
+                net.minecraft.sounds.SoundSource.PLAYERS, 2.0F, 0.9F + random.nextFloat() * 0.2F);
     }
 
     /** Firework arrows flash nearby targets instead of behaving like explosive arrows. */
     private void spawnFlashbang()
     {
         if (level().isClientSide) return;
-        var area = getBoundingBox().inflate(4.0D);
-        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, area,
-                candidate -> candidate != getOwner() && candidate.isAlive()
-                        && candidate.distanceToSqr(this) <= 16.0D))
+        if (fireworkRadius > 0.0F)
         {
-            target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 120, 0, false, true));
+            var area = getBoundingBox().inflate(fireworkRadius);
+            for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, area,
+                    candidate -> candidate != getOwner() && candidate.isAlive()
+                            && candidate.distanceToSqr(this) <= fireworkRadius * fireworkRadius))
+            {
+                double distance = Math.sqrt(target.distanceToSqr(this));
+                int duration = (int) Math.ceil(fireworkStrength * Math.max(0.0D, 1.0D - distance / fireworkRadius));
+                if (duration > 0) target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 0, false, true));
+            }
         }
         level().playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_BLAST,
                 net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -465,12 +833,20 @@ public class TrickArrowEntity extends Arrow
         if (!(level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
         // The reference arrow bursts into twenty or twenty-one cactus spikes.
         int count = 20 + random.nextInt(2);
+        Vec3 incomingMotion = getDeltaMovement();
         for (int i = 0; i < count; ++i)
         {
-            Arrow spike = new Arrow(level(), getOwner() instanceof LivingEntity owner ? owner : null);
+            if (!(getOwner() instanceof LivingEntity owner)) break;
+            com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity spike =
+                    new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
             spike.setPos(getX(), getY(), getZ());
-            spike.shoot(random.nextDouble() * 2.0D - 1.0D, random.nextDouble() * 2.0D - 0.25D,
-                    random.nextDouble() * 2.0D - 1.0D, 1.2F, 12.0F);
+            // The reference spike inherits the Cactus Arrow's travel direction and adds a small
+            // random spread; firing evenly in random directions made the burst look unrelated.
+            spike.setDeltaMovement(incomingMotion.scale(20.0D).add(
+                    random.nextDouble() * 0.4D - 0.2D,
+                    random.nextDouble() * 0.4D - 0.2D,
+                    random.nextDouble() * 0.4D - 0.2D));
+            spike.hasImpulse = true;
             serverLevel.addFreshEntity(spike);
         }
     }
@@ -493,7 +869,14 @@ public class TrickArrowEntity extends Arrow
         tag.putFloat("ExplosionRadius", explosionRadius);
         tag.putBoolean("Detonated", detonated);
         tag.putBoolean("GrappleSnapped", grappleSnapped);
+        tag.putInt("VineUseTicks", vineUseTicks);
         tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
+        tag.putBoolean("PufferfishFusing", entityData.get(PUFFERFISH_FUSING));
+        if (!fireworkStack.isEmpty()) tag.put("FireworkStack", fireworkStack.save(new CompoundTag()));
+        tag.putInt("FireworkAge", fireworkAge);
+        tag.putInt("FireworkLifetime", fireworkLifetime);
+        tag.putInt("FireworkStrength", fireworkStrength);
+        tag.putFloat("FireworkRadius", fireworkRadius);
         if (!vialPotion.isEmpty()) tag.put("VialPotion", vialPotion.save(new CompoundTag()));
     }
 
@@ -505,8 +888,28 @@ public class TrickArrowEntity extends Arrow
         setExplosionRadius(tag.contains("ExplosionRadius") ? tag.getFloat("ExplosionRadius") : DEFAULT_EXPLOSION_RADIUS);
         detonated = tag.getBoolean("Detonated");
         grappleSnapped = tag.getBoolean("GrappleSnapped");
+        vineUseTicks = Math.max(0, tag.getInt("VineUseTicks"));
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
+        entityData.set(PUFFERFISH_FUSING, tag.getBoolean("PufferfishFusing") || pufferfishFuseTicks >= 0);
+        fireworkStack = tag.contains("FireworkStack", CompoundTag.TAG_COMPOUND)
+                ? ItemStack.of(tag.getCompound("FireworkStack")) : ItemStack.EMPTY;
+        entityData.set(FIREWORK_STACK, fireworkStack.copy());
+        fireworkAge = tag.getInt("FireworkAge");
+        fireworkLifetime = tag.contains("FireworkLifetime") ? tag.getInt("FireworkLifetime") : -1;
+        fireworkStrength = tag.contains("FireworkStrength") ? tag.getInt("FireworkStrength") : 120;
+        fireworkRadius = tag.getFloat("FireworkRadius");
+        if (fireworkLifetime < 0 && "firework".equals(getArrowType()))
+        {
+            if (fireworkStack.isEmpty())
+            {
+                fireworkStack = ItemTrickArrow.getAttachedItem(ItemTrickArrow.createStack("firework"));
+            }
+            int savedAge = fireworkAge;
+            setFireworkStack(fireworkStack);
+            fireworkAge = savedAge;
+        }
         vialPotion = tag.contains("VialPotion", CompoundTag.TAG_COMPOUND)
                 ? ItemStack.of(tag.getCompound("VialPotion")) : ItemStack.EMPTY;
+        entityData.set(VIAL_POTION, vialPotion.copy());
     }
 }

@@ -105,6 +105,16 @@ public final class EarthCrackEntity extends Entity
         return entityData.get(TARGET_ID);
     }
 
+    public LivingEntity getTarget()
+    {
+        return getLiving(TARGET_ID);
+    }
+
+    public LivingEntity getCaster()
+    {
+        return getLiving(CASTER_ID);
+    }
+
     private void emitCrackParticles(LivingEntity target)
     {
         if (tickCount % 3 != 0) return;

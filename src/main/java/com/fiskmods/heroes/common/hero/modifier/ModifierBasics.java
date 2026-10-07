@@ -37,6 +37,16 @@ class ModifierImmunity extends Modifier
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
+        if (group == Modifiers.DamageGroup.FIRE)
+        {
+            SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+            if (data != null && data.getData().get(Vars.METAL_SKIN)
+                    && data.getData().get(Vars.METAL_HEAT_COOLDOWN) > 0)
+            {
+                return false;
+            }
+        }
+
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction >= 0.0F)
         {
@@ -137,7 +147,7 @@ class ModifierProjectileImmunity extends Modifier
         if (source.is(DamageTypeTags.IS_PROJECTILE))
         {
             if (source.getDirectEntity() instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity arrow
-                    && "vibranium".equals(arrow.getArrowType()))
+                    && arrow.canPierceDurability(entity))
             {
                 return false;
             }
@@ -320,12 +330,17 @@ class ModifierMetalSkin extends Modifier
 
         if (data != null && data.getData().get(Vars.METAL_SKIN))
         {
-            float heat = data.getData().get(Vars.METAL_HEAT);
-            data.getData().set(Vars.METAL_HEAT, Math.min(100.0F, heat + amount * 2.0F));
+            MetalSkinHeat.add(entity, amount * 0.02F);
             return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
 
         return amount;
+    }
+
+    @Override
+    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        MetalSkinHeat.tick(entity, data);
     }
 }
 

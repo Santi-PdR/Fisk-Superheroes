@@ -20,6 +20,16 @@ final class SuitArmAnimationRenderer
 
     static void apply(HeroModelData suit, PlayerModel<?> model, Player player, float limbSwingAmount)
     {
+        JsonObject animationEffect = suit.getCustom().get("fiskheroes:animation");
+        if (animationEffect != null && animationEffect.has("animation")
+                && "fiskheroes:hat_tip_player".equals(animationEffect.get("animation").getAsString()))
+        {
+            float data = Mth.clamp(suit.evaluateRenderData(animationEffect.get("data"), player, 0.0F), 0.0F, 1.0F);
+            float progress = Mth.sin((float) Math.PI * (1.0F - data));
+            progress *= progress;
+            model.rightArm.xRot = lerp(model.rightArm.xRot, -2.4F, progress);
+        }
+
         JsonObject armAnimation = suit.getCustom().get("fiskheroes:arm_animation");
         float rightPose = armAnimation != null && armAnimation.has("dataRArmPose")
                 ? suit.evaluateRenderData(armAnimation.get("dataRArmPose"), player, 0.0F)

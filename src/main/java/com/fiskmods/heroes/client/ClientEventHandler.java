@@ -37,6 +37,7 @@ public class ClientEventHandler
     private static boolean weaponKeyHeld;
     private static boolean maskKeyDown;
     private static boolean attackKeyDown;
+    private static boolean abilityClickMode;
     private static long nextGunShotTick = Long.MIN_VALUE;
     private static int hudAbilityHeld = Integer.MIN_VALUE;
     private static final boolean[] spellDirectionDown = new boolean[4];
@@ -53,6 +54,16 @@ public class ClientEventHandler
     public static void onKeyInput(InputEvent.Key event)
     {
         Minecraft mc = Minecraft.getInstance();
+        if (mc.player != null && mc.screen == null && event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
+                && SHKeyBinds.ABILITY_CLICK_MODE.matches(event.getKey(), event.getScanCode()))
+        {
+            abilityClickMode = !abilityClickMode;
+            if (abilityClickMode) mc.mouseHandler.releaseMouse();
+            else mc.mouseHandler.grabMouse();
+            event.setCanceled(true);
+            return;
+        }
+
         if (SHKeyBinds.WEAPON.matches(event.getKey(), event.getScanCode()))
         {
             if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
@@ -143,6 +154,7 @@ public class ClientEventHandler
             java.util.Arrays.fill(abilityKeysDown, false);
             maskKeyDown = false;
             attackKeyDown = false;
+            abilityClickMode = false;
             nextGunShotTick = Long.MIN_VALUE;
             hudAbilityHeld = Integer.MIN_VALUE;
             spellMenuWasDown = false;
@@ -152,6 +164,8 @@ public class ClientEventHandler
         }
 
         Minecraft mc = Minecraft.getInstance();
+        // Vanilla GUI screens own the pointer while open and re-capture it when they close.
+        if (mc.screen != null) abilityClickMode = false;
         updateSpellInput(mc, player);
         for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
         {
@@ -241,6 +255,10 @@ public class ClientEventHandler
     private static void setAbilityInput(LocalPlayer player, int index, boolean down)
     {
         AbilityHandler.setClientKeyState(player, index, down);
+        if (down)
+        {
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Ability input sent from client: index={}", index);
+        }
         SHNetwork.sendToServer(new PacketAbility(index, down));
 
         if (down)
@@ -248,12 +266,12 @@ public class ClientEventHandler
             com.fiskmods.heroes.common.hero.Hero hero = HeroTracker.getHeroType(player);
             if (hero != null)
             {
-                if (hero.getKeyBinding("SHAPE_SHIFT") == index
+                if (hero.hasKeyBind("SHAPE_SHIFT") && hero.getKeyBinding("SHAPE_SHIFT") == index
                         && hero.isKeyBindEnabled(player, "SHAPE_SHIFT"))
                 {
                     Minecraft.getInstance().setScreen(new com.fiskmods.heroes.client.gui.ShapeShiftScreen());
                 }
-                else if (hero.getKeyBinding("SHAPE_SHIFT_RESET") == index
+                else if (hero.hasKeyBind("SHAPE_SHIFT_RESET") && hero.getKeyBinding("SHAPE_SHIFT_RESET") == index
                         && hero.isKeyBindEnabled(player, "SHAPE_SHIFT_RESET"))
                 {
                     SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketSetDisguise(""));
@@ -346,11 +364,11 @@ public class ClientEventHandler
         {
             if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null)
             {
-                // MouseHandler reports GLFW window coordinates, while the HUD uses GUI-scaled
-                // coordinates. Scale by the window's logical size (not framebuffer pixels),
-                // otherwise clicks drift on HiDPI / OS-scaled displays.
-                double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getWidth();
-                double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getHeight();
+                // Convert MouseHandler's raw window coordinates the same way vanilla converts
+                // them before dispatching clicks to screens. getWidth()/getHeight() are framebuffer
+                // dimensions and produce a shifted hit position on HiDPI or scaled displays.
+                double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
+                double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
                 int index = SuitHud.findKeyBindAt(x, y);
                 if (index != Integer.MIN_VALUE && index >= -1 && index < 16)
                 {

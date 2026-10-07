@@ -32,8 +32,14 @@ public final class ModifierHandler
 
         if (data.getHeroType() == null)
         {
+            data.getData().set(Vars.METAL_SKIN, false);
             return;
         }
+
+        boolean hasActiveMetalSkin = data.getHeroType().getPowerContainer().getEntries().stream()
+                .anyMatch(entry -> entry.getModifier().getId().getPath().equals("metal_skin")
+                        && entry.isEnabled() && entry.isModifierEnabled(entity, data));
+        data.getData().set(Vars.METAL_SKIN, hasActiveMetalSkin);
 
         float projectionTimer = data.getData().get(Vars.ENERGY_PROJECTION_TIMER);
         if (projectionTimer > 0.0F)

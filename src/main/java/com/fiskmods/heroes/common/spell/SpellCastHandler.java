@@ -177,20 +177,23 @@ public final class SpellCastHandler
         JsonObject primaryProfile = properties.has("damageProfile") && properties.get("damageProfile").isJsonObject()
                 ? properties.getAsJsonObject("damageProfile") : new JsonObject();
         double damage = number(primaryProfile, "damage", 5.0D);
-        target.hurt(caster.damageSources().magic(), (float) Math.max(0.0D, damage));
-
+        JsonObject burnProfile = new JsonObject();
+        int frequency = 20;
         if (properties.has("whipBurn") && properties.get("whipBurn").isJsonObject())
         {
             JsonObject burn = properties.getAsJsonObject("whipBurn");
-            JsonObject burnProfile = burn.has("damageProfile") && burn.get("damageProfile").isJsonObject()
+            burnProfile = burn.has("damageProfile") && burn.get("damageProfile").isJsonObject()
                     ? burn.getAsJsonObject("damageProfile") : new JsonObject();
-            double burnDamage = number(burnProfile, "damage", 0.0D);
-            if (burnDamage > 0.0D)
-            {
-                target.hurt(caster.damageSources().magic(), (float) burnDamage);
-                target.setSecondsOnFire(Math.max(1, (int) (number(burn, "frequency", 20.0D) / 20.0D)));
-            }
+            frequency = Math.max(1, (int) number(burn, "frequency", 20.0D));
         }
+
+        SpellWhipEntity tether = new SpellWhipEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.SPELL_WHIP.get(), caster.level(), caster,
+                target, burnProfile, frequency);
+        if (!caster.level().addFreshEntity(tether)) return false;
+
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, caster,
+                caster.damageSources().magic(), (float) Math.max(0.0D, damage), primaryProfile);
 
         Vec3 pull = caster.position().subtract(target.position()).normalize();
         target.setDeltaMovement(target.getDeltaMovement().add(pull.x * 0.8D, Math.max(0.1D, pull.y * 0.4D), pull.z * 0.8D));
