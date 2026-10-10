@@ -3,6 +3,11 @@ package com.fiskmods.heroes.common.item;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
+import com.fiskmods.heroes.common.hero.Hero;
+import com.fiskmods.heroes.common.hero.HeroAttribute;
+import com.fiskmods.heroes.common.hero.HeroIteration;
+import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
@@ -56,7 +61,7 @@ public class ItemCompoundBow extends BowItem
         boolean quiverAmmo = quiverArrowSlot >= 0;
 
         int chargeTicks = getUseDuration(bow) - timeLeft;
-        float power = BowItem.getPowerForTime(chargeTicks);
+        float power = getPowerForTime(chargeTicks, player);
         if (power < 0.1F) return;
 
         AbstractArrow arrow = arrowItem.createArrow(level, arrowStack.copy(), player);
@@ -101,6 +106,37 @@ public class ItemCompoundBow extends BowItem
             player.awardStat(Stats.ITEM_USED.get(this));
             player.gameEvent(GameEvent.PROJECTILE_SHOOT);
         }
+    }
+
+    /**
+     * The original bow uses a 30-tick base drawback and resolves the hero's BOW_DRAWBACK
+     * attribute against it. A hero value of 0.5 therefore draws in 15 ticks; using BowItem's
+     * fixed 20-tick curve loses those pack-specific timings.
+     */
+    public static float getDrawDuration(LivingEntity entity)
+    {
+        double base = 30.0D;
+        HeroIteration iteration = HeroTracker.getHero(entity);
+        if (iteration == null) return (float) base;
+
+        var modifiers = SHAttributes.collect(entity, iteration.getHero());
+        Hero.AttributeMod drawback = modifiers.get(HeroAttribute.BOW_DRAWBACK);
+        if (drawback == null) return (float) base;
+
+        double adjusted = switch (drawback.operation())
+        {
+            case 1, 2 -> base * (1.0D + drawback.amount());
+            default -> base + drawback.amount();
+        };
+        double duration = HeroAttribute.BOW_DRAWBACK.isAdditive() ? adjusted : base * 2.0D - adjusted;
+        if (!Double.isFinite(duration)) return (float) base;
+        return (float) net.minecraft.util.Mth.clamp(duration, 1.0D, 1200.0D);
+    }
+
+    private static float getPowerForTime(int chargeTicks, LivingEntity entity)
+    {
+        float charge = chargeTicks / getDrawDuration(entity);
+        return Math.min((charge * charge + charge * 2.0F) / 3.0F, 1.0F);
     }
 
     private static void prepareArrow(AbstractArrow arrow, ItemStack bow, float power)

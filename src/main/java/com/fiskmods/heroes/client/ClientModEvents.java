@@ -36,7 +36,9 @@ public final class ClientModEvents
                     (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.COMPOUND_BOW.get(), new net.minecraft.resources.ResourceLocation("pull"),
                     (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack
-                            ? (float) (stack.getUseDuration() - entity.getUseItemRemainingTicks()) / stack.getUseDuration() : 0.0F);
+                            ? net.minecraft.util.Mth.clamp((stack.getUseDuration() - entity.getUseItemRemainingTicks())
+                                    / com.fiskmods.heroes.common.item.ItemCompoundBow.getDrawDuration(entity), 0.0F, 1.0F)
+                            : 0.0F);
             ItemProperties.register(ModItems.TRICK_ARROW.get(), FiskHeroes.id("arrow_type"),
                     (stack, level, entity, seed) -> ItemTrickArrow.getTypeIndex(stack));
         });
