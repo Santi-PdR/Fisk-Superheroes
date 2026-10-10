@@ -1,0 +1,11 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.superspeed.move.loop.savitar.rgb",
+  "condition": {
+    "start": true,
+    "continue": "entity.getData('fiskheroes:speeding') && entity.getData('fiskheroes:moving')"
+  },
+  "volume": "entity.getData('fiskheroes:speed') == 1 ? 0.1 : entity.getData('fiskheroes:speed') == 2 ? 0.35 : entity.getData('fiskheroes:speed') == 3 ? 0.7 : 1.0 * (entity.getData('fiskheroes:speed') >= 4 ? 1 : 0)",
+  "loop": true,
+  "fadeOut": 5
+}

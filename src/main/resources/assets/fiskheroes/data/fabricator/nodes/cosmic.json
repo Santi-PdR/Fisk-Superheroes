@@ -1,0 +1,29 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.cosmic.name"
+    },
+    "icon": {
+      "item": "fiskheroes:supercharged_eternium"
+    }
+  },
+  "requirements": [ ],
+  "price": {
+    "IRID_GOLD": 3,
+    "XP_LEVELS": 30
+  },
+  "criteria": {
+    "nexus": {
+      "trigger": "fiskheroes:location",
+      "description": {
+        "translate": "node.fiskheroes.cosmic.nexus.desc"
+      },
+      "condition": {
+        "variables": {
+          "location": "LOCATION_PLAYER_IS_IN"
+        },
+        "check": "location.getStructure() == 'eternity_nexus'"
+      }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.tier6_7.name"
+    },
+    "description": {
+      "translate": "node.fiskheroes.tier6_7.desc"
+    },
+    "icon": {
+      "text": "6-7"
+    },
+    "isLevelable": true
+  },
+  "requirements": [ ],
+  "price": {
+    "IRID_GOLD": 6,
+    "XP_LEVELS": 20
+  },
+  "criteria": {
+    "tier": {
+      "trigger": "fiskheroes:suit_tier",
+      "description": {
+        "translate": "node.fiskheroes.tier6_7.tier.desc"
+      },
+      "condition": {
+        "variables": {
+          "max": "MAX_TIER_UNLOCKED"
+        },
+        "check": "max >= 5"
+      }
+    }
+  }
+}

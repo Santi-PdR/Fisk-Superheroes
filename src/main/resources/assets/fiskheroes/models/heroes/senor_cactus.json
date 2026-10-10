@@ -1,0 +1,33 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:senor_cactus_layer1",
+    "layer2": "fiskheroes:senor_cactus_layer2",
+    "cape": "fiskheroes:senor_cactus_cape",
+    "hat": "fiskheroes:senor_cactus_sombrero"
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 24
+    },
+    "fiskheroes:model": {
+      "applicable": ["HELMET"],
+      "modelType": "fiskheroes:sombrero",
+      "texture": "hat",
+      "anchor": "head",
+      "opacity": 1.0,
+      "animations": [
+        {
+          "animation": "fiskheroes:hat_tip_sombrero",
+          "data": "fiskheroes:hat_tip"
+        }
+      ]
+    },
+    "fiskheroes:animation": {
+      "animation": "fiskheroes:hat_tip_player",
+      "data": "fiskheroes:hat_tip"
+    }
+  }
+}

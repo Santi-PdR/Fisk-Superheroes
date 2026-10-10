@@ -1,0 +1,13 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.superspeed.flicker.loop.comics",
+  "condition": {
+    "start": "entity.getWornChestplate().suitType() == 'fiskheroes:august_heart_comics' || entity.getWornChestplate().suitType() == 'fiskheroes:godspeed_comics'",
+    "continue": "(entity.getWornChestplate().suitType() == 'fiskheroes:august_heart_comics' || entity.getWornChestplate().suitType() == 'fiskheroes:godspeed_comics') && entity.getData('fiskheroes:speeding')"
+  },
+  "volume": "0.35 - Math.random() * 0.1",
+  "pitch": "1.2 - Math.random() * 0.4",
+  "loop": true,
+  "fadeIn": 5,
+  "fadeOut": 5
+}

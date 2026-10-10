@@ -1,0 +1,91 @@
+package com.fiskmods.heroes.client.keybinds;
+
+import org.lwjgl.glfw.GLFW;
+
+import com.fiskmods.heroes.FiskHeroes;
+import com.mojang.blaze3d.platform.InputConstants;
+
+import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.settings.KeyConflictContext;
+import net.minecraftforge.client.settings.KeyModifier;
+
+/**
+ * The mod's key mappings. The original registered a mask key, an "equip item" key and five suit
+ * ability keys; the same seven keys are used here. Hero packs bind their abilities to the ability
+ * keys by index.
+ */
+public class SHKeyBinds
+{
+    public static final String CATEGORY = "key.categories.fiskheroes";
+    public static final int ABILITY_COUNT = 5;
+
+    public static final KeyMapping MASK = new KeyMapping("key.openMask", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_X), CATEGORY);
+    public static final KeyMapping WEAPON = new KeyMapping("key.equipItem", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_R), CATEGORY);
+    public static final KeyMapping SPELL_MENU = new KeyMapping("key.spellMenu", KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_H), CATEGORY);
+    /** Releases the captured cursor so players can click the ability rows in the HUD. */
+    public static final KeyMapping ABILITY_CLICK_MODE = new KeyMapping("key.abilityClickMode",
+            KeyConflictContext.IN_GAME, KeyModifier.NONE,
+            InputConstants.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_F6), CATEGORY);
+
+    public static final KeyMapping[] ABILITIES = new KeyMapping[ABILITY_COUNT];
+
+    static
+    {
+        // Preserve the original 1.7.10 defaults: C, V, B, F and G.
+        int[] defaults = { GLFW.GLFW_KEY_C, GLFW.GLFW_KEY_V, GLFW.GLFW_KEY_B, GLFW.GLFW_KEY_F, GLFW.GLFW_KEY_G };
+
+        for (int i = 0; i < ABILITY_COUNT; ++i)
+        {
+            ABILITIES[i] = new KeyMapping("key.suitAbility" + (i + 1), KeyConflictContext.IN_GAME, KeyModifier.NONE,
+                    InputConstants.Type.KEYSYM.getOrCreate(defaults[i]), CATEGORY);
+        }
+    }
+
+    public static KeyMapping[] all()
+    {
+        KeyMapping[] mappings = new KeyMapping[4 + ABILITY_COUNT];
+        mappings[0] = MASK;
+        mappings[1] = WEAPON;
+        mappings[2] = SPELL_MENU;
+        mappings[3] = ABILITY_CLICK_MODE;
+        System.arraycopy(ABILITIES, 0, mappings, 4, ABILITY_COUNT);
+        return mappings;
+    }
+
+    /** The key mapping of the given ability index (1..5), or the mask key for index 0. */
+    public static KeyMapping get(int index)
+    {
+        if (index == 0)
+        {
+            return MASK;
+        }
+
+        int ability = index - 1;
+
+        if (ability >= 0 && ability < ABILITY_COUNT)
+        {
+            return ABILITIES[ability];
+        }
+
+        return null;
+    }
+
+    public static void register(net.minecraftforge.client.event.RegisterKeyMappingsEvent event)
+    {
+        for (KeyMapping mapping : all())
+        {
+            event.register(mapping);
+        }
+    }
+
+    public static String describe(int abilityIndex)
+    {
+        KeyMapping mapping = ABILITIES[Math.max(0, Math.min(ABILITY_COUNT - 1, abilityIndex))];
+        return mapping.getTranslatedKeyMessage().getString();
+    }
+
+    static
+    {
+        FiskHeroes.LOGGER.debug("Fisk's Superheroes key mappings registered");
+    }
+}

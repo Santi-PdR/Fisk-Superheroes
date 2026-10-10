@@ -1,0 +1,76 @@
+{
+  "name": "power.fiskheroes.mind_stone.name",
+  "modifiers": {
+    "fiskheroes:cooldown": {
+      "cooldown": {
+        "toggleData": "fiskheroes:intangible",
+        "cooldownData": "fiskheroes:dyn/intangibility_cooldown",
+        "duration": 300,
+        "recovery": 1.0
+      }
+    },
+    "fiskheroes:intangibility": {
+      "isAbsolute": true,
+      "soundEvents": {
+        "ENABLE": "fiskheroes:vision_intang_on",
+        "DISABLE": "fiskheroes:vision_intang_off"
+      }
+    },
+    "fiskheroes:controlled_flight": {
+      "speed": 0.1,
+      "boostSpeed": 0.25,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": false
+        },
+        "entities": {
+          "stopFlying": false,
+          "dealDamage": true
+        }
+      },
+      "knockback": 0.4,
+      "soundEvents": {
+        "ENABLE": ["fiskheroes:flight_loop", "fiskheroes:flight_cape_loop"],
+        "BOOST": "fiskheroes:flight_boost",
+        "IMPACT_ENTITY": "fiskheroes:flight_impact_entity"
+      }
+    },
+    "fiskheroes:charged_beam": {
+      "damageProfile": {
+        "damage": 7.0,
+        "types": {
+          "ENERGY": 1.0
+        },
+        "properties": {
+          "COOK_ENTITY": true,
+          "HEAT_TRANSFER": 20
+        }
+      },
+      "chargeTime": 20,
+      "duration": 40,
+      "cooldownTime": 40,
+      "range": 32.0,
+      "radius": 0.1,
+      "soundEvents": {
+        "SHOOT": "fiskheroes:mind_stone_start",
+        "SHOOT_STOP": "fiskheroes:mind_stone_stop",
+        "BEAM_AMBIENT": "fiskheroes:mind_stone_loop",
+        "CHARGE": "fiskheroes:mind_stone_charge"
+      }
+    }
+  },
+  "hud": [
+    {
+      "type": "PROGRESS",
+      "texture": "fiskheroes:textures/gui/bars/intangibility.png",
+      "data": "fiskheroes:dyn/intangibility_cooldown"
+    },
+    {
+      "type": "CIRCLE",
+      "color": "fiskheroes:charged_beam",
+      "data": "fiskheroes:beam_charge"
+    }
+  ]
+}

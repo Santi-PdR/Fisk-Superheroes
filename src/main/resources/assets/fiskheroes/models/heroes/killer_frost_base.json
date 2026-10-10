@@ -1,0 +1,47 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "icicle": "fiskheroes:killer_frost_icicle",
+    "hands": "fiskheroes:killer_frost_hands"
+  },
+  "custom": {
+    "fiskheroes:chest": {
+      "applicable": ["CHESTPLATE"],
+      "extrude": 0.75,
+      "offset": 1
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["CHESTPLATE"],
+      "texture": ["null", "hands"],
+      "opacity": 0.8,
+      "data": "fiskheroes:cryo_charge"
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:killer_frost_ice",
+      "conditionals": ["vars:CHARGING"]
+    },
+    "fiskheroes:shield|spikeL": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "icicle",
+      "offset": [3.25, 10.0, 0.0],
+      "rotation": [0.0, 0.0, -3.125],
+      "curve": [20.0, 90.0],
+      "mirror": false,
+      "large": false,
+      "data": "entity.getInterpolatedData('fiskheroes:blade_timer') * (entity.isBookPlayer() ? 1 : Math.sqrt(entity.getData('fiskheroes:cryo_charge')))"
+    },
+    "fiskheroes:shield|spikeR": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "icicle",
+      "offset": [-1.25, 10.0, 0.0],
+      "rotation": [0.0, 180.0, -3.125],
+      "curve": [20.0, 90.0],
+      "mirror": false,
+      "large": false,
+      "data": "entity.getInterpolatedData('fiskheroes:blade_timer') * (entity.isBookPlayer() ? 1 : Math.sqrt(entity.getData('fiskheroes:cryo_charge')))"
+    }
+  },
+  "vars": {
+    "CHARGING": "entity.getData('fiskheroes:cryo_charging')"
+  }
+}

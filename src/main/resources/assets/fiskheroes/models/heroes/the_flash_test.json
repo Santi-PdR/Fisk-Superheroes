@@ -1,0 +1,30 @@
+{
+  "parent": "fiskheroes:the_flash",
+  "resources": {
+    "layer1": "fiskheroes:the_flash_test_layer1",
+    "layer2": "fiskheroes:the_flash_test_layer2",
+    "layer3": "fiskheroes:the_flash_test_layer3"
+  },
+  "texture": {
+    "renderLayer": {
+      "LEGGINGS": "layer2",
+      "BOOTS": "layer3"
+    },
+    "default": "layer1"
+  },
+  "showModel": {
+    "head": ["HELMET"],
+    "headwear": ["HELMET"],
+    "body": ["CHESTPLATE"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"],
+    "leftLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"]
+  },
+  "custom": {
+    "fiskheroes:trail": {
+      "type": "fiskheroes:blur_red",
+      "conditionals": ["vars:SPEEDING"]
+    }
+  }
+}

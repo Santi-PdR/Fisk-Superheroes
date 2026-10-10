@@ -1,0 +1,64 @@
+{
+  "name": "power.fiskheroes.umbrakinesis.name",
+  "modifiers": {
+    "fiskheroes:cooldown": {
+      "cooldown": {
+        "toggleData": "fiskheroes:shadowform",
+        "cooldownData": "fiskheroes:dyn/shadowform_cooldown",
+        "duration": 400,
+        "recovery": 1.0
+      }
+    },
+    "fiskheroes:telekinesis": {
+      "telekinesis": {
+        "crushMelons": false,
+        "crushThrowables": false,
+        "squeezeChickens": false,
+        "explodeCreepers": false,
+        "destroyInanimates": false
+      },
+      "canGrab": {
+        "mobs": true,
+        "items": true,
+        "projectiles": false,
+        "inanimates": false
+      },
+      "range": 10.0,
+      "soundEvents": {
+        "GRAB": ["fiskheroes:shadowchain_loop", "fiskheroes:shadowchain_start"],
+        "RELEASE": "fiskheroes:shadowchain_release"
+      }
+    },
+    "fiskheroes:shadowform": {
+      "soundEvents": {
+        "DISABLE": "fiskheroes:shadowform_disable",
+        "ENABLE": ["fiskheroes:shadowform_enable", "fiskheroes:shadowform_loop"]
+      }
+    },
+    "fiskheroes:shadowdome": {
+      "chargeTime": 40,
+      "duration": 1200,
+      "radius": 24.0,
+      "soundEvents": {
+        "CAST": "fiskheroes:shadowdome_cast_loop",
+        "DISSOLVE": "fiskheroes:shadowdome_dissolve",
+        "FORM": ["fiskheroes:shadowdome_form", "fiskheroes:shadowdome_form_loop"]
+      }
+    },
+    "fiskheroes:flight": {
+      "speed": 0.1
+    }
+  },
+  "hud": [
+    {
+      "type": "PROGRESS",
+      "texture": "fiskheroes:textures/gui/bars/shadowform.png",
+      "data": "fiskheroes:dyn/shadowform_cooldown"
+    },
+    {
+      "type": "CIRCLE",
+      "color": "0x33334D",
+      "data": "fiskheroes:lightsout_timer"
+    }
+  ]
+}

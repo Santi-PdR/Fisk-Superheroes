@@ -1,0 +1,70 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:captain_america_sam_layer1",
+    "layer2": "fiskheroes:captain_america_sam_layer2",
+    "wings": "fiskheroes:captain_america_sam_wings",
+    "jetpack": "fiskheroes:captain_america_sam_jetpack",
+    "jetpack_lights": "fiskheroes:captain_america_sam_jetpack_lights"
+  },
+  "custom": {
+    "fiskheroes:wings": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "wings",
+      "yOffset": -1,
+      "dataWings": "fiskheroes:wing_animation_timer",
+      "dataShield": 0.0
+    },
+    "fiskheroes:model": {
+      "applicable": ["CHESTPLATE"],
+      "modelType": "fiskheroes:falcon_cap_jetpack",
+      "texture": ["jetpack", "jetpack_lights"],
+      "anchor": "body",
+      "opacity": 1.0
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:cap_falcon",
+      "conditionals": ["vars:BOOSTING"]
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 1.0,
+          "offset": [0.0, 4.5, 3.75],
+          "rotation": [95.0, -180.0, 0.0]
+        }
+      ],
+      "offsetFrom": {
+        "QUIVER": [-0.5, 0.75, 2.3]
+      }
+    },
+    "fiskheroes:booster": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:blue_fire_layer_%s",
+      "anchor": "body",
+      "offset": [0.0, 5.0, 2.6],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.75, 3.0],
+      "opacity": 1.0,
+      "mirror": false,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:booster|sides": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:blue_fire_layer_%s",
+      "anchor": "body",
+      "offset": [0.75, 5.0, 2.6],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.5, 2.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":0.75},{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:dyn/flight_super_boost_timer')","intensity":0.75},{"factor":"entity.isSprinting() && entity.getData('fiskheroes:flying') ? 0.15 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:flight_boost_timer')) : 0","intensity":0.05},{"factor":"entity.getData('fiskheroes:dyn/flight_super_boost') > 0 ? 0.15 * Math.sin(Math.PI * entity.getInterpolatedData('fiskheroes:dyn/flight_super_boost_timer')) : 0","intensity":0.05}]}
+  },
+  "vars": {
+    "BOOSTING": "entity.getData('fiskheroes:jetpacking_timer') > 0"
+  }
+}
