@@ -263,6 +263,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             poseStack.pushPose();
             anchor.translateAndRotate(poseStack);
+            translate(poseStack, effect.get("offset"));
             if (effect.has("mirror") && effect.get("mirror").getAsBoolean()) poseStack.scale(-1.0F, 1.0F, 1.0F);
             RenderType renderType = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
             VertexConsumer vertex = buffer.getBuffer(renderType);
