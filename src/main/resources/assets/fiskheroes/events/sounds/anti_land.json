@@ -1,0 +1,7 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:suit.antimonitor.land",
+  "condition": "entity.getData('fiskheroes:scale') >= 4.0",
+  "volume": "Math.min(0.1 + (entity.getData('fiskheroes:scale') - 1) * 0.35, 2.0)",
+  "pitch": "0.7 - Math.random() * 0.2"
+}

@@ -1,0 +1,26 @@
+{
+  "parent": "fiskheroes:iron_man",
+  "resources": {
+    "layer1": "fiskheroes:iron_man_mk45_layer1",
+    "layer2": "fiskheroes:iron_man_mk45_layer2",
+    "lights": "fiskheroes:iron_man_mk45_lights",
+    "suit": "fiskheroes:iron_man_mk45_suit.tx.json",
+    "mask": "fiskheroes:iron_man_mk45_mask.tx.json"
+  },
+  "lights": {
+    "vars:MASK_OPEN": {
+      "true": {
+        "renderLayer": {
+          "HELMET": "null"
+        }
+      }
+    },
+    "default": "lights"
+  },
+  "itemIcons": {
+    "HELMET": "%s_0",
+    "CHESTPLATE": "%s_1",
+    "LEGGINGS": "%s_2",
+    "BOOTS": "%s_3"
+  }
+}

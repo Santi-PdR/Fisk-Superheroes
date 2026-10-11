@@ -1,0 +1,415 @@
+{
+  "name": "Fisk's Superheroes",
+  "description": "The default FiskHeroes heropack",
+  "domain": "fiskheroes",
+  "packFormat": 1,
+  "sounds": {
+    "download": {
+      "repository": "FiskFille/Superheroes",
+      "version": 3
+    },
+    "range": {
+      "anti_forcefield": { "target": "ALL" },
+      "anti_grow": 192.0,
+      "anti_grow_antimatter": 192.0,
+      "anti_grow_roar": 192.0,
+      "anti_punch": 12.0,
+      "anti_shadowform_disable": 32.0,
+      "anti_shadowform_enable": 32.0,
+      "anti_shadowform_loop": { "distance": 24.0, "target": "ALL" },
+      "antimatter_beam": { "distance": 32.0, "target": "ALL" },
+      "antimatter_blast_loop": { "distance": 32.0, "target": "ALL" },
+      "antimatter_blast_start": 32.0,
+      "atom_boost": 64.0,
+      "atom_flight_enable": 32.0,
+      "atom_flight_loop": { "distance": 32.0, "target": "ALL" },
+      "black_lightning_boost": 64.0,
+      "black_lightning_flight_enable": 24.0,
+      "black_lightning_flight_loop1": { "distance": 32.0, "target": "ALL" },
+      "black_lightning_flight_loop2": { "distance": 32.0, "target": "ALL" },
+      "black_lightning_lightning_cast": 64.0,
+      "cap_sam_boost": 64.0,
+      "cap_sam_boost_enable": 96.0,
+      "cap_sam_flight_ambient_loop": { "target": "ALL" },
+      "cap_sam_flight_loop": { "distance": 32.0, "target": "ALL" },
+      "charged_beam": { "distance": 32.0, "target": "ALL" },
+      "cold_gun_static": { "target": "ALL" },
+      "cosmic_beam": { "distance": 32.0, "target": "ALL" },
+      "energy_blast": 24.0,
+      "energy_projection": { "distance": 32.0, "target": "ALL" },
+      "falcon_boost": 64.0,
+      "falcon_boost_enable": 96.0,
+      "falcon_flight_ambient_loop": { "target": "ALL" },
+      "falcon_flight_disable": 24.0,
+      "falcon_flight_enable": 24.0,
+      "falcon_flight_loop": { "distance": 32.0, "target": "ALL" },
+      "firestorm_boost": 96.0,
+      "firestorm_flight_enable": 64.0,
+      "firestorm_flight_loop": { "distance": 48.0, "target": "ALL" },
+      "flicker_loop_comics": { "target": "ALL" },
+      "flicker_loop_trajectory": { "target": "ALL" },
+      "flicker_loop_zoom": { "target": "ALL" },
+      "flicker_loop_zoom_pink": { "target": "ALL" },
+      "flight_boost": 64.0,
+      "flight_boost_super": 128.0,
+      "flight_cape_loop": { "target": "ALL" },
+      "flight_dive_loop": { "target": "ALL" },
+      "flight_loop": { "target": "ALL" },
+      "gliding": { "target": "ALL" },
+      "gravity_manip_wave": 24.0,
+      "healing_factor": { "target": "ALL" },
+      "heat_vision": { "distance": 32.0, "target": "ALL" },
+      "iron_man_boost": 96.0,
+      "iron_man_flight_enable": 64.0,
+      "iron_man_flight_loop": { "distance": 48.0, "target": "ALL" },
+      "lightning_cast": 64.0,
+      "manta_beam_loop": { "distance": 32.0, "target": "ALL" },
+      "manta_beam_start": 32.0,
+      "manta_boost": 96.0,
+      "manta_flight_enable": 64.0,
+      "manta_flight_loop": { "distance": 48.0, "target": "ALL" },
+      "mind_stone_loop": { "distance": 32.0, "target": "ALL" },
+      "mind_stone_start": 32.0,
+      "mk50_cannon_shoot": 32.0,
+      "mk50_cannon_static": { "target": "ALL" },
+      "mk85_beam_loop": { "distance": 32.0, "target": "ALL" },
+      "mk85_beam_start": 32.0,
+      "mysterio_beam_loop": { "distance": 32.0, "target": "ALL" },
+      "mysterio_beam_start": 32.0,
+      "mysterio_boost_enable": 64.0,
+      "mysterio_boost_loop": { "distance": 32.0, "target": "ALL" },
+      "mysterio_charged_beam_loop": { "distance": 32.0, "target": "ALL" },
+      "mysterio_charged_beam_start": 32.0,
+      "pym_grow_giant": 64.0,
+      "repulsor_blast": 48.0,
+      "reverse_flash_vibration_loop": { "target": "ALL" },
+      "shadowchain_loop":  { "target": "ALL" },
+      "shadowdome_cast_loop": { "distance": 48.0, "target": "ALL" },
+      "shadowdome_dissolve": { "distance": 80.0, "target": "ALL" },
+      "shadowdome_form": { "distance": 80.0, "target": "ALL" },
+      "shadowdome_form_loop": { "distance": 48.0, "target": "ALL" },
+      "shadowform_loop":  { "target": "ALL" },
+      "slow_motion_disable_comics": { "target": "ONLY_SELF" },
+      "slow_motion_disable_cw": { "target": "ONLY_SELF" },
+      "slow_motion_enable_comics": { "target": "ONLY_SELF" },
+      "slow_motion_enable_cw": { "target": "ONLY_SELF" },
+      "super_speed_move_loop_barry_test": { "distance": 64.0, "target": "ALL" },
+      "super_speed_move_loop_cape": { "target": "ALL" },
+      "super_speed_move_loop_comics": { "distance": 64.0, "target": "ALL" },
+      "super_speed_move_loop_cw": { "distance": 64.0, "target": "ALL" },
+      "super_speed_move_loop_savitar": { "distance": 96.0, "target": "ALL" },
+      "super_speed_move_loop_savitar_rgb": { "distance": 64.0, "target": "ALL" },
+      "super_speed_move_loop_shazam_dceu": { "distance": 64.0, "target": "ALL" },
+      "super_speed_move_loop_zoom_pink": { "distance": 64.0, "target": "ALL" },
+      "super_speed_sprint_barry": 64.0,
+      "super_speed_sprint_barry_test": 64.0,
+      "super_speed_sprint_comics": 64.0,
+      "super_speed_sprint_jay": 64.0,
+      "super_speed_sprint_negative": 64.0,
+      "super_speed_sprint_negative_roar": 64.0,
+      "super_speed_sprint_savitar": 64.0,
+      "super_speed_sprint_savitar_noise": 64.0,
+      "super_speed_sprint_shazam_dceu": 64.0,
+      "super_speed_sprint_trajectory1": 64.0,
+      "super_speed_sprint_trajectory2": 64.0,
+      "super_speed_sprint_wally": 64.0,
+      "super_speed_sprint_zoom": 64.0,
+      "super_speed_sprint_zoom_death": 64.0,
+      "super_speed_sprint_zoom_death_noise": 64.0,
+      "super_speed_sprint_zoom_pink": 64.0,
+      "super_speed_stop_barry": 64.0,
+      "super_speed_stop_barry_test": 64.0,
+      "super_speed_stop_comics": 64.0,
+      "super_speed_stop_jay": 64.0,
+      "super_speed_stop_negative": 64.0,
+      "super_speed_stop_negative_roar": 64.0,
+      "super_speed_stop_savitar": 64.0,
+      "super_speed_stop_savitar_noise": 64.0,
+      "super_speed_stop_trajectory1": 64.0,
+      "super_speed_stop_trajectory2": 64.0,
+      "super_speed_stop_wally": 64.0,
+      "super_speed_stop_zoom": 64.0,
+      "super_speed_stop_zoom_death": 64.0,
+      "super_speed_stop_zoom_death_noise": 64.0,
+      "super_speed_stop_zoom_death_roar": 96.0,
+      "super_speed_stop_zoom_pink": 64.0,
+      "telekinesis_loop": { "target": "ALL" },
+      "web_stress_loop": { "target": "ONLY_SELF" },
+      "web_swinging": { "target": "ALL" },
+      "web_swinging_fall_loop": { "target": "ALL" },
+      "zoom_concept_vibration_loop": { "target": "ALL" }
+    }
+  },
+  "dataVars": {
+    "steeled": "BOOLEAN",
+    "steel_timer": "FLOAT_INTERP",
+    "steel_cooldown": "FLOAT",
+    "nanites": "BOOLEAN",
+    "nanite_timer": "FLOAT_INTERP",
+    "nanite_cooldown": "FLOAT",
+    "giant_mode": "BOOLEAN",
+    "giant_mode_timer": "FLOAT_INTERP",
+    "giant_mode_cooldown": "FLOAT",
+    "shadowform_cooldown": "FLOAT",
+    "intangibility_cooldown": "FLOAT",
+    "booster_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true },
+    "booster_r_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true },
+    "booster_l_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true },
+    "superhero_landing_ticks": "BYTE",
+    "superhero_landing_timer": "FLOAT_INTERP",
+    "shrink_timer": "FLOAT_INTERP",
+    "flight_super_boost": { "type": "BYTE", "resetWithoutSuit": true },
+    "flight_super_boost_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true },
+    "wing_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true },
+    "super_boost_cooldown": "FLOAT",
+    "super_boost_timeout": { "type": "BYTE", "resetWithoutSuit": true },
+    "speed_sprint_timer": { "type": "FLOAT_INTERP", "resetWithoutSuit": true }
+  },
+  "damageTypes": {
+    "ATLANTEAN_STEEL": "damage_type.atlantean_steel.name",
+    "BLUNT": "damage_type.blunt.name",
+    "BULLET": "damage_type.bullet.name",
+    "CACTUS": "damage_type.cactus.name",
+    "COLD": "damage_type.bullet.name",
+    "COSMIC": "damage_type.cosmic.name",
+    "ELECTRICITY": "damage_type.electricity.name",
+    "ENERGY": "damage_type.energy.name",
+    "ETERNIUM": "damage_type.eternium.name",
+    "EXPLOSION": "damage_type.explosion.name",
+    "FIRE": "damage_type.fire.name",
+    "MAGIC": "damage_type.magic.name",
+    "SHARP": "damage_type.sharp.name",
+    "SHURIKEN": "damage_type.shuriken.name",
+    "SOUND": "damage_type.sound.name",
+    "THORNS": "damage_type.thorns.name"
+  },
+  "alts": {
+    "fiskheroes:august_heart_comics": {
+      "$DEFAULT": {
+        "soundProfile": "COMICS"
+      }
+    },
+    "fiskheroes:captain_america": {
+      "aou": "hero.fiskheroes.captain_america.aou.name",
+      "canada": {
+        "name": "hero.fiskheroes.captain_america.canada.name",
+        "vanity": "achievement.fiskheroes.language"
+      },
+      "museum": "hero.fiskheroes.captain_america.museum.name",
+      "nomad": {
+        "name": "hero.fiskheroes.captain_america.nomad.name",
+        "armor": {
+          "HELMET": "item.superhero_armor.piece.beard"
+        }
+      },
+      "stealth": "hero.fiskheroes.captain_america.stealth.name"
+    },
+    "fiskheroes:deadpool_xmen": {
+      "bob_ross": {
+        "name": "hero.fiskheroes.deadpool_xmen.bob_ross.name",
+        "vanity": "achievement.fiskheroes.allSuits"
+      },
+      "elvis": {
+        "name": "hero.fiskheroes.deadpool_xmen.elvis.name",
+        "vanity": "achievement.fiskheroes.landing",
+        "armor": {
+          "CHESTPLATE": "item.superhero_armor.piece.coat"
+        }
+      },
+      "emmy": {
+        "name": "hero.fiskheroes.deadpool_xmen.emmy.name",
+        "vanity": "achievement.fiskheroes.allSuits",
+        "armor": {
+          "CHESTPLATE": "item.superhero_armor.piece.suit_jacket",
+          "LEGGINGS": "item.superhero_armor.piece.pants",
+          "BOOTS": "item.superhero_armor.piece.shoes"
+        }
+      },
+      "jackman": {
+        "name": "hero.fiskheroes.deadpool_xmen.jackman.name",
+        "vanity": "achievement.fiskheroes.allSuits"
+      },
+      "russia": {
+        "name": "hero.fiskheroes.deadpool_xmen.russia.name",
+        "vanity": "achievement.fiskheroes.allDebuffs"
+      },
+      "trainee": "hero.fiskheroes.deadpool_xmen.trainee.name",
+      "xforce": "hero.fiskheroes.deadpool_xmen.xforce.name"
+    },
+    "fiskheroes:doctor_strange": {
+      "eye": "hero.fiskheroes.doctor_strange.eye.name"
+    },
+    "fiskheroes:falcon": {
+      "civil_war": "hero.fiskheroes.falcon.civil_war.name"
+    },
+    "fiskheroes:godspeed_comics": {
+      "$DEFAULT": {
+        "soundProfile": "COMICS"
+      }
+    },
+    "fiskheroes:green_arrow": {
+      "earthx": "hero.fiskheroes.green_arrow.earthx.name",
+      "s4": "hero.fiskheroes.green_arrow.s4.name",
+      "s5": "hero.fiskheroes.green_arrow.s5.name"
+    },
+    "fiskheroes:guardian": {
+      "earthx": "hero.fiskheroes.guardian.earthx.name"
+    },
+    "fiskheroes:iron_man": {
+      "$DEFAULT": {
+        "maskToggleTicks": 15,
+        "soundProfile": "MK46"
+      },
+      "mk45": "hero.fiskheroes.iron_man.mk45.name",
+      "mk46c": "hero.fiskheroes.iron_man.mk46c.name",
+      "mk47": "hero.fiskheroes.iron_man.mk47.name",
+      "mk47c": "hero.fiskheroes.iron_man.mk47c.name"
+    },
+    "fiskheroes:kid_flash": {
+      "$DEFAULT": {
+        "maskToggleTicks": 12,
+        "soundProfile": "KF"
+      }
+    },
+    "fiskheroes:killer_frost": {
+      "earth2": "hero.fiskheroes.killer_frost.earth2.name"
+    },
+    "fiskheroes:mysterio": {
+      "$DEFAULT": {
+        "maskToggleTicks": 7
+      }
+    },
+    "fiskheroes:prometheus": {
+      "earthx": "hero.fiskheroes.prometheus.earthx.name"
+    },
+    "fiskheroes:reverse_flash": {
+      "$DEFAULT": {
+        "soundProfile": "NEGATIVE"
+      },
+      "earthx": {
+        "name": "hero.fiskheroes.reverse_flash.earthx.name",
+        "soundProfile": "NEGATIVE"
+      }
+    },
+    "fiskheroes:rip_hunter": {
+      "time_master": {
+        "name": "hero.fiskheroes.rip_hunter.time_master.name",
+        "armor": {
+          "CHESTPLATE": "item.superhero_armor.piece.jacket"
+        }
+      }
+    },
+    "fiskheroes:savitar": {
+      "$DEFAULT": {
+        "soundProfile": "SAVITAR"
+      },
+      "red": {
+        "name": "hero.fiskheroes.savitar.red.name",
+        "soundProfile": "BARRY"
+      },
+      "rgb": {
+        "name": "hero.fiskheroes.savitar.rgb.name",
+        "soundProfile": "RGB",
+        "vanity": "achievement.fiskheroes.maxSpeed"
+      }
+    },
+    "fiskheroes:senor_cactus": {
+      "old": {
+        "name": "hero.fiskheroes.senor_cactus.old.name",
+        "vanity": "achievement.fiskheroes.allSuits"
+      }
+    },
+    "fiskheroes:spider_man": {
+      "integrated": "hero.fiskheroes.spider_man.integrated.name",
+      "stark": "hero.fiskheroes.spider_man.stark.name",
+      "upgraded": "hero.fiskheroes.spider_man.upgraded.name"
+    },
+    "fiskheroes:spider_man_raimi": {
+      "youthpastor": {
+        "name": "hero.fiskheroes.spider_man_raimi.youthpastor.name",
+        "vanity": "achievement.fiskheroes.masonryOven"
+      }
+    },
+    "fiskheroes:spider_man_webb": {
+      "tasm1": "hero.fiskheroes.spider_man_webb.tasm1.name"
+    },
+    "fiskheroes:the_flash": {
+      "$DEFAULT": {
+        "maskToggleTicks": 12,
+        "soundProfile": "BARRY"
+      },
+      "earthx": {
+        "name": "hero.fiskheroes.the_flash.earthx.name",
+        "maskToggleTicks": 12,
+        "soundProfile": "BARRY"
+      },
+      "s1": {
+        "name": "hero.fiskheroes.the_flash.s1.name",
+        "maskToggleTicks": 12,
+        "soundProfile": "BARRY"
+      },
+      "s2": {
+        "name": "hero.fiskheroes.the_flash.s2.name",
+        "maskToggleTicks": 12,
+        "soundProfile": "BARRY"
+      },
+      "test": {
+        "name": "hero.fiskheroes.the_flash.test.name",
+        "vanity": "achievement.fiskheroes.kmph1000",
+        "armor": {
+          "HELMET": "item.superhero_armor.piece.helmet",
+          "CHESTPLATE": "item.superhero_armor.piece.leotard",
+          "LEGGINGS": "item.superhero_armor.piece.kneepads",
+          "BOOTS": "item.superhero_armor.piece.sneakers"
+        },
+        "disableMaskToggle": true,
+        "soundProfile": "TEST"
+      }
+    },
+    "fiskheroes:the_flash_hunter": {
+      "$DEFAULT": {
+        "soundProfile": "JAY"
+      }
+    },
+    "fiskheroes:the_flash_jay": {
+      "$DEFAULT": {
+        "disableMaskToggle": true,
+        "soundProfile": "JAY"
+      },
+      "earth90": {
+        "name": "hero.fiskheroes.the_flash_jay.earth90.name",
+        "armor": {
+          "HELMET": "item.superhero_armor.piece.cowl"
+        },
+        "maskToggleTicks": 12,
+        "soundProfile": "JAY"
+      }
+    },
+    "fiskheroes:the_rival": {
+      "$DEFAULT": {
+        "soundProfile": "NEGATIVE"
+      }
+    },
+    "fiskheroes:vision": {
+      "sword": "hero.fiskheroes.vision.sword.name"
+    },
+    "fiskheroes:zoom": {
+      "$DEFAULT": {
+        "soundProfile": "ZOOM"
+      },
+      "concept": {
+        "name": "hero.fiskheroes.zoom.concept.name",
+        "soundProfile": "CONCEPT"
+      },
+      "death": {
+        "name": "hero.fiskheroes.zoom.death.name",
+        "soundProfile": "DEATH"
+      },
+      "pink": {
+        "name": "hero.fiskheroes.zoom.pink.name",
+        "vanity": "achievement.fiskheroes.speedCure",
+        "soundProfile": "PINK"
+      }
+    }
+  }
+}

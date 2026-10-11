@@ -1,0 +1,57 @@
+; Extension animation
+{root_posY} += 3{data_0}
+{claw1_2_posY} -= 2{data_0}
+{claw2_2_posY} -= 2{data_0}
+{claw3_2_posY} -= 2{data_0}
+{claw1_5_posX} -= 2{data_0}
+{claw2_5_posX} -= 2{data_0}
+{claw3_5_posX} -= 2{data_0}
+{claw1_5_rotZ} @ {data_0} -> 0
+{claw2_5_rotZ} @ {data_0} -> 0
+{claw3_5_rotZ} @ {data_0} -> 0
+{claw1_6_rotY} @ {data_0} -> 0
+{claw2_6_rotY} @ {data_0} -> 0
+{claw3_6_rotY} @ {data_0} -> 0
+{claw1_7_rotY} @ {data_0} -> 0
+{claw2_7_rotY} @ {data_0} -> 0
+{claw3_7_rotY} @ {data_0} -> 0
+
+; Rotation offset for reduced repetitiveness
+{data_1} = 45'{data_1}
+{claw1_1_rotY} += {data_1}
+{claw2_1_rotY} += {data_1}
+{claw3_1_rotY} += {data_1}
+
+; Open the claws for grabbing
+{claw1_2_rotZ} -= 80'{data_2}
+{claw2_2_rotZ} -= 80'{data_2}
+{claw3_2_rotZ} -= 80'{data_2}
+
+; Fine tuning for open claw state
+{claw1_2_posX} += 0.2{data_2}
+{claw2_2_posX} += 0.2{data_2}
+{claw3_2_posX} += 0.2{data_2}
+{claw1_3_rotY} += 3'{data_2}
+{claw1_4_rotY} += 3'{data_2}
+{claw2_3_rotY} += 3'{data_2}
+{claw2_4_rotY} += 3'{data_2}
+{claw3_3_rotY} += 3'{data_2}
+{claw3_4_rotY} += 3'{data_2}
+{claw1_6_rotY} -= 5'{data_2}
+{claw1_7_rotY} += 5'{data_2}
+{claw2_6_rotY} -= 5'{data_2}
+{claw2_7_rotY} += 5'{data_2}
+{claw3_6_rotY} -= 5'{data_2}
+{claw3_7_rotY} += 5'{data_2}
+
+; Blade for strike animation
+{blade1_posY} += 3{data_3}
+{blade2_posY} += 3{data_3}
+{eye_posY} -= 0.1{data_3}
+
+{claw1_2_rotZ} += 5'{data_3}
+{claw2_2_rotZ} += 5'{data_3}
+{claw3_2_rotZ} += 5'{data_3}
+{claw1_5_rotZ} += 27'{data_3}
+{claw2_5_rotZ} += 27'{data_3}
+{claw3_5_rotZ} += 27'{data_3}

@@ -1,0 +1,41 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:vision_layer1",
+    "layer2": "fiskheroes:vision_layer2",
+    "cape": "fiskheroes:vision_cape",
+    "stone": "fiskheroes:vision_stone"
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 24
+    },
+    "fiskheroes:invisibility": {
+      "applicable": ["HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"],
+      "opacityMin": 0.5,
+      "opacityMax": 1.0,
+      "data": "fiskheroes:intangibility_timer"
+    },
+    "fiskheroes:charged_beam": {
+      "color": "0xFFFF6D",
+      "anchor": "head",
+      "beams": [
+        {
+          "firstPerson": [0.0, -6.15, 0.0],
+          "offset": [0.0, -6.15, -4.0],
+          "size": [1.0, 0.5]
+        }
+      ],
+      "renderer": "fiskheroes:charged_beam",
+      "particleType": "fiskheroes:impact_charged_beam"
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["HELMET"],
+      "texture": ["null", "stone"],
+      "opacity": 1.0,
+      "data": "fiskheroes:beam_charge"
+    }
+  }
+}

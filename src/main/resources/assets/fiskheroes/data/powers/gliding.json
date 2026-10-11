@@ -1,0 +1,30 @@
+{
+  "name": "power.fiskheroes.gliding.name",
+  "modifiers": {
+    "fiskheroes:gliding": {
+      "gliding": {
+        "speed": 1.0,
+        "lift": 1.0,
+        "gravity": 1.0,
+        "stall": 0.0
+      },
+      "isPowered": false,
+      "isControlled": false,
+      "canJumpActivate": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": true,
+          "takeDamage": true
+        },
+        "entities": {
+          "stopFlying": true,
+          "dealDamage": true
+        }
+      },
+      "knockback": 0.75,
+      "soundEvents": {
+        "ENABLE": "fiskheroes:gliding"
+      }
+    }
+  }
+}

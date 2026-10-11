@@ -1,0 +1,6 @@
+extend("fiskheroes:guardian");
+loadTextures({
+    "layer1": "fiskheroes:guardian_earthx_layer1",
+    "layer2": "fiskheroes:guardian_earthx_layer2",
+    "shield": "fiskheroes:guardian_earthx_shield"
+});

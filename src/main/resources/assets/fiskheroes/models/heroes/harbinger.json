@@ -1,0 +1,56 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "chest": "fiskheroes:harbinger_chest",
+    "pants": "fiskheroes:harbinger_pants",
+    "boots": "fiskheroes:harbinger_boots"
+  },
+  "texture": {
+    "renderLayer": {
+      "LEGGINGS": "pants",
+      "BOOTS": "boots"
+    },
+    "default": "chest"
+  },
+  "showModel": {
+    "head": ["HELMET"],
+    "headwear": ["HELMET"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"],
+    "leftLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"]
+  },
+  "custom": {
+    "fiskheroes:chest": {
+      "applicable": ["CHESTPLATE"],
+      "extrude": 1,
+      "offset": 1
+    },
+    "fiskheroes:energy_projection": {
+      "color": "0x00A5FF",
+      "anchor": "body",
+      "beams": [
+        {
+          "firstPerson": [0.0, 6.0, 0.0],
+          "offset": [0.0, 5.0, -4.0],
+          "size": [4.0, 4.0]
+        }
+      ],
+      "renderer": "fiskheroes:energy_projection",
+      "particleType": "fiskheroes:impact_energy_projection"
+    },
+    "fiskheroes:glowerlay": {
+      "applicable": ["HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"],
+      "includeEffects": ["fiskheroes:chest"],
+      "color": "0xFFFFFF",
+      "data": "fiskheroes:teleport_timer"
+    },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:harbinger_glow"
+    },
+    "fiskheroes:gravity_manipulation": {
+      "color": "0x00A5FF"
+    }
+  }
+}

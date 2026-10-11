@@ -1,0 +1,29 @@
+{
+  "display": {
+    "name": {
+      "translate": "node.fiskheroes.wakanda.name"
+    },
+    "icon": {
+      "item": "fiskheroes:heart_shaped_herb"
+    }
+  },
+  "requirements": [ ],
+  "price": {
+    "TUTRIDIUM": 2,
+    "XP_LEVELS": 10
+  },
+  "criteria": {
+    "heart_shaped_herb": {
+      "trigger": "fiskheroes:block_broken_by_player",
+      "description": {
+        "translate": "node.fiskheroes.wakanda.heart_shaped_herb.desc"
+      },
+      "condition": {
+        "variables": {
+          "block": "BLOCK_BEING_BROKEN"
+        },
+        "check": "block.name() == 'fiskheroes:heart_shaped_herb_plant' && block.metadata() == 4"
+      }
+    }
+  }
+}

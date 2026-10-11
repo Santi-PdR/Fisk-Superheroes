@@ -1,0 +1,23 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:captain_america_layer1",
+    "layer2": "fiskheroes:captain_america_layer2"
+  },
+  "custom": {
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 1.0,
+          "offset": [0.0, 5.0, 2.75],
+          "rotation": [90.0, -180.0, 0.0]
+        }
+      ],
+      "offsetFrom": {
+        "QUIVER": [-0.5, 0.0, 2.86]
+      }
+    }
+  }
+}

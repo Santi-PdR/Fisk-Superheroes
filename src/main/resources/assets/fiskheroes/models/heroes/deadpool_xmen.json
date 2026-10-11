@@ -1,0 +1,33 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:deadpool_xmen_layer1",
+    "layer2": "fiskheroes:deadpool_xmen_layer2",
+    "sheath": "fiskheroes:deadpool_xmen_scabbard"
+  },
+  "custom": {
+    "fiskheroes:deadpool_sheath": {
+      "applicable": ["CHESTPLATE"],
+      "modelType": "fiskheroes:deadpool_scabbard",
+      "anchor": "body",
+      "texture": "sheath"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 0.48,
+          "offset": [-5.1, -2.7, 2.64],
+          "rotation": [180.0, 90.0, -30.0]
+        },
+        {
+          "anchor": "body",
+          "scale": 0.48,
+          "offset": [5.1, -2.7, 2.64],
+          "rotation": [180.0, -90.0, 30.0]
+        }
+      ]
+    }
+  }
+}

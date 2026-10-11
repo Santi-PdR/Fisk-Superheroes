@@ -1,0 +1,13 @@
+{
+  "parent": "fiskheroes:savitar",
+  "resources": {
+    "layer1_lights": "fiskheroes:savitar_rgb_layer1_lights.tx.json",
+    "layer2_lights": "fiskheroes:savitar_rgb_layer2_lights.tx.json"
+  },
+  "custom": {
+    "fiskheroes:trail": {
+      "type": "builtin/lightning_rgb_6",
+      "conditionals": ["vars:SPEEDING"]
+    }
+  }
+}

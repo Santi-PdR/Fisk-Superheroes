@@ -1,0 +1,20 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:black_panther_layer1",
+    "layer2": "fiskheroes:black_panther_layer2",
+    "claws": "fiskheroes:black_panther_claws"
+  },
+  "custom": {
+    "fiskheroes:overlay": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "claws",
+      "opacity": 1.0,
+      "data": 1.0,
+      "conditionals": ["vars:CLAWS"]
+    }
+  },
+  "vars": {
+    "CLAWS": "entity.getInterpolatedData('fiskheroes:blade')"
+  }
+}

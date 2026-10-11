@@ -1,0 +1,50 @@
+{
+  "name": "power.fiskheroes.cactus_physiology.name",
+  "modifiers": {
+    "fiskheroes:cactus_recruitment": {
+      "range": 16.0,
+      "cooldownTime": 5
+    },
+    "fiskheroes:spike_burst": {
+      "damageProfile": {
+        "damage": 1.5,
+        "types": {
+          "CACTUS": 1.0,
+          "SHARP": 1.0
+        },
+        "properties": {
+          "REDUCE_KNOCKBACK": 0.75
+        }
+      },
+      "cooldownTime": 5,
+      "soundEvents": {
+        "SHOOT": "fiskheroes:spike_burst"
+      }
+    },
+    "fiskheroes:thorns": {
+      "damageProfile": {
+        "types": {
+          "CACTUS": 1.0,
+          "THORNS": 1.0,
+          "SHARP": 1.0
+        }
+      },
+      "factor": 0.25
+    },
+    "fiskheroes:damage_immunity": {
+      "damageType": "CACTUS"
+    },
+    "fiskheroes:regeneration|dry": {
+      "factor": 3
+    },
+    "fiskheroes:regeneration|wet": {
+      "factor": 6
+    },
+    "fiskheroes:water_breathing": {
+    },
+    "fiskheroes:damage_resistance": {
+      "damageType": "FIRE",
+      "factor": 0.5
+    }
+  }
+}

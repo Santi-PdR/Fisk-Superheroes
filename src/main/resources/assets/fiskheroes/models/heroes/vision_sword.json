@@ -1,0 +1,24 @@
+{
+  "parent": "fiskheroes:vision",
+  "resources": {
+    "layer1": "fiskheroes:vision_sword_layer1",
+    "layer2": "fiskheroes:vision_sword_layer2",
+    "cape": "fiskheroes:vision_sword_cape",
+    "stone": "fiskheroes:vision_sword_stone"
+  },
+  "custom": {
+    "fiskheroes:charged_beam": {
+      "color": "0x40E7F9",
+      "anchor": "head",
+      "beams": [
+        {
+          "firstPerson": [0.0, -6.15, 0.0],
+          "offset": [0.0, -6.15, -4.0],
+          "size": [1.0, 0.5]
+        }
+      ],
+      "renderer": "fiskheroes:charged_beam",
+      "particleType": "fiskheroes:impact_charged_beam"
+    }
+  }
+}

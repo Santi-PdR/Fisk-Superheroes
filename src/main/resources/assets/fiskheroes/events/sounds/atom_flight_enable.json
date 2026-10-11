@@ -1,0 +1,8 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:suit.atom.boost.start",
+  "condition": "!(entity.isSprinting() && entity.getData('fiskheroes:flying'))",
+  "volume": 0.35,
+  "pitch": "0.9 + Math.random() * 0.2",
+  "fadeOut": 5
+}

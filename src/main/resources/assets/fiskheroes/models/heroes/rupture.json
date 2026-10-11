@@ -1,0 +1,38 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:rupture_layer1",
+    "layer2": "fiskheroes:rupture_layer2",
+    "cape": "fiskheroes:rupture_cape"
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 20
+    },
+    "fiskheroes:energy_manipulation": {
+      "color": "0xFF0000",
+      "anchor": "rightArm",
+      "beams": [
+        {
+          "firstPerson": [-2.5, 0.0, -7.0],
+          "offset": [-0.5, 19.0, -12.0],
+          "size": [1.5, 1.5]
+        }
+      ],
+      "renderer": "fiskheroes:energy_discharge"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 0.55,
+          "offset": [0.5, 4.5, 3.0],
+          "rotation": [0.0, -90.0, 35.0]
+        }
+      ]
+    }
+  }
+}

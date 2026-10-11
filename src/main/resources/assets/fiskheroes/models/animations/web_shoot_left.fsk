@@ -1,0 +1,7 @@
+{data} = curve sin(pi{data}^0.75)
+{y0} = sin({head_rotX} - pi / 2)
+{f} = 2{data}
+
+{leftArm_posX} -= {f}{y0}sin({head_rotY})
+{leftArm_posZ} -= {f}{y0}cos({head_rotY})
+{leftArm_posY} -= {f}cos({head_rotX} - pi / 2) - {data} / 2

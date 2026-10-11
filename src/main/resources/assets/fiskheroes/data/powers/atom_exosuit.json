@@ -1,0 +1,41 @@
+{
+  "name": "power.fiskheroes.atom_exosuit.name",
+  "modifiers": {
+    "fiskheroes:size_manipulation": {
+      "isInstant": true,
+      "minSize": 0.0625,
+      "maxSize": 1.0,
+      "soundEvents": {
+        "SHRINK": "fiskheroes:atom_shrink",
+        "GROW": "fiskheroes:atom_grow"
+      }
+    },
+    "fiskheroes:controlled_flight": {
+      "speed": 0.07,
+      "boostSpeed": 0.16,
+      "canBoost": true,
+      "collision": {
+        "blocks": {
+          "stopFlying": false,
+          "takeDamage": true
+        },
+        "entities": {
+          "stopFlying": true,
+          "dealDamage": true
+        }
+      },
+      "knockback": 0.7,
+      "soundEvents": {
+        "ENABLE": ["fiskheroes:atom_flight_enable", "fiskheroes:atom_flight_loop"],
+        "BOOST": "fiskheroes:atom_boost",
+        "IMPACT_BLOCK": "fiskheroes:flight_impact_block",
+        "IMPACT_ENTITY": "fiskheroes:flight_impact_entity"
+      }
+    },
+    "fiskheroes:damage_immunity": {
+      "damageType": "BULLET"
+    },
+    "fiskheroes:water_breathing": {
+    }
+  }
+}

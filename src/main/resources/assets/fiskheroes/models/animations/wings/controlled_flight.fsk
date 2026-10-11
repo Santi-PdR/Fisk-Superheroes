@@ -1,0 +1,42 @@
+; data_0 = boost
+; data_1 = swing
+; data_2 = roll
+; data_3 = super boost
+; data_4 = rise timer
+
+{data_0} = curve {data_0}
+{data_3} = curve {data_3}
+
+{cosa} = cos({bodyYaw}')
+{sina} = sin({bodyYaw}')
+{strafe} = {motX}{cosa} + {motZ}{sina}
+{forward} = {motZ}{cosa} - {motX}{sina}
+{strafe} = signum({strafe})curve(min(abs {strafe}, 1))
+{forward} = signum({forward})curve(min(abs {forward}, 1))
+
+{descent} = min(abs({motY}) / 2, 1)
+{descent} = signum({motY})sqrt(curve {descent})
+{diff} = ({yaw} - {bodyYaw}) / 180
+{roll} = 1.5signum({data_2}) * sin(abs({data_2})pi)^2
+{swing} = 10'sin(sqrt({data_1})2pi)
+
+{vel} = sqrt({motX}^2 + {motY}^2 + {motZ}^2)
+{dive} = if({vel} >= 0.0001, (abs({motY}) / {vel})^1.5 * signum({motY}), 0)
+{rise} = min(-{dive}, 0)
+
+{right_rotX} = lerp({data_0}, 10', -6')
+{left_rotX} = {right_rotX}
+
+{right_rotY} = lerp({data_0}, -6', -6' - 20'abs({diff}) - 4'{data_3})
+{left_rotY} = {right_rotY} - {swing}
+{right_rotY} += {swing}
+
+{rotZBoost} = -10' + 10'abs({diff}) + min(75'max(-{dive}, 0) + 35'{data_3} - 20'{rise}, 80')
+{right_rotZ} = lerp({data_0}, -12' + 6'{forward} + 15'{strafe} + 20'{descent}, {rotZBoost})
+{left_rotZ} = lerp({data_0}, -12' + 6'{forward} - 15'{strafe} + 20'{descent}, {rotZBoost})
+
+{right_flexY} = lerp({data_0}, 13' - 60'{forward} - 20'{strafe}, -15' + 60'({diff} + {roll}))
+{left_flexY} = lerp({data_0}, 13' - 60'{forward} + 20'{strafe}, -15' - 60'({diff} + {roll}))
+
+{right_flexZ} = lerp({data_0}, -10' + 40'{descent}, 15' - 20'{rise})
+{left_flexZ} = {right_flexZ}

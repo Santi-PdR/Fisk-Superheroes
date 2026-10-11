@@ -1,0 +1,10 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.superspeed.stop.barry",
+  "condition": {
+    "start": "!entity.isInWater() && !entity.getData('fiskheroes:speeding')"
+  },
+  "volume": "Math.min(0.0 + (entity.getData('fiskheroes:speed') - 1) * 0.35, 1)",
+  "pitch": "0.8 + Math.random() * 0.2",
+  "fadeOut": 5
+}

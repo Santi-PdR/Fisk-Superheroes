@@ -1,0 +1,38 @@
+{
+  "parent": "fiskheroes:deadpool_xmen",
+  "resources": {
+    "layer1": "fiskheroes:deadpool_xmen_russia_layer1",
+    "layer2": "fiskheroes:deadpool_xmen_russia_layer2",
+    "boots": "fiskheroes:deadpool_xmen_layer1",
+    "pants": "fiskheroes:deadpool_xmen_layer2"
+  },
+  "texture": {
+    "renderLayer": {
+      "CHESTPLATE": "layer1",
+      "LEGGINGS": {
+        "wornChestplate": {
+          "fiskheroes:deadpool_xmen/russia": "layer2"
+        },
+        "default": "pants"
+      },
+      "BOOTS": "boots"
+    },
+    "default": "layer2"
+  },
+  "showModel": {
+    "head": ["HELMET", "CHESTPLATE"],
+    "headwear": ["HELMET", "CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"],
+    "leftLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["HELMET", "CHESTPLATE"],
+  "itemIcons": {
+    "HELMET": "%s_0",
+    "CHESTPLATE": "%s_1",
+    "LEGGINGS": "deadpool_xmen_2",
+    "BOOTS": "deadpool_xmen_3"
+  }
+}

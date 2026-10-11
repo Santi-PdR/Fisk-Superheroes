@@ -1,0 +1,8 @@
+{
+  "sound": "fiskheroes:suit.antimonitor.blast.loop",
+  "condition": "entity.getData('fiskheroes:beam_shooting') > 0",
+  "volume": "fiskheroes:beam_shooting_timer",
+  "pitch": "1.2 - 0.1 * Math.min(entity.getInterpolatedData('fiskheroes:heat_vision_length'), 2)",
+  "loop": true,
+  "fadeOut": 60
+}

@@ -1,0 +1,38 @@
+{
+  "parent": "fiskheroes:falcon_civil_war",
+  "resources": {
+    "layer1": "fiskheroes:falcon_layer1",
+    "layer2": "fiskheroes:falcon_layer2",
+    "wings": "fiskheroes:falcon_wings",
+    "jetpack": "fiskheroes:falcon_jetpack",
+    "jetpack_lights": "fiskheroes:falcon_jetpack_lights"
+  },
+  "custom": {
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:falcon",
+      "conditionals": ["vars:BOOSTING"]
+    },
+    "fiskheroes:booster": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:orange_fire_layer_%s",
+      "anchor": "body",
+      "offset": [0.0, 4.25, 2.6],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.75, 3.0],
+      "opacity": 1.0,
+      "mirror": false,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:booster|sides": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:orange_fire_layer_%s",
+      "anchor": "body",
+      "offset": [1.0, 4.25, 2.6],
+      "rotation": [0.0, 0.0, 0.0],
+      "scale": [1.5, 2.0],
+      "opacity": 1.0,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    }
+  }
+}

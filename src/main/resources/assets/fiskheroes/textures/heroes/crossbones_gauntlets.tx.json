@@ -1,0 +1,13 @@
+{
+  "texture": "fiskheroes:crossbones_gauntlets_<TIMER>",
+  "getters": {
+    "TIMER": {
+      "key": "(Math.ceil(5 * entity.getInterpolatedData('fiskheroes:punchmode_timer')) + 1) | 0",
+      "values": {
+        "min": 1,
+        "max": 6
+      }
+    }
+  },
+  "isDynamic": true
+}

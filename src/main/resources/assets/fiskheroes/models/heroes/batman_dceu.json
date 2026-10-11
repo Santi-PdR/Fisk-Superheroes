@@ -1,0 +1,30 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:batman_dceu_layer1",
+    "layer2": "fiskheroes:batman_dceu_layer2",
+    "cape": "fiskheroes:batman_dceu_cape"
+  },
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 22,
+      "data": "fiskheroes:wing_animation_timer"
+    },
+    "fiskheroes:equipped_item": {
+      "applicable": ["CHESTPLATE"],
+      "items": [
+        {
+          "anchor": "body",
+          "scale": 0.7,
+          "offset": [-4.5, 10.5, 0.5],
+          "rotation": [100.0, 5.0, 0.0]
+        }
+      ]
+    },
+    "fiskheroes:equipment_wheel": {
+      "color": "0x000000"
+    }
+  }
+}

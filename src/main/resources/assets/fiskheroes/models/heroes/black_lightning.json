@@ -1,0 +1,43 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:black_lightning_layer1",
+    "layer2": "fiskheroes:black_lightning_layer2",
+    "layer1_lights": "fiskheroes:black_lightning_layer1_lights",
+    "layer2_lights": "fiskheroes:black_lightning_layer2_lights",
+    "visor": "fiskheroes:black_lightning_visor"
+  },
+  "lights": {
+    "renderLayer": {
+      "LEGGINGS": "layer2_lights"
+    },
+    "default": "layer1_lights"
+  },
+  "custom": {
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:black_lightning",
+      "conditionals": ["vars:FLYING"]
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["HELMET"],
+      "texture": "visor",
+      "opacity": 1.0,
+      "data": "1 - 0.7 * entity.getInterpolatedData('fiskheroes:mask_open_timer2')"
+    },
+    "fiskheroes:lightning_attack": {
+      "color": "0x0049FF",
+      "anchor": "rightArm",
+      "beams": [
+        {
+          "firstPerson": [-8.0, 4.5, -10.0],
+          "offset": [-0.5, 9.0, 0.0],
+          "size": [0.75, 0.75]
+        }
+      ],
+      "renderer": "fiskheroes:lightning_cast"
+    }
+  },
+  "vars": {
+    "FLYING": "entity.getData('fiskheroes:jetpacking') || entity.getData('fiskheroes:hovering')"
+  }
+}

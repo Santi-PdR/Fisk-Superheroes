@@ -1,0 +1,12 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.superspeed.flicker.loop.v9",
+  "condition": {
+    "continue": "entity.getData('fiskheroes:speeding')"
+  },
+  "volume": "entity.getData('fiskheroes:speed') <= 4 ? 0.0 : 0.1 * (entity.getData('fiskheroes:speed') > 4 ? 1 : 0)",
+  "pitch": "1.2 - Math.random() * 0.4",
+  "loop": true,
+  "fadeIn": 5,
+  "fadeOut": 5
+}

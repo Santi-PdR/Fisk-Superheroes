@@ -1,0 +1,119 @@
+{
+  "name": "power.fiskheroes.antimatter_physiology.name",
+  "modifiers": {
+    "fiskheroes:transformation": {
+      "transformation": {
+        "toggleData": "fiskheroes:dyn/giant_mode",
+        "timerData": "fiskheroes:dyn/giant_mode_timer",
+        "time": 20
+      }
+    },
+    "fiskheroes:cooldown": {
+      "cooldown": {
+        "toggleData": "fiskheroes:shadowform",
+        "cooldownData": "fiskheroes:dyn/shadowform_cooldown",
+        "duration": 200,
+        "recovery": 0.5
+      }
+    },
+    "fiskheroes:energy_projection": {
+      "damageProfile": {
+        "damage": 3.0,
+        "types": {
+          "COSMIC": 1.0
+        },
+        "properties": {
+          "COOK_ENTITY": true,
+          "HEAT_TRANSFER": 80
+        }
+      },
+      "range": 10.0,
+      "radius": 0.1,
+      "soundEvents": {
+        "BEAM_AMBIENT": "fiskheroes:antimatter_beam"
+      }
+    },
+    "fiskheroes:charged_beam": {
+      "damageProfile": {
+        "damage": 9.0,
+        "types": {
+          "COSMIC": 1.0
+        },
+        "properties": {
+          "COOK_ENTITY": true,
+          "HEAT_TRANSFER": 20
+        }
+      },
+      "chargeTime": 10,
+      "duration": 20,
+      "cooldownTime": 20,
+      "range": 32.0,
+      "radius": 0.2,
+      "soundEvents": {
+        "SHOOT": "fiskheroes:antimatter_blast_start",
+        "BEAM_AMBIENT": "fiskheroes:antimatter_blast_loop"
+      }
+    },
+    "fiskheroes:shadowform": {
+      "soundEvents": {
+        "DISABLE": "fiskheroes:anti_shadowform_disable",
+        "ENABLE": ["fiskheroes:anti_shadowform_enable", "fiskheroes:anti_shadowform_loop"]
+      }
+    },
+    "fiskheroes:flight": {
+      "speed": 0.18
+    },
+    "fiskheroes:size_manipulation": {
+      "isInstant": false,
+      "minSize": 1.1,
+      "maxSize": 12.0,
+      "soundEvents": {
+        "GROW": ["fiskheroes:anti_grow_roar", "fiskheroes:anti_grow", "fiskheroes:anti_grow_antimatter"],
+        "GROW_STOP": "fiskheroes:anti_grow_stop",
+        "SHRINK": "fiskheroes:anti_shrink"
+      }
+    },
+    "fiskheroes:shield": {
+      "shield": {
+        "health": 200.0,
+        "regeneration": 15.0,
+        "recoveryDelay": 100,
+        "cooldown": 240
+      },
+      "coverage": {
+        "yawRadius": 180.0,
+        "pitchRadius": 180.0,
+        "yawOffset": 0.0,
+        "pitchOffset": 0.0
+      },
+      "knockback": 0.0,
+      "isToggle": false,
+      "soundEvents": {
+        "BLOCK_START": "fiskheroes:anti_forcefield",
+        "DEFLECT": "fiskheroes:anti_forcefield_deflect",
+        "DISARM": "fiskheroes:shield_disarm"
+      }
+    },
+    "fiskheroes:projectile_immunity": {
+    },
+    "fiskheroes:arrow_catching": {
+    },
+    "fiskheroes:leaping": {
+      "leapAmount": [0.5, 0.4]
+    },
+    "fiskheroes:water_breathing": {
+    }
+  },
+  "hud": [
+    {
+      "type": "PROGRESS",
+      "texture": "fiskheroes:textures/gui/bars/shadowform.png",
+      "data": "fiskheroes:dyn/shadowform_cooldown"
+    },
+    {
+      "type": "CIRCLE",
+      "color": "fiskheroes:charged_beam",
+      "data": "fiskheroes:beam_charge"
+    }
+  ]
+}

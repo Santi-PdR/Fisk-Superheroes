@@ -1,0 +1,10 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:suit.savitar.sprint",
+  "condition": {
+    "start": "entity.isSprinting() && !entity.getData('fiskheroes:speeding')"
+  },
+  "volume": 0.3,
+  "pitch": "1.1 - Math.random() * 0.3",
+  "fadeOut": 5
+}

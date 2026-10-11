@@ -1,0 +1,72 @@
+name: Smoke Test
+
+on:
+  push:
+    branches:
+      - 'arena/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  server:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Prepare server run directory
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\n' > run/server.properties
+
+      - name: Report run classpath
+        run: ./gradlew dumpRunClasspath --console=plain | tail -5
+
+      - name: Boot dedicated server
+        run: |
+          set +e
+          ( sleep 200; echo "stop"; sleep 60; echo "stop"; sleep 60; echo "stop" ) | timeout -k 20 780 ./gradlew runServer --console=plain > smoke.log 2>&1
+          echo "exit code: $?" >> smoke.log
+          pgrep -f "net.minecraft|GradleWrapperMain" | xargs -r kill -9 2>/dev/null
+
+      - name: Collect log
+        if: always()
+        run: |
+          mkdir -p .ci
+          {
+            echo "==== crash reports ===="
+            ls -la run/crash-reports 2>/dev/null && for f in run/crash-reports/*; do echo "--- $f"; cat "$f"; done
+            echo "==== mod mentions ===="
+            grep -E "fiskheroes|Fisk" smoke.log | head -250
+            echo "==== run classpath ===="
+            cat .ci/run-classpath.txt 2>/dev/null | head -80
+            echo "==== errors and exceptions ===="
+            grep -nE "ERROR|FATAL|Exception|Caused by|FAILED|Done \(|Starting minecraft server|Stopping server|hero pack|heroes, .*powers|/WARN" smoke.log | tail -700
+            echo "==== tail ===="
+            tail -150 smoke.log
+          } > .ci/server-log.txt 2>&1
+
+      - name: Publish log
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/server-log.txt
+          git diff --cached --quiet || git commit -m "ci: server smoke log [skip ci]" --no-verify
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
+            git push && break
+            sleep 5
+          done

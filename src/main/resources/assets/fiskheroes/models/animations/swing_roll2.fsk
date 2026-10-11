@@ -1,0 +1,18 @@
+{x} = curve {data}
+{data} = sin(pi(1 - {data}))^3
+
+{head_rotX} @ {data} -> max({head_rotX} - 0.4, -90')
+{rightArm_rotX} @ {data} -> 1
+{rightArm_rotY} @ {data} -'> -0.8
+{rightArm_rotZ} @ {data} -> 0.5
+{leftArm_rotX} @ {data} -> 1
+{leftArm_rotY} @ {data} -'> 0.9
+{leftArm_rotZ} @ {data} -> -0.3
+
+{rightLeg_rotX} @ {data} -> 1.5
+{rightLeg_rotZ} @ {data} -> 0.4
+{leftLeg_rotX} @ {data} -> 1.8
+{leftLeg_rotZ} @ {data} -> 0.3
+
+out "pivot" (0, 0.5, 0)
+out "rotate" (-360{x}, -1, 0, 0)

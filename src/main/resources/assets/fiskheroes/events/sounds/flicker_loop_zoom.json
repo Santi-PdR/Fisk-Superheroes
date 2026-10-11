@@ -1,0 +1,13 @@
+{
+  "parent": "fiskheroes:sound_base",
+  "sound": "fiskheroes:modifier.superspeed.flicker.loop.v9",
+  "condition": {
+    "start": "entity.getWornChestplate().suitType() == 'fiskheroes:zoom' || entity.getWornChestplate().suitType() == 'fiskheroes:zoom/concept'",
+    "continue": "entity.isWearingFullSuit() && (entity.getWornChestplate().suitType() == 'fiskheroes:zoom' || entity.getWornChestplate().suitType() == 'fiskheroes:zoom/concept')"
+  },
+  "volume": 0.1,
+  "pitch": "1.2 - Math.random() * 0.4",
+  "loop": true,
+  "fadeIn": 5,
+  "fadeOut": 5
+}

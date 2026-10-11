@@ -1,0 +1,61 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:obsidian_layer1",
+    "layer2": "fiskheroes:obsidian_layer2",
+    "hood": "fiskheroes:obsidian_hood",
+    "cape": "fiskheroes:obsidian_cape"
+  },
+  "texture": {
+    "renderLayer": {
+      "HELMET": {
+        "wornChestplate": {
+          "fiskheroes:obsidian": "layer2"
+        },
+        "default": "hood"
+      },
+      "LEGGINGS": "layer2"
+    },
+    "default": "layer1"
+  },
+  "showModel": {
+    "head": ["HELMET", "CHESTPLATE"],
+    "headwear": ["HELMET", "CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["LEGGINGS", "BOOTS"],
+    "leftLeg": ["LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["HELMET", "CHESTPLATE"],
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 24
+    },
+    "fiskheroes:invisibility": {
+      "applicable": ["HELMET", "CHESTPLATE", "LEGGINGS", "BOOTS"],
+      "opacityMin": 0.0,
+      "opacityMax": 1.0,
+      "data": "fiskheroes:shadowform_timer"
+    },
+    "fiskheroes:particle_cloud": {
+      "particles": "fiskheroes:shadow_smoke",
+      "conditionals": ["vars:SHADOWFORM"]
+    },
+    "fiskheroes:shadowdome": {
+      "texture": "fiskheroes:textures/entity/shadow_dome.png",
+      "shape": [36, 18]
+    },
+    "fiskheroes:telekinesis_chain": {
+      "particles": "fiskheroes:shadow_smoke",
+      "anchor": "rightArm",
+      "offset": [-0.5, 10.0, 0.0],
+      "firstPerson": [-4.75, 4.0, -8.5]
+    }
+  },
+  "vars": {
+    "SHADOWFORM": "entity.getData('fiskheroes:shadowform')"
+  }
+}

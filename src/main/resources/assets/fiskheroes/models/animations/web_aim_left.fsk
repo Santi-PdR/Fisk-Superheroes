@@ -1,0 +1,6 @@
+{data} = curve {data}
+{leftArm_posX} += {data}
+{leftArm_posY} -= {data}
+{leftArm_rotZ} @ {data} -> pi / 2
+{leftArm_rotX} @ {data} -> 0.1 - pi / 2 + {head_rotY}
+{leftArm_rotY} @ {data} -'> -min({head_rotX} + 0.1, pi / 2)

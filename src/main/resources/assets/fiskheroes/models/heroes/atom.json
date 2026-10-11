@@ -1,0 +1,77 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:atom_layer1",
+    "layer2": "fiskheroes:atom_layer2",
+    "lights": "fiskheroes:atom_lights",
+    "visor": "fiskheroes:atom_visor.tx.json"
+  },
+  "lights": {
+    "renderLayer": {
+      "CHESTPLATE": "lights"
+    },
+    "default": "null"
+  },
+  "custom": {
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:atom",
+      "conditionals": ["vars:FLYING"]
+    },
+    "fiskheroes:overlay": {
+      "applicable": ["HELMET"],
+      "texture": "visor",
+      "opacity": 0.85,
+      "data": 1.0
+    },
+    "fiskheroes:booster|boots": {
+      "applicable": ["BOOTS"],
+      "icon": "fiskheroes:deep_blue_fire_layer_%s",
+      "anchor": "rightLeg",
+      "offset": [0.0, 7.0, 2.0],
+      "rotation": [15.0, 0.0, 0.0],
+      "scale": [1.5, 4.0],
+      "opacity": 0.7,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:booster|back": {
+      "applicable": ["CHESTPLATE"],
+      "icon": "fiskheroes:deep_blue_fire_layer_%s",
+      "anchor": "body",
+      "offset": [1.5, 6.0, 1.75],
+      "rotation": [15.0, 0.0, 5.0],
+      "scale": [1.5, 4.5],
+      "opacity": 0.7,
+      "mirror": true,
+      "data": "fiskheroes:jetpacking_timer"
+    },
+    "fiskheroes:lines|shrink_body": {
+      "applicable": ["CHESTPLATE"],
+      "shape": "fiskheroes:atom_shrink_body",
+      "anchor": "body",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
+    },
+    "fiskheroes:lines|shrink_arm": {
+      "applicable": ["CHESTPLATE"],
+      "shape": "fiskheroes:atom_shrink_arm",
+      "anchor": "rightArm",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
+    },
+    "fiskheroes:lines|shrink_legs": {
+      "applicable": ["LEGGINGS"],
+      "shape": "fiskheroes:atom_shrink_legs",
+      "anchor": "rightLeg",
+      "mirror": true,
+      "color": "0x005EFF",
+      "data": "entity.getInterpolatedData('fiskheroes:dyn/shrink_timer') / (Math.sqrt(entity.getInterpolatedData('fiskheroes:scale')) * 2)"
+    },
+    "fiskheroes:camera_shake": {"shakes":[{"factor":"0.015 * entity.getInterpolatedData('fiskheroes:flight_boost_timer')","intensity":1.5}]}
+  },
+  "vars": {
+    "FLYING": "entity.getData('fiskheroes:jetpacking') || entity.getData('fiskheroes:hovering')"
+  }
+}

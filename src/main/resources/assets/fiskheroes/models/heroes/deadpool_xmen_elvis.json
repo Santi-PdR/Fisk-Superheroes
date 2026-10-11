@@ -1,0 +1,60 @@
+{
+  "parent": "fiskheroes:deadpool_xmen",
+  "resources": {
+    "layer1": "fiskheroes:deadpool_xmen_elvis_layer1",
+    "layer2": "fiskheroes:deadpool_xmen_elvis_layer2",
+    "boots": "fiskheroes:deadpool_xmen_layer1",
+    "boots_pants": "fiskheroes:deadpool_xmen_elvis_boots_pants",
+    "hair1": "fiskheroes:deadpool_xmen_elvis_hair1",
+    "hair2": "fiskheroes:deadpool_xmen_elvis_hair2"
+  },
+  "texture": {
+    "renderLayer": {
+      "CHESTPLATE": "layer1",
+      "BOOTS": {
+        "wornLeggings": {
+          "fiskheroes:deadpool_xmen/elvis": "boots_pants"
+        },
+        "default": "boots"
+      }
+    },
+    "default": "layer2"
+  },
+  "showModel": {
+    "head": ["HELMET", "CHESTPLATE"],
+    "headwear": ["HELMET", "CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["LEGGINGS", "BOOTS"],
+    "leftLeg": ["LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["HELMET", "CHESTPLATE"],
+  "itemIcons": {
+    "HELMET": "%s_0",
+    "CHESTPLATE": "%s_1",
+    "LEGGINGS": "%s_2",
+    "BOOTS": "deadpool_xmen_3"
+  },
+  "custom": {
+    "fiskheroes:ears": {
+      "applicable": ["CHESTPLATE"],
+      "angle": -10,
+      "inset": -0.11
+    },
+    "fiskheroes:opening_mask|hair1": {
+      "applicable": ["HELMET"],
+      "texture": "hair1",
+      "rotation": [-33.23, 0.0, 0.0],
+      "translation": [0.0, -3.53, -3.77],
+      "data": 1.0
+    },
+    "fiskheroes:opening_mask|hair2": {
+      "applicable": ["HELMET"],
+      "texture": "hair2",
+      "rotation": [-33.23, 0.0, 0.0],
+      "translation": [0.0, -6.08, -2.1],
+      "data": 1.0
+    }
+  }
+}

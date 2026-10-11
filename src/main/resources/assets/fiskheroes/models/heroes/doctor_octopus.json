@@ -1,0 +1,78 @@
+{
+  "parent": "fiskheroes:hero_basic",
+  "resources": {
+    "layer1": "fiskheroes:doctor_octopus_layer1",
+    "layer2": "fiskheroes:doctor_octopus_layer2",
+    "boots": "fiskheroes:doctor_octopus_boots",
+    "pants": "fiskheroes:doctor_octopus_pants",
+    "segment": "fiskheroes:doctor_octopus_arm",
+    "claw": "fiskheroes:doctor_octopus_claw",
+    "claw_lights": "fiskheroes:doctor_octopus_claw_lights"
+  },
+  "texture": {
+    "renderLayer": {
+      "LEGGINGS": {
+        "wornChestplate": {
+          "fiskheroes:doctor_octopus": "pants"
+        },
+        "default": "layer2"
+      },
+      "BOOTS": "boots"
+    },
+    "default": "layer1"
+  },
+  "showModel": {
+    "head": ["HELMET"],
+    "headwear": ["HELMET"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"],
+    "leftLeg": ["CHESTPLATE", "LEGGINGS", "BOOTS"]
+  },
+  "custom": {
+    "fiskheroes:tentacles": {
+      "applicable": ["CHESTPLATE"],
+      "segmentLength": 1.8,
+      "segmentLinks": 16,
+      "segment": {
+        "modelType": "fiskheroes:ock_arm",
+        "texture": "segment"
+      },
+      "head": {
+        "modelType": "fiskheroes:ock_claw",
+        "texture": ["claw", "claw_lights"],
+        "animations": [
+          {
+            "animation": "fiskheroes:ock_claw",
+            "data": [
+              "1 - Math.min(entity.as('TENTACLE').getCaster().getInterpolatedData('fiskheroes:tentacle_extend_timer') * 2, 1)",
+              "entity.as('TENTACLE').getIndex()",
+              "entity.as('TENTACLE').getGrabTimer()",
+              "entity.as('TENTACLE').getStrikeTimer()"
+            ]
+          }
+        ]
+      },
+      "anchor": "body",
+      "tentacles": [
+        {
+          "offset": [2.0, -4.5, -2.0],
+          "direction": [13.0, 10.0, -10.0]
+        },
+        {
+          "offset": [-2.0, -4.5, -2.0],
+          "direction": [-13.0, 10.0, -10.0]
+        },
+        {
+          "offset": [2.0, -7.5, -2.0],
+          "direction": [13.0, -10.0, -10.0]
+        },
+        {
+          "offset": [-2.0, -7.5, -2.0],
+          "direction": [-13.0, -10.0, -10.0]
+        }
+      ]
+    }
+  }
+}

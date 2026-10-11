@@ -1,0 +1,48 @@
+{
+  "parent": "fiskheroes:hero_speedster",
+  "resources": {
+    "layer1": "fiskheroes:shazam_dceu_layer1",
+    "layer2": "fiskheroes:shazam_dceu_layer2",
+    "lights": "fiskheroes:shazam_dceu_lights",
+    "cape": "fiskheroes:shazam_dceu_cape"
+  },
+  "lights": {
+    "renderLayer": {
+      "CHESTPLATE": "lights"
+    },
+    "default": "null"
+  },
+  "showModel": {
+    "head": ["CHESTPLATE"],
+    "headwear": ["CHESTPLATE"],
+    "body": ["CHESTPLATE", "LEGGINGS"],
+    "rightArm": ["CHESTPLATE"],
+    "leftArm": ["CHESTPLATE"],
+    "rightLeg": ["LEGGINGS", "BOOTS"],
+    "leftLeg": ["LEGGINGS", "BOOTS"]
+  },
+  "fixHatLayer": ["CHESTPLATE"],
+  "custom": {
+    "fiskheroes:cape": {
+      "applicable": ["CHESTPLATE"],
+      "texture": "cape",
+      "length": 17
+    },
+    "fiskheroes:trail": {
+      "type": "fiskheroes:shazam",
+      "conditionals": ["vars:SPEEDING"]
+    },
+    "fiskheroes:lightning_attack": {
+      "color": "0xD9FFFF",
+      "anchor": "rightArm",
+      "beams": [
+        {
+          "firstPerson": [-8.0, 4.5, -10.0],
+          "offset": [-0.5, 9.0, 0.0],
+          "size": [0.75, 0.75]
+        }
+      ],
+      "renderer": "fiskheroes:lightning_cast"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+; data_0 = boost
+; data_1 = swing
+
+{drag} = sqrt({motX}^2 + {motZ}^2)
+{drag} = sqrt curve min({drag} / 2, 1)
+{descent} = min(abs({motY}) / 2, 1)
+{descent} = signum({motY})sqrt(curve {descent}) / 3
+
+{vel} = sqrt({motX}^2 + {motY}^2 + {motZ}^2)
+{dive} = 1 - if({motY} < 0, if({vel} >= 0.0001, (-{motY} / {vel})^1.5 * {data_0}, 0), 0)
+{differential} = ({yaw} - {bodyYaw}) / 180
+
+{right_rotX} = lerp({data_0}, 12' + 46'abs({descent}), -12')
+{left_rotX} = {right_rotX}
+{right_rotZ} = 90'(1 - {dive}) - lerp({data_0}, 9' - 51'{descent}, 23')
+{left_rotZ} = {right_rotZ}
+
+{turn} = 10'sin(sqrt({data_1})2pi)
+{right_rotY} = (({data_0} - 1) * {drag} * 5 - 1 - 2{differential}) * 0.1 + {turn}
+{left_rotY} = (({data_0} - 1) * {drag} * 5 - 1 + 2{differential}) * 0.1 - {turn}
+
+{right_flexY} = lerp({data_0}, 13' + 76'{descent} + 51'{drag}, -19' + 51'{differential})
+{left_flexY} = lerp({data_0}, 13' + 76'{descent} + 51'{drag}, -19' - 51'{differential})
+{right_flexZ} = lerp({data_0}, max(255'{descent}, 0) - 19', 25')
+{left_flexZ} = {right_flexZ}

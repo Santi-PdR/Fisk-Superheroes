@@ -1,0 +1,10 @@
+{data} = curve {data}
+{rightArm_rotX} @ {data} -> min({pitch}' - 0.9, -0.1)
+{rightArm_rotY} @ {data} -'> {yaw}' - 0.4
+{leftArm_rotX} @ {data} -> min({pitch}' - 1.3, -0.3)
+{leftArm_rotY} @ {data} -'> {yaw}' + 0.3
+
+out "firstPerson" (true)
+out "translate" (-0.4{data}, -0.3{data}, -0.15{data})
+out "rotate" (-20{data}, 1, 0, 0)
+out "rotate" (-35{data}, 0, 0, 1)
