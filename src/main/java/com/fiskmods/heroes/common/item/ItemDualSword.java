@@ -14,7 +14,7 @@ import com.google.common.collect.Multimap;
 import java.util.UUID;
 
 /** Sword with the original optional dual-wield tag and durability rules. */
-public final class ItemDualSword extends SwordItem
+public class ItemDualSword extends SwordItem
 {
     private static final UUID ORIGINAL_DAMAGE_UUID = UUID.fromString("9a9b0d58-880e-4daf-a92f-45ac1d407e6a");
 
@@ -27,7 +27,12 @@ public final class ItemDualSword extends SwordItem
 
     public static boolean isDual(ItemStack stack)
     {
-        return stack.hasTag() && stack.getTag().getBoolean("Dual");
+        if (!stack.hasTag()) return false;
+        net.minecraft.nbt.Tag value = stack.getTag().get("Dual");
+        // Legacy Fisk equipment strings encode booleans as {Dual:1}. Modern SNBT parses that as
+        // an IntTag, so preserve the intended flag semantics across the version change.
+        return value instanceof net.minecraft.nbt.NumericTag numeric
+                ? numeric.getAsByte() != 0 : stack.getTag().getBoolean("Dual");
     }
 
     public static ItemStack setDual(ItemStack stack)
