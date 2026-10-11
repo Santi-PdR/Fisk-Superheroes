@@ -63,7 +63,7 @@ public class ModItems
     public static final RegistryObject<Item> GUN_BASE = REGISTRY.register("gun_base", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> RIFLE_BASE = REGISTRY.register("rifle_base", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> DESERT_EAGLE = REGISTRY.register("desert_eagle",
-            () -> new ItemGun(8, 8, 16, 75.0D, 8.0F, new Item.Properties()));
+            () -> new ItemDesertEagle(8, 8, 16, 75.0D, 8.0F, new Item.Properties()));
     public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
             () -> new ItemGun(15, 20, 16, 75.0D, 3.5F, new Item.Properties()));
     public static final RegistryObject<Item> CHRONOS_RIFLE = REGISTRY.register("chronos_rifle",
@@ -88,7 +88,7 @@ public class ModItems
     public static final RegistryObject<Item> FLASH_RING = REGISTRY.register("flash_ring", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
     public static final RegistryObject<Item> MINI_SUIT = REGISTRY.register("mini_suit", () -> new Item(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> KATANA = REGISTRY.register("katana",
-            () -> new ItemDualSword(new Item.Properties()));
+            () -> new ItemKatana(new Item.Properties()));
     public static final RegistryObject<Item> CHOKUTO = REGISTRY.register("chokuto",
             () -> new ItemDualSword(new Item.Properties()));
     public static final RegistryObject<Item> TACTICAL_TONFA = REGISTRY.register("tactical_tonfa",

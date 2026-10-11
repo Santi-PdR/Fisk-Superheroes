@@ -98,7 +98,7 @@ public class ItemGun extends Item
 
     public static boolean isDual(ItemStack stack)
     {
-        return stack.hasTag() && stack.getTag().getBoolean("Dual");
+        return ItemDualSword.isDual(stack);
     }
 
     public static boolean isGun(ItemStack stack)
