@@ -42,7 +42,7 @@ public final class FabricatorRecipes
     {
         if (loaded && !RECIPES.isEmpty()) return;
         RECIPES.clear();
-        for (Hero hero : Hero.REGISTRY.getValues())
+        for (Hero hero : Hero.REGISTRY.getSortedHeroes())
         {
             ResourceLocation id = hero.getRegistryName();
             String resourcePath = "/assets/" + id.getNamespace() + "/data/fabricator/recipes/" + id.getPath() + ".json";

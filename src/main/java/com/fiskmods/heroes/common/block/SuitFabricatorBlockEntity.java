@@ -125,7 +125,7 @@ public final class SuitFabricatorBlockEntity extends BlockEntity implements Worl
             ItemStack out = items.get(i);
             if (!out.isEmpty())
             {
-                HeroIteration outIter = ItemHeroArmor.get(out);
+                HeroIteration outIter = ItemHeroArmor.getHero(out);
                 if (outIter != null) return outIter;
             }
         }
