@@ -14,20 +14,28 @@ public class PacketInput extends SHPacket
     public static boolean lastJump;
     public static boolean lastSneak;
     public static boolean lastSent;
+    public static int lastForward;
+    public static int lastStrafe;
 
     private final boolean jump;
     private final boolean sneak;
+    private final int forward;
+    private final int strafe;
 
-    public PacketInput(boolean jump, boolean sneak)
+    public PacketInput(boolean jump, boolean sneak, int forward, int strafe)
     {
         this.jump = jump;
         this.sneak = sneak;
+        this.forward = Integer.signum(forward);
+        this.strafe = Integer.signum(strafe);
     }
 
     public PacketInput(FriendlyByteBuf buf)
     {
         jump = buf.readBoolean();
         sneak = buf.readBoolean();
+        forward = Integer.signum(buf.readByte());
+        strafe = Integer.signum(buf.readByte());
     }
 
     @Override
@@ -35,6 +43,8 @@ public class PacketInput extends SHPacket
     {
         buf.writeBoolean(jump);
         buf.writeBoolean(sneak);
+        buf.writeByte(forward);
+        buf.writeByte(strafe);
     }
 
     @Override
@@ -44,7 +54,7 @@ public class PacketInput extends SHPacket
 
         if (player != null)
         {
-            PlayerInputTracker.set(player, jump, sneak);
+            PlayerInputTracker.set(player, jump, sneak, forward, strafe);
         }
     }
 }

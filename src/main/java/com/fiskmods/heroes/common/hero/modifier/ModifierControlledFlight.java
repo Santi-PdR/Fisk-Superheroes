@@ -66,29 +66,13 @@ public class ModifierControlledFlight extends Modifier
             float boostSpeed = entry.getFloat(entity, PowerProperty.BOOST_SPEED);
             boolean canBoost = entry.getBoolean(entity, PowerProperty.CAN_BOOST);
             boolean boosting = canBoost && player.isSprinting();
-            double velocity = boosting ? speed + boostSpeed : speed;
-
-            Vec3 look = player.getLookAngle();
-            Vec3 motion = player.getDeltaMovement();
-
-            // Forward thrust along the look vector, and vertical control from the look pitch
-            double x = motion.x + look.x * velocity;
-            double y = motion.y + look.y * velocity;
-            double z = motion.z + look.z * velocity;
-
-            boolean jumping = com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player);
-            boolean sneaking = com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player);
-
-            if (jumping)
-            {
-                y += velocity;
-            }
-            else if (sneaking)
-            {
-                y -= velocity;
-            }
-
-            player.setDeltaMovement(x, y, z);
+            Vec3 motion = controlledMotion(player.getDeltaMovement(), player.getLookAngle(), player.getYRot(),
+                    com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player),
+                    com.fiskmods.heroes.common.data.PlayerInputTracker.strafe(player),
+                    com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player),
+                    com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player),
+                    boosting, speed, boostSpeed);
+            player.setDeltaMovement(motion);
             player.fallDistance = 0.0F;
             player.hurtMarked = true;
             data.getData().set(Vars.BOOSTER_TIMER, Math.min(20.0F, timer + 1.0F));
@@ -102,6 +86,31 @@ public class ModifierControlledFlight extends Modifier
         {
             data.getData().set(Vars.BOOSTER_TIMER, 0.0F);
         }
+    }
+
+    /** Calculates one tick of flight; hover responds to movement input and boost has drag. */
+    public static Vec3 controlledMotion(Vec3 motion, Vec3 look, float yaw, int forward, int strafe,
+            boolean jump, boolean sneak, boolean boost, float speed, float boostSpeed)
+    {
+        if (boost)
+        {
+            // The original propelled flight applies 0.96 drag before thrust.
+            return motion.scale(0.96D).add(look.scale(Math.max(0.0F, boostSpeed)));
+        }
+        double angle = Math.toRadians(yaw);
+        double fx = -Math.sin(angle);
+        double fz = Math.cos(angle);
+        double x = fx * Integer.signum(forward) + fz * Integer.signum(strafe);
+        double z = fz * Integer.signum(forward) - fx * Integer.signum(strafe);
+        double length = Math.sqrt(x * x + z * z);
+        if (length > 1.0D) { x /= length; z /= length; }
+        double targetY = look.y * Integer.signum(forward) * speed
+                + (jump ? speed : 0.0D) - (sneak ? speed : 0.0D);
+        // Smooth toward the desired velocity. Add the vanilla gravity amount so idle flight
+        // hovers instead of accelerating forever or drifting forward without input.
+        return new Vec3(motion.x * 0.8D + x * speed * 0.2D,
+                motion.y * 0.8D + targetY * 0.2D + 0.08D,
+                motion.z * 0.8D + z * speed * 0.2D);
     }
 
     /**

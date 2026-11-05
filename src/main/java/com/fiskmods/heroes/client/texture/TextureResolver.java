@@ -153,11 +153,6 @@ public final class TextureResolver
             JsonObject resolved = substitute(stitch, values);
             com.mojang.blaze3d.platform.NativeImage result = SHTextures.apply(base, resolved);
 
-            if (result != base)
-            {
-                base.close();
-            }
-
             SHTextures.register(output, result);
             SHTextures.put(output.toString(), output);
             return output;
@@ -173,8 +168,7 @@ public final class TextureResolver
 
     private static ResourceLocation parse(String value)
     {
-        ResourceLocation id = ResourceLocation.tryParse(value);
-        return id != null ? id : new ResourceLocation(FiskHeroes.MODID, value);
+        return ResourceLocation.tryParse(value.indexOf(':') < 0 ? FiskHeroes.MODID + ":" + value : value);
     }
 
     private static ResourceLocation withPath(ResourceLocation id, String path)

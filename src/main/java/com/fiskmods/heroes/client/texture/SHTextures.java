@@ -129,6 +129,7 @@ public final class SHTextures
 
             try
             {
+                com.mojang.blaze3d.platform.NativeImage previous = result;
                 switch (operation)
                 {
                 case "STITCH":
@@ -141,12 +142,13 @@ public final class SHTextures
                     result = combine(result, supply, SHTextures::or);
                     break;
                 case "HUE":
-                    result = hue(result, supply != null ? Integer.parseInt(supply) : 0);
+                    result = hue(result, supply != null ? Float.parseFloat(supply) : 0.0F);
                     break;
                 default:
                     FiskHeroes.LOGGER.warn("Unknown texture operation {}", operation);
                     break;
                 }
+                if (result != previous) previous.close();
             }
             catch (Exception e)
             {
@@ -186,152 +188,49 @@ public final class SHTextures
             return base;
         }
 
-        com.mojang.blaze3d.platform.NativeImage overlay = read(sprite);
-        int width = base.getWidth();
-        int height = base.getHeight();
-
-        for (int x = 0; x < width; ++x)
+        // Supply paths in .tx.json are relative to textures/heroes, just like the base.
+        try (com.mojang.blaze3d.platform.NativeImage overlay = read(sprite(sprite.getNamespace(), sprite.getPath())))
         {
-            for (int y = 0; y < height; ++y)
+            int width = Math.max(base.getWidth(), overlay.getWidth());
+            int height = Math.max(base.getHeight(), overlay.getHeight());
+            boolean resize = width != base.getWidth() || height != base.getHeight();
+            com.mojang.blaze3d.platform.NativeImage result = resize
+                    ? new com.mojang.blaze3d.platform.NativeImage(width, height, true) : base;
+            for (int x = 0; x < width; ++x)
             {
-                int under = base.getPixelRGBA(x, y);
-                int over = x < overlay.getWidth() && y < overlay.getHeight() ? overlay.getPixelRGBA(x, y) : 0;
-
-                if (over == 0)
+                for (int y = 0; y < height; ++y)
                 {
-                    continue;
+                    // The original resized both images to the largest dimensions using nearest-neighbor.
+                    int under = base.getPixelRGBA(x * base.getWidth() / width, y * base.getHeight() / height);
+                    int over = overlay.getPixelRGBA(x * overlay.getWidth() / width, y * overlay.getHeight() / height);
+                    result.setPixelRGBA(x, y, operation.applyAsInt(under, over));
                 }
-
-                base.setPixelRGBA(x, y, operation.applyAsInt(under, over));
             }
+            return result;
         }
-
-        overlay.close();
-        return base;
     }
 
-    /** XOR: pixels present in the mask are removed from the base (and vice versa). */
     private static int xor(int under, int over)
     {
-        int a = under & 0xFF000000;
-        int b = over & 0xFF000000;
-
-        if (a == 0 && b == 0)
-        {
-            return 0;
-        }
-
-        return ((a ^ b) & 0xFF000000) | (under & 0x00FFFFFF & ~(over & 0x00FFFFFF));
+        return com.fiskmods.heroes.common.util.TextureColorMath.xor(under, over);
     }
 
-    /** OR: the overlay is drawn over the base, keeping the base where the overlay is empty. */
     private static int or(int under, int over)
     {
-        if ((over & 0xFF000000) == 0)
-        {
-            return under;
-        }
-
-        if ((under & 0xFF000000) == 0)
-        {
-            return over;
-        }
-
-        // Simple source-over using the overlay's alpha
-        int alpha = (over >>> 24) & 0xFF;
-        int inverse = 255 - alpha;
-        int r = (((over >>> 16) & 0xFF) * alpha + ((under >>> 16) & 0xFF) * inverse) / 255;
-        int g = (((over >>> 8) & 0xFF) * alpha + ((under >>> 8) & 0xFF) * inverse) / 255;
-        int b = ((over & 0xFF) * alpha + (under & 0xFF) * inverse) / 255;
-        return (((under >>> 24) & 0xFF) << 24) | (r << 16) | (g << 8) | b;
+        return com.fiskmods.heroes.common.util.TextureColorMath.or(under, over);
     }
 
-    /** HUE: rotates the hue of a lighting layer, used for the speedster RGB suits. */
-    private static com.mojang.blaze3d.platform.NativeImage hue(com.mojang.blaze3d.platform.NativeImage base, int degrees)
+    private static com.mojang.blaze3d.platform.NativeImage hue(com.mojang.blaze3d.platform.NativeImage base, float degrees)
     {
         for (int x = 0; x < base.getWidth(); ++x)
         {
             for (int y = 0; y < base.getHeight(); ++y)
             {
                 int color = base.getPixelRGBA(x, y);
-
-                if ((color & 0xFF000000) == 0)
-                {
-                    continue;
-                }
-
-                int a = (color >>> 24) & 0xFF;
-                int r = (color >>> 16) & 0xFF;
-                int g = (color >>> 8) & 0xFF;
-                int b = color & 0xFF;
-
-                int rgb = rotateHue(r, g, b, degrees);
-                base.setPixelRGBA(x, y, (a << 24) | (rgb & 0x00FFFFFF));
+                base.setPixelRGBA(x, y, com.fiskmods.heroes.common.util.TextureColorMath.hue(color, degrees));
             }
         }
-
         return base;
-    }
-
-    /** Rotates the hue of a single colour without pulling in AWT. */
-    private static int rotateHue(int r, int g, int b, int degrees)
-    {
-        float max = Math.max(r, Math.max(g, b)) / 255.0F;
-        float min = Math.min(r, Math.min(g, b)) / 255.0F;
-        float delta = max - min;
-        float hue;
-
-        if (delta < 1.0E-5F)
-        {
-            hue = 0.0F;
-        }
-        else if (max == r / 255.0F)
-        {
-            hue = ((g - b) / 255.0F / delta) % 6.0F;
-        }
-        else if (max == g / 255.0F)
-        {
-            hue = (b - r) / 255.0F / delta + 2.0F;
-        }
-        else
-        {
-            hue = (r - g) / 255.0F / delta + 4.0F;
-        }
-
-        hue = (hue / 6.0F + degrees / 360.0F) % 1.0F;
-
-        if (hue < 0.0F)
-        {
-            hue += 1.0F;
-        }
-
-        float saturation = max <= 0.0F ? 0.0F : delta / max;
-        return hsbToRgb(hue, saturation, max);
-    }
-
-    private static int hsbToRgb(float hue, float saturation, float brightness)
-    {
-        int i = (int) (hue * 6.0F) % 6;
-        float f = hue * 6.0F - (int) (hue * 6.0F);
-        float p = brightness * (1.0F - saturation);
-        float q = brightness * (1.0F - saturation * f);
-        float t = brightness * (1.0F - saturation * (1.0F - f));
-
-        float r;
-        float g;
-        float b;
-
-        switch (i)
-        {
-        case 0: r = brightness; g = t; b = p; break;
-        case 1: r = q; g = brightness; b = p; break;
-        case 2: r = p; g = brightness; b = t; break;
-        case 3: r = p; g = q; b = brightness; break;
-        case 4: r = t; g = p; b = brightness; break;
-        default: r = brightness; g = p; b = q; break;
-        }
-
-        return ((int) (r * 255.0F) << 16) | ((int) (g * 255.0F) << 8) | (int) (b * 255.0F);
     }
 
     /** Copies the regions described by a stitcher definition onto a new 64x32 texture. */
@@ -383,7 +282,6 @@ public final class SHTextures
             }
         }
 
-        source.close();
         return result;
     }
 
@@ -394,7 +292,6 @@ public final class SHTextures
             return null;
         }
 
-        ResourceLocation id = ResourceLocation.tryParse(value);
-        return id != null ? id : new ResourceLocation(FiskHeroes.MODID, value);
+        return ResourceLocation.tryParse(value.indexOf(':') < 0 ? FiskHeroes.MODID + ":" + value : value);
     }
 }

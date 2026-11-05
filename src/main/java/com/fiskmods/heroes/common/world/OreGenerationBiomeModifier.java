@@ -111,7 +111,9 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
         ConfiguredFeature<C, Feature<C>> configured = new ConfiguredFeature<>(feature, config);
         return new PlacedFeature(Holder.direct(configured), List.of(
                 CountPlacement.of(count), InSquarePlacement.spread(),
-                HeightRangePlacement.uniform(VerticalAnchor.aboveBottom(minY), VerticalAnchor.aboveBottom(maxY - 1)),
+                // The original ranges are absolute world Y coordinates. In 1.20 the
+                // Overworld bottom is -64, so aboveBottom shifted every vein down 64 blocks.
+                HeightRangePlacement.uniform(VerticalAnchor.absolute(minY), VerticalAnchor.absolute(maxY - 1)),
                 BiomeFilter.biome()));
     }
 
@@ -131,11 +133,19 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
         private boolean grow(WorldGenLevel level, RandomSource random, BlockPos pos, int depth,
                 int minX, int maxX, int minZ, int maxZ)
         {
+            BlockState current = level.getBlockState(pos);
             if (pos.getX() < minX || pos.getX() >= maxX || pos.getZ() < minZ || pos.getZ() >= maxZ
-                    || !level.getBlockState(pos).is(BlockTags.STONE_ORE_REPLACEABLES)) return false;
-            level.setBlock(pos, depth == 0 || random.nextInt(4) == 0
-                    ? ModBlocks.TUTRIDIUM_ORE.get().defaultBlockState()
-                    : ModBlocks.TUTRIDIUM_STONE.get().defaultBlockState(), 2);
+                    || !(current.is(BlockTags.STONE_ORE_REPLACEABLES) || current.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES))) return false;
+            // The original always places the central ore; only one in four adjacent
+            // candidates becomes tutridium stone. The other candidates remain untouched.
+            if (depth == 0)
+            {
+                level.setBlock(pos, ModBlocks.TUTRIDIUM_ORE.get().defaultBlockState(), 2);
+            }
+            else if (random.nextInt(4) == 0)
+            {
+                level.setBlock(pos, ModBlocks.TUTRIDIUM_STONE.get().defaultBlockState(), 2);
+            }
             for (Direction direction : Direction.values())
             {
                 if (depth < random.nextFloat() * 1.5F)
@@ -180,8 +190,9 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
                     double dy = (by + 0.5 - y) / (vertical / 2);
                     double dz = (bz + 0.5 - z) / (horizontal / 2);
                     BlockPos pos = new BlockPos(bx, by, bz);
+                    BlockState existing = context.level().getBlockState(pos);
                     if (dx * dx + dy * dy + dz * dz < 1.0 && random.nextFloat() * 25.0F < 1.0F
-                            && context.level().getBlockState(pos).is(BlockTags.STONE_ORE_REPLACEABLES))
+                            && (existing.is(BlockTags.STONE_ORE_REPLACEABLES) || existing.is(BlockTags.DEEPSLATE_ORE_REPLACEABLES)))
                     {
                         context.level().setBlock(pos, ModBlocks.OLIVINE_ORE.get().defaultBlockState(), 2);
                     }
@@ -208,6 +219,10 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
         public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context)
         {
             WorldGenLevel level = context.level();
+            // The original structure generator only ran in the Overworld when
+            // structure generation was enabled, never in the Nether or the End.
+            if (!level.getLevel().dimension().equals(net.minecraft.world.level.Level.OVERWORLD)
+                    || !level.getLevel().getServer().getWorldData().worldGenOptions().generateStructures()) return false;
             BlockPos origin = context.origin();
             int centerX = (origin.getX() & ~15) + 8;
             int centerZ = (origin.getZ() & ~15) + 8;

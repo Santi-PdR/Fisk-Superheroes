@@ -55,7 +55,8 @@ public class ModifierFlight extends Modifier
             if (data.getData().get(Vars.SPEEDING)) speed *= data.getData().get(Vars.SPEED) * 1.1F;
             if (player.isSprinting()) speed *= 1.2F;
 
-            player.moveRelative(0.075F * speed, new Vec3(player.xxa, 0.0D, player.zza));
+            player.moveRelative(0.075F * speed, new Vec3(
+                    PlayerInputTracker.strafe(player), 0.0D, PlayerInputTracker.forward(player)));
 
             Vec3 motion = player.getDeltaMovement();
             double gravity = 0.08D;

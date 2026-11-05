@@ -23,9 +23,21 @@ public final class PlayerInputTracker
     {
     }
 
-    public static void set(Player player, boolean jump, boolean sneak)
+    public static void set(Player player, boolean jump, boolean sneak, int forward, int strafe)
     {
-        INPUTS.computeIfAbsent(player.getUUID(), k -> new Input()).set(jump, sneak);
+        INPUTS.computeIfAbsent(player.getUUID(), k -> new Input()).set(jump, sneak, forward, strafe);
+    }
+
+    public static int forward(Player player)
+    {
+        Input input = INPUTS.get(player.getUUID());
+        return input != null ? input.forward : 0;
+    }
+
+    public static int strafe(Player player)
+    {
+        Input input = INPUTS.get(player.getUUID());
+        return input != null ? input.strafe : 0;
     }
 
     public static boolean isJumping(Player player)
@@ -49,11 +61,15 @@ public final class PlayerInputTracker
     {
         private boolean jump;
         private boolean sneak;
+        private int forward;
+        private int strafe;
 
-        void set(boolean jump, boolean sneak)
+        void set(boolean jump, boolean sneak, int forward, int strafe)
         {
             this.jump = jump;
             this.sneak = sneak;
+            this.forward = Integer.signum(forward);
+            this.strafe = Integer.signum(strafe);
         }
     }
 }
