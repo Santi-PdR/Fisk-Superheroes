@@ -99,7 +99,9 @@ public final class AlloySmelteryBlockEntity extends BlockEntity implements World
             dirty = true;
         }
 
-        if (dirty)
+        // Save progress during a long operation, not only when an item is produced.
+        if (dirty || (be.burnTime != 0 && level.getGameTime() % 20 == 0)
+                || (wasBurning && be.burnTime == 0))
         {
             be.setChanged();
         }
@@ -220,6 +222,7 @@ public final class AlloySmelteryBlockEntity extends BlockEntity implements World
     public void clearContent()
     {
         items.clear();
+        setChanged();
     }
 
     @Override

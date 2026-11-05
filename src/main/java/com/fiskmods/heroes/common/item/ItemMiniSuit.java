@@ -39,20 +39,16 @@ public class ItemMiniSuit extends Item
     {
         ItemStack stack = player.getItemInHand(hand);
         ItemStack[] stored = ItemFlashRing.getContainedArmor(stack);
-        if (stored == null)
-        {
-            var atom = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHero(FiskHeroes.id("atom"));
-            if (atom != null && ModItems.heroArmor != null)
-            {
-                stored = ItemFlashRing.getContainedArmor(ItemFlashRing.create(this, atom.getDefaultIteration()));
-            }
-        }
+        // An empty miniature is not a suit. Only deploy armor actually stored in its NBT;
+        // synthesizing a default suit here would create free armor from an empty item.
         if (stored == null) return InteractionResultHolder.pass(stack);
 
         if (!level.isClientSide)
         {
             for (int i = 0; i < 4; ++i)
             {
+                // Partial suits must not unequip armor in slots they do not occupy.
+                if (stored[i].isEmpty()) continue;
                 ItemStack existing = player.getItemBySlot(ARMOR_SLOTS[i]);
                 if (!existing.isEmpty())
                 {
@@ -62,10 +58,7 @@ public class ItemMiniSuit extends Item
                         player.drop(existing, false);
                     }
                 }
-                if (!stored[i].isEmpty())
-                {
-                    player.setItemSlot(ARMOR_SLOTS[i], stored[i].copy());
-                }
+                player.setItemSlot(ARMOR_SLOTS[i], stored[i].copy());
             }
             if (!player.getAbilities().instabuild)
             {

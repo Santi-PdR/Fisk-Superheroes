@@ -57,12 +57,15 @@ public final class FabricatorRecipes
                     for (Map.Entry<String, JsonElement> entry : root.getAsJsonObject("items").entrySet())
                     {
                         ResourceLocation itemId = ResourceLocation.tryParse(entry.getKey());
-                        if (itemId == null) continue;
-                        Item item = ForgeRegistries.ITEMS.getValue(itemId);
-                        if (item != null && item != Items.AIR)
+                        Item item = itemId != null ? ForgeRegistries.ITEMS.getValue(itemId) : null;
+                        int count = entry.getValue().getAsInt();
+                        if (item == null || item == Items.AIR || count <= 0)
                         {
-                            map.put(item, entry.getValue().getAsInt());
+                            // Never silently drop an ingredient: that would make a broken recipe
+                            // cheaper (and potentially usable) on the server.
+                            throw new IllegalArgumentException("Invalid ingredient " + entry.getKey() + " (count " + count + ")");
                         }
+                        map.merge(item, count, Math::addExact);
                     }
                 }
                 if (!map.isEmpty())

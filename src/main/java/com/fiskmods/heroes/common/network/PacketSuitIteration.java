@@ -31,7 +31,7 @@ public final class PacketSuitIteration extends SHPacket
     public void handle(NetworkEvent.Context context)
     {
         ServerPlayer sender = context.getSender();
-        if (sender != null && sender.containerMenu instanceof SuitIteratorMenu menu)
+        if (sender != null && sender.containerMenu instanceof SuitIteratorMenu menu && menu.stillValid(sender))
         {
             menu.applyIteration(iterationKey);
         }

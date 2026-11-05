@@ -187,13 +187,26 @@ public final class AbilityHandler
                 net.minecraft.world.entity.EquipmentSlot.LEGS,
                 net.minecraft.world.entity.EquipmentSlot.FEET
         };
+        HeroIteration active = data.getHero();
+        if (active == null) return;
         net.minecraft.world.item.ItemStack[] pieces = new net.minecraft.world.item.ItemStack[4];
         boolean hasAny = false;
         for (int i = 0; i < 4; ++i)
         {
-            pieces[i] = player.getItemBySlot(slots[i]).copy();
-            if (!pieces[i].isEmpty()) hasAny = true;
-            player.setItemSlot(slots[i], net.minecraft.world.item.ItemStack.EMPTY);
+            net.minecraft.world.item.ItemStack worn = player.getItemBySlot(slots[i]);
+            HeroIteration pieceHero = com.fiskmods.heroes.common.hero.ItemHeroArmor.isSuitPiece(worn)
+                    ? com.fiskmods.heroes.common.hero.ItemHeroArmor.getHero(worn) : null;
+            if (pieceHero != null && pieceHero.getHero().equals(active.getHero()))
+            {
+                pieces[i] = worn.copy();
+                player.setItemSlot(slots[i], net.minecraft.world.item.ItemStack.EMPTY);
+                hasAny = true;
+            }
+            else
+            {
+                // Ordinary armor and pieces from another hero are not part of this suit.
+                pieces[i] = net.minecraft.world.item.ItemStack.EMPTY;
+            }
         }
         if (!hasAny) return;
 

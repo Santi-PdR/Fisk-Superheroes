@@ -101,13 +101,16 @@ public final class SuitIteratorMenu extends AbstractContainerMenu
         HeroIteration target = hero.getIteration(iterationKey);
         if (target == null) return;
 
+        // Reject the whole change if any inserted piece does not exist in the target
+        // iteration; partially changing the set would leave it in an inconsistent state.
+        for (int i = 0; i < 4; ++i)
+        {
+            if (!armorInput.getItem(i).isEmpty() && !target.hasPieceOfSet(i)) return;
+        }
         for (int i = 0; i < 4; ++i)
         {
             ItemStack stack = armorInput.getItem(i);
-            if (!stack.isEmpty() && target.hasPieceOfSet(i))
-            {
-                ItemHeroArmor.setHero(stack, target);
-            }
+            if (!stack.isEmpty()) ItemHeroArmor.setHero(stack, target);
         }
         armorInput.setChanged();
         broadcastChanges();

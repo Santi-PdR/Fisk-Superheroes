@@ -381,6 +381,7 @@ public final class SuitFabricatorBlockEntity extends BlockEntity implements Worl
     public void clearContent()
     {
         items.clear();
+        syncAndSave();
     }
 
     @Override

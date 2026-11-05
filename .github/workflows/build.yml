@@ -42,6 +42,11 @@ jobs:
           fi
           chmod +x gradlew
 
+      - name: Check packaged textures and trails
+        run: |
+          python3 .ci/verify_model_textures.py
+          python3 .ci/verify_trails.py
+
       - name: Build
         id: gradle
         run: |
@@ -83,8 +88,15 @@ jobs:
           if-no-files-found: ignore
           compression-level: 0
 
-      - name: Publish preview release jar
+      - name: Test machines and miniature suits in Forge
         if: steps.gradle.outputs.exit_code == '0'
+        run: |
+          mkdir -p run
+          echo 'eula=true' > run/eula.txt
+          timeout -k 20 600 ./gradlew runGameTestServer --no-daemon --console=plain
+
+      - name: Publish preview release jar
+        if: steps.gradle.outputs.exit_code == '0' && github.ref == 'refs/heads/arena/46651ecf-fisk-superheroes'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -97,7 +109,7 @@ jobs:
               --prerelease \
               --target "${GITHUB_SHA}" \
               --title "Fisk's Superheroes 1.20.1 (2.4.0 Preview)" \
-              --notes "Build automático de Minecraft 1.20.1 Forge (47.1.0+) desde la rama ${GITHUB_REF_NAME}."
+              --notes "Build automático de Minecraft 1.20.1 Forge (47.4.10+) desde la rama ${GITHUB_REF_NAME}."
           fi
 
       - name: Upload build reports
