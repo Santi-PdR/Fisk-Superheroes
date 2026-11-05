@@ -1,14 +1,19 @@
 package com.fiskmods.heroes.common.item;
 
+import java.util.List;
+
+import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.Hero;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.sound.SHSounds;
 
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -16,7 +21,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -24,22 +28,21 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import java.util.List;
 
-/** Basic magazine firearm used by the bundled firearm heroes. */
+/** Base firearm/launcher item used by Fisk's Superheroes weapons. */
 public class ItemGun extends Item
 {
-    private static final String AMMO_TAG = "Ammo";
-    private static final String NEXT_SHOT_TAG = "NextShotTick";
+    protected static final String AMMO_TAG = "Ammo";
+    protected static final String NEXT_SHOT_TAG = "NextShotTick";
     private static final String NEXT_NOTICE_TAG = "FiskHeroesGunNoticeTick";
     public static final String RELOAD_END_TAG = "fiskheroes_gun_reload_end";
     private static final String RELOAD_DURATION_TAG = "fiskheroes_gun_reload_duration";
-    private final int magazineSize;
-    private final int cooldownTicks;
-    private final int reloadTicks;
-    private final double range;
-    private final float damage;
-    private final boolean usesAmmo;
+    protected final int magazineSize;
+    protected final int cooldownTicks;
+    protected final int reloadTicks;
+    protected final double range;
+    protected final float damage;
+    protected final boolean usesAmmo;
 
     public ItemGun(int magazineSize, int cooldownTicks, int reloadTicks, double range, float damage, Properties properties)
     {
@@ -134,16 +137,10 @@ public class ItemGun extends Item
             return false;
         }
 
-        // A gun can be used directly from the item action, before the next player-tick has
-        // resolved a suit that was just equipped. Refresh at the server authority boundary, as
-        // ability input does, so valid shots do not fail with stale hero data.
         HeroTracker.update(player);
         HeroIteration iteration = HeroTracker.getHero(player);
         Hero hero = iteration != null ? iteration.getHero() : null;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
-        // AIM is a presentation/input state, not a prerequisite for firing. Several pack heroes
-        // bind AIM to the primary attack key, which leaves ordinary right-click use otherwise
-        // silently doing nothing unless the player holds two different mouse buttons at once.
         if (hero == null || data == null)
         {
             showUseNotice(player, "message.fiskheroes.gun.requires_suit");
@@ -167,47 +164,48 @@ public class ItemGun extends Item
         }
         stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, now + shotCooldown);
 
+        return triggerSingleShot(player, stack);
+    }
+
+    protected boolean triggerSingleShot(Player player, ItemStack stack)
+    {
+        Level level = player.level();
         int ammo = getAmmo(stack);
         if (ammo <= 0)
         {
-            player.playSound(SoundEvents.DISPENSER_FAIL, 0.8F, 0.8F + level.random.nextFloat() * 0.3F);
+            SHSounds.play(player, FiskHeroes.id("item.gun.click"), SoundSource.PLAYERS, 0.8F,
+                    0.85F + level.random.nextFloat() * 0.25F);
             showUseNotice(player, "message.fiskheroes.gun.empty");
             return false;
         }
 
-        // Dual models represent two pistols, but the original alternates the hand/shot; it does
-        // not discharge both rounds at once. Keep the larger combined magazine and cadence while
-        // consuming one round per attack.
         if (usesAmmo) stack.getOrCreateTag().putInt(AMMO_TAG, ammo - 1);
         if (player instanceof ServerPlayer serverPlayer)
         {
-            fire(serverPlayer);
+            fire(serverPlayer, stack);
         }
-        playShotSound(player, level);
+        playShotSound(player, level, stack);
         player.awardStat(Stats.ITEM_USED.get(this));
         return true;
     }
 
-    /** Plays the weapon-specific fire sound, preserving the legacy Deagle pack event. */
-    private void playShotSound(Player player, Level level)
+    protected void playShotSound(Player player, Level level, ItemStack stack)
     {
         String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
-        if ("desert_eagle".equals(id))
+        float pitch = 1.0F / (level.random.nextFloat() * 0.3F + 0.7F);
+        switch (id)
         {
-            float pitch = 1.0F / (level.random.nextFloat() * 0.3F + 0.7F);
-            com.fiskmods.heroes.common.sound.SHSounds.play(player,
-                    new net.minecraft.resources.ResourceLocation("fiskheroes", "item.gun.deagle.shoot"),
-                    net.minecraft.sounds.SoundSource.PLAYERS, 4.0F, pitch);
-        }
-        else
-        {
-            player.playSound(SoundEvents.CROSSBOW_SHOOT, 1.0F,
-                    0.9F + level.random.nextFloat() * 0.2F);
+            case "desert_eagle" -> SHSounds.play(player, FiskHeroes.id("item.gun.deagle.shoot"), SoundSource.PLAYERS, 4.0F, pitch);
+            case "beretta_93r" -> SHSounds.play(player, FiskHeroes.id("item.gun.beretta.shoot"), SoundSource.PLAYERS, 3.5F, pitch);
+            case "chronos_rifle" -> SHSounds.play(player, FiskHeroes.id("item.chronosrifle.shoot"), SoundSource.PLAYERS, 3.5F, 1.0F);
+            case "rip_hunters_gun" -> SHSounds.play(player, FiskHeroes.id("item.ripsgun.shoot"), SoundSource.PLAYERS, 3.0F, 1.0F);
+            case "cold_gun" -> SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 2.0F, 1.0F);
+            case "heat_gun" -> player.playSound(net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
+            default -> player.playSound(net.minecraft.sounds.SoundEvents.CROSSBOW_SHOOT, 1.0F, 0.9F + level.random.nextFloat() * 0.2F);
         }
     }
 
-    /** Explain the common silent failure cases without spamming while primary attack is held. */
-    private static void showUseNotice(Player player, String translationKey)
+    protected static void showUseNotice(Player player, String translationKey)
     {
         long now = player.level().getGameTime();
         if (player.getPersistentData().getLong(NEXT_NOTICE_TAG) > now) return;
@@ -215,20 +213,17 @@ public class ItemGun extends Item
         player.displayClientMessage(Component.translatable(translationKey), true);
     }
 
-    private void fire(ServerPlayer shooter)
+    protected void fire(ServerPlayer shooter, ItemStack stack)
     {
         Level level = shooter.level();
         String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
 
-        // These two weapons are projectile launchers in the original pack, not hitscan guns.
-        // Keep their energy bolt collision, impact and explosion behavior on the registered
-        // projectile path; aiming the Chronos Rifle grants the original scoped damage bonus.
         if (id.equals("chronos_rifle") || id.equals("rip_hunters_gun"))
         {
             com.google.gson.JsonObject profile = new com.google.gson.JsonObject();
             profile.addProperty("damage", damage);
             com.google.gson.JsonObject types = new com.google.gson.JsonObject();
-            types.addProperty("BULLET", 1.0D);
+            types.addProperty(id.equals("chronos_rifle") ? "ENERGY" : "BULLET", 1.0D);
             profile.add("types", types);
 
             SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
@@ -247,21 +242,20 @@ public class ItemGun extends Item
                 ClipContext.Fluid.NONE, shooter));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
 
-        // The original guns render a moving bullet ray/trail. The 1.20 port resolves damage on
-        // the server, so show a short, server-synchronized tracer along that same clipped ray;
-        // otherwise a valid miss looks exactly like a broken weapon to the player.
         if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
-            net.minecraft.core.particles.ParticleOptions tracer = net.minecraftforge.registries.ForgeRegistries.ITEMS
-                    .getKey(this).getPath().equals("cold_gun")
-                    ? net.minecraft.core.particles.ParticleTypes.SNOWFLAKE
-                    : new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
+            net.minecraft.core.particles.ParticleOptions tracer = switch (id)
+            {
+                case "cold_gun" -> net.minecraft.core.particles.ParticleTypes.SNOWFLAKE;
+                case "heat_gun" -> net.minecraft.core.particles.ParticleTypes.FLAME;
+                default -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
+            };
             double distance = start.distanceTo(end);
-            int points = Math.min(16, Math.max(1, (int) Math.ceil(distance / 4.0D)));
+            int points = Math.min(18, Math.max(1, (int) Math.ceil(distance / 3.5D)));
             for (int i = 1; i <= points; ++i)
             {
                 Vec3 point = start.lerp(end, i / (double) (points + 1));
-                serverLevel.sendParticles(tracer, point.x, point.y, point.z, 1, 0.015D, 0.015D, 0.015D, 0.0D);
+                serverLevel.sendParticles(tracer, point.x, point.y, point.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
             }
         }
 
@@ -294,36 +288,47 @@ public class ItemGun extends Item
             }
         }
 
+        onRayBlockHit(shooter, block);
+
         boolean acceptedHit = false;
         if (hit != null)
         {
-            // Hitscan bullets still need projectile damage semantics: hero immunities and
-            // resistances inspect both the DamageType tags and the active original profile.
             var damageType = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.ARROW);
             var source = new net.minecraft.world.damagesource.DamageSource(damageType, shooter, shooter);
             LivingEntity target = hit;
+            String dmgProfile = id.equals("cold_gun") ? "COLD" : (id.equals("heat_gun") ? "FIRE" : "BULLET");
             final boolean[] applied = { false };
             com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                    java.util.Map.of("BULLET", 1.0D), () -> applied[0] = target.hurt(source, damage));
+                    java.util.Map.of(dmgProfile, 1.0D), () -> applied[0] = target.hurt(source, damage));
             acceptedHit = applied[0];
         }
 
         if (acceptedHit)
         {
-            if (id.equals("cold_gun"))
-            {
-                hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 100, hit.getTicksRequiredToFreeze()));
-            }
-            else if (id.equals("heat_gun"))
-            {
-                hit.setSecondsOnFire(5);
-            }
-            else if (id.equals("chronos_rifle"))
-            {
-                hit.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
-            }
+            onRayEntityHit(shooter, hit);
+        }
+    }
+
+    protected void onRayBlockHit(ServerPlayer shooter, BlockHitResult block)
+    {
+    }
+
+    protected void onRayEntityHit(ServerPlayer shooter, LivingEntity hit)
+    {
+        String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
+        if (id.equals("cold_gun"))
+        {
+            hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 120, hit.getTicksRequiredToFreeze()));
+        }
+        else if (id.equals("heat_gun"))
+        {
+            hit.setSecondsOnFire(6);
+        }
+        else if (id.equals("chronos_rifle"))
+        {
+            hit.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 60, 1));
         }
     }
 
@@ -343,10 +348,11 @@ public class ItemGun extends Item
         player.getPersistentData().putInt(RELOAD_DURATION_TAG, reloadTicks);
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data != null) data.getData().set(Vars.RELOAD_TIMER, 1.0F);
-        player.playSound(SoundEvents.ARMOR_EQUIP_IRON, 0.7F, 1.25F);
+        SHSounds.play(player, FiskHeroes.id(isDual(stack) ? "item.gun.reload.dual" : "item.gun.reload"),
+                SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
-    private boolean hasPermission(Player player, Hero hero)
+    protected boolean hasPermission(Player player, Hero hero)
     {
         String path = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
         String permission = switch (path)

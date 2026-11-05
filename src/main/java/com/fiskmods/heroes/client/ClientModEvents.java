@@ -32,6 +32,9 @@ public final class ClientModEvents
         event.enqueueWork(() ->
         {
             MenuScreens.register(ModMenus.QUIVER.get(), QuiverScreen::new);
+            MenuScreens.register(ModMenus.ALLOY_SMELTERY.get(), com.fiskmods.heroes.client.gui.AlloySmelteryScreen::new);
+            MenuScreens.register(ModMenus.SUIT_ITERATOR.get(), com.fiskmods.heroes.client.gui.SuitIteratorScreen::new);
+            MenuScreens.register(ModMenus.SUIT_FABRICATOR.get(), com.fiskmods.heroes.client.gui.SuitFabricatorScreen::new);
             ItemProperties.register(ModItems.COMPOUND_BOW.get(), new net.minecraft.resources.ResourceLocation("pulling"),
                     (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.COMPOUND_BOW.get(), new net.minecraft.resources.ResourceLocation("pull"),
@@ -62,6 +65,8 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.SPELL_DUPLICATE.get(), com.fiskmods.heroes.client.render.SpellDuplicateRenderer::new);
         event.registerEntityRenderer(ModEntities.ILLUSION_DRONE.get(), com.fiskmods.heroes.client.render.IllusionDroneRenderer::new);
         event.registerEntityRenderer(ModEntities.GRAVITY_WAVE.get(), com.fiskmods.heroes.client.render.GravityWaveRenderer::new);
+        event.registerBlockEntityRenderer(com.fiskmods.heroes.common.block.ModBlockEntities.SUIT_FABRICATOR.get(),
+                com.fiskmods.heroes.client.render.SuitFabricatorBlockEntityRenderer::new);
     }
 
     @SubscribeEvent

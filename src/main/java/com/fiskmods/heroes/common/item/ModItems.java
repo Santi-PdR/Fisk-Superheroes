@@ -42,7 +42,7 @@ public class ModItems
     /* --- Crafting materials --- */
     public static final RegistryObject<Item> SUIT_CORE = REGISTRY.register("suit_core", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SUIT_UPGRADE = REGISTRY.register("suit_upgrade", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> SUIT_DRIVE = REGISTRY.register("suit_drive", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_DRIVE = REGISTRY.register("suit_drive", () -> new ItemSuitDrive(new Item.Properties()));
     public static final RegistryObject<Item> METAHUMAN_LOG = REGISTRY.register("metahuman_log", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> TUTRIDIUM_GEM = REGISTRY.register("tutridium_gem", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> RAW_VIBRANIUM = REGISTRY.register("raw_vibranium", () -> new Item(new Item.Properties()));
@@ -65,35 +65,34 @@ public class ModItems
     public static final RegistryObject<Item> DESERT_EAGLE = REGISTRY.register("desert_eagle",
             () -> new ItemDesertEagle(8, 8, 16, 75.0D, 8.0F, new Item.Properties()));
     public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
-            () -> new ItemGun(15, 20, 16, 75.0D, 3.5F, new Item.Properties()));
+            () -> new ItemBeretta93R(15, 20, 16, 75.0D, 3.5F, new Item.Properties()));
     public static final RegistryObject<Item> CHRONOS_RIFLE = REGISTRY.register("chronos_rifle",
-            () -> new ItemGun(12, 12, 50, 40.0D, 6.0F, false, new Item.Properties()));
+            () -> new ItemChronosRifle(12, 12, 50, 40.0D, 6.0F, new Item.Properties()));
     public static final RegistryObject<Item> COLD_GUN = REGISTRY.register("cold_gun",
-            () -> new ItemGun(1, 8, 0, 24.0D, 1.0F, false, new Item.Properties()));
+            () -> new ItemColdGun(1, 8, 0, 24.0D, 1.0F, new Item.Properties()));
     public static final RegistryObject<Item> HEAT_GUN = REGISTRY.register("heat_gun",
-            () -> new ItemGun(1, 8, 0, 24.0D, 2.0F, false, new Item.Properties()));
+            () -> new ItemHeatGun(1, 8, 0, 24.0D, 2.0F, new Item.Properties()));
     public static final RegistryObject<Item> RIP_HUNTERS_GUN = REGISTRY.register("rip_hunters_gun",
-            () -> new ItemGun(1, 10, 0, 32.0D, 5.0F, false, new Item.Properties()));
+            () -> new ItemRipHuntersGun(1, 10, 0, 32.0D, 5.0F, new Item.Properties()));
     public static final RegistryObject<Item> BO_STAFF = REGISTRY.register("bo_staff",
-            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 3, -2.4F, new Item.Properties()));
+            () -> new ItemBoStaff(new Item.Properties()));
     public static final RegistryObject<Item> RUPTURES_SCYTHE = REGISTRY.register("ruptures_scythe",
-            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 6, -2.8F, new Item.Properties()));
+            () -> new ItemRuptureScythe(new Item.Properties()));
     public static final RegistryObject<Item> SCIMITAR = REGISTRY.register("scimitar",
-            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 4, -2.4F, new Item.Properties()));
+            () -> new ItemScimitar(new Item.Properties()));
     public static final RegistryObject<Item> SWORD_BLADE = REGISTRY.register("sword_blade", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> HANDLE = REGISTRY.register("handle", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> IRIDESCENT_GOLD = REGISTRY.register("iridescent_gold", () -> new Item(new Item.Properties()));
 
     /* --- Equipment --- */
-    public static final RegistryObject<Item> FLASH_RING = REGISTRY.register("flash_ring", () -> new Item(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
-    public static final RegistryObject<Item> MINI_SUIT = REGISTRY.register("mini_suit", () -> new Item(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> FLASH_RING = REGISTRY.register("flash_ring", () -> new ItemFlashRing(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+    public static final RegistryObject<Item> MINI_SUIT = REGISTRY.register("mini_suit", () -> new ItemMiniSuit(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> KATANA = REGISTRY.register("katana",
             () -> new ItemKatana(new Item.Properties()));
     public static final RegistryObject<Item> CHOKUTO = REGISTRY.register("chokuto",
-            () -> new ItemDualSword(new Item.Properties()));
+            () -> new ItemChokuto(new Item.Properties()));
     public static final RegistryObject<Item> TACTICAL_TONFA = REGISTRY.register("tactical_tonfa",
-            () -> new net.minecraft.world.item.SwordItem(net.minecraft.world.item.Tiers.IRON, 2, -2.4F,
-                    new Item.Properties().durability(600)));
+            () -> new ItemTacticalTonfa(new Item.Properties()));
     public static final RegistryObject<Item> GRAPPLING_GUN = REGISTRY.register("grappling_gun",
             () -> new ItemGrapplingGun(new Item.Properties().durability(256)));
     public static final RegistryObject<Item> CAPTAIN_AMERICAS_SHIELD = REGISTRY.register("captain_americas_shield", () -> new ItemCaptainAmericaShield(new Item.Properties()));
@@ -218,12 +217,28 @@ public class ModItems
                 .displayItems((params, output) ->
                 {
                     output.accept(FLASH_RING.get());
-                    output.accept(MINI_SUIT.get());
+                    for (com.fiskmods.heroes.common.hero.Hero hero : com.fiskmods.heroes.common.hero.Hero.REGISTRY.getSortedHeroes())
+                    {
+                        if (!hero.isHidden() && ItemFlashRing.canContainHero(hero))
+                        {
+                            output.accept(ItemFlashRing.create(FLASH_RING.get(), hero.getDefaultIteration()));
+                        }
+                    }
+                    for (com.fiskmods.heroes.common.hero.Hero hero : com.fiskmods.heroes.common.hero.Hero.REGISTRY.getSortedHeroes())
+                    {
+                        if (!hero.isHidden() && hero.hasKeyBind("MINIATURIZE_SUIT"))
+                        {
+                            output.accept(ItemFlashRing.create(MINI_SUIT.get(), hero.getDefaultIteration()));
+                        }
+                    }
                     output.accept(KATANA.get());
                     output.accept(ItemDualSword.setDual(new ItemStack(KATANA.get())));
                     output.accept(CHOKUTO.get());
                     output.accept(ItemDualSword.setDual(new ItemStack(CHOKUTO.get())));
+                    output.accept(SCIMITAR.get());
+                    output.accept(ItemDualSword.setDual(new ItemStack(SCIMITAR.get())));
                     output.accept(TACTICAL_TONFA.get());
+                    output.accept(ItemDualSword.setDual(new ItemStack(TACTICAL_TONFA.get())));
                     output.accept(GRAPPLING_GUN.get());
                     output.accept(DESERT_EAGLE.get());
                     output.accept(dualItem(DESERT_EAGLE.get()));
@@ -235,7 +250,6 @@ public class ModItems
                     output.accept(RIP_HUNTERS_GUN.get());
                     output.accept(BO_STAFF.get());
                     output.accept(RUPTURES_SCYTHE.get());
-                    output.accept(SCIMITAR.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
                     output.accept(COMPOUND_BOW.get());

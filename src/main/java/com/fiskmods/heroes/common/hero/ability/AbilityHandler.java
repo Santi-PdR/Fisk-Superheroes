@@ -164,6 +164,12 @@ public final class AbilityHandler
                 continue;
             }
 
+            if ("MINIATURIZE_SUIT".equals(key))
+            {
+                miniaturizeSuit(player, data);
+                continue;
+            }
+
             ModifierEntry entry = activate(player, data, hero, key);
             if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
             {
@@ -171,6 +177,44 @@ public final class AbilityHandler
                         .computeIfAbsent(index, ignored -> new ArrayList<>()).add(entry);
             }
         }
+    }
+
+    private static void miniaturizeSuit(ServerPlayer player, SHPlayerData data)
+    {
+        net.minecraft.world.entity.EquipmentSlot[] slots = {
+                net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET
+        };
+        net.minecraft.world.item.ItemStack[] pieces = new net.minecraft.world.item.ItemStack[4];
+        boolean hasAny = false;
+        for (int i = 0; i < 4; ++i)
+        {
+            pieces[i] = player.getItemBySlot(slots[i]).copy();
+            if (!pieces[i].isEmpty()) hasAny = true;
+            player.setItemSlot(slots[i], net.minecraft.world.item.ItemStack.EMPTY);
+        }
+        if (!hasAny) return;
+
+        net.minecraft.world.item.ItemStack mini = com.fiskmods.heroes.common.item.ItemFlashRing.setContainedArmor(
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.MINI_SUIT.get()), pieces);
+        if (player.getMainHandItem().isEmpty())
+        {
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, mini);
+        }
+        else if (!player.getInventory().add(mini))
+        {
+            player.drop(mini, false);
+        }
+
+        data.getData().set(Vars.SIZE_STATE, (byte) 0);
+        data.getData().set(Vars.SCALE, 1.0F);
+        data.getData().set(Vars.FLYING, false);
+        HeroTracker.update(player);
+        com.fiskmods.heroes.common.sound.SHSounds.play(player,
+                com.fiskmods.heroes.FiskHeroes.id("atom_shrink"),
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
     /** Retries an aim-gated shared-key ability after the aim state has had time to settle. */
@@ -245,11 +289,10 @@ public final class AbilityHandler
             case "TELEPORT" -> "teleportation";
             case "HORIZONTAL_BOW" -> "archery";
             case "SHIELD_THROW" -> "shield_throwing";
-            case "MINIATURIZE_SUIT", "SIZE_MANIPULATION" -> "size_manipulation";
+            case "SIZE_MANIPULATION" -> "size_manipulation";
             default -> key.startsWith("TENTACLE_") ? "tentacles" : null;
         };
-        boolean miniaturizeOnly = "MINIATURIZE_SUIT".equals(key);
-        ModifierEntry entry = findEnabledModifier(hero, key, modifierId, miniaturizeOnly, player, data);
+        ModifierEntry entry = findEnabledModifier(hero, key, modifierId, false, player, data);
 
         if (entry == null)
         {

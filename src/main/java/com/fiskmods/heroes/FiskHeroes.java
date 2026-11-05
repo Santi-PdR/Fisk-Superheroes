@@ -71,6 +71,7 @@ public class FiskHeroes
         ModItems.REGISTRY.register(modBus);
         ModBlocks.REGISTRY.register(modBus);
         ModBlocks.ITEMS.register(modBus);
+        com.fiskmods.heroes.common.block.ModBlockEntities.REGISTRY.register(modBus);
         BIOME_MODIFIER_SERIALIZERS.register(modBus);
         ModMenus.REGISTRY.register(modBus);
         ModEntities.REGISTRY.register(modBus);
@@ -122,8 +123,13 @@ public class FiskHeroes
                     com.fiskmods.heroes.common.network.PacketStopSound::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketGravityAmount.class,
                     com.fiskmods.heroes.common.network.PacketGravityAmount::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketSuitIteration.class,
+                    com.fiskmods.heroes.common.network.PacketSuitIteration::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketFabricatorAction.class,
+                    com.fiskmods.heroes.common.network.PacketFabricatorAction::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
+            com.fiskmods.heroes.common.block.FabricatorRecipes.ensureLoaded();
             LOGGER.info("Fisk's Superheroes loaded: {} heroes, {} powers, {} data variables",
                     Hero.REGISTRY.size(), com.fiskmods.heroes.common.hero.power.Power.REGISTRY.size(), DataRegistry.INSTANCE.size());
         });

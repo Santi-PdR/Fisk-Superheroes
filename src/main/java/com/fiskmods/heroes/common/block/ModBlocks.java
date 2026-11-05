@@ -61,12 +61,18 @@ public final class ModBlocks
     public static final RegistryObject<Block> VIBRANIUM_ORE = registerVibraniumOre();
     public static final RegistryObject<Block> LUNAR_ROCK = register("lunar_rock", 1.5F, 10.0F, false, 0);
     public static final RegistryObject<Block> COBBLED_LUNAR_ROCK = register("cobbled_lunar_rock", 2.0F, 10.0F, false, 0);
+    public static final RegistryObject<Block> ALLOY_SMELTERY = registerAlloySmeltery();
+    public static final RegistryObject<Block> SUIT_ITERATOR = registerSuitIterator();
+    public static final RegistryObject<Block> SUIT_FABRICATOR = registerSuitFabricator("suit_fabricator", false);
+    public static final RegistryObject<Block> COSMIC_SUIT_FABRICATOR = registerSuitFabricator("cosmic_suit_fabricator", true);
     /** Invisible, short-lived redstone source used by trick pulse arrows. */
     public static final RegistryObject<Block> PULSE_SIGNAL = REGISTRY.register("pulse_signal", () ->
             new PulseSignalBlock(BlockBehaviour.Properties.of().strength(-1.0F, 3600000.0F)
                     .noLootTable().noOcclusion().noCollission()));
 
-    public static final List<RegistryObject<Block>> ALL = List.of(TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
+    public static final List<RegistryObject<Block>> ALL = List.of(
+            ALLOY_SMELTERY, SUIT_ITERATOR, SUIT_FABRICATOR, COSMIC_SUIT_FABRICATOR,
+            TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
             GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, SUPERCHARGED_ETERNIUM, ETERNIUM_STONE,
             NEXUS_BRICKS, NEXUS_SOIL, NEXUS_BRICK_STAIRS, NEXUS_BRICK_SLAB,
@@ -158,6 +164,35 @@ public final class ModBlocks
                 new TutridiumStoneBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)
                         .strength(1.5F, 10.0F).sound(SoundType.STONE)));
         ITEMS.register("tutridium_stone", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerAlloySmeltery()
+    {
+        RegistryObject<Block> block = REGISTRY.register("alloy_smeltery", () ->
+                new AlloySmelteryBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE)
+                        .strength(5.0F, 10.0F).sound(SoundType.STONE).requiresCorrectToolForDrops()
+                        .lightLevel(state -> state.getValue(AlloySmelteryBlock.LIT) ? 13 : 0)));
+        ITEMS.register("alloy_smeltery", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerSuitIterator()
+    {
+        RegistryObject<Block> block = REGISTRY.register("suit_iterator", () ->
+                new SuitIteratorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                        .strength(5.0F, 20.0F).sound(SoundType.METAL).requiresCorrectToolForDrops()));
+        ITEMS.register("suit_iterator", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerSuitFabricator(String name, boolean cosmic)
+    {
+        RegistryObject<Block> block = REGISTRY.register(name, () ->
+                new SuitFabricatorBlock(cosmic, BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                        .strength(6.0F, 30.0F).sound(SoundType.METAL).requiresCorrectToolForDrops()
+                        .lightLevel(state -> cosmic ? 7 : 3)));
+        ITEMS.register(name, () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 

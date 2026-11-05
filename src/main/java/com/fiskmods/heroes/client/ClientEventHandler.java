@@ -448,6 +448,21 @@ public class ClientEventHandler
     }
 
     @SubscribeEvent
+    public static void onComputeFov(net.minecraftforge.client.event.ComputeFovModifierEvent event)
+    {
+        var player = event.getPlayer();
+        if (player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get()))
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(player);
+            if (data != null && data.getData().get(Vars.AIMING))
+            {
+                float timer = net.minecraft.util.Mth.clamp(data.getData().get(Vars.AIMING_TIMER), 0.0F, 1.0F);
+                event.setNewFovModifier(event.getFovModifier() * (1.0F - 0.45F * timer));
+            }
+        }
+    }
+
+    @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event)
     {
         com.fiskmods.heroes.common.data.RenderTickInfo.set(com.fiskmods.heroes.client.ClientEventHandler.partialTicks());

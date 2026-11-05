@@ -58,4 +58,17 @@ public final class ItemGrapplingGun extends Item
         player.awardStat(Stats.ITEM_USED.get(this));
         return InteractionResultHolder.sidedSuccess(stack, false);
     }
+
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer)
+    {
+        consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions()
+        {
+            @Override
+            public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer()
+            {
+                return com.fiskmods.heroes.client.render.GrapplingGunItemRenderer.getInstance();
+            }
+        });
+    }
 }
