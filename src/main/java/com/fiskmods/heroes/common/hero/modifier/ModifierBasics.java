@@ -659,21 +659,12 @@ class ModifierSpeedDisintegration extends Modifier
     }
 }
 
-/** Grants the suit's equipment items. */
+/** Marker for pack-defined utility belt equipment; actions are handled by EquipmentHelper. */
 class ModifierEquipment extends Modifier
 {
     ModifierEquipment(ResourceLocation id)
     {
         super(id);
-    }
-
-    @Override
-    public void onRespawn(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
-    {
-        if (entity instanceof Player player)
-        {
-            com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.grantEquipment(player, data);
-        }
     }
 }
 

@@ -284,7 +284,6 @@ public class CommonEventHandler
         if (event.getEntity() instanceof ServerPlayer player)
         {
             DataSyncer.onPlayerLogin(player);
-            EquipmentHelper.grantEquipment(player, SHDataCapabilities.getPlayer(player));
         }
     }
 

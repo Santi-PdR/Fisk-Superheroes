@@ -181,4 +181,40 @@ public final class PortRegressionTests
             reencoded.release();
         }
     }
+    @GameTest(template = "test_empty")
+    public static void changingSuitsDoesNotGenerateEquipment(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:green_arrow");
+        if (data == null || hero == null || hero.getEquipment().isEmpty())
+        {
+            helper.fail("Test requires player capability and an archer with declared equipment");
+            return;
+        }
+        var chest = com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                com.fiskmods.heroes.common.item.ModItems.heroArmor[1]);
+        for (int i = 0; i < 3; ++i)
+        {
+            player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, chest.copy());
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            if (data.getHero() == null)
+            {
+                helper.fail("Archer suit was not activated");
+                return;
+            }
+            player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.item.ItemStack.EMPTY);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        }
+        for (int i = 0; i < player.getInventory().getContainerSize(); ++i)
+        {
+            if (!player.getInventory().getItem(i).isEmpty())
+            {
+                helper.fail("Changing suits must not generate free equipment");
+                return;
+            }
+        }
+        helper.succeed();
+    }
+
 }
