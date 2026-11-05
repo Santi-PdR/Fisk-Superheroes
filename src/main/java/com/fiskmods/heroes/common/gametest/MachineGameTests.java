@@ -76,6 +76,28 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void fabricatorRejectsMissingIngredients(GameTestHelper helper)
+    {
+        Hero hero = FabricatorRecipes.getCraftableHeroes().stream().findFirst().orElse(null);
+        if (hero == null)
+        {
+            helper.fail("No fabricator recipe loaded");
+            return;
+        }
+        BlockPos relative = new BlockPos(1, 1, 1);
+        helper.setBlock(relative, ModBlocks.COSMIC_SUIT_FABRICATOR.get());
+        BlockPos pos = helper.absolutePos(relative);
+        SuitFabricatorBlockEntity be = (SuitFabricatorBlockEntity) helper.getLevel().getBlockEntity(pos);
+        be.setItem(10, ItemSuitDrive.createForHero(hero));
+        be.setItem(11, new ItemStack(ModItems.SUIT_CORE.get()));
+        if (be.canPrint() || be.startPrint() || be.getItem(11).isEmpty() || be.isPrinting())
+        {
+            helper.fail("Missing ingredients must not start printing or consume the core");
+        }
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void fabricatorPrintsAndRetainsHero(GameTestHelper helper)
     {
         Hero hero = FabricatorRecipes.getCraftableHeroes().stream()
@@ -111,6 +133,17 @@ public final class MachineGameTests
         for (int i = 0; i < SuitFabricatorBlockEntity.MAX_PRINT_TIME; ++i)
         {
             SuitFabricatorBlockEntity.serverTick(helper.getLevel(), pos, helper.getLevel().getBlockState(pos), be);
+            if (i == SuitFabricatorBlockEntity.MAX_PRINT_TIME / 2 - 1)
+            {
+                SuitFabricatorBlockEntity restored = new SuitFabricatorBlockEntity(pos, helper.getLevel().getBlockState(pos));
+                restored.load(be.saveWithoutMetadata());
+                if (!restored.isPrinting() || restored.getPrintTime() != SuitFabricatorBlockEntity.MAX_PRINT_TIME / 2
+                        || restored.getTargetIteration() == null || restored.getTargetIteration().getHero() != hero)
+                {
+                    helper.fail("Fabricator must preserve print progress and hero when saved");
+                    return;
+                }
+            }
         }
         if (be.isPrinting() || !be.hasFinishedOutput())
         {

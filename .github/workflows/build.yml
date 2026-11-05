@@ -93,8 +93,12 @@ jobs:
         run: |
           mkdir -p run
           echo 'eula=true' > run/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\n' > run/server.properties
           set -o pipefail
           timeout -k 20 600 ./gradlew runGameTestServer --no-daemon --console=plain 2>&1 | tee ci-gametest.log
+          # A zero-test run can exit successfully; require our regression suite to run.
+          count=$(sed -nE 's/.*All ([0-9]+) required tests passed.*/\1/p' ci-gametest.log | tail -1)
+          test "${count:-0}" -ge 5
 
       - name: Publish GameTest log
         if: always() && hashFiles('ci-gametest.log') != ''
@@ -120,6 +124,7 @@ jobs:
           TAG="v2.4.0-1.20.1-preview"
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" build/libs/*.jar --clobber
+            gh release edit "$TAG" --notes "Build automático de Minecraft 1.20.1 Forge (47.4.10+) desde la rama ${GITHUB_REF_NAME}."
           else
             gh release create "$TAG" build/libs/*.jar \
               --prerelease \
