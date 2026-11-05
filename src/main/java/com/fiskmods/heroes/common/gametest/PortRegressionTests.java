@@ -135,6 +135,30 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void tutridiumGeneratesInStoneAndDeepslate(GameTestHelper helper)
+    {
+        var relative = new net.minecraft.core.BlockPos(1, 1, 1);
+        var pos = helper.absolutePos(relative);
+        var random = net.minecraft.util.RandomSource.create(1234L);
+        for (var base : new net.minecraft.world.level.block.Block[] {
+                net.minecraft.world.level.block.Blocks.STONE, net.minecraft.world.level.block.Blocks.DEEPSLATE })
+        {
+            helper.setBlock(relative, base);
+            if (!com.fiskmods.heroes.common.world.OreGenerationBiomeModifier.generateTutridiumVein(helper.getLevel(), random, pos)
+                    || !helper.getLevel().getBlockState(pos).is(com.fiskmods.heroes.common.block.ModBlocks.TUTRIDIUM_ORE.get()))
+            {
+                helper.fail("Tutridium vein must replace stone and deepslate");
+                return;
+            }
+        }
+        helper.setBlock(relative, net.minecraft.world.level.block.Blocks.BEDROCK);
+        if (com.fiskmods.heroes.common.world.OreGenerationBiomeModifier.generateTutridiumVein(helper.getLevel(), random, pos)
+                || !helper.getLevel().getBlockState(pos).is(net.minecraft.world.level.block.Blocks.BEDROCK))
+            helper.fail("Tutridium vein must not replace bedrock");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void movementPacketRoundTrip(GameTestHelper helper)
     {
         FriendlyByteBuf encoded = new FriendlyByteBuf(Unpooled.buffer());

@@ -124,13 +124,10 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
         @Override
         public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context)
         {
-            BlockPos origin = context.origin();
-            int minX = origin.getX() & ~15;
-            int minZ = origin.getZ() & ~15;
-            return grow(context.level(), context.random(), origin, 0, minX, minX + 16, minZ, minZ + 16);
+            return generateTutridiumVein(context.level(), context.random(), context.origin());
         }
 
-        private boolean grow(WorldGenLevel level, RandomSource random, BlockPos pos, int depth,
+        private static boolean grow(net.minecraft.world.level.LevelAccessor level, RandomSource random, BlockPos pos, int depth,
                 int minX, int maxX, int minZ, int maxZ)
         {
             BlockState current = level.getBlockState(pos);
@@ -155,6 +152,14 @@ public final class OreGenerationBiomeModifier implements BiomeModifier
             }
             return true;
         }
+    }
+
+    /** Shared entry point for world generation and the server-side worldgen regression test. */
+    public static boolean generateTutridiumVein(net.minecraft.world.level.LevelAccessor level, RandomSource random, BlockPos origin)
+    {
+        int minX = origin.getX() & ~15;
+        int minZ = origin.getZ() & ~15;
+        return TutridiumVeinFeature.grow(level, random, origin, 0, minX, minX + 16, minZ, minZ + 16);
     }
 
     private static final class OlivineVeinFeature extends Feature<NoneFeatureConfiguration>
