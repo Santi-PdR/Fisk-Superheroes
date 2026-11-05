@@ -69,16 +69,19 @@ public final class DataSyncer
 
     public static void sendFullSync(ServerPlayer player)
     {
-        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        sendFullSyncTo(player, player);
+    }
 
-        if (data != null)
-        {
-            CompoundTag tag = new CompoundTag();
-            data.getData().writeTo(tag);
-            SHNetwork.sendToPlayer(new PacketSyncData(player.getId(), tag), player);
-            SHNetwork.sendToPlayer(new PacketSyncSuit(player.getId(), data.getHero()), player);
-            SHNetwork.sendToPlayer(new PacketSyncToggles(player.getId(), data.getEnabledToggles()), player);
-        }
+    /** A newly tracking client needs current values, not just future dirty changes. */
+    public static void sendFullSyncTo(ServerPlayer recipient, ServerPlayer subject)
+    {
+        SHPlayerData data = SHDataCapabilities.getPlayer(subject);
+        if (data == null) return;
+        CompoundTag tag = new CompoundTag();
+        data.getData().writeTo(tag);
+        SHNetwork.sendToPlayer(new PacketSyncData(subject.getId(), tag), recipient);
+        SHNetwork.sendToPlayer(new PacketSyncSuit(subject.getId(), data.getHero()), recipient);
+        SHNetwork.sendToPlayer(new PacketSyncToggles(subject.getId(), data.getEnabledToggles()), recipient);
     }
 
     public static void sendTogglesToTracking(ServerPlayer subject)

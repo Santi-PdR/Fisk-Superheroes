@@ -264,8 +264,7 @@ public final class Vars
 
     private static <T> DataVar<T> register(String name, DataType<T> type, T defaultValue, boolean resetWithoutSuit)
     {
-        DataVar<?> var = DataRegistry.INSTANCE.register(new ResourceLocation(FiskHeroes.MODID, name), type, resetWithoutSuit);
-        return (DataVar<T>) var;
+        return DataRegistry.INSTANCE.register(new ResourceLocation(FiskHeroes.MODID, name), type, defaultValue, resetWithoutSuit);
     }
 
     public static boolean getToggleState(LivingEntity entity, ResourceLocation id)

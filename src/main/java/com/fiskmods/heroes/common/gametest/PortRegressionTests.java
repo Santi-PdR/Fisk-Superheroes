@@ -62,6 +62,79 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void dataVariablesRoundTripAndFirstSync(GameTestHelper helper)
+    {
+        var source = new com.fiskmods.heroes.common.data.var.DataContainer();
+        var target = new com.fiskmods.heroes.common.data.var.DataContainer();
+        var vars = com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED;
+        var anchor = com.fiskmods.heroes.common.data.var.Vars.WEB_ANCHOR_X;
+        var flying = com.fiskmods.heroes.common.data.var.Vars.FLYING;
+        if (source.get(com.fiskmods.heroes.common.data.var.Vars.SPEED) != 4
+                || source.get(com.fiskmods.heroes.common.data.var.Vars.LIGHTSOUT_ID) != -1
+                || source.get(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE) != -1)
+        {
+            helper.fail("Built-in data variables must preserve their explicit defaults");
+            return;
+        }
+        source.set(vars, (short) 1234);
+        source.set(anchor, -134.75D);
+        source.set(flying, true);
+        net.minecraft.nbt.CompoundTag saved = new net.minecraft.nbt.CompoundTag();
+        source.writeTo(saved);
+        target.readUpdate(source.writeDirty());
+        if (target.get(vars) != 1234 || target.get(anchor) != -134.75D || !target.get(flying))
+        {
+            helper.fail("First dirty update must populate boolean, short and double values");
+            return;
+        }
+        var reloaded = new com.fiskmods.heroes.common.data.var.DataContainer();
+        reloaded.readFrom(saved);
+        if (reloaded.get(vars) != 1234 || reloaded.get(anchor) != -134.75D || !reloaded.get(flying))
+        {
+            helper.fail("Data variables must survive NBT serialization");
+            return;
+        }
+        source.clearDirty();
+        source.set(vars, (short) 0);
+        source.set(anchor, 0.0D);
+        source.set(flying, false);
+        target.readUpdate(source.writeDirty());
+        if (target.get(vars) != 0 || target.get(anchor) != 0.0D || target.get(flying))
+        {
+            helper.fail("Dirty updates must also transmit values reset to their defaults");
+            return;
+        }
+        target.setFromString(vars, "42");
+        target.setFromString(anchor, "12.5");
+        if (target.get(vars) != 42 || target.get(anchor) != 12.5D)
+            helper.fail("Short and double script values must parse correctly");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void healingFactorWaitsAfterDamage(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        player.setHealth(5.0F);
+        var data = new com.fiskmods.heroes.common.data.SHPlayerData();
+        var modifier = new com.fiskmods.heroes.common.hero.modifier.ModifierHealingFactor(FiskHeroes.id("test_healing"));
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.DELAY, 80);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 79);
+        modifier.tick(player, entry, data);
+        if (player.getHealth() != 5.0F)
+        {
+            helper.fail("Healing factor must wait for its delay");
+            return;
+        }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 80);
+        modifier.tick(player, entry, data);
+        modifier.tick(player, entry, data);
+        if (player.getHealth() != 7.0F) helper.fail("Healing factor must heal each tick after its delay");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void movementPacketRoundTrip(GameTestHelper helper)
     {
         FriendlyByteBuf encoded = new FriendlyByteBuf(Unpooled.buffer());

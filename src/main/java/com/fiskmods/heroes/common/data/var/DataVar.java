@@ -66,6 +66,10 @@ public class DataVar<T>
         {
             tag.putByte(key, (Byte) value);
         }
+        else if (value instanceof Short)
+        {
+            tag.putShort(key, (Short) value);
+        }
         else if (value instanceof Integer)
         {
             tag.putInt(key, (Integer) value);
@@ -73,6 +77,10 @@ public class DataVar<T>
         else if (value instanceof Float)
         {
             tag.putFloat(key, (Float) value);
+        }
+        else if (value instanceof Double)
+        {
+            tag.putDouble(key, (Double) value);
         }
         else if (value instanceof String)
         {
@@ -97,6 +105,10 @@ public class DataVar<T>
             {
                 return (T) Byte.valueOf(tag.getByte(key));
             }
+            if (defaultValue instanceof Short && tag.contains(key, Tag.TAG_SHORT))
+            {
+                return (T) Short.valueOf(tag.getShort(key));
+            }
             if (defaultValue instanceof Integer && tag.contains(key, Tag.TAG_INT))
             {
                 return (T) Integer.valueOf(tag.getInt(key));
@@ -104,6 +116,11 @@ public class DataVar<T>
             if (defaultValue instanceof Float && (tag.contains(key, Tag.TAG_FLOAT) || tag.contains(key, Tag.TAG_INT)))
             {
                 return (T) Float.valueOf(tag.getFloat(key));
+            }
+            if (defaultValue instanceof Double && (tag.contains(key, Tag.TAG_DOUBLE) || tag.contains(key, Tag.TAG_FLOAT)
+                    || tag.contains(key, Tag.TAG_INT)))
+            {
+                return (T) Double.valueOf(tag.getDouble(key));
             }
             if (defaultValue instanceof String && tag.contains(key, Tag.TAG_STRING))
             {

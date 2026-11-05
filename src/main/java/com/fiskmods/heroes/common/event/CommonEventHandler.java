@@ -142,6 +142,12 @@ public class CommonEventHandler
             if (data != null)
             {
                 data.getData().updatePrevious();
+                if (!entity.level().isClientSide)
+                {
+                    short elapsed = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED);
+                    if (elapsed < Short.MAX_VALUE - 1)
+                        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) (elapsed + 1));
+                }
                 if (entity instanceof net.minecraft.world.entity.player.Player player)
                 {
                     com.fiskmods.heroes.common.item.ItemGun.tickReload(player, data);
@@ -235,6 +241,15 @@ public class CommonEventHandler
         event.setAmount(result);
     }
 
+    /** Reset only after damage actually reaches the entity, not when an immunity cancels a hit. */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void onLivingDamage(net.minecraftforge.event.entity.living.LivingDamageEvent event)
+    {
+        if (event.getAmount() <= 0.0F || event.getEntity().level().isClientSide) return;
+        var data = SHDataCapabilities.getPlayer(event.getEntity());
+        if (data != null) data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 0);
+    }
+
     @SubscribeEvent
     public static void onLivingFall(LivingFallEvent event)
     {
@@ -290,7 +305,7 @@ public class CommonEventHandler
         if (event.getEntity() instanceof ServerPlayer tracker
                 && event.getTarget() instanceof ServerPlayer subject)
         {
-            DataSyncer.sendTogglesTo(tracker, subject);
+            DataSyncer.sendFullSyncTo(tracker, subject);
         }
     }
 

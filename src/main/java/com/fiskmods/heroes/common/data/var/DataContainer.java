@@ -180,15 +180,12 @@ public class DataContainer
 
     public void readUpdate(CompoundTag tag)
     {
-        for (Map.Entry<DataVar<?>, Object> e : values.entrySet())
+        // Incoming variables may not have been touched on this client before. Iterating
+        // only the existing map silently discarded the first (and often only) update.
+        for (String key : tag.getAllKeys())
         {
-            DataVar<?> var = e.getKey();
-            String key = var.getName().toString();
-
-            if (tag.contains(key))
-            {
-                values.put(var, var.read(tag, key));
-            }
+            DataVar<?> var = DataRegistry.INSTANCE.get(key);
+            if (var != null && var.getName().toString().equals(key)) values.put(var, var.read(tag, key));
         }
     }
 
@@ -203,9 +200,17 @@ public class DataContainer
             {
                 set(var, (T) Float.valueOf(Float.parseFloat(value)));
             }
+            else if (type == DataType.DOUBLE || type == DataType.DOUBLE_INTERP)
+            {
+                set(var, (T) Double.valueOf(Double.parseDouble(value)));
+            }
             else if (type == DataType.INT)
             {
                 set(var, (T) Integer.valueOf(Integer.parseInt(value)));
+            }
+            else if (type == DataType.SHORT)
+            {
+                set(var, (T) Short.valueOf(Short.parseShort(value)));
             }
             else if (type == DataType.BYTE)
             {

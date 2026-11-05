@@ -131,8 +131,8 @@ public final class Modifiers
                 .addProperty(PowerProperty.CAN_JUMP_ACTIVATE, true));
         REGENERATION = registry.register(new ModifierRegeneration(new ResourceLocation(FiskHeroes.MODID, "regeneration"))
                 .addProperty(PowerProperty.FACTOR, 1.0F));
-        HEALING_FACTOR = registry.register(new ModifierRegeneration(new ResourceLocation(FiskHeroes.MODID, "healing_factor"))
-                .addProperty(PowerProperty.FACTOR, 1.0F));
+        HEALING_FACTOR = registry.register(new ModifierHealingFactor(new ResourceLocation(FiskHeroes.MODID, "healing_factor"))
+                .addProperty(PowerProperty.DELAY, 80));
         FIRE_IMMUNITY = registry.register(new ModifierImmunity(new ResourceLocation(FiskHeroes.MODID, "fire_immunity"), DamageGroup.FIRE));
         FIRE_RESISTANCE = registry.register(new ModifierResistance(new ResourceLocation(FiskHeroes.MODID, "fire_resistance"), DamageGroup.FIRE)
                 .addProperty(PowerProperty.FACTOR, 0.5F));

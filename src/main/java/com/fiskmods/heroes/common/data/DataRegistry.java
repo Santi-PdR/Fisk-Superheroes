@@ -22,25 +22,24 @@ public class DataRegistry implements Iterable<DataVar<?>>
     private final Map<ResourceLocation, DataVar<?>> byName = new LinkedHashMap<>();
     private final Map<String, DataVar<?>> byString = new HashMap<>();
 
-    public DataVar<?> register(ResourceLocation name, DataType<?> type, boolean resetWithoutSuit)
+    public <T> DataVar<T> register(ResourceLocation name, DataType<T> type, boolean resetWithoutSuit)
+    {
+        return register(name, type, type.getDefaultValue(), resetWithoutSuit);
+    }
+
+    /** Registers a built-in variable with its explicit default rather than the type's zero. */
+    @SuppressWarnings("unchecked")
+    public <T> DataVar<T> register(ResourceLocation name, DataType<T> type, T defaultValue, boolean resetWithoutSuit)
     {
         DataVar<?> var = byName.get(name);
-
         if (var == null)
         {
-            var = create(name, type, resetWithoutSuit);
+            var = new DataVar<>(name, type, defaultValue, resetWithoutSuit);
             byName.put(name, var);
             byString.put(name.toString(), var);
             byString.put(name.getPath(), var);
         }
-
-        return var;
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private static DataVar<?> create(ResourceLocation name, DataType<?> type, boolean resetWithoutSuit)
-    {
-        return new DataVar(name, type, type.getDefaultValue(), resetWithoutSuit);
+        return (DataVar<T>) var;
     }
 
     /** Resolves a data variable key, which may be fully qualified or relative to {@code fiskheroes}. */
