@@ -83,6 +83,23 @@ jobs:
           if-no-files-found: ignore
           compression-level: 0
 
+      - name: Publish preview release jar
+        if: steps.gradle.outputs.exit_code == '0'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ls -lh build/libs/
+          TAG="v2.4.0-1.20.1-preview"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" build/libs/*.jar --clobber
+          else
+            gh release create "$TAG" build/libs/*.jar \
+              --prerelease \
+              --target "${GITHUB_SHA}" \
+              --title "Fisk's Superheroes 1.20.1 (2.4.0 Preview)" \
+              --notes "Build automático de Minecraft 1.20.1 Forge (47.1.0+) desde la rama ${GITHUB_REF_NAME}."
+          fi
+
       - name: Upload build reports
         if: always()
         uses: actions/upload-artifact@v4
