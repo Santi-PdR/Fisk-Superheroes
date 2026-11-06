@@ -42,8 +42,13 @@ def main():
                                              text=True, timeout=30)
             window = result.strip().splitlines()[-1]
             xdo('windowfocus', '--sync', window)
-            xdo('key', '--clearmodifiers', 't')
-            xdo('type', '--clearmodifiers', '--delay', '5', '/suit fiskheroes:the_flash')
+            xdo('mousemove', '--window', window, '640', '360', 'click', '1')
+            time.sleep(3)
+            # Slash opens command chat directly; give the rendered UI a frame to receive it.
+            xdo('key', '--clearmodifiers', 'slash')
+            time.sleep(2)
+            xdo('type', '--clearmodifiers', '--delay', '35', 'suit fiskheroes:the_flash')
+            time.sleep(2)
             xdo('key', 'Return')
             wait_for(r'issued server command: /suit fiskheroes:the_flash', 45, 'suit command', process)
             time.sleep(3)
