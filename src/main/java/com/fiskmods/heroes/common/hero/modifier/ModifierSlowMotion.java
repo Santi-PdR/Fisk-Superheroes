@@ -24,9 +24,20 @@ public class ModifierSlowMotion extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.isToggled(entity);
+        boolean toggle = entry.getBoolean(entity, com.fiskmods.heroes.common.hero.power.PowerProperty.IS_TOGGLE);
+        boolean state = !toggle || !data.getData().get(Vars.SLOW_MOTION);
         entry.setToggled(entity, state);
         data.getData().set(Vars.SLOW_MOTION, state);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, com.fiskmods.heroes.common.hero.power.PowerProperty.IS_TOGGLE))
+        {
+            entry.setToggled(entity, false);
+            data.getData().set(Vars.SLOW_MOTION, false);
+        }
     }
 
     @Override

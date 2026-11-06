@@ -34,6 +34,8 @@ public final class AbilityHandler
     /** Aim-gated powers sharing the AIM key are retried until aim settles or the key is released. */
     private static final Map<UUID, Map<Integer, Set<String>>> PENDING_AIM_ABILITIES = new HashMap<>();
     private static final Map<UUID, Map<String, Long>> ABILITY_COOLDOWNS = new HashMap<>();
+    /** A scroll while holding SUPER_SPEED changes its level instead of toggling on release. */
+    private static final Set<UUID> SPEED_SCROLLED = new java.util.HashSet<>();
 
     private AbilityHandler()
     {
@@ -71,6 +73,12 @@ public final class AbilityHandler
 
         if (!pressed)
         {
+            boolean speedKey = iteration != null && iteration.getHero().hasKeyBind("SUPER_SPEED")
+                    && iteration.getHero().getKeyBinding("SUPER_SPEED") == index;
+            boolean speedWasHeld = speedKey && isKeyPressed(player, "SUPER_SPEED");
+            boolean scrolled = speedKey && SPEED_SCROLLED.remove(player.getUUID());
+            if (speedWasHeld && !scrolled && !player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get()))
+                activate(player, data, iteration.getHero(), "SUPER_SPEED");
             activatePendingAimAbilities(player, data, iteration, index);
             release(player, data, index);
             if (index == 0) return;
@@ -135,6 +143,10 @@ public final class AbilityHandler
                 }
                 continue;
             }
+
+            // The original toggles super speed on release so holding the key and scrolling
+            // changes speed levels without also switching the power off.
+            if ("SUPER_SPEED".equals(key)) continue;
 
             ScriptFunction function = hero.getKeyBindFuncs().get(key);
 
@@ -401,6 +413,7 @@ public final class AbilityHandler
 
     public static void clear(ServerPlayer player)
     {
+        SPEED_SCROLLED.remove(player.getUUID());
         SERVER_PRESSED_KEYS.remove(player.getUUID());
         PENDING_AIM_ABILITIES.remove(player.getUUID());
         ABILITY_COOLDOWNS.remove(player.getUUID());
@@ -573,6 +586,12 @@ public final class AbilityHandler
         if (byIndex == null) return;
         byIndex.remove(index);
         if (byIndex.isEmpty()) states.remove(entity.getUUID());
+    }
+
+    /** Marks a validated speed-wheel request so releasing that key does not toggle speed. */
+    public static void markSpeedScrolled(ServerPlayer player)
+    {
+        SPEED_SCROLLED.add(player.getUUID());
     }
 
     /** Finds the modifier of a hero whose {@code key} property matches the ability name. */

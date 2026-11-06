@@ -120,6 +120,15 @@ public class ClientEventHandler
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data == null) return;
 
+        if (event.getScrollDelta() == 0.0D) return;
+        if (hero != null && hero.isKeyPressed(player, "SUPER_SPEED") && data.getData().get(Vars.SPEEDING))
+        {
+            int direction = event.getScrollDelta() > 0.0D ? 1 : -1;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketChangeSpeed(direction));
+            event.setCanceled(true);
+            return;
+        }
+
         if (hero != null && hero.isKeyPressed(player, "GRAVITY_MANIPULATION"))
         {
             int direction = event.getScrollDelta() > 0.0D ? 1 : -1;

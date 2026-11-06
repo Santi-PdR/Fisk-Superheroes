@@ -54,6 +54,8 @@ public class SHAttributes
     public static final RegistryObject<Attribute> DAMAGE_REDUCTION = REGISTRY.register("damage_reduction", () -> new RangedAttribute("attribute.fiskheroes.damage_reduction", 0.0D, 0.0D, 1.0D).setSyncable(true));
     public static final RegistryObject<Attribute> BASE_SPEED_LEVELS = REGISTRY.register("base_speed_levels", () -> new RangedAttribute("attribute.fiskheroes.base_speed_levels", 0.0D, 0.0D, 2048.0D).setSyncable(true));
 
+    // Original speedster movement modifier; stable across server ticks and removed on suit change.
+    private static final UUID SPEEDSTER_SPEED = UUID.fromString("388b19ef-9685-4881-be63-04bc862dca2d");
     private static Map<HeroAttribute, Attribute> mapping;
 
     private static Map<HeroAttribute, Attribute> mapping()
@@ -149,7 +151,8 @@ public class SHAttributes
 
             UUID id = uuid(entity, attribute, "hero");
             AttributeModifier existing = instance.getModifier(id);
-            Hero.AttributeMod mod = values.get(attribute);
+            Hero.AttributeMod mod = attribute == HeroAttribute.SPRINT_SPEED && !entity.isSprinting()
+                    ? null : values.get(attribute);
             double amount = mod != null ? mod.amount() : 0.0D;
             AttributeModifier.Operation operation = mod != null ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
 
@@ -170,10 +173,46 @@ public class SHAttributes
                 instance.addTransientModifier(new AttributeModifier(id, "fiskheroes:" + attribute.getName(), amount, operation));
             }
         }
+        updateSpeedsterModifier(entity, data);
+    }
+
+    /** Original speed-level curve, expressed as a vanilla movement-speed attribute bonus. */
+    public static double speedsterBonus(int speedLevel)
+    {
+        if (speedLevel < 1) return 0.0D;
+        double topSpeed = Math.max(speedLevel * 50.0D, 20.0D);
+        return 0.0049467960817423D * (topSpeed - 20.0D);
+    }
+
+    private static void updateSpeedsterModifier(LivingEntity entity, SHPlayerData data)
+    {
+        var speed = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (speed == null) return;
+        var entry = data.getHeroType() == null ? null : data.getHeroType().getPowerContainer().getEntries().stream()
+                .filter(candidate -> candidate.getModifier() instanceof com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed
+                        && candidate.isEnabled() && candidate.isModifierEnabled(entity, data))
+                .findFirst().orElse(null);
+        if (entry != null && entity instanceof Player player)
+        {
+            int maximum = com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.maxSpeed(player, entry, data);
+            int selected = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED);
+            int clamped = net.minecraft.util.Mth.clamp(selected, 1, maximum);
+            if (selected != clamped) data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SPEED, (byte) clamped);
+        }
+        boolean enabled = entry != null && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+                && com.fiskmods.heroes.common.config.SHConfig.ALLOW_SUPER_SPEED.get();
+        double amount = enabled ? speedsterBonus(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED)) : 0.0D;
+        AttributeModifier existing = speed.getModifier(SPEEDSTER_SPEED);
+        if (existing != null && (amount <= 0.0D || Math.abs(existing.getAmount() - amount) > 1.0E-5D))
+            speed.removeModifier(existing);
+        if (amount > 0.0D && speed.getModifier(SPEEDSTER_SPEED) == null)
+            speed.addTransientModifier(new AttributeModifier(SPEEDSTER_SPEED, "fiskheroes:speedster", amount, AttributeModifier.Operation.ADDITION));
     }
 
     public static void clearModifiers(LivingEntity entity)
     {
+        AttributeInstance movement = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+        if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
         for (HeroAttribute attribute : HeroAttribute.values())
         {
             Attribute vanilla = get(attribute);

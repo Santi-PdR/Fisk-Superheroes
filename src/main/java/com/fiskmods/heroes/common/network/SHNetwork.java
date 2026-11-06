@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 3 adds directional movement to PacketInput; mixed versions must not decode it.
-    private static final String PROTOCOL = "3";
+    // Version 4 adds speed-level input; mixed versions must not decode different packet IDs.
+    private static final String PROTOCOL = "4";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

@@ -173,7 +173,16 @@ public final class PortRegressionTests
             {
                 helper.fail("Directional input packet must round-trip with bounded axes");
             }
-            else helper.succeed();
+            else
+            {
+                encoded.clear();
+                reencoded.clear();
+                new com.fiskmods.heroes.common.network.PacketChangeSpeed(-30).encode(encoded);
+                new com.fiskmods.heroes.common.network.PacketChangeSpeed(encoded).encode(reencoded);
+                if (reencoded.readByte() != -1 || reencoded.readableBytes() != 0)
+                    helper.fail("Speed scroll packet must encode only a bounded direction");
+                else helper.succeed();
+            }
         }
         finally
         {
@@ -419,6 +428,142 @@ public final class PortRegressionTests
         }
         if (checked < 100) helper.fail("Expected at least 100 active built-in modifier ticks, saw " + checked);
         else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void speedsterMovementUsesSelectedLevel(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || hero == null) { helper.fail("Flash or player data is missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("super_speed"));
+        if (entry == null) { helper.fail("Flash is missing super speed"); return; }
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        double normal = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        entry.getModifier().onActivate(player, entry, data);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        double fast = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        double expected = com.fiskmods.heroes.common.hero.attribute.SHAttributes.speedsterBonus(4);
+        if (Math.abs((fast - normal) - expected) > 0.0001D)
+        { helper.fail("Speed level four must apply its original movement attribute bonus"); return; }
+
+        player.setSprinting(true);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
+        player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        entry.getModifier().tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED_SPRINTING)
+                || player.getDeltaMovement().lengthSqr() != 0.0D)
+        { helper.fail("A stationary speedster must not be propelled forward"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 1, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (!data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED_SPRINTING))
+        { helper.fail("Moving sprint state must be synchronized to hero scripts"); return; }
+        com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.changeSpeed(player, entry, data, -500);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED) != 3)
+        { helper.fail("Speed adjustment must advance one level at a time"); return; }
+        com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.changeSpeed(player, entry, data, 1);
+        com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.changeSpeed(player, entry, data, 1);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED) != 4)
+        { helper.fail("Speed adjustment must respect the suit's maximum level"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+                || data.isToggleEnabled(FiskHeroes.id("super_speed"))
+                || player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED)
+                    .getModifier(java.util.UUID.fromString("388b19ef-9685-4881-be63-04bc862dca2d")) != null)
+        { helper.fail("Removing the suit must clear super speed and its attribute"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void slowMotionSupportsToggleAndHold(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || flash == null || spider == null) { helper.fail("Missing test heroes"); return; }
+        var toggle = flash.getPowerContainer().getEntry(FiskHeroes.id("slow_motion"));
+        var hold = spider.getPowerContainer().getEntry(FiskHeroes.id("slow_motion"));
+        var property = com.fiskmods.heroes.common.hero.power.PowerProperty.IS_TOGGLE;
+        var state = com.fiskmods.heroes.common.data.var.Vars.SLOW_MOTION;
+        if (toggle == null || hold == null || !toggle.getBoolean(player, property) || hold.getBoolean(player, property))
+        { helper.fail("Flash must toggle slow motion; Spider-Man must hold it"); return; }
+        toggle.getModifier().onActivate(player, toggle, data);
+        toggle.getModifier().onToggle(player, toggle, data);
+        if (!data.getData().get(state)) { helper.fail("Toggle mode must stay on after release"); return; }
+        toggle.getModifier().onActivate(player, toggle, data);
+        if (data.getData().get(state)) { helper.fail("Second toggle must switch slow motion off"); return; }
+        hold.getModifier().onActivate(player, hold, data);
+        if (!data.getData().get(state)) { helper.fail("Hold mode must start on press"); return; }
+        hold.getModifier().onToggle(player, hold, data);
+        if (data.getData().get(state) || data.isToggleEnabled(FiskHeroes.id("slow_motion")))
+            helper.fail("Hold mode must stop on release");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void suitSprintBonusOnlyAppliesWhileSprinting(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:green_arrow");
+        if (hero == null) { helper.fail("Green Arrow is missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var attribute = player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        player.setSprinting(false);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (attribute.getModifiers().stream().anyMatch(mod -> mod.getName().equals("fiskheroes:sprint_speed")))
+        { helper.fail("Sprint-only suit bonus applied while walking"); return; }
+        player.setSprinting(true);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (attribute.getModifiers().stream().noneMatch(mod -> mod.getName().equals("fiskheroes:sprint_speed")))
+            helper.fail("Suit sprint bonus missing while sprinting");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void speedKeyAndScrollAreValidatedOnServer(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-speed-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Flash or player data is missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var speed = com.fiskmods.heroes.common.data.var.Vars.SPEED;
+        var active = com.fiskmods.heroes.common.data.var.Vars.SPEEDING;
+        if (com.fiskmods.heroes.common.network.PacketChangeSpeed.requestChange(player, -1))
+        { helper.fail("Speed scroll without the held key must be rejected"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        if (data.getData().get(active) || com.fiskmods.heroes.common.network.PacketChangeSpeed.requestChange(player, -1))
+        { helper.fail("Speed must not toggle on key-down, or allow scrolling while disabled"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        if (!data.getData().get(active)) { helper.fail("Speed must toggle on key release"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        if (!com.fiskmods.heroes.common.network.PacketChangeSpeed.requestChange(player, -1)
+                || data.getData().get(speed) != 3)
+        { helper.fail("Held speed key must permit a one-level scroll"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 2, false);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        if (!data.getData().get(active)) { helper.fail("Scrolling must prevent the release toggle"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        if (data.getData().get(active)) { helper.fail("A subsequent tap must switch speed off"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
     }
 
 }

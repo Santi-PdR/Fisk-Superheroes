@@ -127,6 +127,8 @@ public class FiskHeroes
                     com.fiskmods.heroes.common.network.PacketSuitIteration::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketFabricatorAction.class,
                     com.fiskmods.heroes.common.network.PacketFabricatorAction::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketChangeSpeed.class,
+                    com.fiskmods.heroes.common.network.PacketChangeSpeed::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
             com.fiskmods.heroes.common.block.FabricatorRecipes.ensureLoaded();

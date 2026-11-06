@@ -104,6 +104,16 @@ public final class HeroTracker
 
         data.setHero(current);
 
+        // Suit-dependent states must not leak into a hero without the relevant power. In
+        // particular, a speed toggle left behind used to survive taking the suit off.
+        if (!hasModifier(current, "super_speed"))
+            com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.disable(player);
+        if (!hasModifier(current, "slow_motion"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SLOW_MOTION, false);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("slow_motion"), false);
+        }
+
         if (previous != null)
         {
             com.fiskmods.heroes.common.hero.attribute.SHAttributes.clearModifiers(player);
@@ -115,4 +125,10 @@ public final class HeroTracker
             data.getData().resetWithoutSuit();
         }
     }
+    private static boolean hasModifier(@Nullable HeroIteration iteration, String path)
+    {
+        return iteration != null && iteration.getHero().getPowerContainer().getEntries().stream()
+                .anyMatch(entry -> entry.getModifier().getId().getPath().equals(path));
+    }
+
 }

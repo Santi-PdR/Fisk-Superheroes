@@ -122,9 +122,11 @@ public final class Modifiers
                 .addProperty(PowerProperty.SPEED, 0.1F)
                 .addProperty(PowerProperty.CAN_BOOST, true)).setSoundState(Vars.JETPACKING);
         SUPER_SPEED = registry.register(new ModifierSuperSpeed(new ResourceLocation(FiskHeroes.MODID, "super_speed"))
+                .addProperty(PowerProperty.IS_TOGGLE, true)
                 .addProperty(PowerProperty.SPEED, 1.0F)
                 .addProperty(PowerProperty.CAN_USE_TREADMILL, true)).setSoundState(Vars.SPEEDING);
         SLOW_MOTION = registry.register(new ModifierSlowMotion(new ResourceLocation(FiskHeroes.MODID, "slow_motion"))
+                .addProperty(PowerProperty.IS_TOGGLE, true)
                 .addProperty(PowerProperty.SPEED, 1.0F)).setSoundState(Vars.SLOW_MOTION);
         WATER_BREATHING = registry.register(new ModifierWaterBreathing(new ResourceLocation(FiskHeroes.MODID, "water_breathing")));
         LEAPING = registry.register(new ModifierLeaping(new ResourceLocation(FiskHeroes.MODID, "leaping"))
