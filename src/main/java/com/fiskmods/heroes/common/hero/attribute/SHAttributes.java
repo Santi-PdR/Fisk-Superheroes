@@ -56,6 +56,7 @@ public class SHAttributes
 
     // Original speedster movement modifier; stable across server ticks and removed on suit change.
     private static final UUID SPEEDSTER_SPEED = UUID.fromString("388b19ef-9685-4881-be63-04bc862dca2d");
+    private static final UUID SPEEDSTER_STEP = UUID.fromString("953f86b5-f64b-4665-b3aa-837b2c1082da");
     private static Map<HeroAttribute, Attribute> mapping;
 
     private static Map<HeroAttribute, Attribute> mapping()
@@ -207,12 +208,29 @@ public class SHAttributes
             speed.removeModifier(existing);
         if (amount > 0.0D && speed.getModifier(SPEEDSTER_SPEED) == null)
             speed.addTransientModifier(new AttributeModifier(SPEEDSTER_SPEED, "fiskheroes:speedster", amount, AttributeModifier.Operation.ADDITION));
+
+        // The original gives speedsters one-block step assist while speed is active. Respect
+        // a larger existing step height rather than stacking a fixed bonus on other mods.
+        AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        if (step != null)
+        {
+            AttributeModifier stepBonus = step.getModifier(SPEEDSTER_STEP);
+            if (!enabled && stepBonus != null) step.removeModifier(stepBonus);
+            else if (enabled && stepBonus == null)
+            {
+                double missing = Math.max(0.0D, 1.0D - entity.maxUpStep());
+                if (missing > 1.0E-5D)
+                    step.addTransientModifier(new AttributeModifier(SPEEDSTER_STEP, "fiskheroes:speedster_step", missing, AttributeModifier.Operation.ADDITION));
+            }
+        }
     }
 
     public static void clearModifiers(LivingEntity entity)
     {
         AttributeInstance movement = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
+        AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+        if (step != null) step.removeModifier(SPEEDSTER_STEP);
         for (HeroAttribute attribute : HeroAttribute.values())
         {
             Attribute vanilla = get(attribute);

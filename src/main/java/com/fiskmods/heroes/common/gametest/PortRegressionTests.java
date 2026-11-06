@@ -445,12 +445,18 @@ public final class PortRegressionTests
         if (entry == null) { helper.fail("Flash is missing super speed"); return; }
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         double normal = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        float normalStep = player.maxUpStep();
         entry.getModifier().onActivate(player, entry, data);
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         double fast = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         double expected = com.fiskmods.heroes.common.hero.attribute.SHAttributes.speedsterBonus(4);
         if (Math.abs((fast - normal) - expected) > 0.0001D)
         { helper.fail("Speed level four must apply its original movement attribute bonus"); return; }
+        if (player.maxUpStep() < 0.999F)
+        { helper.fail("Active super speed must allow one-block steps"); return; }
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (player.maxUpStep() > 1.001F)
+        { helper.fail("Repeated speed updates must not stack the step bonus"); return; }
 
         player.setSprinting(true);
         com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
@@ -477,6 +483,8 @@ public final class PortRegressionTests
                 || player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED)
                     .getModifier(java.util.UUID.fromString("388b19ef-9685-4881-be63-04bc862dca2d")) != null)
         { helper.fail("Removing the suit must clear super speed and its attribute"); return; }
+        if (Math.abs(player.maxUpStep() - normalStep) > 0.001F)
+        { helper.fail("Removing the suit must restore step height"); return; }
         com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
         helper.succeed();
     }
