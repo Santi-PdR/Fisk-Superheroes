@@ -1,16 +1,16 @@
 package com.fiskmods.heroes.common.hero.modifier;
 
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.hero.power.Modifier;
-import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 
 /**
- * Accelerated healing. The factor scales the vanilla regeneration rate, as in the original mod
- * (where the factor was applied to the healing interval).
+ * Adjusts natural regeneration's interval, not the amount healed. FoodData still handles hunger,
+ * saturation, exhaustion, the naturalRegeneration gamerule and starvation normally.
  */
 public class ModifierRegeneration extends Modifier
 {
@@ -19,24 +19,19 @@ public class ModifierRegeneration extends Modifier
         super(id);
     }
 
-    @Override
-    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    /** Called by the FoodData transformer at the two natural-healing comparisons. */
+    public static int healInterval(Player player, int vanillaInterval)
     {
-        float factor = entry.getFloat(entity, PowerProperty.FACTOR);
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null || data.getHeroType() == null) return vanillaInterval;
 
-        if (factor <= 0)
-        {
-            factor = 1.0F;
-        }
-
-        int delay = entry.getInt(entity, PowerProperty.DELAY);
-        int interval = delay > 0 ? delay : Math.max(1, (int) (80.0F / factor));
-
-        boolean fed = !(entity instanceof net.minecraft.world.entity.player.Player player) || player.getFoodData().getFoodLevel() > 0;
-
-        if (fed && entity.getHealth() < entity.getMaxHealth() && entity.tickCount % interval == 0)
-        {
-            entity.heal(1.0F * Math.max(1.0F, factor));
-        }
+        double factor = data.getHeroType().getPowerContainer().getEntries().stream()
+                .filter(entry -> entry.getModifier() instanceof ModifierRegeneration
+                        && entry.isEnabled() && entry.isModifierEnabled(player, data))
+                .mapToDouble(entry -> entry.getFloat(player, PowerProperty.FACTOR))
+                .max().orElse(Double.NaN);
+        if (Double.isNaN(factor)) return vanillaInterval;
+        if (factor <= 0.0D) return Integer.MAX_VALUE;
+        return Math.max(1, (int) Math.ceil(vanillaInterval / factor));
     }
 }

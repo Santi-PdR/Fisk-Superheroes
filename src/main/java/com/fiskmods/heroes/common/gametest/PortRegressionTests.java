@@ -217,4 +217,73 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void naturalRegenerationUsesVanillaFoodRules(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        var trajectory = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:trajectory");
+        if (data == null || spider == null || trajectory == null)
+        {
+            helper.fail("Player capability and regeneration heroes must be loaded");
+            return;
+        }
+        var food = player.getFoodData();
+        var natural = helper.getLevel().getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_NATURAL_REGENERATION);
+        boolean oldNatural = natural.get();
+        try
+        {
+            natural.set(true, helper.getLevel().getServer());
+            data.setHero(spider.getDefaultIteration());
+            player.setHealth(5.0F);
+            food.setFoodLevel(18);
+            food.setSaturation(0.0F);
+            for (int i = 0; i < 19; ++i) food.tick(player);
+            if (player.getHealth() != 5.0F) { helper.fail("Factor 4 regenerated before 20 ticks"); return; }
+            food.tick(player);
+            if (player.getHealth() != 6.0F || food.getExhaustionLevel() != 6.0F)
+            { helper.fail("Factor 4 must regenerate one health with vanilla exhaustion at 20 ticks"); return; }
+
+            player.setHealth(5.0F);
+            food.setFoodLevel(20);
+            food.setSaturation(6.0F);
+            food.setExhaustion(0.0F);
+            food.tick(player); food.tick(player);
+            if (player.getHealth() != 5.0F) { helper.fail("Saturated regeneration occurred too early"); return; }
+            food.tick(player);
+            if (player.getHealth() != 6.0F || food.getExhaustionLevel() != 6.0F)
+            { helper.fail("Saturated regeneration must retain vanilla healing and exhaustion"); return; }
+
+            player.setHealth(5.0F);
+            food.setFoodLevel(18);
+            food.setSaturation(0.0F);
+            food.setExhaustion(0.0F);
+            data.setHero(trajectory.getDefaultIteration());
+            for (int i = 0; i < 106; ++i) food.tick(player);
+            if (player.getHealth() != 5.0F) { helper.fail("Factor 0.75 must slow regeneration"); return; }
+            food.tick(player);
+            if (player.getHealth() != 6.0F) { helper.fail("Factor 0.75 must heal at 107 ticks"); return; }
+
+            player.setHealth(5.0F);
+            natural.set(false, helper.getLevel().getServer());
+            for (int i = 0; i < 120; ++i) food.tick(player);
+            if (player.getHealth() != 5.0F) { helper.fail("Natural regeneration gamerule must be respected"); return; }
+            natural.set(true, helper.getLevel().getServer());
+            food.setFoodLevel(0);
+            for (int i = 0; i < 79; ++i) food.tick(player);
+            var tag = new net.minecraft.nbt.CompoundTag();
+            food.addAdditionalSaveData(tag);
+            if (tag.getInt("foodTickTimer") != 79) { helper.fail("Starvation timer was modified"); return; }
+            food.tick(player);
+            food.addAdditionalSaveData(tag);
+            if (tag.getInt("foodTickTimer") != 0) { helper.fail("Starvation must tick at the vanilla interval"); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            natural.set(oldNatural, helper.getLevel().getServer());
+        }
+    }
+
 }
