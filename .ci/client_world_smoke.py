@@ -50,7 +50,7 @@ def main():
             xdo('type', '--clearmodifiers', '--delay', '35', 'suit fiskheroes:the_flash')
             time.sleep(2)
             xdo('key', 'Return')
-            wait_for(r'issued server command: /suit fiskheroes:the_flash', 45, 'suit command', process)
+            wait_for(r'\[CHAT\] Equipped The Flash|\[Dev: Equipped The Flash', 45, 'suit command', process)
             time.sleep(3)
             xdo('key', 'F5')
             wait_for(r'Drawing suit fiskheroes:the_flash slot', 45, 'third-person suit render path', process)
