@@ -33,6 +33,10 @@ minecraft {
         }
         client {
             property 'forge.enabledGameTestNamespaces', mod_id
+            // Optional CI-only path: open a pre-generated world directly for interaction tests.
+            if (project.findProperty('quickPlayWorld')) {
+                args '--quickPlaySingleplayer', project.property('quickPlayWorld').toString()
+            }
         }
         server {
             property 'forge.enabledGameTestNamespaces', mod_id
