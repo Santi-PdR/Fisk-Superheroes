@@ -209,20 +209,40 @@ public class SHAttributes
         if (amount > 0.0D && speed.getModifier(SPEEDSTER_SPEED) == null)
             speed.addTransientModifier(new AttributeModifier(SPEEDSTER_SPEED, "fiskheroes:speedster", amount, AttributeModifier.Operation.ADDITION));
 
-        // The original gives speedsters one-block step assist while speed is active. Respect
-        // a larger existing step height rather than stacking a fixed bonus on other mods.
+        updateSpeedsterStep(entity, enabled);
+    }
+
+    /** Keeps at least one block of effective Forge step height without overriding other mods. */
+    private static void updateSpeedsterStep(LivingEntity entity, boolean enabled)
+    {
         AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
-        if (step != null)
+        if (step == null) return;
+
+        AttributeModifier current = step.getModifier(SPEEDSTER_STEP);
+        // Changes from other mods can alter the effective height while speed is active. Recalculate
+        // our contribution only when needed, rather than replacing it and syncing every tick.
+        if (current != null && (!enabled || Math.abs(entity.getStepHeight() - 1.0F) > 1.0E-4F))
         {
-            AttributeModifier stepBonus = step.getModifier(SPEEDSTER_STEP);
-            if (!enabled && stepBonus != null) step.removeModifier(stepBonus);
-            else if (enabled && stepBonus == null)
-            {
-                double missing = Math.max(0.0D, 1.0D - entity.maxUpStep());
-                if (missing > 1.0E-5D)
-                    step.addTransientModifier(new AttributeModifier(SPEEDSTER_STEP, "fiskheroes:speedster_step", missing, AttributeModifier.Operation.ADDITION));
-            }
+            step.removeModifier(current);
+            current = null;
         }
+        if (!enabled || current != null) return;
+
+        // Forge uses maxUpStep + STEP_HEIGHT_ADDITION, clamped at zero. Compute from the
+        // unclamped sum so a negative external addition can also be compensated correctly.
+        double missing = 1.0D - (entity.maxUpStep() + step.getValue());
+        if (missing <= 1.0E-5D) return;
+
+        double multiplier = 1.0D;
+        double baseMultiplier = 0.0D;
+        for (AttributeModifier modifier : step.getModifiers(AttributeModifier.Operation.MULTIPLY_BASE))
+            baseMultiplier += modifier.getAmount();
+        multiplier += baseMultiplier;
+        for (AttributeModifier modifier : step.getModifiers(AttributeModifier.Operation.MULTIPLY_TOTAL))
+            multiplier *= 1.0D + modifier.getAmount();
+        if (multiplier > 1.0E-8D && Double.isFinite(multiplier))
+            step.addTransientModifier(new AttributeModifier(SPEEDSTER_STEP, "fiskheroes:speedster_step",
+                    missing / multiplier, AttributeModifier.Operation.ADDITION));
     }
 
     public static void clearModifiers(LivingEntity entity)

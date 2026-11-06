@@ -445,18 +445,49 @@ public final class PortRegressionTests
         if (entry == null) { helper.fail("Flash is missing super speed"); return; }
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         double normal = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
-        float normalStep = player.maxUpStep();
+        float normalStep = player.getStepHeight();
         entry.getModifier().onActivate(player, entry, data);
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         double fast = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
         double expected = com.fiskmods.heroes.common.hero.attribute.SHAttributes.speedsterBonus(4);
         if (Math.abs((fast - normal) - expected) > 0.0001D)
         { helper.fail("Speed level four must apply its original movement attribute bonus"); return; }
-        if (player.maxUpStep() < 0.999F)
+        if (player.getStepHeight() < 0.999F)
         { helper.fail("Active super speed must allow one-block steps"); return; }
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
-        if (player.maxUpStep() > 1.001F)
+        if (player.getStepHeight() > 1.001F)
         { helper.fail("Repeated speed updates must not stack the step bonus"); return; }
+
+        var step = player.getAttribute(net.minecraftforge.common.ForgeMod.STEP_HEIGHT_ADDITION.get());
+        var external = new net.minecraft.world.entity.ai.attributes.AttributeModifier(java.util.UUID.randomUUID(),
+                "test-external-step", 0.3D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION);
+        step.addTransientModifier(external);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (Math.abs(player.getStepHeight() - 1.0F) > 0.001F)
+        { helper.fail("Speed step must adapt to other step modifiers"); return; }
+        step.removeModifier(external);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (Math.abs(player.getStepHeight() - 1.0F) > 0.001F)
+        { helper.fail("Speed step must recover when another modifier is removed"); return; }
+        var multiplier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(java.util.UUID.randomUUID(),
+                "test-external-multiplier", 1.0D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL);
+        step.addTransientModifier(multiplier);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (Math.abs(player.getStepHeight() - 1.0F) > 0.001F)
+        { helper.fail("Speed step must account for other mods' attribute multipliers"); return; }
+        step.removeModifier(multiplier);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+
+        var floor = new net.minecraft.core.BlockPos(1, 0, 1);
+        var obstacle = new net.minecraft.core.BlockPos(2, 1, 1);
+        helper.setBlock(floor, net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(obstacle, net.minecraft.world.level.block.Blocks.STONE);
+        var start = helper.absolutePos(floor);
+        player.setPos(start.getX() + 0.5D, start.getY() + 1.0D, start.getZ() + 0.5D);
+        player.setOnGround(true);
+        player.move(net.minecraft.world.entity.MoverType.SELF, new net.minecraft.world.phys.Vec3(1.1D, -0.05D, 0.0D));
+        if (player.getY() < start.getY() + 1.99D)
+        { helper.fail("Active speedster must physically step onto a full block: y=" + player.getY()); return; }
 
         player.setSprinting(true);
         com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
@@ -483,7 +514,7 @@ public final class PortRegressionTests
                 || player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED)
                     .getModifier(java.util.UUID.fromString("388b19ef-9685-4881-be63-04bc862dca2d")) != null)
         { helper.fail("Removing the suit must clear super speed and its attribute"); return; }
-        if (Math.abs(player.maxUpStep() - normalStep) > 0.001F)
+        if (Math.abs(player.getStepHeight() - normalStep) > 0.001F)
         { helper.fail("Removing the suit must restore step height"); return; }
         com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
         helper.succeed();
