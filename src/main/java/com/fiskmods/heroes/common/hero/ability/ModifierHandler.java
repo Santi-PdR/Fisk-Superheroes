@@ -72,7 +72,8 @@ public final class ModifierHandler
 
         for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
         {
-            if ("potion_retention".equals(entry.getModifier().getId().getPath())) continue;
+            if ("potion_retention".equals(entry.getModifier().getId().getPath())
+                    || "potion_immunity".equals(entry.getModifier().getId().getPath())) continue;
             if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))
             {
                 continue;
@@ -121,16 +122,17 @@ public final class ModifierHandler
         }
     }
 
-    /** Runs duration-retention modifiers before the living entity ticks its active effects. */
-    public static void tickPotionRetention(Player player)
+    /** Runs potion immunity and duration retention before the player ticks its active effects. */
+    public static void tickPotionEffects(Player player)
     {
-        if (player.level().isClientSide || player.tickCount % 2 == 0) return;
+        if (player.level().isClientSide) return;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data == null || data.getHeroType() == null) return;
 
         for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
         {
-            if (entry.isEnabled() && "potion_retention".equals(entry.getModifier().getId().getPath())
+            String path = entry.getModifier().getId().getPath();
+            if (entry.isEnabled() && ("potion_retention".equals(path) || "potion_immunity".equals(path))
                     && entry.isModifierEnabled(player, data))
             {
                 entry.getModifier().tick(player, entry, data);

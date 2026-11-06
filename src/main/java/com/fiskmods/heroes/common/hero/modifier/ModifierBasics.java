@@ -289,7 +289,7 @@ class ModifierDamageResistance extends Modifier
     }
 }
 
-/** Removes potion effects as fast as they are applied. */
+/** Removes only the potion effects listed by the power, as in the original modifier. */
 class ModifierPotionImmunity extends Modifier
 {
     ModifierPotionImmunity(ResourceLocation id)
@@ -300,17 +300,14 @@ class ModifierPotionImmunity extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entity.getActiveEffects().isEmpty())
+        com.google.gson.JsonElement configured = entry.get(entity, PowerProperty.POTION_EFFECTS);
+        if (configured == null || !configured.isJsonArray()) return;
+        for (com.google.gson.JsonElement element : configured.getAsJsonArray())
         {
-            return;
-        }
-
-        for (MobEffectInstance effect : new java.util.ArrayList<>(entity.getActiveEffects()))
-        {
-            if (effect.getEffect().getCategory() == net.minecraft.world.effect.MobEffectCategory.HARMFUL)
-            {
-                entity.removeEffect(effect.getEffect());
-            }
+            if (!element.isJsonPrimitive() || !element.getAsJsonPrimitive().isString()) continue;
+            ResourceLocation id = ResourceLocation.tryParse(element.getAsString());
+            if (id != null)
+                net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getOptional(id).ifPresent(entity::removeEffect);
         }
     }
 }

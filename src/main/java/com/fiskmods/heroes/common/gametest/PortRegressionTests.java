@@ -325,4 +325,25 @@ public final class PortRegressionTests
         else helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void potionImmunityOnlyRemovesConfiguredEffects(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:deadpool_xmen");
+        if (data == null || hero == null) { helper.fail("Deadpool or player data is missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.POISON, 200));
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WITHER, 200));
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.WEAKNESS, 200));
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.REGENERATION, 200));
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickPotionEffects(player);
+        if (player.hasEffect(net.minecraft.world.effect.MobEffects.POISON)
+                || player.hasEffect(net.minecraft.world.effect.MobEffects.WITHER)
+                || !player.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS)
+                || !player.hasEffect(net.minecraft.world.effect.MobEffects.REGENERATION))
+            helper.fail("Potion immunity must remove only Deadpool's listed poison and wither effects");
+        else helper.succeed();
+    }
+
 }

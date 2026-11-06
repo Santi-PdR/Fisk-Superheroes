@@ -123,7 +123,7 @@ public class CommonEventHandler
     {
         if (event.phase == TickEvent.Phase.START)
         {
-            ModifierHandler.tickPotionRetention(event.player);
+            ModifierHandler.tickPotionEffects(event.player);
             return;
         }
 
