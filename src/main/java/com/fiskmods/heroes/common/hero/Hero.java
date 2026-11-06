@@ -292,6 +292,7 @@ public class Hero implements Comparable<Hero>
             if (!powers.contains(id))
             {
                 powers.add(id);
+                powerContainer.addPower(id);
             }
         }
     }
