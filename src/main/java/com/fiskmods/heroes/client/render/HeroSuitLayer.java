@@ -87,12 +87,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         poseStack.pushPose();
 
-        // The original ModelBipedMultiLayer expanded suit cubes by 0.05 model units so the
-        // costume sat just above the vanilla player skin. The 1.20 layer reuses PlayerModel, so
-        // apply the equivalent small shell expansion here to prevent coplanar suit/skin faces
-        // from flickering or showing through at grazing angles.
-        float renderScale = scale * 1.005F;
-        poseStack.scale(renderScale, renderScale, renderScale);
+        poseStack.scale(scale, scale, scale);
 
         for (int slot = 0; slot < 4; ++slot)
         {
@@ -1047,9 +1042,12 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         String[] names = { "head", "headwear", "body", "rightArm", "leftArm", "rightLeg", "leftLeg" };
         boolean[] previous = new boolean[parts.length];
 
-        for (int i = 0; i < names.length; ++i)
+        for (int i = 0; i < parts.length; ++i)
         {
             previous[i] = parts[i].visible;
+        }
+        for (int i = 0; i < names.length; ++i)
+        {
             parts[i].visible = previous[i] && data.showsModelPart(slot, names[i]);
         }
 
@@ -1077,23 +1075,18 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     }
 
     /**
-     * Suit textures use the classic four-pixel arm UV layout. Drawing them through the Alex/slim
-     * model stretches those UVs over three-pixel cubes and makes suit seams vary with skin type.
-     * For slim players, render a classic player mesh with the same pose and visibility instead.
+     * The costume needs its own expanded geometry. Scaling the parent player mesh leaves
+     * vanilla hat/jacket/sleeve layers in front of it, hiding otherwise valid suit textures.
+     * Use classic-width arms for the pack's UV layout regardless of the player's skin type.
      */
     private static void renderSuitModel(AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> model,
             PoseStack poseStack, VertexConsumer consumer, int packedLight, int packedOverlay,
             float red, float green, float blue, float alpha)
     {
-        if (!"slim".equals(player.getModelName()))
-        {
-            model.renderToBuffer(poseStack, consumer, packedLight, packedOverlay, red, green, blue, alpha);
-            return;
-        }
-
         if (classicSuitModel == null)
         {
-            ModelPart root = Minecraft.getInstance().getEntityModels().bakeLayer(net.minecraft.client.model.geom.ModelLayers.PLAYER);
+            var mesh = PlayerModel.createMesh(new net.minecraft.client.model.geom.builders.CubeDeformation(0.55F), false);
+            ModelPart root = net.minecraft.client.model.geom.builders.LayerDefinition.create(mesh, 64, 64).bakeRoot();
             classicSuitModel = new PlayerModel<>(root, false);
         }
 
