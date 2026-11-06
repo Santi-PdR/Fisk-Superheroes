@@ -243,7 +243,7 @@ public final class PortRegressionTests
             if (player.getHealth() != 5.0F) { helper.fail("Factor 4 regenerated before 20 ticks"); return; }
             food.tick(player);
             if (player.getHealth() != 6.0F || food.getExhaustionLevel() != 6.0F)
-            { helper.fail("Factor 4 must regenerate one health with vanilla exhaustion at 20 ticks"); return; }
+            { helper.fail("Factor 4 at 20 ticks: health=" + player.getHealth() + ", exhaustion=" + food.getExhaustionLevel() + ", interval=" + com.fiskmods.heroes.common.hero.modifier.ModifierRegeneration.healInterval(player, 80)); return; }
 
             player.setHealth(5.0F);
             food.setFoodLevel(20);
