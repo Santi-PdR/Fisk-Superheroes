@@ -383,22 +383,8 @@ public class JSEntity
 
     public boolean isWearingFullSuit()
     {
-        var iteration = entity instanceof Player player ? HeroTracker.getWornSuit(player) : null;
-
-        if (iteration == null)
-        {
-            return false;
-        }
-
-        for (int i = 0; i < 4; ++i)
-        {
-            if (iteration.getArmorType(i) != null && getArmor(i).isEmpty())
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return entity instanceof Player player
+                && HeroTracker.hasCompleteSuit(player, HeroTracker.getWornSuit(player));
     }
 
     public float getPunchTimerInterpolated()

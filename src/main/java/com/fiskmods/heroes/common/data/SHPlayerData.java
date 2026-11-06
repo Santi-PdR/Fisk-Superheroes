@@ -15,6 +15,8 @@ public class SHPlayerData implements IDataHolder
 {
     private final DataContainer data = new DataContainer();
 
+    // Client-only session marker; the server sends the active suit, not merely its appearance.
+    private boolean authoritativeHero;
     private HeroIteration hero;
     private HeroIteration prevHero;
     private int heroChangeTime;
@@ -63,6 +65,16 @@ public class SHPlayerData implements IDataHolder
         {
             spellCooldowns.put(spell, gameTime);
         }
+    }
+
+    public boolean hasAuthoritativeHero()
+    {
+        return authoritativeHero;
+    }
+
+    public void markAuthoritativeHero()
+    {
+        authoritativeHero = true;
     }
 
     public HeroIteration getHero()

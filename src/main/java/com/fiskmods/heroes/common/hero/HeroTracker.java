@@ -19,22 +19,35 @@ public final class HeroTracker
     {
     }
 
-    /**
-     * The iteration worn by the given player, or null when no suit piece is equipped. The
-     * chestplate is the "core" piece of a set and therefore takes precedence.
-     */
+    /** The visible iteration, preferring a valid chestpiece over other worn suit pieces. */
     @Nullable
     public static HeroIteration getWornSuit(Player player)
     {
-        // PlayerInventory's armor list is ordered feet, legs, chest, head. The chestplate is
-        // the suit's core piece, so prefer it when a player has accidentally mixed hero sets.
+        // Inventory armor is ordered feet, legs, chest, head; ItemHeroArmor slots are reversed.
         for (int armorIndex : new int[] { 2, 3, 1, 0 })
         {
             ItemStack stack = player.getInventory().armor.get(armorIndex);
+            if (!(stack.getItem() instanceof ItemHeroArmor armor) || armor.getSlot() != 3 - armorIndex) continue;
             HeroIteration iteration = ItemHeroArmor.getHero(stack);
-            if (iteration != null) return iteration;
+            if (iteration != null && iteration.hasPieceOfSet(armor.getSlot())) return iteration;
         }
         return null;
+    }
+
+    /** Every defined piece must be the correct armor item and the same suit iteration. */
+    public static boolean hasCompleteSuit(Player player, @Nullable HeroIteration iteration)
+    {
+        if (iteration == null) return false;
+        boolean hasPiece = false;
+        for (int slot = 0; slot < 4; ++slot)
+        {
+            if (!iteration.hasPieceOfSet(slot)) continue;
+            hasPiece = true;
+            ItemStack stack = player.getInventory().armor.get(3 - slot);
+            if (!(stack.getItem() instanceof ItemHeroArmor armor) || armor.getSlot() != slot
+                    || ItemHeroArmor.getHero(stack) != iteration) return false;
+        }
+        return hasPiece;
     }
 
     /** The hero currently active for an entity, taken from its player data. */
@@ -82,13 +95,27 @@ public final class HeroTracker
 
         com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
 
+        // Once a suit packet has arrived, the server is authoritative. A local COMMON config may
+        // differ from the server's requireFullSuit setting and must not overwrite its decision.
+        if (player.level().isClientSide && data.hasAuthoritativeHero()) return;
         HeroIteration worn = getWornSuit(player);
+        if (com.fiskmods.heroes.common.config.SHConfig.REQUIRE_FULL_SUIT.get() && !hasCompleteSuit(player, worn))
+            worn = null;
         HeroIteration current = data.getHero();
 
         if (worn != current)
         {
             onHeroChanged(player, data, current, worn);
         }
+    }
+
+    /** Apply an authoritative suit transition received from the server. */
+    public static void applySynchronizedHero(Player player, @Nullable HeroIteration iteration)
+    {
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data == null) return;
+        data.markAuthoritativeHero();
+        if (data.getHero() != iteration) onHeroChanged(player, data, data.getHero(), iteration);
     }
 
     private static void onHeroChanged(Player player, SHPlayerData data, @Nullable HeroIteration previous, @Nullable HeroIteration current)
@@ -114,7 +141,7 @@ public final class HeroTracker
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("slow_motion"), false);
         }
 
-        if (previous != null)
+        if (previous != null && !player.level().isClientSide)
         {
             com.fiskmods.heroes.common.hero.attribute.SHAttributes.clearModifiers(player);
         }

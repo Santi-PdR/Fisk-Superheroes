@@ -76,17 +76,9 @@ public class PacketSyncSuit extends SHPacket
             return;
         }
 
-        if (hero == null)
-        {
-            data.setHero(null);
-            return;
-        }
-
-        Hero heroType = Hero.REGISTRY.getHero(hero);
-
-        if (heroType != null)
-        {
-            data.setHero(heroType.getIteration(iteration));
-        }
+        if (!(entity instanceof net.minecraft.world.entity.player.Player player)) return;
+        Hero heroType = hero != null ? Hero.REGISTRY.getHero(hero) : null;
+        com.fiskmods.heroes.common.hero.HeroTracker.applySynchronizedHero(player,
+                heroType != null ? heroType.getIteration(iteration) : null);
     }
 }
