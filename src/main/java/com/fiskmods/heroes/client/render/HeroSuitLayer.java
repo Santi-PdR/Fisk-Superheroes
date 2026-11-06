@@ -1090,6 +1090,9 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             classicSuitModel = new PlayerModel<>(root, false);
         }
 
+        // EntityModel defaults to young=true, which renders a miniature suit around an
+        // adult player's waist unless the parent's age/pose state is copied as well.
+        model.copyPropertiesTo(classicSuitModel);
         copyPart(model.head, classicSuitModel.head);
         copyPart(model.hat, classicSuitModel.hat);
         copyPart(model.body, classicSuitModel.body);
