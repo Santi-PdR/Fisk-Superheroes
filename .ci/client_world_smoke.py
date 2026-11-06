@@ -54,6 +54,8 @@ def main():
             time.sleep(3)
             xdo('key', 'F5')
             wait_for(r'Drawing suit fiskheroes:the_flash slot', 45, 'third-person suit render path', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-world-screenshot.jpg'], check=True, timeout=30)
             xdo('keydown', 'c')
             time.sleep(0.3)
             xdo('keyup', 'c')
