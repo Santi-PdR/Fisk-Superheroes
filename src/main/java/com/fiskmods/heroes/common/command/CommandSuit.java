@@ -17,6 +17,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -49,7 +50,7 @@ public class CommandSuit
 
         try
         {
-            String key = StringArgumentType.getString(context, "hero");
+            String key = heroKey(context);
             Hero hero = Hero.REGISTRY.getHeroIgnoreCase(key);
 
             if (hero != null)
@@ -72,7 +73,7 @@ public class CommandSuit
     {
         dispatcher.register(Commands.literal("suit")
                 .requires(source -> source.hasPermission(2))
-                .then(Commands.argument("hero", StringArgumentType.string())
+                .then(Commands.argument("hero", ResourceLocationArgument.id())
                         .suggests(SUGGEST_HEROES)
                         .executes(context -> suit(context, null))
                         .then(Commands.argument("iteration", StringArgumentType.string())
@@ -80,10 +81,17 @@ public class CommandSuit
                                 .executes(context -> suit(context, StringArgumentType.getString(context, "iteration"))))));
     }
 
+    /** ResourceLocation arguments without an explicit domain use Minecraft's default namespace. */
+    private static String heroKey(CommandContext<CommandSourceStack> context) throws CommandSyntaxException
+    {
+        var id = ResourceLocationArgument.getId(context, "hero");
+        return "minecraft".equals(id.getNamespace()) ? id.getPath() : id.toString();
+    }
+
     private static int suit(CommandContext<CommandSourceStack> context, String iterationKey) throws CommandSyntaxException
     {
         ServerPlayer player = context.getSource().getPlayerOrException();
-        String key = StringArgumentType.getString(context, "hero");
+        String key = heroKey(context);
         Hero hero = Hero.REGISTRY.getHeroIgnoreCase(key);
 
         if (hero == null)

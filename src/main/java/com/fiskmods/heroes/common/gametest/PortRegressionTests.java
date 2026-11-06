@@ -670,4 +670,21 @@ public final class PortRegressionTests
         }
     }
 
+    @GameTest(template = "test_empty")
+    public static void suitCommandAcceptsNamespacedAndShortIds(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "suit-command-test"));
+        var dispatcher = new com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack>();
+        com.fiskmods.heroes.common.command.CommandSuit.register(dispatcher);
+        var source = player.createCommandSourceStack().withPermission(2);
+        for (String command : new String[] { "suit fiskheroes:the_flash", "suit the_flash", "suit fiskheroes:the_flash test" })
+        {
+            var parsed = dispatcher.parse(command, source);
+            if (parsed.getReader().canRead() || parsed.getContext().getCommand() == null)
+            { helper.fail("Suit command did not parse: " + command); return; }
+        }
+        helper.succeed();
+    }
+
 }
