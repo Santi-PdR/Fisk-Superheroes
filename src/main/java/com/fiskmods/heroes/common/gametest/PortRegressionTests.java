@@ -388,4 +388,37 @@ public final class PortRegressionTests
         else helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
+    {
+        int checked = 0;
+        for (var hero : com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroes())
+        {
+            var player = helper.makeMockPlayer();
+            player.setPos(net.minecraft.world.phys.Vec3.atCenterOf(helper.absolutePos(new net.minecraft.core.BlockPos(1, 1, 1))));
+            player.tickCount = 20;
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            if (data == null) { helper.fail("Player data capability missing"); return; }
+            data.setHero(hero.getDefaultIteration());
+            for (var entry : hero.getPowerContainer().getEntries())
+            {
+                try
+                {
+                    if (entry.isEnabled() && entry.isModifierEnabled(player, data))
+                    {
+                        entry.getModifier().tick(player, entry, data);
+                        ++checked;
+                    }
+                }
+                catch (Exception e)
+                {
+                    helper.fail("Default tick failed for " + hero.getName() + " / " + entry.getCard() + ": " + e);
+                    return;
+                }
+            }
+        }
+        if (checked < 100) helper.fail("Expected at least 100 active built-in modifier ticks, saw " + checked);
+        else helper.succeed();
+    }
+
 }
