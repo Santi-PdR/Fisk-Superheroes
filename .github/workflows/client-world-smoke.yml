@@ -55,6 +55,13 @@ jobs:
           PY
       - name: Enter world, equip Flash and activate a key
         run: xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/client_world_smoke.py
+      - name: Upload world screenshot for visual inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-world-screenshot
+          path: ci-world-screenshot.jpg
+          if-no-files-found: ignore
       - name: Publish world client log
         if: always() && hashFiles('ci-client-world.log') != ''
         run: |
@@ -63,10 +70,6 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/client-world-log.txt
-          if [ -f ci-world-screenshot.jpg ]; then
-            cp ci-world-screenshot.jpg .ci/world-screenshot.jpg
-            git add -f .ci/world-screenshot.jpg
-          fi
           git diff --cached --quiet || git commit -m 'ci: client world smoke log [skip ci]' --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
