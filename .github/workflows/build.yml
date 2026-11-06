@@ -116,6 +116,48 @@ jobs:
             sleep 5
           done
 
+      # Test the reobfuscated distributable, not only ForgeGradle's development classpath.
+      - name: Boot a production Forge server with the built jar
+        if: steps.gradle.outputs.exit_code == '0'
+        run: |
+          set -euo pipefail
+          version=$(sed -n 's/^forge_version=//p' gradle.properties)
+          minecraft=$(sed -n 's/^minecraft_version=//p' gradle.properties)
+          server="$RUNNER_TEMP/fisk-production-server"
+          mkdir -p "$server/mods"
+          curl -fsSL --retry 3 "https://maven.minecraftforge.net/net/minecraftforge/forge/${minecraft}-${version}/forge-${minecraft}-${version}-installer.jar" -o "$RUNNER_TEMP/forge-installer.jar"
+          java -jar "$RUNNER_TEMP/forge-installer.jar" --installServer "$server" > ci-production.log 2>&1
+          cp build/libs/fiskheroes-1.20.1-2.4.0.jar "$server/mods/"
+          echo 'eula=true' > "$server/eula.txt"
+          printf 'online-mode=false\nmax-tick-time=-1\nspawn-protection=0\n' > "$server/server.properties"
+          cd "$server"
+          set +e
+          (sleep 150; echo stop) | timeout -k 20 360 ./run.sh nogui >> "$GITHUB_WORKSPACE/ci-production.log" 2>&1
+          code=${PIPESTATUS[1]}
+          set -e
+          cd "$GITHUB_WORKSPACE"
+          tail -100 ci-production.log
+          test "$code" -eq 0
+          grep -q 'Done (' ci-production.log
+          grep -q "Fisk's Superheroes ready:" ci-production.log
+          ! grep -qE '#@!@# Game crashed|\[.*FATAL\]|Failed to load mod|Exception in thread "main"' ci-production.log
+          test ! -d "$server/crash-reports"
+
+      - name: Publish production server log
+        if: always() && hashFiles('ci-production.log') != ''
+        run: |
+          mkdir -p .ci
+          { grep -iE 'fiskheroes|coremod|error|exception|fatal|Done \(|stopping server' ci-production.log | tail -300 || true; tail -120 ci-production.log; } > .ci/production-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/production-log.txt
+          git diff --cached --quiet || git commit -m 'ci: production smoke log [skip ci]' --no-verify
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
+            git push && break
+            sleep 5
+          done
+
       - name: Publish preview release jar
         if: steps.gradle.outputs.exit_code == '0' && github.ref == 'refs/heads/arena/46651ecf-fisk-superheroes'
         env:
