@@ -346,4 +346,46 @@ public final class PortRegressionTests
         else helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void playerDataSurvivesInvalidatedClone(GameTestHelper helper)
+    {
+        var original = helper.makeMockPlayer();
+        var replacement = helper.makeMockPlayer();
+        var oldData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(original);
+        var newData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(replacement);
+        if (oldData == null || newData == null) { helper.fail("Player data capabilities were not attached"); return; }
+        var vars = com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED;
+        oldData.getData().set(vars, (short) 123);
+        oldData.setSpellCooldownUntil(FiskHeroes.id("test_cooldown"), 250L);
+        original.invalidateCaps();
+        if (com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(original) != null)
+        { helper.fail("Old capability was not invalidated before cloning"); return; }
+        com.fiskmods.heroes.common.data.SHDataCapabilities.onPlayerClone(
+                new net.minecraftforge.event.entity.player.PlayerEvent.Clone(replacement, original, true));
+        if (newData.getData().get(vars) != 123 || newData.getSpellCooldownUntil(FiskHeroes.id("test_cooldown")) != 250L
+                || com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(original) != null)
+            helper.fail("Clone must copy invalidated data and leave old capabilities invalidated");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void damageResetsHealingDelay(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data capability was not attached"); return; }
+        var timer = com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED;
+        data.getData().set(timer, (short) 120);
+        player.setHealth(20.0F);
+        player.getAbilities().invulnerable = false;
+        if (!player.hurt(player.damageSources().generic(), 2.0F) || player.getHealth() >= 20.0F
+                || data.getData().get(timer) != 0)
+        { helper.fail("Real damage must reset the healing delay"); return; }
+        data.getData().set(timer, (short) 120);
+        var zeroDamage = new net.minecraftforge.event.entity.living.LivingDamageEvent(player, player.damageSources().generic(), 0.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingDamage(zeroDamage);
+        if (data.getData().get(timer) != 120) helper.fail("Zero damage must not reset the healing delay");
+        else helper.succeed();
+    }
+
 }

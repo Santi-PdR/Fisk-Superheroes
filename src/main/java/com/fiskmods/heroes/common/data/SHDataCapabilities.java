@@ -58,12 +58,21 @@ public class SHDataCapabilities
 
     public static void onPlayerClone(PlayerEvent.Clone event)
     {
-        SHPlayerData original = getPlayer(event.getOriginal());
-        SHPlayerData replacement = getPlayer(event.getEntity());
-
-        if (original != null && replacement != null)
+        // Forge invalidates the old player's capability dispatcher when it is removed. Revive it
+        // only while copying, then restore the invalid state expected by other capability users.
+        event.getOriginal().reviveCaps();
+        try
         {
-            replacement.copyFrom(original);
+            SHPlayerData original = getPlayer(event.getOriginal());
+            SHPlayerData replacement = getPlayer(event.getEntity());
+            if (original != null && replacement != null)
+            {
+                replacement.copyFrom(original);
+            }
+        }
+        finally
+        {
+            event.getOriginal().invalidateCaps();
         }
     }
 
