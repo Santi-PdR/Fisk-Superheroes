@@ -286,4 +286,43 @@ public final class PortRegressionTests
         }
     }
 
+    @GameTest(template = "test_empty")
+    public static void heroPowersAreBakedAndTick(GameTestHelper helper)
+    {
+        int checked = 0;
+        for (var hero : com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroes())
+        {
+            var expected = new java.util.LinkedHashSet<String>();
+            for (var id : hero.getPowers())
+            {
+                var power = com.fiskmods.heroes.common.hero.power.Power.REGISTRY.get(id);
+                if (power == null) { helper.fail("Missing power " + id + " for " + hero.getName()); return; }
+                expected.addAll(power.createEntries().keySet());
+            }
+            var actual = new java.util.LinkedHashSet<String>();
+            for (var entry : hero.getPowerContainer().getEntries()) actual.add(entry.getCard());
+            if (!expected.equals(actual))
+            {
+                helper.fail("Incorrect baked modifier cards for " + hero.getName() + ": expected " + expected + ", got " + actual);
+                return;
+            }
+            if (!expected.isEmpty()) ++checked;
+        }
+        if (checked < 50) { helper.fail("Expected to verify powers for at least 50 built-in heroes"); return; }
+
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:deadpool_xmen");
+        if (data == null || hero == null) { helper.fail("Deadpool or player data is missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        player.setHealth(5.0F);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 81);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+        if (player.getHealth() != 6.0F)
+            helper.fail("A worn Deadpool suit must actually tick its healing factor");
+        else helper.succeed();
+    }
+
 }
