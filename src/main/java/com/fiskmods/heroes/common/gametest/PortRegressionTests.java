@@ -526,7 +526,7 @@ public final class PortRegressionTests
         if (!mod.isImmuneTo(player, absolute, damage.inWall(), 8)
                 || !mod.isImmuneTo(player, absolute, melee, 8)
                 || !mod.isImmuneTo(player, absolute, arrow, 8)
-                || !mod.isImmuneTo(player, absolute, damage.outOfWorld(), 8)
+                || !mod.isImmuneTo(player, absolute, damage.fellOutOfWorld(), 8)
                 || mod.isImmuneTo(player, absolute, damage.lava(), 8))
         { helper.fail("Absolute phase must block melee, arrows, void and suffocation, but not lava"); return; }
         if (mod.modifyOutgoingDamage(player, absolute, attacker, damage.playerAttack(player), 8) != 0)
@@ -535,7 +535,7 @@ public final class PortRegressionTests
         if (!normal.getModifier().isImmuneTo(player, normal, damage.inWall(), 8)
                 || normal.getModifier().isImmuneTo(player, normal, melee, 8)
                 || normal.getModifier().isImmuneTo(player, normal, arrow, 8)
-                || normal.getModifier().isImmuneTo(player, normal, damage.outOfWorld(), 8))
+                || normal.getModifier().isImmuneTo(player, normal, damage.fellOutOfWorld(), 8))
         { helper.fail("Non-absolute phase must protect against suffocation only"); return; }
         player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
                 com.fiskmods.heroes.common.hero.modifier.ModEffects.PHASE_SUPPRESSANT.get(), 100));
