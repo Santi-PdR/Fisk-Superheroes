@@ -639,6 +639,26 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void soundManifestRetainsAliasesAndVariants(GameTestHelper helper)
+    {
+        var original = com.google.gson.JsonParser.parseString("""
+                {"ambient.flight":{"category":"ambient","sounds":["ambient/flight_loop","ambient/flight_loop2"]},
+                 "nexus.ignite":{"sounds":[{"name":"minecraft:mob/ghast/fireball4","pitch":1.1}]}}
+                """).getAsJsonObject();
+        var converted = com.fiskmods.heroes.common.sound.SoundManifest.normalize(original);
+        var flight = converted.getAsJsonObject("ambient.flight").getAsJsonArray("sounds");
+        var vanilla = converted.getAsJsonObject("nexus.ignite").getAsJsonArray("sounds").get(0).getAsJsonObject();
+        if (flight.size() != 2 || !flight.get(0).getAsJsonObject().get("name").getAsString().equals("fiskheroes:ambient/flight_loop")
+                || !flight.get(1).getAsJsonObject().get("name").getAsString().equals("fiskheroes:ambient/flight_loop2")
+                || !vanilla.get("name").getAsString().equals("minecraft:entity.ghast.shoot")
+                || !vanilla.get("type").getAsString().equals("event")
+                || Math.abs(vanilla.get("pitch").getAsFloat() - 1.1F) > 0.001F
+                || !original.getAsJsonObject("ambient.flight").getAsJsonArray("sounds").get(0).isJsonPrimitive())
+            helper.fail("Original sound aliases, variants, vanilla events and pitch must survive conversion");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
     {
         int checked = 0;

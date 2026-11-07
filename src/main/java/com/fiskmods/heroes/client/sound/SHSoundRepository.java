@@ -40,8 +40,8 @@ public final class SHSoundRepository
     private static final int DEFAULT_VERSION = 3;
 
     private static Path root;
-    private static boolean downloading;
-    private static boolean ready;
+    private static volatile boolean downloading;
+    private static volatile boolean ready;
     private static final Map<String, String> INDEX = new LinkedHashMap<>();
 
     private SHSoundRepository()
@@ -69,9 +69,16 @@ public final class SHSoundRepository
     }
 
     /** Loads the cached index if the sounds have already been downloaded. */
-    public static void loadCached()
+    public static synchronized void loadCached()
     {
         Path indexFile = root().resolve("sounds.index");
+        // Old port caches contain only filename-derived events; they need the archive's actual
+        // sounds.json table and must be downloaded once more rather than marked ready.
+        if (!Files.isRegularFile(root().resolve("sound-events.json")))
+        {
+            ready = false;
+            return;
+        }
 
         if (!Files.isRegularFile(indexFile))
         {
@@ -92,7 +99,6 @@ public final class SHSoundRepository
                 }
             }
 
-            ready = !INDEX.isEmpty();
             Path soundPackDir = root().resolve("pack");
             if (Files.isDirectory(soundPackDir))
             {
@@ -100,6 +106,7 @@ public final class SHSoundRepository
                 // cached packs without requiring another download.
                 writeIndex(soundPackDir);
             }
+            ready = !INDEX.isEmpty() && Files.isDirectory(soundPackDir);
             FiskHeroes.LOGGER.info("FiskHeroes sound repository: {} cached sounds", INDEX.size());
         }
         catch (IOException e)
@@ -111,12 +118,8 @@ public final class SHSoundRepository
     /** Downloads the repository in the background when it is not cached yet. */
     public static void downloadIfMissing(String repository, int version)
     {
-        if (ready || downloading || Files.isRegularFile(root().resolve("sounds.index")))
-        {
-            loadCached();
-            return;
-        }
-
+        loadCached();
+        if (ready || downloading) return;
         downloading = true;
         String repo = repository != null && !repository.isEmpty() ? repository : DEFAULT_REPOSITORY;
         int ver = version > 0 ? version : DEFAULT_VERSION;
@@ -158,10 +161,13 @@ public final class SHSoundRepository
             throw new IOException("HTTP " + response.statusCode());
         }
 
-        extract(temp, dir);
-        Files.deleteIfExists(temp);
-        writeIndex(dir);
-        loadCached();
+        synchronized (SHSoundRepository.class)
+        {
+            extract(temp, dir);
+            Files.deleteIfExists(temp);
+            writeIndex(dir);
+            loadCached();
+        }
         FiskHeroes.LOGGER.info("FiskHeroes sound repository ready: {} sounds", INDEX.size());
         net.minecraft.client.Minecraft.getInstance().execute(SHSoundPack::refresh);
     }
@@ -170,6 +176,7 @@ public final class SHSoundRepository
     private static void extract(Path zip, Path dir) throws IOException
     {
         INDEX.clear();
+        String eventManifest = null;
 
         try (ZipInputStream in = new ZipInputStream(Files.newInputStream(zip)))
         {
@@ -183,19 +190,32 @@ public final class SHSoundRepository
                 }
 
                 String name = entry.getName().replace('\\', '/');
-
+                if (name.equals("sounds.json"))
+                {
+                    byte[] bytes = in.readNBytes(2_000_001);
+                    if (bytes.length > 2_000_000) throw new IOException("Sound manifest is too large");
+                    eventManifest = new String(bytes, StandardCharsets.UTF_8);
+                    continue;
+                }
                 if (!name.toLowerCase(java.util.Locale.ROOT).endsWith(".ogg"))
                 {
                     continue;
                 }
 
                 String path = assetPath(name);
-                Path target = dir.resolve("assets/fiskheroes/sounds/" + path);
+                Path sounds = dir.resolve("assets/fiskheroes/sounds").toAbsolutePath().normalize();
+                Path target = sounds.resolve(path).normalize();
+                if (!target.startsWith(sounds) || !path.matches("[a-z0-9_./-]+"))
+                    throw new IOException("Unsafe sound archive path: " + name);
                 Files.createDirectories(target.getParent());
                 Files.copy(in, target, StandardCopyOption.REPLACE_EXISTING);
                 INDEX.put(eventName(path), path);
             }
         }
+        if (eventManifest == null || INDEX.isEmpty()) throw new IOException("Sound archive lacks its event table or audio files");
+        // Validate before marking the cache migratable on the next launch.
+        com.google.gson.JsonParser.parseString(eventManifest).getAsJsonObject();
+        Files.writeString(root().resolve("sound-events.json"), eventManifest, StandardCharsets.UTF_8);
     }
 
     /** Strips any leading folder (such as {@code sounds/} or {@code assets/}) from an archive path. */
@@ -230,33 +250,17 @@ public final class SHSoundRepository
         Files.createDirectories(root());
         Files.write(root().resolve("sounds.index"), lines, StandardCharsets.UTF_8);
 
-        // sounds.json for the pack we serve to the client
-        StringBuilder json = new StringBuilder("{\n");
-        boolean first = true;
-
-        for (Map.Entry<String, String> e : INDEX.entrySet())
+        // The original archive supplies event names, variants and pitch/stream metadata. File
+        // names do not map one-to-one to event names (for example ambient.flight -> flight_loop).
+        Path manifest = root().resolve("sound-events.json");
+        if (!Files.isRegularFile(manifest)) throw new IOException("Sound archive lacks sounds.json");
+        com.google.gson.JsonObject original;
+        try (java.io.Reader reader = Files.newBufferedReader(manifest, StandardCharsets.UTF_8))
         {
-            String event = e.getKey().substring(e.getKey().indexOf(':') + 1);
-
-            if (!first)
-            {
-                json.append(",\n");
-            }
-
-            first = false;
-            String soundPath = e.getValue();
-            if (soundPath.endsWith(".ogg"))
-            {
-                soundPath = soundPath.substring(0, soundPath.length() - ".ogg".length());
-            }
-            // Sound names in sounds.json default to the minecraft namespace when unqualified.
-            // The downloaded files live in assets/fiskheroes/sounds, and Minecraft appends .ogg.
-            json.append("  \"").append(event).append("\": { \"sounds\": [ { \"name\": \"")
-                    .append(FiskHeroes.MODID).append(':').append(soundPath).append("\", \"stream\": true } ] }");
+            original = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
         }
-
-        json.append("\n}\n");
-        Files.write(dir.resolve("assets/fiskheroes/sounds.json"), json.toString().getBytes(StandardCharsets.UTF_8));
+        com.google.gson.JsonObject converted = com.fiskmods.heroes.common.sound.SoundManifest.normalize(original);
+        Files.writeString(dir.resolve("assets/fiskheroes/sounds.json"), converted.toString(), StandardCharsets.UTF_8);
         Files.writeString(dir.resolve("pack.mcmeta"), "{\n  \"pack\": {\n    \"pack_format\": 15,\n    \"description\": \"Fisk's Superheroes sounds\"\n  }\n}\n", StandardCharsets.UTF_8);
     }
 

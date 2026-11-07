@@ -67,6 +67,7 @@ public final class SHSoundPack implements PackResources
         // index here as well as during client setup, otherwise a cached pack is first loaded with
         // its stale file and only repaired after the initial resource reload.
         SHSoundRepository.loadCached();
+        if (!SHSoundRepository.isReady()) return;
         Path root = SHSoundRepository.root().resolve("pack");
 
         if (!Files.isDirectory(root.resolve("assets/fiskheroes/sounds")))
