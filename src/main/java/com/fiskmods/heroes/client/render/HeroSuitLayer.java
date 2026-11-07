@@ -120,7 +120,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             if (texture != null)
             {
-                logRenderDiagnostic("rendered:" + pieceIteration.getRegistryName() + ":" + slot,
+                logRenderDiagnostic("rendered:" + pieceIteration.getRegistryName() + ":" + slot + ":" + texture,
                         "Drawing suit {} slot {} from {}", pieceIteration.getRegistryName(), SLOT_NAMES[slot], texture);
                 boolean[] hidden = hidePartsFor(playerModel, pieceModel, slot);
                 VertexConsumer consumer = buffer.getBuffer(RenderType.entityTranslucent(texture));

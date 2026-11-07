@@ -38,6 +38,12 @@ public final class PlayerSizeHandler
     {
         float scale = scale(player);
         Float previous = LAST_SCALE.put(player, scale);
-        if (previous == null || Float.compare(previous, scale) != 0) player.refreshDimensions();
+        if (previous == null || Float.compare(previous, scale) != 0)
+        {
+            player.refreshDimensions();
+            com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Player dimensions entity={} side={} scale={} width={} eye={}",
+                    player.getGameProfile().getName(), player.level().isClientSide ? "client" : "server",
+                    scale, player.getBbWidth(), player.getEyeHeight());
+        }
     }
 }

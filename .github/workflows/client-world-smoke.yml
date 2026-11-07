@@ -65,7 +65,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: client-world-screenshot
-          path: ci-world-screenshot.jpg
+          path: |
+            ci-world-screenshot.jpg
+            ci-antman-screenshot.jpg
           if-no-files-found: ignore
       - name: Publish world client log
         if: always() && hashFiles('ci-client-world.log') != ''

@@ -129,6 +129,28 @@ def main():
             if not match or float(match.group(1)) < 0.75:
                 raise RuntimeError(f'Spider-Man jump impulse too small: {match.group(1) if match else "missing"}')
             print('PASS: Spider-Man local jump impulse', match.group(1), flush=True)
+            # The comics suit changes both its equipped base texture and emissive layer when
+            # speeding. Check real client resource selection before and after the ability key.
+            command('gamemode creative')
+            command('suit fiskheroes:godspeed_comics')
+            wait_for(r'Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1\.png',
+                     45, 'Godspeed normal equipped texture', process)
+            xdo('key', 'c')
+            wait_for(r'Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1_on\.png',
+                     45, 'Godspeed active equipped texture', process)
+            command('suit fiskheroes:ant_man')
+            wait_for(r'\[CHAT\] Equipped Ant-Man|\[Dev: Equipped Ant-Man', 45, 'equip Ant-Man', process)
+            time.sleep(3)
+            xdo('key', 'c')
+            wait_for(r'Player dimensions entity=Dev side=server scale=0\.0625 width=', 45,
+                     'Ant-Man shrinking changes the server collision dimensions', process)
+            wait_for(r'Player dimensions entity=Dev side=client scale=0\.0625 width=', 45,
+                     'Ant-Man scale synchronizes to the client', process)
+            match = re.search(r'Player dimensions entity=Dev side=client scale=0\.0625 width=([-+0-9.eE]+)',
+                              log.read_text(errors='replace'))
+            if not match or not 0.03 < float(match.group(1)) < 0.05:
+                raise RuntimeError(f'Unexpected client collision width after shrinking: {match.group(1) if match else "missing"}')
+            subprocess.run(['scrot', 'ci-antman-screenshot.jpg'], check=True, timeout=30)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

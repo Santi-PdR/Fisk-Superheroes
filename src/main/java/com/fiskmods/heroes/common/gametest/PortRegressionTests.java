@@ -94,7 +94,7 @@ public final class PortRegressionTests
         var vars = data.getData();
         vars.set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
         var entry = hero.getPowerContainer().getEntries().stream()
-                .filter(e -> e.getModifier().getId().equals(FiskHeroes.id("size_manipulation")) && "small".equals(e.getCard()))
+                .filter(e -> e.getModifier().getId().equals(FiskHeroes.id("size_manipulation")) && e.getCard() != null && e.getCard().endsWith("|small"))
                 .findFirst().orElse(null);
         if (entry == null || !entry.isModifierEnabled(player, data)) { helper.fail("Small-size card missing"); return; }
         float initialWidth = player.getBbWidth();
