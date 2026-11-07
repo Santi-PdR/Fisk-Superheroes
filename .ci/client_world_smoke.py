@@ -222,6 +222,21 @@ def main():
             wait_for(r'Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=true, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6\.png',
                      45, 'Crossbones first-person gauntlet render', process)
             subprocess.run(['scrot', 'ci-crossbones-screenshot.jpg'], check=True, timeout=30)
+            # Exercise a full-strength charged punch through the real client, server and
+            # Player.attack path. An unarmoured, stationary golem starts at 100 health.
+            command('fill -4 159 -4 4 159 4 minecraft:stone')
+            command('fill -4 160 -4 4 164 4 minecraft:air')
+            command('tp @s 0 160 0 0 0')
+            command('summon minecraft:iron_golem 0 160 2 {NoAI:1b,Tags:["fisk_melee_smoke"]}')
+            xdo('keydown', 'Shift_L')
+            time.sleep(2)
+            xdo('keyup', 'Shift_L')
+            time.sleep(1)
+            xdo('click', '1')
+            time.sleep(2)
+            command('execute if data entity @e[type=minecraft:iron_golem,tag=fisk_melee_smoke,limit=1] {Health:84.5f} run say CROSSBONES_CHARGED_HIT_OK')
+            wait_for(r'\[CHAT\].*CROSSBONES_CHARGED_HIT_OK', 45,
+                     'real client charged punch deals the 15.5 damage profile', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
