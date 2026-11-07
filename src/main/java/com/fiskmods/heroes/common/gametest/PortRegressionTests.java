@@ -1703,6 +1703,71 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 120)
+    public static void ironManAimedShotsRequireAimAndCooldown(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-repulsor-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (hero == null) { helper.fail("Iron Man is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+        { helper.fail("Shot fired without aim"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        if (!com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player)
+                || com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+        { helper.fail("Shot must fire once then respect configured cooldown"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        helper.runAfterDelay(31, () -> {
+            if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+            { helper.fail("Shot fired after aim was released"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+            if (!com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+            { helper.fail("Shot did not recover after cooldown"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty")
+    public static void mark50CannonHonorsNanitesAndAimPhase(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-cannon-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Mark 50 or player data is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+        { helper.fail("Cannon fired with nanites inactive"); return; }
+        new com.fiskmods.heroes.pack.js.JSEntity(player).setData("fiskheroes:dyn/nanites", true);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+        { helper.fail("Cannon fired before aim settled"); return; }
+        for (int i = 0; i < 20; ++i)
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (!com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player)
+                || com.fiskmods.heroes.common.hero.ability.AbilityHandler.fireAimedSuitShot(player))
+        { helper.fail("Cannon failed to fire after aiming or ignored cooldown"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty")
     public static void speedKeyAndScrollAreValidatedOnServer(GameTestHelper helper)
     {

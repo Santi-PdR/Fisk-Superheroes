@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 5 adds use-key state to PacketInput; both sides must decode the same layout.
-    private static final String PROTOCOL = "5";
+    // Version 6 adds the aimed suit-shot request; both sides must register the same packets.
+    private static final String PROTOCOL = "6";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

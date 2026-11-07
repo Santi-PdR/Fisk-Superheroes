@@ -242,6 +242,35 @@ public final class AbilityHandler
                 net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
+    /** Right-click-in-air shots from suit modifiers, independent of pack key bindings. */
+    public static boolean fireAimedSuitShot(ServerPlayer player)
+    {
+        HeroTracker.update(player);
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        HeroIteration iteration = data != null ? data.getHero() : null;
+        if (iteration == null || !player.isAlive() || !player.getMainHandItem().isEmpty()
+                || !data.getData().get(Vars.AIMING)
+                || !shouldAim(player, iteration.getHero(), isKeyPressed(player, "AIM"))) return false;
+
+        for (ModifierEntry entry : iteration.getHero().getPowerContainer().getEntries())
+        {
+            String path = entry.getModifier().getId().getPath();
+            if (!(path.equals("repulsor_blast") || path.equals("energy_bolt"))
+                    || !entry.isEnabled() || !entry.isModifierEnabled(player, data)) continue;
+
+            String cooldownKey = "aim_shot:" + entry.getModifier().getId();
+            long now = player.level().getGameTime();
+            Map<String, Long> cooldowns = ABILITY_COOLDOWNS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
+            if (cooldowns.getOrDefault(cooldownKey, 0L) > now) return false;
+            cooldowns.put(cooldownKey, now + Math.max(0, entry.getInt(player, PowerProperty.COOLDOWN_TIME)));
+            entry.getModifier().onActivate(player, entry, data);
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Aimed suit shot: player={}, modifier={}",
+                    player.getGameProfile().getName(), entry.getModifier().getId());
+            return true;
+        }
+        return false;
+    }
+
     /** Retries an aim-gated shared-key ability after the aim state has had time to settle. */
     public static void tickHeldAbilities(ServerPlayer player)
     {

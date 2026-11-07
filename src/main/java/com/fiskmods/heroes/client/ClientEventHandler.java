@@ -424,6 +424,24 @@ public class ClientEventHandler
         }
     }
 
+    /** Iron Man's repulsor and Mark 50 cannon fire on use in air while aiming. */
+    @SubscribeEvent
+    public static void onUseSuitShot(InputEvent.InteractionKeyMappingTriggered event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (!event.isUseItem() || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || abilityClickMode || mc.screen != null || mc.player == null
+                || !mc.player.getMainHandItem().isEmpty() || mc.hitResult == null
+                || mc.hitResult.getType() != net.minecraft.world.phys.HitResult.Type.MISS) return;
+        SHPlayerData data = SHDataCapabilities.getPlayer(mc.player);
+        var iteration = data != null ? data.getHero() : null;
+        if (iteration == null || !data.getData().get(Vars.AIMING)) return;
+        boolean hasShot = iteration.getHero().getPowerContainer().getEntries().stream().anyMatch(entry ->
+                entry.isEnabled() && (entry.getModifier().getId().getPath().equals("repulsor_blast")
+                        || entry.getModifier().getId().getPath().equals("energy_bolt")));
+        if (hasShot) SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketAimedSuitShot());
+    }
+
     @SubscribeEvent
     public static void onMouseInput(InputEvent.MouseButton.Pre event)
     {
