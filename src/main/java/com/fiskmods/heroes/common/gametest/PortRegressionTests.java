@@ -165,11 +165,11 @@ public final class PortRegressionTests
         FriendlyByteBuf reencoded = new FriendlyByteBuf(Unpooled.buffer());
         try
         {
-            new PacketInput(true, false, 100, -50).encode(encoded);
+            new PacketInput(true, false, 100, -50, true).encode(encoded);
             new PacketInput(encoded).encode(reencoded);
             if (!reencoded.readBoolean() || reencoded.readBoolean()
                     || reencoded.readByte() != 1 || reencoded.readByte() != -1
-                    || reencoded.readableBytes() != 0)
+                    || !reencoded.readBoolean() || reencoded.readableBytes() != 0)
             {
                 helper.fail("Directional input packet must round-trip with bounded axes");
             }
@@ -546,6 +546,41 @@ public final class PortRegressionTests
         if (!modifier.isImmuneTo(player, entry, player.damageSources().arrow(arrow, attacker), 8)
                 || !arrow.isRemoved() || !player.getMainHandItem().is(net.minecraft.world.item.Items.ARROW))
             helper.fail("A looked-at arrow must be caught on impact when the main hand is empty");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldControlDistinguishesToggleAndHold(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.SHIELD;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        var shield = com.fiskmods.heroes.common.data.var.Vars.SHIELD;
+        var blocking = com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING;
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        if (!data.getData().get(shield) || data.getData().get(blocking))
+        { helper.fail("A deployed toggle shield must wait for the use key before blocking"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0, true);
+        modifier.tick(player, entry, data);
+        if (!data.getData().get(blocking)) { helper.fail("Use key must raise the deployed shield"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0, false);
+        modifier.tick(player, entry, data);
+        if (data.getData().get(blocking) || !data.getData().get(shield))
+        { helper.fail("Releasing use must stop blocking without retracting a toggle shield"); return; }
+        modifier.onActivate(player, entry, data);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.IS_TOGGLE, false);
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        if (!data.getData().get(shield) || !data.getData().get(blocking))
+        { helper.fail("A hold shield must block while its ability key is held"); return; }
+        modifier.onToggle(player, entry, data);
+        modifier.tick(player, entry, data);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        if (data.getData().get(shield) || data.getData().get(blocking))
+            helper.fail("Releasing a hold shield must retract it");
         else helper.succeed();
     }
 

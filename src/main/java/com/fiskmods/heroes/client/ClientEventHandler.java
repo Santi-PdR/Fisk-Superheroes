@@ -240,22 +240,25 @@ public class ClientEventHandler
         boolean activeInput = mc.screen == null;
         boolean jump = activeInput && mc.options.keyJump.isDown();
         boolean sneak = activeInput && mc.options.keyShift.isDown();
+        boolean use = activeInput && mc.options.keyUse.isDown();
         int forward = activeInput ? (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0) : 0;
         int strafe = activeInput ? (mc.options.keyLeft.isDown() ? 1 : 0) - (mc.options.keyRight.isDown() ? 1 : 0) : 0;
-        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, jump, sneak, forward, strafe);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, jump, sneak, forward, strafe, use);
 
         if (!com.fiskmods.heroes.common.network.PacketInput.lastSent
                 || jump != com.fiskmods.heroes.common.network.PacketInput.lastJump
                 || sneak != com.fiskmods.heroes.common.network.PacketInput.lastSneak
+                || use != com.fiskmods.heroes.common.network.PacketInput.lastUse
                 || forward != com.fiskmods.heroes.common.network.PacketInput.lastForward
                 || strafe != com.fiskmods.heroes.common.network.PacketInput.lastStrafe)
         {
             com.fiskmods.heroes.common.network.PacketInput.lastSent = true;
             com.fiskmods.heroes.common.network.PacketInput.lastJump = jump;
             com.fiskmods.heroes.common.network.PacketInput.lastSneak = sneak;
+            com.fiskmods.heroes.common.network.PacketInput.lastUse = use;
             com.fiskmods.heroes.common.network.PacketInput.lastForward = forward;
             com.fiskmods.heroes.common.network.PacketInput.lastStrafe = strafe;
-            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketInput(jump, sneak, forward, strafe));
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketInput(jump, sneak, forward, strafe, use));
         }
 
         SHPlayerData data = SHDataCapabilities.getPlayer(player);

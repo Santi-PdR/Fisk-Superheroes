@@ -171,15 +171,12 @@ class ModifierShield extends Modifier
             boolean state = !entry.isToggled(entity);
             entry.setToggled(entity, state);
             data.getData().set(Vars.SHIELD, state);
-            data.getData().set(Vars.SHIELD_BLOCKING, state);
         }
         else
         {
             data.getData().set(Vars.SHIELD, true);
-            data.getData().set(Vars.SHIELD_BLOCKING, true);
         }
 
-        AbilityData.playSound(entity, entry, data.getData().get(Vars.SHIELD_BLOCKING) ? "BLOCK_START" : "BLOCK_STOP");
     }
 
     @Override
@@ -188,8 +185,6 @@ class ModifierShield extends Modifier
         if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
         {
             data.getData().set(Vars.SHIELD, false);
-            data.getData().set(Vars.SHIELD_BLOCKING, false);
-            AbilityData.playSound(entity, entry, "BLOCK_STOP");
         }
     }
 
@@ -243,6 +238,13 @@ class ModifierShield extends Modifier
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
         var vars = data.getData();
+        boolean previousBlocking = vars.get(Vars.SHIELD_BLOCKING);
+        boolean wantsBlock = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE)
+                || entity instanceof Player player && com.fiskmods.heroes.common.data.PlayerInputTracker.isUsing(player);
+        boolean blocking = vars.get(Vars.SHIELD) && wantsBlock && vars.get(Vars.SHIELD_COOLDOWN) == 0;
+        vars.set(Vars.SHIELD_BLOCKING, blocking);
+        if (blocking != previousBlocking && !entity.level().isClientSide)
+            AbilityData.playSound(entity, entry, blocking ? "BLOCK_START" : "BLOCK_STOP");
         vars.set(Vars.SHIELD_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_TIMER),
                 vars.get(Vars.SHIELD) ? 1.0F : 0.0F, 0.1F));
         vars.set(Vars.SHIELD_BLOCKING_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_BLOCKING_TIMER),
