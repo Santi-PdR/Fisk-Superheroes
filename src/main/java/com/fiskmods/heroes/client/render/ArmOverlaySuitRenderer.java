@@ -48,12 +48,15 @@ public final class ArmOverlaySuitRenderer
         {
             // Match the original effect's postRender, zeroed arm pivot, then animated shell.
             arm.translateAndRotate(poseStack);
-            float x = arm.x, y = arm.y, z = arm.z;
-            float xRot = arm.xRot, yRot = arm.yRot, zRot = arm.zRot;
+            var oldArmPose = arm.storePose();
+            var oldSleevePose = sleeve.storePose();
             try
             {
                 arm.x = arm.y = arm.z = 0.0F;
                 arm.xRot = arm.yRot = arm.zRot = 0.0F;
+                // Both shells are already inside the arm transform. Applying the sleeve's
+                // original pivot/rotation again creates a second displaced arm.
+                sleeve.copyFrom(arm);
                 poseStack.translate(side * offset[0] * eased / 16.0D,
                         offset[1] * eased / 16.0D, offset[2] * eased / 16.0D);
                 poseStack.mulPose(Axis.ZP.rotationDegrees(rotation[2] * eased));
@@ -70,8 +73,8 @@ public final class ArmOverlaySuitRenderer
             }
             finally
             {
-                arm.x = x; arm.y = y; arm.z = z;
-                arm.xRot = xRot; arm.yRot = yRot; arm.zRot = zRot;
+                arm.loadPose(oldArmPose);
+                sleeve.loadPose(oldSleevePose);
             }
         }
         finally

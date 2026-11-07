@@ -20,6 +20,24 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void capeSegmentsAreContinuousAndHaveCorrectLength(GameTestHelper helper)
+    {
+        float length = 24.0F;
+        int segments = 24;
+        float step = length / 16.0F / segments;
+        for (int i = 0; i < segments; ++i)
+        {
+            float top = com.fiskmods.heroes.common.util.CapeMeshMath.segmentY(i, length, segments);
+            float next = com.fiskmods.heroes.common.util.CapeMeshMath.segmentY(i + 1, length, segments);
+            if (Math.abs(top + step - next) > 0.00001F)
+            { helper.fail("Cape segments must meet without gaps"); return; }
+        }
+        if (Math.abs(com.fiskmods.heroes.common.util.CapeMeshMath.segmentY(segments, length, segments) - 1.5F) > 0.00001F)
+        { helper.fail("The cape must have its declared length, not double it"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void armorTextureTreesRespectConditionsAndNull(GameTestHelper helper)
     {
         var tree = com.google.gson.JsonParser.parseString("""

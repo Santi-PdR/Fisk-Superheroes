@@ -80,11 +80,6 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
         ParticleEmitterRenderer.tick(player, playerModel, model, scale);
 
-        ModelPart[] animatedParts = { playerModel.head, playerModel.rightArm, playerModel.leftArm };
-        net.minecraft.client.model.geom.PartPose[] originalPoses = java.util.Arrays.stream(animatedParts)
-                .map(ModelPart::storePose).toArray(net.minecraft.client.model.geom.PartPose[]::new);
-        SuitArmAnimationRenderer.apply(model, playerModel, player, limbSwingAmount);
-
         poseStack.pushPose();
 
         // PlayerSizeRenderer scales the complete wearer, including this suit layer.
@@ -217,11 +212,6 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         }
 
         QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, playerModel, model, 1);
-
-        for (int i = 0; i < animatedParts.length; ++i)
-        {
-            animatedParts[i].loadPose(originalPoses[i]);
-        }
 
         poseStack.popPose();
     }
@@ -567,7 +557,6 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         final int segments = 24;
         float pixelScale = 1.0F / 16.0F;
         float width = widthPixels * pixelScale;
-        float segmentLength = lengthPixels * pixelScale / segments;
         float uWidth = widthPixels / 64.0F;
         float vLength = lengthPixels / 32.0F;
         float u0 = 0.0F;
@@ -576,40 +565,57 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         for (int i = 0; i < segments; ++i)
         {
-            float top = segmentLength * i;
-            float bottom = segmentLength * (i + 1);
+            float top = com.fiskmods.heroes.common.util.CapeMeshMath.segmentY(i, lengthPixels, segments);
+            float bottom = com.fiskmods.heroes.common.util.CapeMeshMath.segmentY(i + 1, lengthPixels, segments);
             float topV = vLength * i / segments;
             float bottomV = vLength * (i + 1) / segments;
-            float wave = (float) Math.sin((ticks * 0.09F) + i * 0.16F) * flex * (i / (float) segments);
-            float left = -width * 0.5F - wave;
-            float right = width * 0.5F + wave;
-            float bend = (float) Math.sin((ticks * 0.07F) + i * 0.12F) * flex * 0.012F * (i + 1);
+            // Shared endpoints keep adjacent textured strips joined even when fluttering.
+            float topWave = capeWave(ticks, i, segments, flex);
+            float bottomWave = capeWave(ticks, i + 1, segments, flex);
+            float topBend = capeBend(ticks, i, flex);
+            float bottomBend = capeBend(ticks, i + 1, flex);
+            float topLeft = -width * 0.5F - topWave;
+            float topRight = width * 0.5F + topWave;
+            float bottomLeft = -width * 0.5F - bottomWave;
+            float bottomRight = width * 0.5F + bottomWave;
 
-            poseStack.pushPose();
-            poseStack.translate(0.0D, top, bend);
-            vertex(consumer, poseStack, left, 0, 0, u0, topV, packedLight, opacity);
-            vertex(consumer, poseStack, right, 0, 0, u1, topV, packedLight, opacity);
-            vertex(consumer, poseStack, right, segmentLength, 0, u1, bottomV, packedLight, opacity);
-            vertex(consumer, poseStack, left, segmentLength, 0, u0, bottomV, packedLight, opacity);
+            vertex(consumer, poseStack, topLeft, top, topBend, u1, topV, packedLight, opacity, 1.0F);
+            vertex(consumer, poseStack, topRight, top, topBend, u0, topV, packedLight, opacity, 1.0F);
+            vertex(consumer, poseStack, bottomRight, bottom, bottomBend, u0, bottomV, packedLight, opacity, 1.0F);
+            vertex(consumer, poseStack, bottomLeft, bottom, bottomBend, u1, bottomV, packedLight, opacity, 1.0F);
             // The reverse face uses the back half of the original cape texture region.
-            vertex(consumer, poseStack, left, segmentLength, 0, uWidth, bottomV, packedLight, opacity);
-            vertex(consumer, poseStack, right, segmentLength, 0, uWidth * 2.0F, bottomV, packedLight, opacity);
-            vertex(consumer, poseStack, right, 0, 0, uWidth * 2.0F, topV, packedLight, opacity);
-            vertex(consumer, poseStack, left, 0, 0, uWidth, topV, packedLight, opacity);
-            poseStack.popPose();
-            poseStack.translate(0.0D, segmentLength, 0.0D);
+            vertex(consumer, poseStack, bottomLeft, bottom, bottomBend, uWidth, bottomV, packedLight, opacity, -1.0F);
+            vertex(consumer, poseStack, bottomRight, bottom, bottomBend, uWidth * 2.0F, bottomV, packedLight, opacity, -1.0F);
+            vertex(consumer, poseStack, topRight, top, topBend, uWidth * 2.0F, topV, packedLight, opacity, -1.0F);
+            vertex(consumer, poseStack, topLeft, top, topBend, uWidth, topV, packedLight, opacity, -1.0F);
         }
+    }
+
+    private static float capeWave(int ticks, int index, int segments, float flex)
+    {
+        return (float) Math.sin(ticks * 0.09F + index * 0.16F) * flex * (index / (float) segments);
+    }
+
+    private static float capeBend(int ticks, int index, float flex)
+    {
+        return (float) Math.sin(ticks * 0.07F + index * 0.12F) * flex * 0.012F * index;
     }
 
     private static void vertex(VertexConsumer consumer, PoseStack poseStack, float x, float y, float z,
             float u, float v, int packedLight, float opacity)
+    {
+        vertex(consumer, poseStack, x, y, z, u, v, packedLight, opacity, 1.0F);
+    }
+
+    private static void vertex(VertexConsumer consumer, PoseStack poseStack, float x, float y, float z,
+            float u, float v, int packedLight, float opacity, float normalZ)
     {
         consumer.vertex(poseStack.last().pose(), x, y, z)
                 .color(255, 255, 255, Math.round(255.0F * opacity))
                 .uv(u, v)
                 .overlayCoords(OverlayTexture.NO_OVERLAY)
                 .uv2(packedLight)
-                .normal(poseStack.last().normal(), 0.0F, 0.0F, 1.0F)
+                .normal(poseStack.last().normal(), 0.0F, 0.0F, normalZ)
                 .endVertex();
     }
 
@@ -1050,12 +1056,13 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             parts[i].visible = previous[i] && data.showsModelPart(slot, names[i]);
         }
 
-        // The jacket/sleeve overlays follow the body pieces of the suit
-        parts[7].visible = previous[7] && model.body.visible;
-        parts[8].visible = previous[8] && model.rightArm.visible;
-        parts[9].visible = previous[9] && model.leftArm.visible;
-        parts[10].visible = previous[10] && model.rightLeg.visible;
-        parts[11].visible = previous[11] && model.leftLeg.visible;
+        // Suit outer layers are independent of the player's optional skin-layer settings.
+        parts[1].visible = model.head.visible && data.showsModelPart(slot, "headwear");
+        parts[7].visible = model.body.visible;
+        parts[8].visible = model.rightArm.visible;
+        parts[9].visible = model.leftArm.visible;
+        parts[10].visible = model.rightLeg.visible;
+        parts[11].visible = model.leftLeg.visible;
 
         return previous;
     }

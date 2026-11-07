@@ -10,13 +10,34 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 
 /** Applies the player-arm subset of the pack's FSK animations to the worn suit model. */
-final class SuitArmAnimationRenderer
+public final class SuitArmAnimationRenderer
 {
     private static final float HALF_PI = (float) (Math.PI / 2.0D);
 
     private SuitArmAnimationRenderer()
     {
     }
+
+    /** Called after vanilla setupAnim, before the player skin and all armor layers are drawn. */
+    public static void onPlayerModelSetup(PlayerModel<?> model, net.minecraft.world.entity.LivingEntity entity, float limbSwingAmount)
+    {
+        if (!(entity instanceof net.minecraft.client.player.AbstractClientPlayer player)) return;
+        var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getWornSuit(player);
+        if (iteration == null) return;
+        HeroModelData suit = HeroModelRegistry.get(iteration);
+        if (suit == null) return;
+        float before = model.rightArm.xRot;
+        apply(suit, model, player, limbSwingAmount);
+        model.rightSleeve.copyFrom(model.rightArm);
+        model.leftSleeve.copyFrom(model.leftArm);
+        if (Math.abs(model.rightArm.xRot - before) > 0.01F
+                && DIAGNOSTICS.add(iteration.getRegistryName().toString()))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shared suit arm pose applied: hero={}, sleeveAligned={}",
+                    iteration.getRegistryName(), model.rightSleeve.xRot == model.rightArm.xRot
+                            && model.leftSleeve.xRot == model.leftArm.xRot);
+    }
+
+    private static final java.util.Set<String> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     static void apply(HeroModelData suit, PlayerModel<?> model, Player player, float limbSwingAmount)
     {
@@ -129,16 +150,16 @@ final class SuitArmAnimationRenderer
             }
             case "blocking" ->
             {
-                right.xRot = 0.2F * right.xRot - 1.3F * progress;
+                right.xRot = lerp(right.xRot, 0.2F * right.xRot - 1.3F, progress);
                 right.yRot -= 1.1F * progress;
                 right.zRot += 0.3F * progress;
             }
             case "blocking_arm" ->
             {
-                right.xRot = 0.1F * right.xRot - 2.3F * progress;
+                right.xRot = lerp(right.xRot, 0.1F * right.xRot - 2.3F, progress);
                 right.yRot -= 0.8F * progress;
                 right.zRot += 0.2F * progress;
-                left.xRot = 0.1F * left.xRot - 2.3F * progress;
+                left.xRot = lerp(left.xRot, 0.1F * left.xRot - 2.3F, progress);
                 left.yRot += 0.8F * progress;
                 left.zRot -= 0.2F * progress;
             }

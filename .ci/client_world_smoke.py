@@ -163,6 +163,8 @@ def main():
                          60, 'held Mysterio aim activates the gated beam on the server', process)
             finally:
                 xdo('keyup', 'v')
+            wait_for(r'Shared suit arm pose applied: hero=fiskheroes:mysterio, sleeveAligned=true',
+                     45, 'player skin and suit share the animated arm pose', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
