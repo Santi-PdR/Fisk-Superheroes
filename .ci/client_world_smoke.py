@@ -25,6 +25,20 @@ def wait_for(pattern, seconds, label, process):
     raise RuntimeError(f'Timed out waiting for {label}')
 
 
+def wait_for_count(pattern, count, seconds, label, process):
+    expression = re.compile(pattern, re.IGNORECASE)
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        text = log.read_text(errors='replace') if log.exists() else ''
+        if len(expression.findall(text)) >= count:
+            print('PASS:', label, flush=True)
+            return
+        if process.poll() is not None:
+            raise RuntimeError(f'Client exited before {label}, code {process.returncode}')
+        time.sleep(0.25)
+    raise RuntimeError(f'Timed out waiting for {label}')
+
+
 def xdo(*args):
     subprocess.run(['xdotool', *args], check=True, timeout=30)
 
@@ -263,6 +277,8 @@ def main():
             dimensions = dict(line.split('=', 1) for line in geometry.splitlines() if '=' in line)
             win_width, win_height = int(dimensions['WIDTH']), int(dimensions['HEIGHT'])
             x, y, w, h = rects[2]
+            transition = r'Ability input transition: index=3, pressed=(true|false)'
+            initial = len(re.findall(transition, log.read_text(errors='replace')))
             xdo('key', 'F6')
             time.sleep(1)
             xdo('mousemove', '--window', window, str(int((x + w / 2) * win_width / gui_width)),
@@ -272,12 +288,12 @@ def main():
             xdo('mouseup', '1')
             wait_for(r'Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY',
                      45, 'click third ability row and activate intangibility', process)
+            wait_for_count(transition, initial + 2, 45, 'HUD click press and release', process)
             # Holding B and the same HUD control at once must not send an early release
             # when the mouse is released. Only the final B release ends the combined input.
-            transition = r'Ability input transition: index=3, pressed=(true|false)'
             before = len(re.findall(transition, log.read_text(errors='replace')))
             xdo('keydown', 'b')
-            time.sleep(2)
+            wait_for_count(transition, before + 1, 45, 'keyboard ability press', process)
             xdo('mousedown', '1')
             time.sleep(0.5)
             xdo('mouseup', '1')
@@ -286,9 +302,7 @@ def main():
             if during != ['true']:
                 raise RuntimeError(f'Overlapping keyboard/HUD holds emitted wrong transitions: {during}')
             xdo('keyup', 'b')
-            wait_for(r'Ability input transition: index=3, pressed=false', 45,
-                     'ability key release is delivered', process)
-            time.sleep(1)
+            wait_for_count(transition, before + 2, 45, 'ability key release is delivered', process)
             after = re.findall(transition, log.read_text(errors='replace'))[before:]
             if after != ['true', 'false']:
                 raise RuntimeError(f'Combined input did not release exactly once: {after}')
