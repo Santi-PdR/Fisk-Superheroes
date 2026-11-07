@@ -29,6 +29,16 @@ def xdo(*args):
     subprocess.run(['xdotool', *args], check=True, timeout=30)
 
 
+def command(text):
+    # Opening/closing chat takes a few rendered frames on software rendering.
+    xdo('key', '--clearmodifiers', 'slash')
+    time.sleep(0.8)
+    xdo('type', '--clearmodifiers', '--delay', '15', text)
+    time.sleep(0.4)
+    xdo('key', 'Return')
+    time.sleep(1)
+
+
 def main():
     environment = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
     with log.open('w') as output:
@@ -61,7 +71,31 @@ def main():
             xdo('keyup', 'c')
             wait_for(r'Ability input accepted: hero=fiskheroes:the_flash, index=1', 45,
                      'server received the speedster ability key', process)
-            time.sleep(4)
+            time.sleep(3)
+            command('suit fiskheroes:vision')
+            wait_for(r'\[CHAT\] Equipped Vision|\[Dev: Equipped Vision', 45, 'equip Vision', process)
+            # A high platform and a short wall make the movement test independent of terrain.
+            command('fill ~-5 119 ~-5 ~5 119 ~9 minecraft:stone')
+            command('fill ~-5 120 ~-5 ~5 126 ~9 minecraft:air')
+            command('tp @s ~ 120 ~ 0 0')
+            command('fill ~-3 ~ ~3 ~3 ~4 ~3 minecraft:stone')
+            command('summon minecraft:marker ~ ~ ~')
+            xdo('keydown', 'w')
+            time.sleep(3)
+            xdo('keyup', 'w')
+            command('execute as @e[type=minecraft:marker,limit=1] at @s if entity @p[distance=..2.9] run say BEFORE_PHASE_BLOCKED')
+            wait_for(r'\[CHAT\].*BEFORE_PHASE_BLOCKED', 30, 'wall blocks normal movement', process)
+            xdo('keydown', 'v')
+            time.sleep(0.3)
+            xdo('keyup', 'v')
+            wait_for(r'Ability modifier executed: hero=.*Vision.*, key=INTANGIBILITY', 45,
+                     'activate intangibility on the server', process)
+            time.sleep(2)
+            xdo('keydown', 'w')
+            time.sleep(5)
+            xdo('keyup', 'w')
+            command('execute as @e[type=minecraft:marker,limit=1] at @s if entity @p[distance=4..] run say PHASE_CROSSED_WALL')
+            wait_for(r'\[CHAT\].*PHASE_CROSSED_WALL', 45, 'client and server crossed the wall while phased', process)
             text = log.read_text(errors='replace')
             if re.search(r'#@!@# Game crashed|\[.*?/FATAL\]|Error ticking modifier|Error running hero tick handler', text):
                 raise RuntimeError('Client/server reported a crash or modifier error')
