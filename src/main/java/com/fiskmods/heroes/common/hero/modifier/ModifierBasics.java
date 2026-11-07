@@ -398,19 +398,43 @@ class ModifierGliding extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float timer = data.getData().get(Vars.GLIDING_TIMER);
+        boolean gliding = data.getData().get(Vars.GLIDING);
+        boolean powered = entry.getBoolean(entity, PowerProperty.IS_POWERED);
+        boolean controlled = entry.getBoolean(entity, PowerProperty.IS_CONTROLLED);
+        if (entity.onGround() || entity.isShiftKeyDown() || entity.isPassenger()
+                || entity.isInWater() && !powered
+                || entity instanceof Player player && player.getAbilities().flying)
+        {
+            gliding = false;
+            data.getData().set(Vars.GLIDING, false);
+            entry.setToggled(entity, false);
+        }
 
-        if (data.getData().get(Vars.GLIDING) && !entity.onGround())
+        boolean flyingForward = controlled && gliding && entity instanceof Player player
+                && com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player) > 0;
+        boolean jetpacking = controlled && gliding && !flyingForward && entity instanceof Player player
+                && com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player);
+        data.getData().set(Vars.GLIDE_FLYING, flyingForward);
+        data.getData().set(Vars.JETPACKING, jetpacking);
+        float target = gliding ? 1.0F : 0.0F;
+        data.getData().set(Vars.WING_ANIMATION_TIMER, net.minecraft.util.Mth.approach(
+                data.getData().get(Vars.WING_ANIMATION_TIMER), target, 1.0F / 6.0F));
+        boolean glidePose = controlled ? flyingForward : gliding;
+        data.getData().set(Vars.GLIDING_TIMER, net.minecraft.util.Mth.approach(
+                data.getData().get(Vars.GLIDING_TIMER), glidePose ? 1.0F : 0.0F,
+                glidePose ? 1.0F / 10.0F : 1.0F / 6.0F));
+        boolean jetpackPose = gliding && (!(!controlled || flyingForward) || entity.isSprinting());
+        data.getData().set(Vars.JETPACKING_TIMER, net.minecraft.util.Mth.approach(
+                data.getData().get(Vars.JETPACKING_TIMER), jetpackPose ? 1.0F : 0.0F, 0.5F));
+
+        if (gliding)
         {
             Vec3 motion = entity.getDeltaMovement();
-            double y = Math.max(motion.y, -0.12D);
+            double y = jetpacking ? motion.y + (motion.y < 0.0D ? 0.16D : 0.1D)
+                    : Math.max(motion.y, -0.12D);
             entity.setDeltaMovement(motion.x, y, motion.z);
             entity.fallDistance = Math.min(entity.fallDistance, 1.0F);
-            data.getData().set(Vars.GLIDING_TIMER, Math.min(10.0F, timer + 0.5F));
-        }
-        else if (timer > 0)
-        {
-            data.getData().set(Vars.GLIDING_TIMER, Math.max(0.0F, timer - 1.0F));
+            if (entity instanceof Player player) player.hurtMarked = true;
         }
     }
 }

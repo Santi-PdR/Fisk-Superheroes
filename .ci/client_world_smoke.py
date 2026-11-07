@@ -175,8 +175,19 @@ def main():
             xdo('key', 'F5')
             time.sleep(1)
             xdo('key', 'F5')
-            wait_for(r'First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1\.png',
-                     45, 'first-person arm uses the worn chest texture', process)
+            wait_for(r'First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1\.png, poseAligned=true',
+                     45, 'first-person suit arm matches the actual vanilla arm pose', process)
+            # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
+            command('suit fiskheroes:batman_dceu')
+            command('gamemode survival')
+            command('tp @s ~ 190 ~')
+            xdo('key', 'F5')  # Third-person rear view.
+            time.sleep(1)
+            xdo('key', 'space')
+            wait_for(r'Gliding input: player=Dev, active=true', 45, 'falling jump activates Batman glide', process)
+            wait_for(r'Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape\.png',
+                     45, 'client renders Batman deployed cape texture', process)
+            subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

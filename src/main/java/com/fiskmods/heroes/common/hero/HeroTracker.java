@@ -179,6 +179,19 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER, 0.0F);
         }
 
+        if (!hasModifier(current, "gliding"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDE_FLYING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.JETPACKING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WING_ANIMATION_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.JETPACKING_TIMER, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("gliding"), false);
+            if (!player.level().isClientSide)
+                com.fiskmods.heroes.common.hero.ability.GlidingInputHandler.clear(player);
+        }
+
         if (!hasModifier(current, "web_swinging"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WEB_SWINGING, false);

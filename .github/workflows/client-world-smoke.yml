@@ -68,6 +68,7 @@ jobs:
           path: |
             ci-world-screenshot.jpg
             ci-antman-screenshot.jpg
+            ci-batman-cape-screenshot.jpg
           if-no-files-found: ignore
       - name: Publish world client log
         if: always() && hashFiles('ci-client-world.log') != ''

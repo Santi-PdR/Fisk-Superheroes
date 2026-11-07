@@ -71,7 +71,7 @@ public final class Vars
     public static final DataVar<Boolean> INVISIBLE = register("invisible", DataType.BOOLEAN, false, false);
     public static final DataVar<Boolean> IS_SWING_IN_PROGRESS = register("is_swing_in_progress", DataType.BOOLEAN, false, false);
     public static final DataVar<Boolean> JETPACKING = register("jetpacking", DataType.BOOLEAN, false, false);
-    public static final DataVar<Float> JETPACKING_TIMER = register("jetpacking_timer", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> JETPACKING_TIMER = register("jetpacking_timer", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<Float> LEVITATE_TIMER = register("levitate_timer", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<Boolean> LIGHTSOUT = register("lightsout", DataType.BOOLEAN, false, false);
     public static final DataVar<Integer> LIGHTSOUT_ID = register("lightsout_id", DataType.INT, -1, false);
@@ -214,7 +214,7 @@ public final class Vars
     public static final DataVar<Double> WEB_ANCHOR_Z = register("web_anchor_z", DataType.DOUBLE, 0.0D, true);
     public static final DataVar<String> DISGUISE_UUID = register("disguise_uuid", DataType.STRING, "", true);
     public static final DataVar<String> SHAPE_SHIFTING_TO_UUID = register("shape_shifting_to_uuid", DataType.STRING, "", true);
-    public static final DataVar<Float> WING_ANIMATION_TIMER = register("wing_animation_timer", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> WING_ANIMATION_TIMER = register("wing_animation_timer", DataType.FLOAT_INTERP, 0.0F, false);
   /* --- Pack-declared dynamic variables (fiskheroes:dyn/*) --- */
     public static final DataVar<Boolean> STEELED = register("dyn/steeled", DataType.BOOLEAN, false, false);
     public static final DataVar<Float> STEEL_TIMER = register("dyn/steel_timer", DataType.FLOAT_INTERP, 0.0F, false);

@@ -504,7 +504,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             float suitOpacity)
     {
         com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:cape");
-        if (effect == null || !appliesToSlot(effect, slot))
+        if (effect == null || !appliesToSlot(effect, slot) || !passesConditionals(effect, model, player))
         {
             return;
         }
@@ -545,7 +545,19 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             RenderType type = pass == 0 ? RenderType.entityTranslucent(texture) : RenderType.eyes(texture);
             VertexConsumer consumer = buffer.getBuffer(type);
-            renderCapeMesh(poseStack, consumer, packedLight, player.tickCount, width, length, open, suitOpacity);
+            if (open > 0.0F)
+            {
+                renderCapeMesh(poseStack, consumer, packedLight, player.tickCount, width, length, open, suitOpacity);
+            }
+            else
+            {
+                float wingFlare = com.fiskmods.heroes.common.util.CapeMeshMath.wingFlare(animation,
+                        velocity.y, velocity.length());
+                if (wingFlare > 0.01F)
+                    logRenderDiagnostic("cape-wing:" + texture,
+                            "Drawing deployed cape for {} with texture {}", player.getGameProfile().getName(), texture);
+                renderCapeWings(poseStack, consumer, packedLight, width, length, wingFlare, suitOpacity);
+            }
             poseStack.popPose();
             restoreParts(playerModel, hidden);
         }
@@ -588,6 +600,56 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             vertex(consumer, poseStack, bottomRight, bottom, bottomBend, uWidth * 2.0F, bottomV, packedLight, opacity, -1.0F);
             vertex(consumer, poseStack, topRight, top, topBend, uWidth * 2.0F, topV, packedLight, opacity, -1.0F);
             vertex(consumer, poseStack, topLeft, top, topBend, uWidth, topV, packedLight, opacity, -1.0F);
+        }
+    }
+
+    /** Deployed Batman-style cape: both texture faces use the original distinct UV halves. */
+    private static void renderCapeWings(PoseStack pose, VertexConsumer consumer, int light,
+            float widthPixels, float lengthPixels, float flare, float opacity)
+    {
+        float width = widthPixels / 16.0F;
+        float length = lengthPixels / 16.0F;
+        float u = widthPixels / 64.0F;
+        float v = lengthPixels / 32.0F;
+        float[] centerY = {0.0F, 0.3F * length, length * (1.0F - 0.4F * flare),
+                length * (1.0F - 0.1F * flare), length * (1.0F + 0.4F * flare)};
+        float[] textureY = {0.0F, 0.3F * v, v * (1.0F - 0.4F * flare),
+                v * (1.0F - 0.1F * flare), v};
+        for (int row = 0; row < 4; ++row)
+        {
+            float x0 = com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterX(row, width, flare);
+            float x1 = com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterX(row + 1, width, flare);
+            float y0 = com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterY(row, length, flare);
+            float y1 = com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterY(row + 1, length, flare);
+            // Positive-Z face: left edge, center, right edge. Opposite face reverses winding.
+            capeQuad(pose, consumer, light, opacity, -x0, y0, 0, centerY[row],
+                    -x1, y1, 0, centerY[row + 1], u, u / 2, textureY[row], textureY[row + 1], true);
+            capeQuad(pose, consumer, light, opacity, 0, centerY[row], x0, y0,
+                    0, centerY[row + 1], x1, y1, u / 2, 0, textureY[row], textureY[row + 1], true);
+            capeQuad(pose, consumer, light, opacity, -x0, y0, 0, centerY[row],
+                    -x1, y1, 0, centerY[row + 1], u * 2, u * 1.5F, textureY[row], textureY[row + 1], false);
+            capeQuad(pose, consumer, light, opacity, 0, centerY[row], x0, y0,
+                    0, centerY[row + 1], x1, y1, u * 1.5F, u, textureY[row], textureY[row + 1], false);
+        }
+    }
+
+    private static void capeQuad(PoseStack pose, VertexConsumer consumer, int light, float opacity,
+            float lx0, float ly0, float rx0, float ry0, float lx1, float ly1, float rx1, float ry1,
+            float leftU, float rightU, float v0, float v1, boolean front)
+    {
+        if (front)
+        {
+            vertex(consumer, pose, lx0, ly0, 0, leftU, v0, light, opacity, 1);
+            vertex(consumer, pose, rx0, ry0, 0, rightU, v0, light, opacity, 1);
+            vertex(consumer, pose, rx1, ry1, 0, rightU, v1, light, opacity, 1);
+            vertex(consumer, pose, lx1, ly1, 0, leftU, v1, light, opacity, 1);
+        }
+        else
+        {
+            vertex(consumer, pose, lx1, ly1, 0, leftU, v1, light, opacity, -1);
+            vertex(consumer, pose, rx1, ry1, 0, rightU, v1, light, opacity, -1);
+            vertex(consumer, pose, rx0, ry0, 0, rightU, v0, light, opacity, -1);
+            vertex(consumer, pose, lx0, ly0, 0, leftU, v0, light, opacity, -1);
         }
     }
 

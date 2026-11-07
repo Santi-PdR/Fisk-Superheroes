@@ -12,15 +12,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.entity.HumanoidArm;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.RenderArmEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 
-/** Render the chestpiece's skin-layout arm in first person, over the vanilla arm. */
-@Mod.EventBusSubscriber(modid = FiskHeroes.MODID, value = Dist.CLIENT)
+/** Render the chestpiece over the exact first-person arm that vanilla just drew. */
 public final class FirstPersonSuitArms
 {
     private static PlayerModel<?> suitModel;
@@ -28,33 +21,25 @@ public final class FirstPersonSuitArms
 
     private FirstPersonSuitArms() {}
 
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void render(RenderArmEvent event)
+    public static void render(com.mojang.blaze3d.vertex.PoseStack pose,
+            net.minecraft.client.renderer.MultiBufferSource buffers, int packedLight,
+            net.minecraft.client.player.AbstractClientPlayer player, ModelPart originalArm, ModelPart originalSleeve)
     {
-        var player = event.getPlayer();
         var piece = player.getItemBySlot(EquipmentSlot.CHEST);
         var iteration = ItemHeroArmor.getHero(piece);
         if (!(piece.getItem() instanceof ItemHeroArmor armor) || armor.getSlot() != 1
                 || iteration == null || !iteration.hasPieceOfSet(1) || player.isInvisible()) return;
         HeroModelData data = HeroModelRegistry.get(iteration);
-        boolean right = event.getArm() == HumanoidArm.RIGHT;
+        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
+        if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
+        boolean right = originalArm == playerRenderer.getModel().rightArm;
+        if (!right && originalArm != playerRenderer.getModel().leftArm) return;
         if (data == null || !data.showsModelPart(1, right ? "rightArm" : "leftArm")) return;
         var texture = data.getTexture(1, player);
         float opacity = HeroSuitLayer.suitOpacity(data, player, 1);
         if (texture == null || opacity <= 0.001F) return;
-        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
-        if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
-
-        // Forge posts this event *inside* renderRightHand/renderLeftHand. Do not call either
-        // method here (that would recursively post the event), and do not cancel it: vanilla
-        // still draws the skin exactly once after this armor pass is queued.
-        var original = playerRenderer.getModel();
-        original.attackTime = 0.0F;
-        original.crouching = false;
-        original.swimAmount = 0.0F;
-        original.setupAnim(player, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-        ModelPart originalArm = right ? original.rightArm : original.leftArm;
-        originalArm.xRot = 0.0F; // PlayerRenderer's first-person renderHand does the same.
+        // The hook runs after PlayerRenderer.renderHand has reset the first-person x rotation.
+        // Reuse its live parts rather than invoking setupAnim again on the shared player model.
 
         if (suitModel == null)
         {
@@ -64,20 +49,25 @@ public final class FirstPersonSuitArms
         ModelPart arm = right ? suitModel.rightArm : suitModel.leftArm;
         ModelPart sleeve = right ? suitModel.rightSleeve : suitModel.leftSleeve;
         arm.copyFrom(originalArm);
-        sleeve.copyFrom(arm);
+        sleeve.copyFrom(originalSleeve);
         arm.visible = true;
         sleeve.visible = true;
-        var vertex = event.getMultiBufferSource().getBuffer(RenderType.entityTranslucent(texture));
-        arm.render(event.getPoseStack(), vertex, event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
-        sleeve.render(event.getPoseStack(), vertex, event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
+        var vertex = buffers.getBuffer(RenderType.entityTranslucent(texture));
+        arm.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
+        sleeve.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
         var lights = data.getLights(1, player);
         if (lights != null)
         {
-            vertex = event.getMultiBufferSource().getBuffer(RenderType.eyes(lights));
-            arm.render(event.getPoseStack(), vertex, event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
-            sleeve.render(event.getPoseStack(), vertex, event.getPackedLight(), OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
+            vertex = buffers.getBuffer(RenderType.eyes(lights));
+            arm.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
+            sleeve.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
         }
         if (DIAGNOSTICS.add(iteration.getRegistryName().toString()))
-            FiskHeroes.LOGGER.info("First-person suit arm rendered: hero={}, texture={}", iteration.getRegistryName(), texture);
+            FiskHeroes.LOGGER.info("First-person suit arm rendered: hero={}, texture={}, poseAligned={}", iteration.getRegistryName(), texture,
+                    arm.x == originalArm.x && arm.y == originalArm.y && arm.z == originalArm.z
+                            && arm.xRot == originalArm.xRot && arm.yRot == originalArm.yRot && arm.zRot == originalArm.zRot
+                            && sleeve.x == originalSleeve.x && sleeve.y == originalSleeve.y
+                            && sleeve.xRot == originalSleeve.xRot && sleeve.yRot == originalSleeve.yRot
+                            && sleeve.zRot == originalSleeve.zRot);
     }
 }

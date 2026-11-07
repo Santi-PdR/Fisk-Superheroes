@@ -81,6 +81,61 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void deployedCapeUsesTwoSidedWingGeometry(GameTestHelper helper)
+    {
+        float folded = com.fiskmods.heroes.common.util.CapeMeshMath.wingFlare(0.5F, 0.0D, 0.0D);
+        float deployed = com.fiskmods.heroes.common.util.CapeMeshMath.wingFlare(1.0F, 0.0D, 0.0D);
+        float diving = com.fiskmods.heroes.common.util.CapeMeshMath.wingFlare(1.0F, -1.0D, 1.0D);
+        float w = 14.0F / 16.0F;
+        float l = 22.0F / 16.0F;
+        if (folded != 0.0F || deployed != 1.0F || Math.abs(diving - 1.0F / 6.0F) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterX(0, w, folded) - w / 2) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterX(0, w, deployed) - w * 2.75F) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.CapeMeshMath.wingOuterY(4, l, deployed) - l * 1.4F) > 0.0001F)
+        { helper.fail("Cape wings must unfold from the original UV and geometry proportions"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void fallingJumpDeploysBatmanCapeAndLandingResets(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-glide-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Batman or player data is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("gliding"));
+        if (entry == null || !entry.getBoolean(player, com.fiskmods.heroes.common.hero.power.PowerProperty.CAN_JUMP_ACTIVATE))
+        { helper.fail("Batman gliding power is missing its jump control"); return; }
+        player.setOnGround(false);
+        player.setDeltaMovement(0.0D, -0.4D, 0.0D);
+        com.fiskmods.heroes.common.network.PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (!data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+        { helper.fail("A falling jump must deploy the cape"); return; }
+        for (int i = 0; i < 12; ++i) entry.getModifier().tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WING_ANIMATION_TIMER) != 1.0F
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER) != 1.0F
+                || player.getDeltaMovement().y < -0.121D)
+        { helper.fail("Gliding must unfold the cape, normalize the pose and slow the fall"); return; }
+        player.setOnGround(true);
+        for (int i = 0; i < 8; ++i) entry.getModifier().tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING)
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WING_ANIMATION_TIMER) != 0.0F)
+        { helper.fail("Landing must stop gliding and fold the cape"); return; }
+        com.fiskmods.heroes.common.network.PacketInput.clearServerState(player);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void armorTextureTreesRespectConditionsAndNull(GameTestHelper helper)
     {
         var tree = com.google.gson.JsonParser.parseString("""
