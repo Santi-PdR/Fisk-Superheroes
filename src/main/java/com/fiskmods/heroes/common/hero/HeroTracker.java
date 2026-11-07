@@ -73,6 +73,12 @@ public final class HeroTracker
     /** Recomputes the worn suit, firing the transition logic when it changes. */
     public static void update(LivingEntity entity)
     {
+        update(entity, com.fiskmods.heroes.common.config.SHConfig.REQUIRE_FULL_SUIT.get());
+    }
+
+    /** Resolve with the given server policy; kept separate so tests need not mutate the live config file. */
+    public static void update(LivingEntity entity, boolean requireFullSuit)
+    {
         if (!(entity instanceof Player player))
         {
             return;
@@ -99,7 +105,7 @@ public final class HeroTracker
         // differ from the server's requireFullSuit setting and must not overwrite its decision.
         if (player.level().isClientSide && data.hasAuthoritativeHero()) return;
         HeroIteration worn = getWornSuit(player);
-        if (com.fiskmods.heroes.common.config.SHConfig.REQUIRE_FULL_SUIT.get() && !hasCompleteSuit(player, worn))
+        if (requireFullSuit && !hasCompleteSuit(player, worn))
             worn = null;
         HeroIteration current = data.getHero();
 

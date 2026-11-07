@@ -416,8 +416,9 @@ public final class PortRegressionTests
         types.addProperty("CACTUS", 1.0F);
         var profile = new com.google.gson.JsonObject();
         profile.add("types", types);
-        boolean hit = com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
-        if (hit || target.getHealth() != 20.0F || attacker.getHealth() != 20.0F)
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        // LivingEntity.hurt can return true even if LivingHurtEvent was canceled.
+        if (target.getHealth() != 20.0F || attacker.getHealth() != 20.0F)
         { helper.fail("A cactus-typed projectile must be immune and must not trigger thorns"); return; }
         types.addProperty("CACTUS", 0.5F);
         if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile)
@@ -707,35 +708,30 @@ public final class PortRegressionTests
         var ironman = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
         if (data == null || flash == null || spider == null || ironman == null)
         { helper.fail("Suit test heroes or capability missing"); return; }
-        var config = com.fiskmods.heroes.common.config.SHConfig.REQUIRE_FULL_SUIT;
-        boolean previous = config.get();
-        try
         {
             var flashIter = flash.getDefaultIteration();
-            config.set(false);
             player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
                     com.fiskmods.heroes.common.hero.ItemHeroArmor.create(flashIter, com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
             if (data.getHero() != flashIter) { helper.fail("Partial suits must work when full suit is optional"); return; }
-            config.set(true);
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, true);
             if (data.getHero() != null || com.fiskmods.heroes.common.hero.HeroTracker.getWornSuit(player) != flashIter)
             { helper.fail("Partial suit must stay visible but not grant powers"); return; }
             for (int slot = 0; slot < 4; ++slot)
                 player.setItemSlot(com.fiskmods.heroes.common.command.CommandSuit.slotFor(slot),
                         com.fiskmods.heroes.common.hero.ItemHeroArmor.create(flashIter, com.fiskmods.heroes.common.item.ModItems.heroArmor[slot]));
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, true);
             if (data.getHero() != flashIter || !new com.fiskmods.heroes.pack.js.JSEntity(player).isWearingFullSuit())
             { helper.fail("A complete matching suit must activate"); return; }
             player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD,
                     com.fiskmods.heroes.common.hero.ItemHeroArmor.create(spider.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[0]));
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, true);
             if (data.getHero() != null || new com.fiskmods.heroes.pack.js.JSEntity(player).isWearingFullSuit())
             { helper.fail("A mismatched hero piece must not count as a full suit"); return; }
             var spoof = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET);
             com.fiskmods.heroes.common.hero.ItemHeroArmor.setHero(spoof, flashIter);
             player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, spoof);
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, true);
             if (data.getHero() != null || new com.fiskmods.heroes.pack.js.JSEntity(player).isWearingFullSuit())
             { helper.fail("Unrelated armor with hero NBT must not count as a suit piece"); return; }
             for (var slot : new net.minecraft.world.entity.EquipmentSlot[] { net.minecraft.world.entity.EquipmentSlot.HEAD,
@@ -746,7 +742,7 @@ public final class PortRegressionTests
                 if (ironIter.hasPieceOfSet(slot))
                     player.setItemSlot(com.fiskmods.heroes.common.command.CommandSuit.slotFor(slot),
                             com.fiskmods.heroes.common.hero.ItemHeroArmor.create(ironIter, com.fiskmods.heroes.common.item.ModItems.heroArmor[slot]));
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player, true);
             if (data.getHero() != ironIter) { helper.fail("A complete one-piece suit must activate"); return; }
             player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.item.ItemStack.EMPTY);
             var fakeChest = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_CHESTPLATE);
@@ -755,10 +751,6 @@ public final class PortRegressionTests
             if (com.fiskmods.heroes.common.hero.HeroTracker.getWornSuit(player) != null)
             { helper.fail("Tagged non-hero armor must not resolve as an active suit"); return; }
             helper.succeed();
-        }
-        finally
-        {
-            config.set(previous);
         }
     }
 
