@@ -147,6 +147,14 @@ public final class HeroTracker
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("slow_motion"), false);
         }
 
+        if (!hasModifier(current, "intangibility"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBILITY_TIMER, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("intangibility"), false);
+            com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.release(player, data);
+        }
+
         if (previous != null && !player.level().isClientSide)
         {
             com.fiskmods.heroes.common.hero.attribute.SHAttributes.clearModifiers(player);

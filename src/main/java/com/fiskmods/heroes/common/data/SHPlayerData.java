@@ -28,6 +28,21 @@ public class SHPlayerData implements IDataHolder
     private int suitDisabledTime;
 
     private boolean invulnerable;
+    // Transient ownership of the noPhysics flag; never serialized or copied on respawn.
+    private boolean phaseCollisionApplied;
+    private boolean previousNoPhysics;
+
+    public boolean isPhaseCollisionApplied() { return phaseCollisionApplied; }
+    public void beginPhaseCollision(boolean previous)
+    {
+        phaseCollisionApplied = true;
+        previousNoPhysics = previous;
+    }
+    public boolean endPhaseCollision()
+    {
+        phaseCollisionApplied = false;
+        return previousNoPhysics;
+    }
 
     public DataContainer getData()
     {

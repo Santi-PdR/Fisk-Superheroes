@@ -505,6 +505,82 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void intangibilityRespectsItsDamageModes(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var vision = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        var martian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:martian_manhunter");
+        if (data == null || vision == null || martian == null)
+        { helper.fail("Intangibility test heroes or player capability missing"); return; }
+        var absolute = vision.getPowerContainer().getEntry(FiskHeroes.id("intangibility"));
+        var normal = martian.getPowerContainer().getEntry(FiskHeroes.id("intangibility"));
+        if (absolute == null || normal == null) { helper.fail("Intangibility modifier missing"); return; }
+        data.setHero(vision.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, true);
+        var damage = player.damageSources();
+        var melee = damage.playerAttack(attacker);
+        var arrow = damage.arrow(new net.minecraft.world.entity.projectile.Arrow(helper.getLevel(), attacker), attacker);
+        var mod = absolute.getModifier();
+        if (!mod.isImmuneTo(player, absolute, damage.inWall(), 8)
+                || !mod.isImmuneTo(player, absolute, melee, 8)
+                || !mod.isImmuneTo(player, absolute, arrow, 8)
+                || !mod.isImmuneTo(player, absolute, damage.outOfWorld(), 8)
+                || mod.isImmuneTo(player, absolute, damage.lava(), 8))
+        { helper.fail("Absolute phase must block melee, arrows, void and suffocation, but not lava"); return; }
+        if (mod.modifyOutgoingDamage(player, absolute, attacker, damage.playerAttack(player), 8) != 0)
+        { helper.fail("Absolute phase must also prevent the wearer from dealing melee damage"); return; }
+        data.setHero(martian.getDefaultIteration());
+        if (!normal.getModifier().isImmuneTo(player, normal, damage.inWall(), 8)
+                || normal.getModifier().isImmuneTo(player, normal, melee, 8)
+                || normal.getModifier().isImmuneTo(player, normal, arrow, 8)
+                || normal.getModifier().isImmuneTo(player, normal, damage.outOfWorld(), 8))
+        { helper.fail("Non-absolute phase must protect against suffocation only"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                com.fiskmods.heroes.common.hero.modifier.ModEffects.PHASE_SUPPRESSANT.get(), 100));
+        if (normal.getModifier().isImmuneTo(player, normal, damage.inWall(), 8))
+            helper.fail("Phase suppressant must disable protection");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void phaseCollisionSurvivesPlayerTickAndCleansUp(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        if (data == null || hero == null) { helper.fail("Vision or player data is missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 1, 1));
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 1, 1), net.minecraft.world.level.block.Blocks.STONE);
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, true);
+        player.tick();
+        if (!player.noPhysics) { helper.fail("Player tick must not cancel active phasing"); return; }
+        double start = player.getX();
+        player.move(net.minecraft.world.entity.MoverType.SELF, new Vec3(1.0D, 0.0D, 0.0D));
+        if (player.getX() < start + 0.99D) { helper.fail("Phased player must move through a solid block"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, false);
+        com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.update(player, data);
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        start = player.getX();
+        player.move(net.minecraft.world.entity.MoverType.SELF, new Vec3(1.0D, 0.0D, 0.0D));
+        if (player.noPhysics || player.getX() >= start + 0.99D)
+        { helper.fail("Collision must return when phasing is switched off"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, true);
+        com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.update(player, data);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        if (player.noPhysics || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE))
+            helper.fail("Taking off the suit must clear phasing and restore collision");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
     {
         int checked = 0;

@@ -118,6 +118,14 @@ public class CommonEventHandler
         event.setCanceled(true);
     }
 
+    /** LivingTick fires inside Player.tick, after vanilla overwrites noPhysics with spectator mode. */
+    @SubscribeEvent
+    public static void onLivingTick(LivingEvent.LivingTickEvent event)
+    {
+        if (event.getEntity() instanceof net.minecraft.world.entity.player.Player player)
+            com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.update(player, SHDataCapabilities.getPlayer(player));
+    }
+
     @SubscribeEvent
     public static void onPlayerTick(TickEvent.PlayerTickEvent event)
     {

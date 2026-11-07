@@ -282,9 +282,21 @@ class ModifierIntangibility extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.isToggled(entity);
+        boolean state = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !entry.isToggled(entity);
+        setActive(entity, entry, data, state);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE)) setActive(entity, entry, data, false);
+    }
+
+    private void setActive(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean state)
+    {
         entry.setToggled(entity, state);
         data.getData().set(Vars.INTANGIBLE, state);
+        if (entity instanceof Player player) IntangibilityPhysics.update(player, data);
         AbilityData.playSound(entity, entry, state ? "ENABLE" : "DISABLE");
     }
 
@@ -292,9 +304,32 @@ class ModifierIntangibility extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        if (data == null || !data.getData().get(Vars.INTANGIBLE) || entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get()))
+            return false;
+        if (source.is(net.minecraft.world.damagesource.DamageTypes.IN_WALL)) return true;
+        if (!entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE)) return false;
+        return source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_INVULNERABILITY)
+                || isMelee(source);
+    }
+
+    private static boolean isMelee(net.minecraft.world.damagesource.DamageSource source)
+    {
+        return source.getEntity() != null && source.getEntity() == source.getDirectEntity()
+                && (source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                        || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK)
+                        || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK_NO_AGGRO)
+                        || source.is(net.minecraft.world.damagesource.DamageTypes.STING));
+    }
+
+    @Override
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry, Entity target,
+            net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
         return data != null && data.getData().get(Vars.INTANGIBLE)
                 && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get())
-                && !entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE);
+                && entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE) && isMelee(source) ? 0.0F : amount;
     }
 
     @Override
@@ -304,23 +339,16 @@ class ModifierIntangibility extends Modifier
                 && !entity.hasEffect(ModEffects.PHASE_SUPPRESSANT.get());
         float timer = data.getData().get(Vars.INTANGIBILITY_TIMER);
         data.getData().set(Vars.INTANGIBILITY_TIMER,
-                net.minecraft.util.Mth.approach(timer, active ? 1.0F : 0.0F, 0.2F));
-
+                net.minecraft.util.Mth.approach(timer, active ? 1.0F : 0.0F, 0.1F));
+        if (entity instanceof Player player) IntangibilityPhysics.update(player, data);
         if (active)
         {
-            entity.noPhysics = true;
             entity.fallDistance = 0.0F;
-
             if (entity.level().getBlockState(entity.blockPosition()).isAir())
-            {
                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0D, 0.5D, 1.0D));
-            }
-        }
-        else
-        {
-            entity.noPhysics = false;
         }
     }
+
 }
 
 /** Ant-Man style size manipulation. */
