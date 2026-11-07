@@ -247,6 +247,7 @@ public class SHAttributes
 
     public static void clearModifiers(LivingEntity entity)
     {
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(entity);
         AttributeInstance movement = entity.getAttribute(Attributes.MOVEMENT_SPEED);
         if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
         AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());

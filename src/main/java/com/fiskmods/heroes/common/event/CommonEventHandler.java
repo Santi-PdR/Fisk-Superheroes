@@ -31,6 +31,13 @@ public class CommonEventHandler
 {
     private static final String CACTUS_COOLDOWN_UNTIL = "FiskHeroesCactusSummonUntil";
 
+    /** Install the current suit bonus before vanilla computes attack cooldown and critical damage. */
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void onAttackEntity(net.minecraftforge.event.entity.player.AttackEntityEvent event)
+    {
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.prepareAttack(event.getEntity());
+    }
+
     /** Uses the selected belt gadget when the player's hand is empty. */
     @SubscribeEvent
     public static void onEquipmentUse(PlayerInteractEvent.RightClickItem event)
@@ -141,6 +148,8 @@ public class CommonEventHandler
         }
 
         LivingEntity entity = event.player;
+        if (!entity.level().isClientSide)
+            com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(entity);
 
         // Snapshot the values so interpolated variables can be rendered smoothly this tick
         if (entity instanceof net.minecraft.world.entity.player.Player)
@@ -238,7 +247,17 @@ public class CommonEventHandler
 
         net.minecraft.world.entity.Entity attackerEntity = event.getSource().getEntity();
         LivingEntity attacker = attackerEntity instanceof LivingEntity living ? living : null;
-        float outgoing = ModifierHandler.modifyOutgoingDamage(attacker, entity, event.getSource(), event.getAmount());
+        double knockback = com.fiskmods.heroes.common.hero.ability.MeleeCombat.extraKnockback(attacker, event.getSource());
+        float outgoing;
+        try
+        {
+            outgoing = ModifierHandler.modifyOutgoingDamage(attacker, entity, event.getSource(), event.getAmount());
+        }
+        finally
+        {
+            if (attacker != null && com.fiskmods.heroes.common.hero.ability.MeleeCombat.isDirectMelee(attacker, event.getSource()))
+                com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(attacker);
+        }
         float result = ModifierHandler.modifyDamage(entity, event.getSource(), outgoing);
 
         if (result <= 0)
@@ -247,6 +266,12 @@ public class CommonEventHandler
             return;
         }
 
+        if (knockback > 0.0D)
+        {
+            double yaw = Math.toRadians(attacker.getYRot());
+            entity.push(-Math.sin(yaw) * knockback * 0.5D, 0.0D, Math.cos(yaw) * knockback * 0.5D);
+            entity.hurtMarked = true;
+        }
         event.setAmount(result);
     }
 

@@ -1859,4 +1859,96 @@ public final class PortRegressionTests
         else helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void playerAttackUsesCrossbonesPunchProfile(GameTestHelper helper)
+    {
+        var attacker = helper.makeMockPlayer();
+        var target = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(attacker);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:crossbones");
+        if (data == null || hero == null) { helper.fail("Crossbones or player capability missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        target.getAbilities().invulnerable = false;
+        attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED).setBaseValue(1000.0D);
+        target.setHealth(20.0F);
+        attacker.attack(target);
+        if (Math.abs(target.getHealth() - 13.0F) > 0.02F)
+        { helper.fail("A full-strength normal Crossbones punch should deal 7 damage, health=" + target.getHealth()); return; }
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED, true);
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        target.setDeltaMovement(0, 0, 0);
+        attacker.setYRot(0);
+        attacker.attack(target);
+        if (Math.abs(target.getHealth() - 4.5F) > 0.02F)
+        { helper.fail("Charged Crossbones punch should deal 15.5 damage, health=" + target.getHealth()); return; }
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED) || target.getDeltaMovement().z < 1.2D)
+        { helper.fail("Charged melee should consume charge and add profile knockback"); return; }
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        attacker.attack(target);
+        if (Math.abs(target.getHealth() - 7.5F) > 0.02F)
+        { helper.fail("Following hit should use BLUNT rather than the consumed charge, health=" + target.getHealth()); return; }
+        if (Math.abs(attacker.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) - 1.0D) > 0.01D)
+        { helper.fail("Temporary attack attribute must not leak after the hit"); return; }
+        data.setHero(null);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.clearModifiers(attacker);
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        attacker.attack(target);
+        if (Math.abs(target.getHealth() - 19.0F) > 0.02F)
+            helper.fail("Removing the suit must restore vanilla attack damage, health=" + target.getHealth());
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void weaponBonusesRespectEquipmentAndAttackCooldown(GameTestHelper helper)
+    {
+        var attacker = helper.makeMockPlayer();
+        var target = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(attacker);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:deathstroke_dceu");
+        if (data == null || hero == null) { helper.fail("Deathstroke or player capability missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var attack = attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        var speed = attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED);
+        target.getAbilities().invulnerable = false;
+        speed.setBaseValue(1000.0D);
+        var katana = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.KATANA.get());
+        attacker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, katana);
+        attacker.getAttributes().addTransientAttributeModifiers(katana.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        double base = attack.getValue();
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.prepareAttack(attacker);
+        if (Math.abs(attack.getValue() - base - 4.5D) > 0.01D)
+        { helper.fail("Hero's katana should receive full weapon bonus"); return; }
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(attacker);
+        attacker.getAttributes().removeAttributeModifiers(katana.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        var sword = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_SWORD);
+        attacker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, sword);
+        attacker.getAttributes().addTransientAttributeModifiers(sword.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        base = attack.getValue();
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.prepareAttack(attacker);
+        if (Math.abs(attack.getValue() - base - 2.25D) > 0.01D)
+        { helper.fail("Unrelated weapon should receive half the positive bonus"); return; }
+        com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(attacker);
+        target.setHealth(20.0F);
+        attacker.attack(target);
+        float full = 20.0F - target.getHealth();
+        if (Math.abs(full - (float) (base + 2.25D)) > 0.05F)
+        { helper.fail("Real weapon attack did not include its suit bonus: " + full); return; }
+        // Immediately after an attack, a long cooldown should scale the suit bonus along with
+        // vanilla damage, rather than adding its full value after the hit has been calculated.
+        speed.setBaseValue(1.0D);
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        float strength = attacker.getAttackStrengthScale(0.5F);
+        attacker.attack(target);
+        float expected = full * (0.2F + strength * strength * 0.8F);
+        if (Math.abs((20.0F - target.getHealth()) - expected) > 0.05F)
+            helper.fail("Weapon bonus must follow vanilla cooldown, expected=" + expected + " dealt=" + (20.0F - target.getHealth()));
+        else helper.succeed();
+    }
+
 }
