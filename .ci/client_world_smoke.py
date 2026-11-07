@@ -94,9 +94,7 @@ def main():
             xdo('keydown', 'w')
             time.sleep(5)
             xdo('keyup', 'w')
-            command('data get entity @s Pos')
-            command('data get entity @e[type=minecraft:marker,limit=1] Pos')
-            command('execute as @e[type=minecraft:marker,limit=1] at @s positioned ~-3 ~-10 ~4 if entity @p[dx=6,dy=20,dz=10] run say PHASE_CROSSED_WALL')
+            command('execute as @e[type=minecraft:marker,limit=1] at @s positioned ~-8 ~-64 ~4 if entity @p[dx=16,dy=128,dz=128] run say PHASE_CROSSED_WALL')
             wait_for(r'\[CHAT\].*PHASE_CROSSED_WALL', 45, 'client and server crossed the wall while phased', process)
             wait_for(r'Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit\.vision\.intangibility\.enable',
                      45, 'resolve Vision sound to its downloaded event', process)
