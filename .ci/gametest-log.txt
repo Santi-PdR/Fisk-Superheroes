@@ -3,12 +3,12 @@ Daemon will be stopped at the end of the build
 > Task :prepareRunGameTestServer
 > Task :prepareRunGameTestServerCompile UP-TO-DATE
 > Task :runGameTestServer
-[15:59:25] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
-[15:59:25] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
-[15:59:25] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
-[15:59:25] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
-[15:59:28] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
-[15:59:28] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[16:09:10] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
+[16:09:10] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[16:09:10] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
+[16:09:10] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
+[16:09:11] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
+[16:09:12] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
@@ -16,113 +16,113 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-[15:59:39] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[15:59:41] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[15:59:41] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[15:59:41] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[15:59:41] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[15:59:41] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[15:59:46] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
-[15:59:46] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (32 tests)...
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: 32 tests are now running!
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++]
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: ========= 32 GAME TESTS COMPLETE ======================
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: All 32 required tests passed :)
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[15:59:50] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794067153474.json
-BUILD SUCCESSFUL in 40s
-[15:59:41] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/ai/village/VillageSiege
-[15:59:42] [Worker-Main-3/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate
-[15:59:42] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[15:59:43] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[15:59:43] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[15:59:43] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[15:59:44] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 10%
-[15:59:44] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 26%
-[15:59:45] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 52%
-[15:59:45] [Worker-Main-3/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
-[15:59:45] [Worker-Main-3/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
-[15:59:45] [Worker-Main-3/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x5278391b893998a4
-[15:59:45] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 69%
-[15:59:46] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 89%
-[15:59:46] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 3663 ms
-[15:59:46] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
-[15:59:46] [Server thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 1657
-[15:59:46] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[15:59:46] [Server thread/INFO] [Fisk's Superheroes/]: Fisk's Superheroes ready: 67 heroes registered
-[15:59:46] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
-[15:59:46] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
-[15:59:46] [Server thread/DEBUG] [io.ne.ut.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@580fd68e
-[15:59:46] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/NaturalSpawner
-[15:59:46] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (32 tests)...
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: 32 tests are now running!
-[15:59:47] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[15:59:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
-[15:59:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
-[15:59:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
-[15:59:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
-[15:59:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++]
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: ========= 32 GAME TESTS COMPLETE ======================
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: All 32 required tests passed :)
-[15:59:47] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[15:59:47] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
-[15:59:47] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
-[15:59:47] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
-[15:59:49] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
-[15:59:49] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[15:59:49] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
-[15:59:49] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
-[15:59:50] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[15:59:50] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[15:59:50] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
-[15:59:50] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
-[15:59:50] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794067153474.json
+[16:09:19] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[16:09:20] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
+[16:09:20] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
+[16:09:20] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
+[16:09:22] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[16:09:23] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (34 tests)...
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: 34 tests are now running!
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++]
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: ========= 34 GAME TESTS COMPLETE ======================
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: All 34 required tests passed :)
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[16:09:25] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794067742516.json
+BUILD SUCCESSFUL in 25s
+[16:09:20] [Thread-1/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PhantomSpawner
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PatrolSpawner
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/npc/CatSpawner
+[16:09:20] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/ai/village/VillageSiege
+[16:09:20] [Worker-Main-2/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate
+[16:09:21] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
+[16:09:21] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
+[16:09:21] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 2%
+[16:09:21] [Worker-Main-1/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
+[16:09:21] [Worker-Main-1/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
+[16:09:21] [Worker-Main-1/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xf85336de73fef4fd
+[16:09:22] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 25%
+[16:09:22] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 69%
+[16:09:22] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 1729 ms
+[16:09:22] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[16:09:22] [Server thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 1657
+[16:09:22] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
+[16:09:22] [Server thread/INFO] [Fisk's Superheroes/]: Fisk's Superheroes ready: 67 heroes registered
+[16:09:22] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
+[16:09:22] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
+[16:09:22] [Server thread/DEBUG] [io.ne.ut.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@3ecd937f
+[16:09:22] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/NaturalSpawner
+[16:09:23] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (34 tests)...
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: 34 tests are now running!
+[16:09:23] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[16:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[16:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[16:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[16:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[16:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++]
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: ========= 34 GAME TESTS COMPLETE ======================
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: All 34 required tests passed :)
+[16:09:23] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[16:09:23] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[16:09:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[16:09:23] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[16:09:24] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[16:09:25] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
+[16:09:25] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[16:09:25] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[16:09:25] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
+[16:09:25] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
+[16:09:25] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794067742516.json
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -130,5 +130,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 40s
+BUILD SUCCESSFUL in 25s
 11 actionable tasks: 7 executed, 4 up-to-date
