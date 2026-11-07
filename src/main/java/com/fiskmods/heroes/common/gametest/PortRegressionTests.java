@@ -250,10 +250,34 @@ public final class PortRegressionTests
             if (target.getHealth() != target.getMaxHealth() || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
             { helper.fail("A slow pass must not damage or stop flight"); return; }
             player.setDeltaMovement(0, 0, 1.2D);
+            player.noPhysics = true;
+            com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.2D);
+            player.noPhysics = false;
+            if (target.getHealth() != target.getMaxHealth() || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+            { helper.fail("No-physics flight must not cause collision damage"); return; }
+            var collision = com.fiskmods.heroes.common.hero.power.PowerProperty.COLLISION;
+            entry.setProperty(collision, com.google.gson.JsonParser.parseString("""
+                    {"entities":{"stopFlying":true,"dealDamage":false}}
+                    """));
+            com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.2D);
+            if (target.getHealth() != target.getMaxHealth() || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+            { helper.fail("A pack may disable entity impacts"); return; }
+            entry.setProperty(collision, com.google.gson.JsonParser.parseString("""
+                    {"entities":{"stopFlying":false,"dealDamage":true}}
+                    """));
             com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.2D);
             if (target.getHealth() >= target.getMaxHealth() || target.getDeltaMovement().z <= 0.0D
+                    || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+            { helper.fail("Impact damage and knockback must not stop flight when the pack disables stopping"); return; }
+            target.setHealth(target.getMaxHealth());
+            target.invulnerableTime = 0;
+            entry.setProperty(collision, com.google.gson.JsonParser.parseString("""
+                    {"entities":{"stopFlying":true,"dealDamage":true}}
+                    """));
+            com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.2D);
+            if (target.getHealth() >= target.getMaxHealth()
                     || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
-            { helper.fail("A fast entity impact must damage, knock back and stop the glide"); return; }
+            { helper.fail("A configured entity impact must damage the target and stop the glide"); return; }
         }
         finally { target.discard(); }
         helper.succeed();
