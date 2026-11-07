@@ -63,6 +63,8 @@ jobs:
           ./gradlew dumpApi --no-daemon --console=plain >> ci-build.log 2>&1 || true
 
       - name: Publish build log back to the branch
+        # Log commits can race with other CI jobs; they must not mask test results.
+        continue-on-error: true
         if: always()
         run: |
           mkdir -p .ci
@@ -102,6 +104,8 @@ jobs:
           test "${count:-0}" -ge 48
 
       - name: Publish GameTest log
+        # Log commits can race with other CI jobs; they must not mask test results.
+        continue-on-error: true
         if: always() && hashFiles('ci-gametest.log') != ''
         run: |
           mkdir -p .ci
@@ -144,6 +148,8 @@ jobs:
           test ! -d "$server/crash-reports"
 
       - name: Publish production server log
+        # Log commits can race with other CI jobs; they must not mask test results.
+        continue-on-error: true
         if: always() && hashFiles('ci-production.log') != ''
         run: |
           mkdir -p .ci
