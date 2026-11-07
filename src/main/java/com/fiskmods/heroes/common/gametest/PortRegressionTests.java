@@ -420,6 +420,7 @@ public final class PortRegressionTests
         // LivingEntity.hurt can return true even if LivingHurtEvent was canceled.
         if (target.getHealth() != 20.0F || attacker.getHealth() != 20.0F)
         { helper.fail("A cactus-typed projectile must be immune and must not trigger thorns"); return; }
+        target.invulnerableTime = 0;
         types.addProperty("CACTUS", 0.5F);
         if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile)
                 || Math.abs(target.getHealth() - 16.0F) > 0.01F || attacker.getHealth() != 20.0F)
