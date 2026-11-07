@@ -92,7 +92,13 @@ public final class PortRegressionTests
         if (data == null || hero == null) { helper.fail("Ant-Man data missing"); return; }
         var pos = helper.absolutePos(new net.minecraft.core.BlockPos(2, 2, 2));
         player.setPos(pos.getX() + 0.5D, 120.0D, pos.getZ() + 0.5D);
-        data.setHero(hero.getDefaultIteration());
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int slot = 0; slot < slots.length; ++slot)
+            player.setItemSlot(slots[slot], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                    hero.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[slot]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
         data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
         var action = hero.getKeyBindFuncs().get("func_GIANT_MODE");
         if (action == null) { helper.fail("Ant-Man's giant mode key is missing"); return; }
@@ -107,7 +113,10 @@ public final class PortRegressionTests
                 || vars.get(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE) != 0
                 || Math.abs(player.getBbWidth() - 3.0F) > 0.001F
                 || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER) - 1.0F) > 0.001F)
-        { helper.fail("Giant-mode callback must grow the player and complete its transformation"); return; }
+        { helper.fail("Giant-mode growth: scale=" + vars.get(com.fiskmods.heroes.common.data.var.Vars.SCALE)
+                + ", state=" + vars.get(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE)
+                + ", width=" + player.getBbWidth() + ", timer="
+                + vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER)); return; }
         action.call(new com.fiskmods.heroes.pack.js.JSEntity(player), new com.fiskmods.heroes.pack.js.JSManager());
         for (int i = 0; i < 12; ++i)
         {
