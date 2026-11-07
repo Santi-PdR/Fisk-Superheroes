@@ -997,7 +997,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     }
 
     /** Applies the original model's per-piece invisibility/intangibility opacity curve. */
-    private static float suitOpacity(HeroModelData model, AbstractClientPlayer player, int slot)
+    static float suitOpacity(HeroModelData model, AbstractClientPlayer player, int slot)
     {
         SHPlayerData playerData = SHDataCapabilities.getPlayer(player);
         float visibility = playerData == null ? 1.0F : 1.0F - net.minecraft.util.Mth.clamp(

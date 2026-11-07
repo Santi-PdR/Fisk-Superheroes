@@ -165,6 +165,12 @@ def main():
                 xdo('keyup', 'v')
             wait_for(r'Shared suit arm pose applied: hero=fiskheroes:mysterio, sleeveAligned=true',
                      45, 'player skin and suit share the animated arm pose', process)
+            # Cycle from third-person back through front view to first person.
+            xdo('key', 'F5')
+            time.sleep(1)
+            xdo('key', 'F5')
+            wait_for(r'First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1\.png',
+                     45, 'first-person arm uses the worn chest texture', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
