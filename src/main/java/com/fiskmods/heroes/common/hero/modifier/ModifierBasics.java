@@ -346,25 +346,33 @@ class ModifierInvisibility extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.isToggled(entity);
+        boolean state = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !entry.isToggled(entity);
+        setActive(entity, entry, data, state);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE)) setActive(entity, entry, data, false);
+    }
+
+    private void setActive(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean state)
+    {
         entry.setToggled(entity, state);
         data.getData().set(Vars.INVISIBLE, state);
-        apply(entity, state);
+        if (entity instanceof Player player) InvisibilityState.update(player, data);
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (data.getData().get(Vars.INVISIBLE))
-        {
-            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 40, 0, true, false, false));
-        }
+        boolean invisible = data.getData().get(Vars.INVISIBLE);
+        float timer = data.getData().get(Vars.INVISIBILITY_TIMER);
+        data.getData().set(Vars.INVISIBILITY_TIMER,
+                net.minecraft.util.Mth.approach(timer, invisible ? 1.0F : 0.0F, 0.1F));
+        if (entity instanceof Player player) InvisibilityState.update(player, data);
     }
 
-    static void apply(LivingEntity entity, boolean invisible)
-    {
-        entity.setInvisible(invisible);
-    }
 }
 
 /** Hovering: cancels gravity while the ability is active. */

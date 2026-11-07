@@ -994,16 +994,16 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
     /** Applies the original model's per-piece invisibility/intangibility opacity curve. */
     private static float suitOpacity(HeroModelData model, AbstractClientPlayer player, int slot)
     {
+        SHPlayerData playerData = SHDataCapabilities.getPlayer(player);
+        float visibility = playerData == null ? 1.0F : 1.0F - net.minecraft.util.Mth.clamp(
+                playerData.getData().get(com.fiskmods.heroes.common.data.var.Vars.INVISIBILITY_TIMER), 0.0F, 1.0F);
         com.google.gson.JsonObject effect = model.getCustom().get("fiskheroes:invisibility");
-        if (effect == null || !appliesToSlot(effect, slot))
-        {
-            return 1.0F;
-        }
+        if (effect == null || !appliesToSlot(effect, slot)) return visibility;
 
         float data = model.evaluateRenderData(effect.get("data"), player, 0.0F);
         float min = effect.has("opacityMin") ? effect.get("opacityMin").getAsFloat() : 0.0F;
         float max = effect.has("opacityMax") ? effect.get("opacityMax").getAsFloat() : 1.0F;
-        return net.minecraft.util.Mth.clamp(max + (min - max) * data, 0.0F, 1.0F);
+        return visibility * net.minecraft.util.Mth.clamp(max + (min - max) * data, 0.0F, 1.0F);
     }
 
     static boolean passesConditionals(com.google.gson.JsonObject effect, HeroModelData model, AbstractClientPlayer player)

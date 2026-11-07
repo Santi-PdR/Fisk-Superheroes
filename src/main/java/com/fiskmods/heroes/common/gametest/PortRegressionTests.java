@@ -581,6 +581,51 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void suitInvisibilityPreservesPotionsAndEndsOnSuitChange(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var martian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:martian_manhunter");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || martian == null || flash == null)
+        { helper.fail("Invisibility test heroes or player capability missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(martian.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        var entry = martian.getPowerContainer().getEntry(FiskHeroes.id("invisibility"));
+        if (entry == null) { helper.fail("Martian invisibility modifier missing"); return; }
+        var modifier = entry.getModifier();
+        var timer = com.fiskmods.heroes.common.data.var.Vars.INVISIBILITY_TIMER;
+        modifier.onActivate(player, entry, data);
+        for (int i = 0; i < 11; ++i) modifier.tick(player, entry, data);
+        if (!player.isInvisible() || player.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY)
+                || data.getData().get(timer) < 0.99F)
+        { helper.fail("Suit invisibility must not create a potion and must animate its fade"); return; }
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        if (player.isInvisible() || data.getData().get(timer) >= 1.0F)
+        { helper.fail("Deactivating the suit must restore visibility without a potion delay"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.INVISIBILITY, 200));
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        modifier.onActivate(player, entry, data);
+        if (!player.isInvisible() || player.getEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY).getDuration() != 200)
+        { helper.fail("Disabling suit invisibility must preserve an independent potion"); return; }
+        player.removeEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
+        player.setInvisible(false);
+        modifier.onActivate(player, entry, data);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(flash.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        if (player.isInvisible() || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.INVISIBLE)
+                || data.getData().get(timer) != 0.0F || data.isToggleEnabled(FiskHeroes.id("invisibility")))
+            helper.fail("Switching to a suit without invisibility must clean up its state");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
     {
         int checked = 0;

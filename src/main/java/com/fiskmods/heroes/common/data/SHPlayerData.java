@@ -44,6 +44,21 @@ public class SHPlayerData implements IDataHolder
         return previousNoPhysics;
     }
 
+    private boolean suitInvisibilityApplied;
+    private boolean previousInvisible;
+
+    public boolean isSuitInvisibilityApplied() { return suitInvisibilityApplied; }
+    public void beginSuitInvisibility(boolean previous)
+    {
+        suitInvisibilityApplied = true;
+        previousInvisible = previous;
+    }
+    public boolean endSuitInvisibility()
+    {
+        suitInvisibilityApplied = false;
+        return previousInvisible;
+    }
+
     public DataContainer getData()
     {
         return data;
