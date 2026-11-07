@@ -1871,6 +1871,8 @@ public final class PortRegressionTests
         target.getAbilities().invulnerable = false;
         attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED).setBaseValue(1000.0D);
         target.setHealth(20.0F);
+        attacker.setPos(0, 0, 0);
+        target.setPos(0, 0, 2);
         attacker.attack(target);
         if (Math.abs(target.getHealth() - 13.0F) > 0.02F)
         { helper.fail("A full-strength normal Crossbones punch should deal 7 damage, health=" + target.getHealth()); return; }
@@ -1884,8 +1886,12 @@ public final class PortRegressionTests
         attacker.attack(target);
         if (Math.abs(target.getHealth() - 4.5F) > 0.02F)
         { helper.fail("Charged Crossbones punch should deal 15.5 damage, health=" + target.getHealth()); return; }
-        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED) || target.getDeltaMovement().z < 1.2D)
-        { helper.fail("Charged melee should consume charge and add profile knockback"); return; }
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED))
+        { helper.fail("Charged melee should consume its charge"); return; }
+        // LivingEntity.hurt subsequently halves existing horizontal velocity and adds its
+        // own 0.4 knockback. The profile must still leave more than vanilla's 0.4 impulse.
+        if (target.getDeltaMovement().z < 0.9D)
+        { helper.fail("Charged melee should add profile knockback, velocity=" + target.getDeltaMovement()); return; }
         target.invulnerableTime = 0;
         target.setHealth(20.0F);
         attacker.attack(target);
