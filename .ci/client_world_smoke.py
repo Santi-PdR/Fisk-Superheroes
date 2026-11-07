@@ -180,7 +180,7 @@ def main():
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
             command('gamemode survival')
-            command('tp @s ~ 300 ~')
+            command('tp @s ~ 300 ~ 0 0')
             xdo('key', 'F5')  # Third-person rear view.
             time.sleep(1)
             xdo('keydown', 'space')
@@ -188,7 +188,12 @@ def main():
                 wait_for(r'Gliding input: player=Dev, active=true', 45, 'falling jump activates Batman glide', process)
             finally:
                 xdo('keyup', 'space')
-            wait_for(r'Local gliding motion applied for Dev', 45, 'local player applies glide motion', process)
+            wait_for(r'Local gliding travel for Dev: horizontal=([-+0-9.eE]+), vertical=',
+                     45, 'local player uses gliding travel', process)
+            match = re.search(r'Local gliding travel for Dev: horizontal=([-+0-9.eE]+), vertical=',
+                              log.read_text(errors='replace'))
+            if not match or float(match.group(1)) <= 0.0001:
+                raise RuntimeError('Gliding travel did not generate forward speed')
             wait_for(r'Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape\.png',
                      45, 'client renders Batman deployed cape texture', process)
             subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)

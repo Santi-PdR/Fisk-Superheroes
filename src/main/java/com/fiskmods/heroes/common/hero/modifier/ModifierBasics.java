@@ -382,8 +382,6 @@ class ModifierHover extends Modifier
 /** Gliding: fall slowly while the ability is toggled on. */
 class ModifierGliding extends Modifier
 {
-    private boolean loggedClientMotion;
-
     ModifierGliding(ResourceLocation id)
     {
         super(id);
@@ -448,11 +446,6 @@ class ModifierGliding extends Modifier
         boolean jetpacking = controlled && gliding && !forward
                 && com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player);
         applyMotion(player, data, gliding, controlled, forward, jetpacking, false);
-        if (gliding && !loggedClientMotion)
-        {
-            loggedClientMotion = true;
-            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Local gliding motion applied for {}", player.getGameProfile().getName());
-        }
     }
 
     private static void applyMotion(LivingEntity entity, SHPlayerData data, boolean gliding,
@@ -479,13 +472,9 @@ class ModifierGliding extends Modifier
                 y = Math.sin(entity.tickCount / 10.0D) * 0.025D * scale;
             }
         }
-        else
-        {
-            // Forward gliding still uses an approximation until travel is ported.
-            y = Math.max(y, -0.12D);
-        }
+        else return; // Forward gliding is handled during travel, not in the tick hook.
         entity.setDeltaMovement(motion.x, y, motion.z);
-        entity.fallDistance = Math.min(entity.fallDistance, 1.0F);
+        entity.fallDistance = 0.0F;
         if (server && entity instanceof Player player) player.hurtMarked = true;
     }
 }

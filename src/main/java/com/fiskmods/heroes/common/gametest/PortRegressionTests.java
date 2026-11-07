@@ -122,9 +122,24 @@ public final class PortRegressionTests
         { helper.fail("A falling jump must deploy the cape"); return; }
         for (int i = 0; i < 12; ++i) entry.getModifier().tick(player, entry, data);
         if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WING_ANIMATION_TIMER) != 1.0F
-                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER) != 1.0F
-                || player.getDeltaMovement().y < -0.121D)
-        { helper.fail("Gliding must unfold the cape, normalize the pose and slow the fall"); return; }
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER) != 1.0F)
+        { helper.fail("Gliding must unfold the cape and normalize the pose"); return; }
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 8, 1));
+        player.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        player.setYRot(0);
+        player.setXRot(0);
+        player.setDeltaMovement(0, -0.4, 0);
+        double beforeZ = player.getZ();
+        player.travel(Vec3.ZERO);
+        if (player.getZ() <= beforeZ + 0.01 || player.getDeltaMovement().z <= 0.01
+                || player.getDeltaMovement().y <= -0.4)
+        { helper.fail("Glide travel hook must convert descent into forward movement"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, false);
+        Vec3 unchanged = player.getDeltaMovement();
+        if (com.fiskmods.heroes.common.hero.ability.GlidingTravel.travel(player)
+                || !unchanged.equals(player.getDeltaMovement()))
+        { helper.fail("Inactive gliding must leave vanilla travel in control"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, true);
         player.setOnGround(true);
         for (int i = 0; i < 8; ++i) entry.getModifier().tick(player, entry, data);
         if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING)
@@ -132,6 +147,33 @@ public final class PortRegressionTests
         { helper.fail("Landing must stop gliding and fold the cape"); return; }
         com.fiskmods.heroes.common.network.PacketInput.clearServerState(player);
         com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void glidingTravelUsesPitchStallAndPoweredBoost(GameTestHelper helper)
+    {
+        var horizontalLook = new Vec3(0, 0, 1);
+        var falling = new Vec3(0, -0.4, 0);
+        var glide = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                falling, horizontalLook, 0, 1, 1, 1, 0, false, 0);
+        var boosted = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                falling, horizontalLook, 0, 1, 1, 1, 0, true, 0.1);
+        var stalled = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                falling, horizontalLook, 0, 1, 1, 1, 1, false, 0);
+        var climbingLook = new Vec3(0, 0.5, Math.sqrt(0.75));
+        var forward = new Vec3(0, -0.1, 1);
+        var level = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                forward, horizontalLook, 0, 1, 1, 1, 0, false, 0);
+        var climb = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                forward, climbingLook, -30, 1, 1, 1, 0, false, 0);
+        if (glide.z <= 0 || glide.y <= falling.y - 0.08 || boosted.z <= glide.z
+                || stalled.y >= glide.y || climb.y <= level.y || climb.z >= level.z)
+        { helper.fail("Gliding must convert falling to forward speed, account for stall, boost and pitch"); return; }
+        var vertical = com.fiskmods.heroes.common.hero.ability.GlidingTravel.step(
+                forward, new Vec3(0, 1, 0), -90, 1, 1, 1, 0, false, 0);
+        if (!Double.isFinite(vertical.x) || !Double.isFinite(vertical.y) || !Double.isFinite(vertical.z))
+        { helper.fail("Looking straight up must not divide by zero"); return; }
         helper.succeed();
     }
 
