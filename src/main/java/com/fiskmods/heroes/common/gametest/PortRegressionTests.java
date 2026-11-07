@@ -136,6 +136,41 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void controlledGlidingDistinguishesHoverForwardAndJetpack(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-hover-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        var base = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("gliding")) : null;
+        if (data == null || base == null) { helper.fail("Gliding data is missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(base.getModifier(), null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.IS_CONTROLLED, true);
+        var vars = data.getData();
+        var v = com.fiskmods.heroes.common.data.var.Vars.GLIDING;
+        player.setOnGround(false);
+        vars.set(v, true);
+        player.setDeltaMovement(0, -0.4, 0);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y + 0.29D) > 0.001D
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.GLIDE_FLYING))
+        { helper.fail("Controlled gliding without forward input must hover and brake its descent"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, true, false, 0, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.JETPACKING)
+                || Math.abs(player.getDeltaMovement().y + 0.13D) > 0.001D)
+        { helper.fail("Jump while hovering must activate the jetpack boost"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, true, false, 1, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.GLIDE_FLYING)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.JETPACKING))
+        { helper.fail("Forward movement must select glide flight instead of jetpacking"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void armorTextureTreesRespectConditionsAndNull(GameTestHelper helper)
     {
         var tree = com.google.gson.JsonParser.parseString("""

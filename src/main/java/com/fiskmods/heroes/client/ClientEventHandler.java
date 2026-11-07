@@ -182,6 +182,7 @@ public class ClientEventHandler
             // A fresh server connection needs the initial key state even if it has
             // not changed since the previous world was closed.
             com.fiskmods.heroes.common.network.PacketInput.lastSent = false;
+            com.fiskmods.heroes.common.data.PlayerInputTracker.clearClient();
             return;
         }
 

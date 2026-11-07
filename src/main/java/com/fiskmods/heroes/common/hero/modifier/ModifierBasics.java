@@ -382,6 +382,8 @@ class ModifierHover extends Modifier
 /** Gliding: fall slowly while the ability is toggled on. */
 class ModifierGliding extends Modifier
 {
+    private boolean loggedClientMotion;
+
     ModifierGliding(ResourceLocation id)
     {
         super(id);
@@ -427,15 +429,64 @@ class ModifierGliding extends Modifier
         data.getData().set(Vars.JETPACKING_TIMER, net.minecraft.util.Mth.approach(
                 data.getData().get(Vars.JETPACKING_TIMER), jetpackPose ? 1.0F : 0.0F, 0.5F));
 
-        if (gliding)
+        applyMotion(entity, data, gliding, controlled, flyingForward, jetpacking, true);
+    }
+
+    @Override
+    public void tickClient(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        // LocalPlayer drives its own movement. Correcting velocity only on the server leaves
+        // multiplayer clients falling normally and continually snapping back to the server.
+        // Remote players instead use vanilla interpolation and must not be driven here.
+        if (!(entity instanceof Player player) || !player.isLocalPlayer()) return;
+        boolean gliding = data.getData().get(Vars.GLIDING) && !player.onGround()
+                && !player.isShiftKeyDown() && !player.isPassenger() && !player.getAbilities().flying
+                && (!player.isInWater() || entry.getBoolean(player, PowerProperty.IS_POWERED));
+        boolean controlled = entry.getBoolean(player, PowerProperty.IS_CONTROLLED);
+        boolean forward = controlled && gliding
+                && com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player) > 0;
+        boolean jetpacking = controlled && gliding && !forward
+                && com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player);
+        applyMotion(player, data, gliding, controlled, forward, jetpacking, false);
+        if (gliding && !loggedClientMotion)
         {
-            Vec3 motion = entity.getDeltaMovement();
-            double y = jetpacking ? motion.y + (motion.y < 0.0D ? 0.16D : 0.1D)
-                    : Math.max(motion.y, -0.12D);
-            entity.setDeltaMovement(motion.x, y, motion.z);
-            entity.fallDistance = Math.min(entity.fallDistance, 1.0F);
-            if (entity instanceof Player player) player.hurtMarked = true;
+            loggedClientMotion = true;
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Local gliding motion applied for {}", player.getGameProfile().getName());
         }
+    }
+
+    private static void applyMotion(LivingEntity entity, SHPlayerData data, boolean gliding,
+            boolean controlled, boolean forward, boolean jetpacking, boolean server)
+    {
+        if (!gliding) return;
+        Vec3 motion = entity.getDeltaMovement();
+        double y = motion.y;
+        if (jetpacking)
+        {
+            y += y < 0.0D ? 0.16D : 0.1D;
+        }
+        else if (controlled && !forward)
+        {
+            // Controlled winged suits hover when neither flying forward nor ascending.
+            // These thresholds and the bobbing motion match the original update hook.
+            float scale = data.getData().get(Vars.SCALE);
+            float factor = Math.max(scale, 1.0F);
+            if (y < -0.11D * factor) y += 0.11D * factor;
+            else if (y > 0.001D * factor) y -= 0.001D * factor;
+            else
+            {
+                if (scale < 1.0F) scale = (1.0F - scale) / 2.0F;
+                y = Math.sin(entity.tickCount / 10.0D) * 0.025D * scale;
+            }
+        }
+        else
+        {
+            // Forward gliding still uses an approximation until travel is ported.
+            y = Math.max(y, -0.12D);
+        }
+        entity.setDeltaMovement(motion.x, y, motion.z);
+        entity.fallDistance = Math.min(entity.fallDistance, 1.0F);
+        if (server && entity instanceof Player player) player.hurtMarked = true;
     }
 }
 

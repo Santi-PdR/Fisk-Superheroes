@@ -188,6 +188,7 @@ def main():
                 wait_for(r'Gliding input: player=Dev, active=true', 45, 'falling jump activates Batman glide', process)
             finally:
                 xdo('keyup', 'space')
+            wait_for(r'Local gliding motion applied for Dev', 45, 'local player applies glide motion', process)
             wait_for(r'Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape\.png',
                      45, 'client renders Batman deployed cape texture', process)
             subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)

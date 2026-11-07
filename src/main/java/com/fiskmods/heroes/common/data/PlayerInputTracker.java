@@ -6,21 +6,35 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.world.entity.player.Player;
 
-/**
- * Per-player client input that the server cannot otherwise observe.
- * <p>
- * 1.7.10 let the server read {@code EntityPlayer.movementInput} directly. That field is client-only
- * in 1.20.1 ({@code LocalPlayer.input}) and the vanilla protocol does not carry the jump/sneak keys
- * to the server, so the flight modifier needs them forwarded explicitly. This is the same
- * information vanilla used to expose, not a gameplay shortcut: the client only reports the raw keys
- * and the server still owns every movement decision.
- */
+/** Raw movement keys, kept separately for the logical client and authoritative server. */
 public final class PlayerInputTracker
 {
-    private static final Map<UUID, Input> INPUTS = new ConcurrentHashMap<>();
+    // Integrated client and server share a JVM and player UUID; they must not share input state.
+    // Immutable snapshots also prevent the other thread from observing a partially updated input.
+    private static final Map<UUID, Input> CLIENT_INPUTS = new ConcurrentHashMap<>();
+    private static final Map<UUID, Input> SERVER_INPUTS = new ConcurrentHashMap<>();
+    private static final Input EMPTY = new Input(false, false, 0, 0, false);
 
-    private PlayerInputTracker()
+    private PlayerInputTracker() {}
+
+    private static Map<UUID, Input> inputs(boolean clientSide)
     {
+        return clientSide ? CLIENT_INPUTS : SERVER_INPUTS;
+    }
+
+    static void set(boolean clientSide, UUID id, boolean jump, boolean sneak, int forward, int strafe, boolean use)
+    {
+        inputs(clientSide).put(id, new Input(jump, sneak, Integer.signum(forward), Integer.signum(strafe), use));
+    }
+
+    static Input get(boolean clientSide, UUID id)
+    {
+        return inputs(clientSide).getOrDefault(id, EMPTY);
+    }
+
+    static void clear(boolean clientSide, UUID id)
+    {
+        inputs(clientSide).remove(id);
     }
 
     public static void set(Player player, boolean jump, boolean sneak, int forward, int strafe)
@@ -30,59 +44,30 @@ public final class PlayerInputTracker
 
     public static void set(Player player, boolean jump, boolean sneak, int forward, int strafe, boolean use)
     {
-        INPUTS.computeIfAbsent(player.getUUID(), k -> new Input()).set(jump, sneak, forward, strafe, use);
+        set(player.level().isClientSide, player.getUUID(), jump, sneak, forward, strafe, use);
     }
 
-    public static boolean isUsing(Player player)
+    private static Input get(Player player)
     {
-        Input input = INPUTS.get(player.getUUID());
-        return input != null && input.use;
+        return get(player.level().isClientSide, player.getUUID());
     }
 
-    public static int forward(Player player)
-    {
-        Input input = INPUTS.get(player.getUUID());
-        return input != null ? input.forward : 0;
-    }
-
-    public static int strafe(Player player)
-    {
-        Input input = INPUTS.get(player.getUUID());
-        return input != null ? input.strafe : 0;
-    }
-
-    public static boolean isJumping(Player player)
-    {
-        Input input = INPUTS.get(player.getUUID());
-        return input != null && input.jump;
-    }
-
-    public static boolean isSneaking(Player player)
-    {
-        Input input = INPUTS.get(player.getUUID());
-        return input != null && input.sneak;
-    }
+    public static boolean isUsing(Player player) { return get(player).use(); }
+    public static int forward(Player player) { return get(player).forward(); }
+    public static int strafe(Player player) { return get(player).strafe(); }
+    public static boolean isJumping(Player player) { return get(player).jump(); }
+    public static boolean isSneaking(Player player) { return get(player).sneak(); }
 
     public static void clear(Player player)
     {
-        INPUTS.remove(player.getUUID());
+        clear(player.level().isClientSide, player.getUUID());
     }
 
-    private static final class Input
+    /** Called when the client disconnects; never clears the integrated server's inputs. */
+    public static void clearClient()
     {
-        private boolean jump;
-        private boolean sneak;
-        private boolean use;
-        private int forward;
-        private int strafe;
-
-        void set(boolean jump, boolean sneak, int forward, int strafe, boolean use)
-        {
-            this.jump = jump;
-            this.sneak = sneak;
-            this.use = use;
-            this.forward = Integer.signum(forward);
-            this.strafe = Integer.signum(strafe);
-        }
+        CLIENT_INPUTS.clear();
     }
+
+    record Input(boolean jump, boolean sneak, int forward, int strafe, boolean use) {}
 }
