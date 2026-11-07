@@ -41,6 +41,8 @@ public final class SHSoundPlayer
             return;
         }
 
+        com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Playing pack sound definition {} as {}", packet.getId(), event.getLocation());
+
         if (packet.isLoop())
         {
             for (SHLoopingSound existing : LOOPS)

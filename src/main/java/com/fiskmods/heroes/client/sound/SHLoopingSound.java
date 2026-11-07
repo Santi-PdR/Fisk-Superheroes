@@ -50,7 +50,8 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
     public SHLoopingSound(ResourceLocation definitionId, int entityId, double x, double y, double z, SoundSource source,
             float volume, float pitch, int fadeIn, int fadeOut, int delay, float range)
     {
-        super(definitionId, source, RandomSource.create());
+        // Retain definitionId for stop packets and scripts, but play its resolved audio event.
+        super(SHSounds.get(definitionId).getLocation(), source, RandomSource.create());
         this.definitionId = definitionId;
         this.entityId = entityId;
         this.baseVolume = volume;

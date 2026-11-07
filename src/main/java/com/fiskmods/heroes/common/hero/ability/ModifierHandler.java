@@ -120,6 +120,9 @@ public final class ModifierHandler
         if (previous == null || previous != value)
         {
             data.setSoundState(entry.getModifier().getId(), value);
+            // Equipping an inactive power is not a DISABLE transition.
+            if (previous == null && !value) return;
+            if (!value) com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(entity, entry, "ENABLE");
             com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(entity, entry, value ? "ENABLE" : "DISABLE");
         }
     }

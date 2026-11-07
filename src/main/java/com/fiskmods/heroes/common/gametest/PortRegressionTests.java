@@ -626,6 +626,19 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void soundDefinitionsResolveToAudioEvents(GameTestHelper helper)
+    {
+        var oneShot = com.fiskmods.heroes.common.sound.SHSounds.get(FiskHeroes.id("vision_intang_on"));
+        var loop = com.fiskmods.heroes.common.sound.SHSounds.get(FiskHeroes.id("flight_cape_loop"));
+        var loopDef = com.fiskmods.heroes.common.sound.SHSounds.getDefinition(FiskHeroes.id("flight_cape_loop"));
+        if (oneShot == null || !oneShot.getLocation().equals(FiskHeroes.id("suit.vision.intangibility.enable"))
+                || loop == null || !loop.getLocation().equals(FiskHeroes.id("modifier.flight.cape.loop"))
+                || loopDef == null || !loopDef.isLoop())
+            helper.fail("Sound definitions must resolve to their audio event, preserving loop metadata");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
     {
         int checked = 0;

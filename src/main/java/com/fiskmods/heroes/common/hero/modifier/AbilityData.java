@@ -72,32 +72,39 @@ public final class AbilityData
             return;
         }
 
-        // Sound entries may be a single id or a list of variants; one is picked at random, as the
-        // original dispatcher did.
-        String id;
-
+        // Arrays are layered sounds (often an enable cue plus one or more loops), not alternatives.
         if (sound.isJsonArray())
         {
-            var list = sound.getAsJsonArray();
-
-            if (list.isEmpty())
-            {
-                return;
-            }
-
-            id = list.get(entity.getRandom().nextInt(list.size())).getAsString();
+            for (JsonElement element : sound.getAsJsonArray()) playSoundElement(entity, element);
         }
-        else
-        {
-            id = sound.getAsString();
-        }
+        else playSoundElement(entity, sound);
+    }
 
-        ResourceLocation location = ResourceLocation.tryParse(id);
+    private static void playSoundElement(LivingEntity entity, JsonElement sound)
+    {
+        if (!sound.isJsonPrimitive() || !sound.getAsJsonPrimitive().isString()) return;
+        ResourceLocation id = ResourceLocation.tryParse(sound.getAsString());
+        if (id != null) com.fiskmods.heroes.common.sound.SHSounds.play(entity, id, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
 
-        if (location != null)
-        {
-            com.fiskmods.heroes.common.sound.SHSounds.play(entity, location, SoundSource.PLAYERS, 1.0F, 1.0F);
-        }
+    /** Stop any looping cues for a trigger when its state or suit goes away. */
+    public static void stopSoundLoops(LivingEntity entity, ModifierEntry entry, String trigger)
+    {
+        JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
+        if (sounds == null || !sounds.isJsonObject()) return;
+        JsonElement sound = sounds.getAsJsonObject().get(trigger);
+        if (sound == null) return;
+        if (sound.isJsonArray())
+            for (JsonElement element : sound.getAsJsonArray()) stopLoopElement(entity, element);
+        else stopLoopElement(entity, sound);
+    }
+
+    private static void stopLoopElement(LivingEntity entity, JsonElement sound)
+    {
+        if (!sound.isJsonPrimitive() || !sound.getAsJsonPrimitive().isString()) return;
+        ResourceLocation id = ResourceLocation.tryParse(sound.getAsString());
+        var definition = id == null ? null : com.fiskmods.heroes.common.sound.SHSounds.getDefinition(id);
+        if (definition != null && definition.isLoop()) com.fiskmods.heroes.common.sound.SHSounds.stopLoop(entity, id);
     }
 }
 

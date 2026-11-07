@@ -135,6 +135,12 @@ public final class HeroTracker
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(serverPlayer);
         }
 
+        if (previous != null && !player.level().isClientSide)
+        {
+            for (var entry : previous.getHero().getPowerContainer().getEntries())
+                com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(player, entry, "ENABLE");
+        }
+        data.getSoundStates().clear();
         data.setHero(current);
 
         // Suit-dependent states must not leak into a hero without the relevant power. In

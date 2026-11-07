@@ -134,7 +134,11 @@ public final class SHSounds
 
         if (definition != null)
         {
-            event = SoundEvent.createFixedRangeEvent(id, (float) definition.getRange());
+            // Definitions are aliases: e.g. vision_intang_on names the downloaded event
+            // suit.vision.intangibility.enable, not a sounds.json entry named vision_intang_on.
+            ResourceLocation sound = definition.getSound();
+            if (sound == null) return null;
+            event = SoundEvent.createFixedRangeEvent(sound, (float) definition.getRange());
         }
         else if (ForgeRegistries.SOUND_EVENTS.containsKey(id))
         {
@@ -169,8 +173,15 @@ public final class SHSounds
         }
 
         SoundDefinition definition = DEFINITIONS.get(id);
-        float volumeScale = definition != null ? definition.getVolume().getFloat(null, 1.0F) : 1.0F;
-        float pitchScale = definition != null ? definition.getPitch().getFloat(null, 1.0F) : 1.0F;
+        if (definition != null && !definition.getCondition().shouldStart(entity)) return;
+        if (definition != null && definition.isLoop())
+        {
+            send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), source,
+                    volume, pitch, true);
+            return;
+        }
+        float volumeScale = definition != null ? definition.getVolume().getFloat(entity, 1.0F) : 1.0F;
+        float pitchScale = definition != null ? definition.getPitch().getFloat(entity, 1.0F) : 1.0F;
 
         send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), source, volume * volumeScale, pitch * pitchScale, false);
     }
@@ -193,9 +204,10 @@ public final class SHSounds
         }
 
         SoundDefinition definition = DEFINITIONS.get(id);
+        if (definition != null && !definition.getCondition().shouldStart(entity)) return;
+        // The client loop evaluates volume and pitch every tick; do not multiply them twice.
         send(entity.level(), entity, id, entity.getX(), entity.getY(), entity.getZ(), SoundSource.PLAYERS,
-                definition != null ? definition.getVolume().getFloat(null, 1.0F) : 1.0F,
-                definition != null ? definition.getPitch().getFloat(null, 1.0F) : 1.0F, true);
+                1.0F, 1.0F, true);
     }
 
     /** Stops a looping sound previously started with {@link #playLoop}. */

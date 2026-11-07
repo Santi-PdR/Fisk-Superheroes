@@ -83,7 +83,7 @@ def main():
             xdo('keydown', 'w')
             time.sleep(3)
             xdo('keyup', 'w')
-            command('execute as @e[type=minecraft:marker,limit=1] at @s if entity @p[distance=..2.9] run say BEFORE_PHASE_BLOCKED')
+            command('execute as @e[type=minecraft:marker,limit=1] at @s positioned ~-3 ~-10 ~-2 if entity @p[dx=6,dy=20,dz=4] run say BEFORE_PHASE_BLOCKED')
             wait_for(r'\[CHAT\].*BEFORE_PHASE_BLOCKED', 30, 'wall blocks normal movement', process)
             xdo('keydown', 'v')
             time.sleep(0.3)
@@ -94,9 +94,13 @@ def main():
             xdo('keydown', 'w')
             time.sleep(5)
             xdo('keyup', 'w')
-            command('execute as @e[type=minecraft:marker,limit=1] at @s if entity @p[distance=4..] run say PHASE_CROSSED_WALL')
+            command('execute as @e[type=minecraft:marker,limit=1] at @s positioned ~-3 ~-10 ~4 if entity @p[dx=6,dy=20,dz=10] run say PHASE_CROSSED_WALL')
             wait_for(r'\[CHAT\].*PHASE_CROSSED_WALL', 45, 'client and server crossed the wall while phased', process)
+            wait_for(r'Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit\.vision\.intangibility\.enable',
+                     45, 'resolve Vision sound to its downloaded event', process)
             text = log.read_text(errors='replace')
+            if re.search(r'Unable to play (?:unknown|empty) soundEvent: fiskheroes:(?:vision_intang|suit\.vision\.intangibility|modifier\.flight\.cape|ambient\.flight)', text):
+                raise RuntimeError('Vision or flight sound event was missing from the downloaded pack')
             if re.search(r'#@!@# Game crashed|\[.*?/FATAL\]|Error ticking modifier|Error running hero tick handler', text):
                 raise RuntimeError('Client/server reported a crash or modifier error')
             print('PASS: client world smoke completed', flush=True)

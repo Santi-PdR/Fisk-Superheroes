@@ -261,7 +261,6 @@ class ModifierBlade extends Modifier
         boolean state = !entry.isToggled(entity);
         entry.setToggled(entity, state);
         data.getData().set(Vars.BLADE, state);
-        AbilityData.playSound(entity, entry, state ? "ENABLE" : "DISABLE");
     }
 
     @Override
@@ -297,7 +296,6 @@ class ModifierIntangibility extends Modifier
         entry.setToggled(entity, state);
         data.getData().set(Vars.INTANGIBLE, state);
         if (entity instanceof Player player) IntangibilityPhysics.update(player, data);
-        AbilityData.playSound(entity, entry, state ? "ENABLE" : "DISABLE");
     }
 
     @Override
@@ -478,7 +476,6 @@ class ModifierShadowform extends Modifier
         entry.setToggled(entity, state);
         data.getData().set(Vars.SHADOWFORM, state);
         data.getData().markDirty(Vars.SHADOWFORM);
-        AbilityData.playSound(entity, entry, state ? "ENABLE" : "DISABLE");
     }
 
     @Override
