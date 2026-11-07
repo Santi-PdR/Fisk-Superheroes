@@ -84,6 +84,44 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void antManGiantModeGrowsAndReturns(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:ant_man");
+        if (data == null || hero == null) { helper.fail("Ant-Man data missing"); return; }
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(2, 2, 2));
+        player.setPos(pos.getX() + 0.5D, 120.0D, pos.getZ() + 0.5D);
+        data.setHero(hero.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        var action = hero.getKeyBindFuncs().get("func_GIANT_MODE");
+        if (action == null) { helper.fail("Ant-Man's giant mode key is missing"); return; }
+        action.call(new com.fiskmods.heroes.pack.js.JSEntity(player), new com.fiskmods.heroes.pack.js.JSManager());
+        for (int i = 0; i < 12; ++i)
+        {
+            com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+            com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        }
+        var vars = data.getData();
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SCALE) - 5.0F) > 0.001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE) != 0
+                || Math.abs(player.getBbWidth() - 3.0F) > 0.001F
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER) - 1.0F) > 0.001F)
+        { helper.fail("Giant-mode callback must grow the player and complete its transformation"); return; }
+        action.call(new com.fiskmods.heroes.pack.js.JSEntity(player), new com.fiskmods.heroes.pack.js.JSManager());
+        for (int i = 0; i < 12; ++i)
+        {
+            com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+            com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        }
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SCALE) - 1.0F) > 0.001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE) != 0
+                || Math.abs(player.getBbWidth() - 0.6F) > 0.001F)
+        { helper.fail("Disabling giant mode must restore the normal size and collision width"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void sizeManipulationChangesPlayerDimensions(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
