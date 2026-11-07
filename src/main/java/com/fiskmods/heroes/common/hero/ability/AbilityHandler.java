@@ -327,7 +327,8 @@ public final class AbilityHandler
         }
 
         int cooldown = entry.getInt(player, PowerProperty.COOLDOWN_TIME);
-        if (cooldown > 0)
+        // Charged beams use COOLDOWN_TIME as their charge decay, not a key-down lockout.
+        if (cooldown > 0 && !"charged_beam".equals(entry.getModifier().getId().getPath()))
         {
             String cooldownKey = entry.getCard() + ":" + key;
             long now = player.level().getGameTime();

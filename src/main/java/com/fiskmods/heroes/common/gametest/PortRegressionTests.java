@@ -20,6 +20,49 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void chargedBeamUsesNormalizedAnimationAndCooldown(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-beam-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Vision or player data is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("charged_beam"));
+        if (entry == null) { helper.fail("Vision charged beam is missing"); return; }
+        int chargeTime = Math.max(1, entry.getInt(player, com.fiskmods.heroes.common.hero.power.PowerProperty.CHARGE_TIME));
+        int cooldownTime = Math.max(1, entry.getInt(player, com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME));
+        var vars = data.getData();
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+        for (int i = 0; i < chargeTime; ++i) entry.getModifier().tick(player, entry, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGE) - 1.0F) > 0.0001F)
+        { helper.fail("Beam charge must reach one after chargeTime ticks"); return; }
+        for (int i = 0; i < 4; ++i) entry.getModifier().tick(player, entry, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_SHOOTING) <= 0.0F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_SHOOTING_TIMER) <= 0.0F)
+        { helper.fail("A fully charged held beam must animate its firing phase"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+        entry.getModifier().tick(player, entry, data);
+        float cooling = vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGE);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGING)
+                || Math.abs(cooling - (1.0F - 1.0F / cooldownTime)) > 0.0001F)
+        { helper.fail("Releasing the beam must start normalized cooldown instead of erasing charge"); return; }
+        for (int i = 0; i < cooldownTime + 2; ++i) entry.getModifier().tick(player, entry, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGE) != 0.0F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.BEAM_SHOOTING_TIMER) != 0.0F)
+        { helper.fail("Beam animation and charge must finish cooling down"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void capeSegmentsAreContinuousAndHaveCorrectLength(GameTestHelper helper)
     {
         float length = 24.0F;

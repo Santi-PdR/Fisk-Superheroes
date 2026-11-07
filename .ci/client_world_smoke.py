@@ -165,6 +165,12 @@ def main():
                 xdo('keyup', 'v')
             wait_for(r'Shared suit arm pose applied: hero=fiskheroes:mysterio, sleeveAligned=true',
                      45, 'player skin and suit share the animated arm pose', process)
+            xdo('keydown', 'c')
+            try:
+                wait_for(r'Charged beam firing: entity=Dev, charge=1\.0', 60,
+                         'charged beam reaches its normalized firing phase', process)
+            finally:
+                xdo('keyup', 'c')
             # Cycle from third-person back through front view to first person.
             xdo('key', 'F5')
             time.sleep(1)

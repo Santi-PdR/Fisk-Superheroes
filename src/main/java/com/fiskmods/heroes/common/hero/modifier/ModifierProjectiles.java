@@ -532,30 +532,46 @@ class ModifierChargedBeam extends ModifierEnergyProjection
     public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
         data.getData().set(Vars.BEAM_CHARGING, false);
-        data.getData().set(Vars.BEAM_CHARGE, 0.0F);
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        int chargeTime = entry.getInt(entity, PowerProperty.CHARGE_TIME);
+        int chargeTime = Math.max(1, entry.getInt(entity, PowerProperty.CHARGE_TIME));
+        int cooldownTime = Math.max(1, entry.getInt(entity, PowerProperty.COOLDOWN_TIME));
+        int duration = Math.max(1, entry.getInt(entity, PowerProperty.DURATION));
         float charge = data.getData().get(Vars.BEAM_CHARGE);
+        boolean charging = data.getData().get(Vars.BEAM_CHARGING);
+        float shooting = data.getData().get(Vars.BEAM_SHOOTING);
+        boolean firing = charging && charge >= 1.0F && shooting < 1.0F;
 
-        if (data.getData().get(Vars.BEAM_CHARGING))
+        // Pack models and scripts consume normalized fractions, not elapsed ticks. Keep the
+        // timed shooting phase separate so its animation can run only after charging.
+        if (firing)
         {
-            charge = Math.min(chargeTime, charge + 1.0F);
-            data.getData().set(Vars.BEAM_CHARGE, charge);
-
-            if (charge >= chargeTime && entity.level() instanceof ServerLevel level)
-            {
-                int duration = entry.getInt(entity, PowerProperty.DURATION);
-
-                if (duration <= 0 || entity.tickCount % Math.max(1, duration / 8) == 0)
-                {
-                    fire(entity, entry, data, level, true);
-                }
-            }
+            if (shooting == 0.0F && entity.level() instanceof ServerLevel)
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Charged beam firing: entity={}, charge={}", entity.getName().getString(), charge);
+            if (entity.level() instanceof ServerLevel level
+                    && entity.tickCount % Math.max(1, duration / 8) == 0)
+                fire(entity, entry, data, level, true);
+            shooting = Math.min(1.0F, shooting + 1.0F / duration);
+            data.getData().set(Vars.BEAM_SHOOTING, shooting);
         }
+        else if (charging && charge >= 1.0F && shooting >= 1.0F)
+        {
+            charging = false;
+            data.getData().set(Vars.BEAM_CHARGING, false);
+        }
+        else if (!charging && shooting != 0.0F)
+        {
+            data.getData().set(Vars.BEAM_SHOOTING, 0.0F);
+        }
+
+        float step = 1.0F / (charging ? chargeTime : cooldownTime);
+        data.getData().set(Vars.BEAM_CHARGE, net.minecraft.util.Mth.approach(charge, charging ? 1.0F : 0.0F, step));
+        float timer = data.getData().get(Vars.BEAM_SHOOTING_TIMER);
+        data.getData().set(Vars.BEAM_SHOOTING_TIMER,
+                net.minecraft.util.Mth.approach(timer, firing ? 1.0F : 0.0F, 0.25F));
     }
 }
 
