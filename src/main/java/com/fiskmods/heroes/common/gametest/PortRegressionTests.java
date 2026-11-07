@@ -425,6 +425,19 @@ public final class PortRegressionTests
         if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile)
                 || Math.abs(target.getHealth() - 16.0F) > 0.01F || attacker.getHealth() != 20.0F)
         { helper.fail("Mixed projectile damage must retain its partial cactus immunity without retaliation"); return; }
+        var batman = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        if (batman == null) { helper.fail("Batman is missing"); return; }
+        data.setHero(batman.getDefaultIteration());
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        types.remove("CACTUS");
+        types.addProperty("BULLET", 1.0F);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        if (target.getHealth() != 20.0F)
+        { helper.fail("Batman's bullet immunity must block a bullet-typed projectile"); return; }
+        target.invulnerableTime = 0;
+        if (!target.hurt(source, 8.0F) || Math.abs(target.getHealth() - 12.0F) > 0.01F)
+        { helper.fail("Bullet immunity must not block an ordinary arrow"); return; }
         if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile() != null)
             helper.fail("Typed damage profile leaked beyond its scope");
         else helper.succeed();

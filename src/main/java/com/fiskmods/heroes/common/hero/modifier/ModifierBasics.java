@@ -440,7 +440,8 @@ class ModifierThorns extends Modifier
         // This also prevents recursive thorns-vs-thorns damage.
         if (!entity.level().isClientSide && source.getEntity() instanceof LivingEntity attacker && attacker != entity
                 && source.getDirectEntity() == attacker
-                && (source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)))
+                && (source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)
+                        || source.is(DamageTypes.MOB_ATTACK_NO_AGGRO) || source.is(DamageTypes.STING)))
         {
             float reflected = Math.max(originalAmount * entry.getFloat(entity, PowerProperty.FACTOR), 1.0F);
             com.google.gson.JsonElement profile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
