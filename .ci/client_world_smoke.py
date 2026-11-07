@@ -197,6 +197,11 @@ def main():
             wait_for(r'Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape\.png',
                      45, 'client renders Batman deployed cape texture', process)
             subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)
+            # A real block impact should be processed by the server, not just by the local
+            # player's collision prediction. A tall wall intersects the glide at any altitude.
+            command('fill ~-10 -64 ~5 ~10 319 ~5 minecraft:stone')
+            wait_for(r'Gliding wall impact: player=Dev, severity=[-+0-9.eE]+, stopped=true',
+                     45, 'server stops Batman after a real gliding wall impact', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

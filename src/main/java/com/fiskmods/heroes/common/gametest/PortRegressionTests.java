@@ -153,8 +153,7 @@ public final class PortRegressionTests
     @GameTest(template = "test_empty")
     public static void glidingWallCollisionStopsAndHurtsOnlyWhenConfigured(GameTestHelper helper)
     {
-        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-wall-flags"));
+        var player = helper.makeMockPlayer();
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
         var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
         var base = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("gliding")) : null;
@@ -187,15 +186,14 @@ public final class PortRegressionTests
         data.getData().set(active, true);
         com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.0D);
         if (!data.getData().get(active) || player.getHealth() >= 20.0F)
-        { helper.fail("The damage and stop options must operate independently"); return; }
+        { helper.fail("The damage and stop options must operate independently: gliding=" + data.getData().get(active) + ", health=" + player.getHealth()); return; }
         helper.succeed();
     }
 
     @GameTest(template = "test_empty")
     public static void glidingTravelDetectsActualWallImpact(GameTestHelper helper)
     {
-        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-wall-travel"));
+        var player = helper.makeMockPlayer();
         var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
         if (hero == null || data == null) { helper.fail("Batman is missing"); return; }
@@ -224,7 +222,7 @@ public final class PortRegressionTests
         player.travel(Vec3.ZERO);
         if (!player.horizontalCollision || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING)
                 || player.getHealth() >= 20.0F)
-        { helper.fail("Travel into a wall must apply Batman's configured impact and stop his glide"); return; }
+        { helper.fail("Batman wall: collision=" + player.horizontalCollision + ", gliding=" + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING) + ", health=" + player.getHealth() + ", motion=" + player.getDeltaMovement()); return; }
         helper.succeed();
     }
 

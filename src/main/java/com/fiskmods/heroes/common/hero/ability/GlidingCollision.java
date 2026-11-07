@@ -42,6 +42,8 @@ public final class GlidingCollision
                 stop(player, data, entry);
                 stop = true;
             }
+            FiskHeroes.LOGGER.info("Gliding wall impact: player={}, severity={}, stopped={}",
+                    player.getGameProfile().getName(), wallDamage, stop);
             AbilityData.playSound(player, entry, "IMPACT_BLOCK");
         }
 
