@@ -17,6 +17,8 @@ public class PacketInput extends SHPacket
     public static boolean lastSent;
     public static int lastForward;
     public static int lastStrafe;
+    // Separate from PlayerInputTracker: an integrated client and server share static fields.
+    private static final java.util.Map<java.util.UUID, Boolean> SERVER_JUMP = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final boolean jump;
     private final boolean sneak;
@@ -62,9 +64,28 @@ public class PacketInput extends SHPacket
     {
         ServerPlayer player = context.getSender();
 
-        if (player != null)
+        if (player != null) applyServerInput(player, jump, sneak, forward, strafe, use);
+    }
+
+    public static void applyServerInput(net.minecraft.world.entity.player.Player player, boolean jump, boolean sneak,
+            int forward, int strafe, boolean use)
+    {
+        boolean previousJump = Boolean.TRUE.equals(SERVER_JUMP.put(player.getUUID(), jump));
+        // The local player's jump runs client-side; consume the post-swing window on the server
+        // too, so a later authoritative data sync cannot bring it back.
+        if (jump && !previousJump)
         {
-            PlayerInputTracker.set(player, jump, sneak, forward, strafe, use);
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            if (data != null && data.getHeroType() != null
+                    && data.getHeroType().getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging"))
+                    && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING) < 5)
+                data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING, (short) 5);
         }
+        PlayerInputTracker.set(player, jump, sneak, forward, strafe, use);
+    }
+
+    public static void clearServerState(net.minecraft.world.entity.player.Player player)
+    {
+        SERVER_JUMP.remove(player.getUUID());
     }
 }

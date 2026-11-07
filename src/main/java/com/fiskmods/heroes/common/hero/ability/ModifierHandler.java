@@ -239,15 +239,26 @@ public final class ModifierHandler
             return;
         }
 
-        for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
+        float size = data.getData().get(Vars.SCALE);
+        float scale = size > 1.0F ? (float) Math.cbrt(size) : 1.0F;
+        if (entity.isSprinting())
         {
-            String path = entry.getModifier().getId().getPath();
-
-            if ("leaping".equals(path))
+            for (ModifierEntry entry : data.getHeroType().getPowerContainer().getEntries())
             {
-                com.fiskmods.heroes.common.hero.modifier.ModifierLeaping.onJump(entity, entry);
+                if ("leaping".equals(entry.getModifier().getId().getPath()) && entry.isEnabled()
+                        && entry.isModifierEnabled(entity, data))
+                {
+                    com.fiskmods.heroes.common.hero.modifier.ModifierLeaping.onJump(entity, entry, scale);
+                    break; // Cards such as springboard are alternatives, not cumulative boosts.
+                }
             }
         }
+        var attribute = entity.getAttribute(com.fiskmods.heroes.common.hero.attribute.SHAttributes.JUMP_HEIGHT.get());
+        double height = attribute != null ? attribute.getValue() : 1.0D;
+        entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.15D * (height - 1.0D) + 0.185D * (scale - 1.0D), 0));
+        if (data.getHeroType().getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging"))
+                && data.getData().get(Vars.TICKS_SINCE_SWINGING) < 5)
+            data.getData().set(Vars.TICKS_SINCE_SWINGING, (short) 5);
     }
 
     public static boolean hasModifier(Player player, String id)

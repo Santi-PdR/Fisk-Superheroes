@@ -94,6 +94,7 @@ public final class WebSwingHandler
         tag.putDouble(LENGTH, ropeLength);
         persistent.put(ANCHOR_TAG, tag);
 
+        data.getData().set(Vars.TICKS_SINCE_SWINGING, (short) 0);
         data.getData().set(Vars.WEB_RAPPEL, true);
         data.getData().set(Vars.WEB_ANCHOR_X, anchor.x);
         data.getData().set(Vars.WEB_ANCHOR_Y, anchor.y);
@@ -109,10 +110,12 @@ public final class WebSwingHandler
     public static void tick(ServerPlayer player)
     {
         var persistent = player.getPersistentData();
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        if (data != null) updateSwingTimer(player, data, persistent.contains(ANCHOR_TAG));
         if (!persistent.contains(ANCHOR_TAG)) return;
 
-        SHPlayerData data = SHDataCapabilities.getPlayer(player);
-        if (data == null || !data.getData().get(Vars.WEB_SWINGING) || player.isInWater()
+        if (data == null || data.getHero() == null || findSwingModifier(data.getHero(), player, data) == null
+                || !data.getData().get(Vars.WEB_SWINGING) || player.isInWater()
                 || !player.level().dimension().location().toString().equals(persistent.getCompound(ANCHOR_TAG).getString(DIMENSION)))
         {
             release(player, data);
@@ -170,6 +173,21 @@ public final class WebSwingHandler
         player.setDeltaMovement(velocity.subtract(radial.scale(correction)));
         player.hasImpulse = true;
         player.fallDistance = 0.0F;
+    }
+
+    /** Maintains the original short post-swing springboard window. */
+    public static void updateSwingTimer(net.minecraft.world.entity.player.Player player, SHPlayerData data, boolean attached)
+    {
+        if (data.getHeroType() == null || !data.getHeroType().getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging")))
+        {
+            data.getData().set(Vars.TICKS_SINCE_SWINGING, Short.MAX_VALUE);
+            return;
+        }
+        short elapsed = data.getData().get(Vars.TICKS_SINCE_SWINGING);
+        if (attached || !player.onGround() && elapsed == 0)
+            data.getData().set(Vars.TICKS_SINCE_SWINGING, (short) 0);
+        else if (elapsed < Short.MAX_VALUE)
+            data.getData().set(Vars.TICKS_SINCE_SWINGING, (short) (elapsed + 1));
     }
 
     public static void release(ServerPlayer player)

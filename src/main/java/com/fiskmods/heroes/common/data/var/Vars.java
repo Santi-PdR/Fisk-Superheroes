@@ -190,7 +190,7 @@ public final class Vars
     public static final DataVar<Short> TICKS_SINCE_GUNSHOT = register("ticks_since_gunshot", DataType.SHORT, (short) 0, false);
     public static final DataVar<Short> TICKS_SINCE_SHIELD_DAMAGED = register("ticks_since_shield_damaged", DataType.SHORT, (short) 0, false);
     public static final DataVar<Short> TICKS_SINCE_SPRINTING = register("ticks_since_sprinting", DataType.SHORT, (short) 0, false);
-    public static final DataVar<Short> TICKS_SINCE_SWINGING = register("ticks_since_swinging", DataType.SHORT, (short) 0, false);
+    public static final DataVar<Short> TICKS_SINCE_SWINGING = register("ticks_since_swinging", DataType.SHORT, Short.MAX_VALUE, false);
     public static final DataVar<Short> TICKS_SINCE_WEBSHOOT = register("ticks_since_webshoot", DataType.SHORT, (short) 0, false);
     public static final DataVar<Short> TIME_SINCE_DAMAGED = register("time_since_damaged", DataType.SHORT, (short) 0, false);
     public static final DataVar<Byte> TONFA_STATE = register("tonfa_state", DataType.BYTE, (byte) 0, false);

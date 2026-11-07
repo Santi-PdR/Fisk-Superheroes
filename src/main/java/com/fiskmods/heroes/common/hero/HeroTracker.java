@@ -170,6 +170,14 @@ public final class HeroTracker
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("shield"), false);
         }
 
+        if (!hasModifier(current, "web_swinging"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WEB_SWINGING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING, Short.MAX_VALUE);
+            if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
+                com.fiskmods.heroes.common.hero.ability.WebSwingHandler.release(serverPlayer);
+        }
+
         if (!hasModifier(current, "invisibility"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INVISIBLE, false);

@@ -505,6 +505,87 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void jumpingUsesHeroHeightAndActiveLeapCard(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || hero == null) { helper.fail("Spider-Man or player data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING, (short) 100);
+        player.setYRot(0);
+        player.setSprinting(false);
+        player.setDeltaMovement(0, 0.42D, 0);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.onJump(player);
+        if (Math.abs(player.getDeltaMovement().y - 0.795D) > 0.001D || player.getDeltaMovement().horizontalDistanceSqr() > 1e-8)
+        { helper.fail("Jump height applies even without sprinting, but sprint leap must not"); return; }
+        player.setSprinting(true);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 1, 0);
+        player.setDeltaMovement(0, 0.42D, 0);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.onJump(player);
+        if (Math.abs(player.getDeltaMovement().y - 1.045D) > 0.001D
+                || Math.abs(player.getDeltaMovement().z - 1.0D) > 0.001D)
+        { helper.fail("A sprinting normal leap must use the configured forward/up pair"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING, (short) 0);
+        player.setDeltaMovement(0, 0.42D, 0);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.onJump(player);
+        if (Math.abs(player.getDeltaMovement().y - 1.545D) > 0.001D
+                || Math.abs(player.getDeltaMovement().z - 2.0D) > 0.001D
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING) != 5)
+        { helper.fail("Post-swing jump must select only the springboard card and consume its window"); return; }
+        player.setDeltaMovement(0, 0.42D, 0);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.onJump(player);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        if (Math.abs(player.getDeltaMovement().y - 1.045D) > 0.001D
+                || Math.abs(player.getDeltaMovement().z - 1.0D) > 0.001D)
+            helper.fail("The springboard must not repeat after its window was consumed");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void swingTimerTracksAttachmentAndLanding(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || hero == null) { helper.fail("Spider-Man or player data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var timer = com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SWINGING;
+        if (data.getData().get(timer) != Short.MAX_VALUE)
+        { helper.fail("An unused web swing must not start in the springboard window"); return; }
+        player.setOnGround(false);
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.updateSwingTimer(player, data, true);
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.updateSwingTimer(player, data, false);
+        if (data.getData().get(timer) != 0)
+        { helper.fail("A released swing remains recent until landing or jumping"); return; }
+        player.setOnGround(true);
+        for (int i = 0; i < 5; ++i)
+            com.fiskmods.heroes.common.hero.ability.WebSwingHandler.updateSwingTimer(player, data, false);
+        if (data.getData().get(timer) != 5) { helper.fail("Landing must advance the springboard window"); return; }
+        data.getData().set(timer, (short) 0);
+        // Integrated clients and servers share PlayerInputTracker's static map.
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, true, false, 0, 0);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(timer) != 5)
+        { helper.fail("A server-side jump press must consume the springboard window even in singleplayer"); return; }
+        data.getData().set(timer, (short) 0);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(timer) != 0)
+        { helper.fail("Holding jump must not repeatedly consume the springboard window"); return; }
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(timer) != 5)
+        { helper.fail("A subsequent jump press must consume a new springboard window"); return; }
+        PacketInput.clearServerState(player);
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        data.setHero(null);
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.updateSwingTimer(player, data, false);
+        if (data.getData().get(timer) != Short.MAX_VALUE) helper.fail("Taking off the web-swing suit must clear its springboard state");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void waterBreathingReplenishesAirWithoutCreatingPotion(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

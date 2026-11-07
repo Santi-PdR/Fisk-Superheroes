@@ -1,19 +1,19 @@
 package com.fiskmods.heroes.common.hero.modifier;
 
+import com.fiskmods.heroes.common.data.PlayerInputTracker;
 import com.fiskmods.heroes.common.data.SHPlayerData;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Superhuman jumping. The pack script (or the hero's JUMP_HEIGHT attribute) declares the leap
- * amount; this modifier converts it into the jump impulse and keeps track of the airborne state so
- * that leaping does not cause fall damage.
- */
+/** Sprint leaps use the original power's horizontal/vertical impulse pair. */
 public class ModifierLeaping extends Modifier
 {
     public ModifierLeaping(ResourceLocation id)
@@ -21,33 +21,29 @@ public class ModifierLeaping extends Modifier
         super(id);
     }
 
-    @Override
-    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    public static void onJump(LivingEntity entity, ModifierEntry entry, float scale)
     {
-        boolean gliding = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING);
-        float timer = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER);
-
-        if (gliding && !entity.onGround())
+        if (!entity.isSprinting()) return;
+        JsonElement configured = entry.get(entity, PowerProperty.LEAP_AMOUNT);
+        JsonArray leap = configured != null && configured.isJsonArray() ? configured.getAsJsonArray() : null;
+        float forward = component(leap, 0, 1.5F);
+        float up = component(leap, 1, 0.2F);
+        float sideways = entity.xxa;
+        float ahead = entity.zza;
+        if (entity instanceof Player player && !entity.level().isClientSide)
         {
-            // Counts how long the wearer has been gliding; the HUD and the renderer animate off it
-            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, Math.min(200.0F, timer + 1.0F));
+            sideways = PlayerInputTracker.strafe(player);
+            ahead = PlayerInputTracker.forward(player);
         }
-        else if (timer != 0.0F)
-        {
-            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING_TIMER, 0.0F);
-        }
+        entity.moveRelative(forward * scale, new Vec3(sideways, 0, ahead));
+        entity.setDeltaMovement(entity.getDeltaMovement().add(0, up * scale, 0));
+        entity.hasImpulse = true;
+        if (!entity.level().isClientSide) AbilityData.playSound(entity, entry, "LEAP");
     }
 
-    /** Jump impulse hook, invoked from the jump event. */
-    public static void onJump(LivingEntity entity, ModifierEntry entry)
+    private static float component(JsonArray values, int index, float fallback)
     {
-        float leap = entry.getFloat(entity, PowerProperty.AMOUNT);
-
-        if (leap != 0)
-        {
-            Vec3 motion = entity.getDeltaMovement();
-            entity.setDeltaMovement(motion.x, motion.y + 0.2D * leap, motion.z);
-            entity.hasImpulse = true;
-        }
+        return values != null && values.size() > index && values.get(index).isJsonPrimitive()
+                && values.get(index).getAsJsonPrimitive().isNumber() ? values.get(index).getAsFloat() : fallback;
     }
 }
