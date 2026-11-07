@@ -39,7 +39,7 @@ public final class SHSoundRepository
     private static final String DEFAULT_REPOSITORY = "FiskFille/Superheroes";
     private static final int DEFAULT_VERSION = 3;
 
-    private static Path root;
+    private static volatile Path root;
     private static volatile boolean downloading;
     private static volatile boolean ready;
     private static final Map<String, String> INDEX = new LinkedHashMap<>();
@@ -82,6 +82,7 @@ public final class SHSoundRepository
 
         if (!Files.isRegularFile(indexFile))
         {
+            ready = false;
             return;
         }
 
@@ -109,14 +110,15 @@ public final class SHSoundRepository
             ready = !INDEX.isEmpty() && Files.isDirectory(soundPackDir);
             FiskHeroes.LOGGER.info("FiskHeroes sound repository: {} cached sounds", INDEX.size());
         }
-        catch (IOException e)
+        catch (IOException | RuntimeException e)
         {
-            FiskHeroes.LOGGER.warn("Could not read the cached sound index", e);
+            ready = false;
+            FiskHeroes.LOGGER.warn("Could not read the cached sound index; it will be downloaded again", e);
         }
     }
 
     /** Downloads the repository in the background when it is not cached yet. */
-    public static void downloadIfMissing(String repository, int version)
+    public static synchronized void downloadIfMissing(String repository, int version)
     {
         loadCached();
         if (ready || downloading) return;
@@ -151,25 +153,28 @@ public final class SHSoundRepository
         String url = "https://raw.githubusercontent.com/" + repository + "/master/sounds/" + version + ".zip";
         FiskHeroes.LOGGER.info("Downloading the FiskHeroes sound repository ({})", url);
 
-        HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
-        HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
-        HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temp));
+        try
+        {
+            HttpClient client = HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build();
+            HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+            HttpResponse<Path> response = client.send(request, HttpResponse.BodyHandlers.ofFile(temp));
+            if (response.statusCode() / 100 != 2) throw new IOException("HTTP " + response.statusCode());
 
-        if (response.statusCode() / 100 != 2)
+            synchronized (SHSoundRepository.class)
+            {
+                // An interrupted replacement must not leave a stale cache marked ready.
+                Files.deleteIfExists(root().resolve("sound-events.json"));
+                extract(temp, dir);
+                writeIndex(dir);
+                loadCached();
+            }
+            FiskHeroes.LOGGER.info("FiskHeroes sound repository ready: {} sounds", INDEX.size());
+            net.minecraft.client.Minecraft.getInstance().execute(SHSoundPack::refresh);
+        }
+        finally
         {
             Files.deleteIfExists(temp);
-            throw new IOException("HTTP " + response.statusCode());
         }
-
-        synchronized (SHSoundRepository.class)
-        {
-            extract(temp, dir);
-            Files.deleteIfExists(temp);
-            writeIndex(dir);
-            loadCached();
-        }
-        FiskHeroes.LOGGER.info("FiskHeroes sound repository ready: {} sounds", INDEX.size());
-        net.minecraft.client.Minecraft.getInstance().execute(SHSoundPack::refresh);
     }
 
     /** Extracts the archive, keeping only the audio files and flattening the folder layout. */

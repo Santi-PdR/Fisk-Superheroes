@@ -53,6 +53,11 @@ jobs:
           world['Data']['GameType'] = nbtlib.Int(1)
           world.save()
           PY
+      - name: Seed a legacy sound cache for migration
+        run: |
+          mkdir -p run/fiskheroes_sounds/pack/assets/fiskheroes/sounds
+          echo 'fiskheroes:old.filename=old/filename.ogg' > run/fiskheroes_sounds/sounds.index
+          echo '{"old.filename":{"sounds":["old/filename"]}}' > run/fiskheroes_sounds/pack/assets/fiskheroes/sounds.json
       - name: Exercise Flash and Vision in a real client world
         run: xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/client_world_smoke.py
       - name: Upload world screenshot for visual inspection

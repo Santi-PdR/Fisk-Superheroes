@@ -99,6 +99,8 @@ def main():
             wait_for(r'Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit\.vision\.intangibility\.enable',
                      45, 'resolve Vision sound to its downloaded event', process)
             text = log.read_text(errors='replace')
+            if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
+                raise RuntimeError('Legacy sound cache was not migrated from the original archive')
             if re.search(r'Unable to play (?:unknown|empty) soundEvent: fiskheroes:(?:vision_intang|suit\.vision\.intangibility|modifier\.flight\.cape|ambient\.flight)', text):
                 raise RuntimeError('Vision or flight sound event was missing from the downloaded pack')
             if re.search(r'#@!@# Game crashed|\[.*?/FATAL\]|Error ticking modifier|Error running hero tick handler', text):
