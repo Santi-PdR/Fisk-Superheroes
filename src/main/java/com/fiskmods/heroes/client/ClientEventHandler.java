@@ -63,6 +63,14 @@ public class ClientEventHandler
             abilityClickMode = !abilityClickMode;
             if (abilityClickMode)
             {
+                // The released cursor owns left clicks. Clear any attack held before F6,
+                // since its later mouse-up will be consumed by click mode.
+                mc.options.keyAttack.setDown(false);
+                if (attackKeyDown)
+                {
+                    attackKeyDown = false;
+                    syncAbilityInput(mc.player, -1);
+                }
                 mc.mouseHandler.releaseMouse();
                 mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.translatable(
                         "hud.fiskheroes.ability_click_mode.enabled"), false);
@@ -74,7 +82,7 @@ public class ClientEventHandler
                 mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.translatable(
                         "hud.fiskheroes.ability_click_mode.disabled"), false);
             }
-            event.setCanceled(true);
+            // InputEvent.Key is a notification, not a cancelable Forge event.
             return;
         }
 
