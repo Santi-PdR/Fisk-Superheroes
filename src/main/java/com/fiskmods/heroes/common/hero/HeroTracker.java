@@ -161,6 +161,15 @@ public final class HeroTracker
             com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.release(player, data);
         }
 
+        if (!hasModifier(current, "shield"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING_TIMER, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("shield"), false);
+        }
+
         if (!hasModifier(current, "invisibility"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INVISIBLE, false);

@@ -177,10 +177,9 @@ class ModifierShield extends Modifier
         {
             data.getData().set(Vars.SHIELD, true);
             data.getData().set(Vars.SHIELD_BLOCKING, true);
-            data.getData().set(Vars.SHIELD_COOLDOWN, (short) 10);
         }
 
-        AbilityData.playSound(entity, entry, "BLOCK_START");
+        AbilityData.playSound(entity, entry, data.getData().get(Vars.SHIELD_BLOCKING) ? "BLOCK_START" : "BLOCK_STOP");
     }
 
     @Override
@@ -190,7 +189,7 @@ class ModifierShield extends Modifier
         {
             data.getData().set(Vars.SHIELD, false);
             data.getData().set(Vars.SHIELD_BLOCKING, false);
-            data.getData().set(Vars.SHIELD_COOLDOWN, (short) 20);
+            AbilityData.playSound(entity, entry, "BLOCK_STOP");
         }
     }
 
@@ -198,53 +197,70 @@ class ModifierShield extends Modifier
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        if (data == null || !data.getData().get(Vars.SHIELD) || !data.getData().get(Vars.SHIELD_BLOCKING)
+                || data.getData().get(Vars.SHIELD_COOLDOWN) > 0 || amount <= 0
+                || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)) return false;
+        var direct = source.getDirectEntity();
+        if (direct == null) return false;
 
-        if (data == null || !data.getData().get(Vars.SHIELD))
+        JsonObject coverage = AbilityData.object(entry.get(entity, PowerProperty.COVERAGE));
+        double dx = direct.getX() - entity.getX();
+        double dy = direct.getY() + direct.getBbHeight() * 0.5D - entity.getEyeY();
+        double dz = direct.getZ() - entity.getZ();
+        float yaw = (float) Math.toDegrees(Math.atan2(dz, dx)) - 90.0F;
+        float pitch = -(float) Math.toDegrees(Math.atan2(dy, Math.sqrt(dx * dx + dz * dz)));
+        float dyaw = Math.abs(net.minecraft.util.Mth.wrapDegrees(yaw - entity.getYRot() + number(coverage, "yawOffset", 0)));
+        float dpitch = Math.abs(net.minecraft.util.Mth.wrapDegrees(pitch - entity.getXRot() + number(coverage, "pitchOffset", 0)));
+        if (dyaw >= number(coverage, "yawRadius", 35) || dpitch >= number(coverage, "pitchRadius", 35)) return false;
+
+        JsonObject shield = AbilityData.object(entry.get(entity, PowerProperty.SHIELD));
+        float maximum = number(shield, "health", shield == null ? 80 : 100);
+        float damage = data.getData().get(Vars.SHIELD_DAMAGE) + amount;
+        data.getData().set(Vars.SHIELD_DAMAGE, damage);
+        data.getData().set(Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) 0);
+        boolean broken = damage >= maximum;
+        if (broken) data.getData().set(Vars.SHIELD_COOLDOWN,
+                (short) Math.max(0, Math.min(Short.MAX_VALUE, (int) number(shield, "cooldown", 100))));
+        if (!entity.level().isClientSide) AbilityData.playSound(entity, entry, broken ? "DISARM" : "DEFLECT");
+        if (source.getEntity() instanceof LivingEntity attacker && direct == attacker && attacker != entity)
         {
-            return false;
+            float knockback = entry.getFloat(entity, PowerProperty.KNOCKBACK);
+            if (broken) knockback = Math.max(knockback * 1.5F, 0.3F);
+            if (knockback > 0) attacker.knockback(Math.min(amount, 20) * knockback,
+                    entity.getX() - attacker.getX(), entity.getZ() - attacker.getZ());
         }
+        // As in the original, the hit which breaks the shield is not absorbed.
+        return !broken;
+    }
 
-        JsonObject shield = AbilityData.object(entry.get(PowerProperty.SHIELD));
-        float health = shield != null && shield.has("health") ? shield.get("health").getAsFloat() : 100.0F;
-
-        // The shield absorbs the hit from the data pool and reflects it
-        // The shield keeps a health pool: absorbing a hit draws from it and the pool refills at
-        // the rate the power declares. The pool is stored in the data variable the original used.
-        short current = data.getData().get(Vars.SHIELD_COOLDOWN);
-        double incoming = amount * 10.0D;
-        double remaining = health - incoming;
-
-        if (remaining > 0)
-        {
-            data.getData().set(Vars.SHIELD_COOLDOWN, (short) Math.max(current, Math.round(health - remaining)));
-            AbilityData.playSound(entity, entry, "DEFLECT");
-            return true;
-        }
-
-        return false;
+    private static float number(JsonObject object, String key, float fallback)
+    {
+        return object != null && object.has(key) && object.get(key).isJsonPrimitive()
+                && object.get(key).getAsJsonPrimitive().isNumber() ? object.get(key).getAsFloat() : fallback;
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float blocking = data.getData().get(Vars.SHIELD_BLOCKING_TIMER);
-        float nextBlocking = net.minecraft.util.Mth.approach(blocking,
-                data.getData().get(Vars.SHIELD_BLOCKING) ? 1.0F : 0.0F, 0.2F);
-        if (nextBlocking != blocking)
+        var vars = data.getData();
+        vars.set(Vars.SHIELD_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_TIMER),
+                vars.get(Vars.SHIELD) ? 1.0F : 0.0F, 0.1F));
+        vars.set(Vars.SHIELD_BLOCKING_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_BLOCKING_TIMER),
+                vars.get(Vars.SHIELD_BLOCKING) && vars.get(Vars.SHIELD_COOLDOWN) == 0 ? 1.0F : 0.0F, 0.2F));
+        short elapsed = vars.get(Vars.TICKS_SINCE_SHIELD_DAMAGED);
+        if (elapsed < Short.MAX_VALUE) vars.set(Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) (elapsed + 1));
+        short cooldown = vars.get(Vars.SHIELD_COOLDOWN);
+        if (cooldown > 0) vars.set(Vars.SHIELD_COOLDOWN, (short) (cooldown - 1));
+        else
         {
-            data.getData().set(Vars.SHIELD_BLOCKING_TIMER, nextBlocking);
-        }
-
-        JsonObject shield = AbilityData.object(entry.get(PowerProperty.SHIELD));
-        int cooldown = shield != null && shield.has("cooldown") ? shield.get("cooldown").getAsInt() : 60;
-
-        short value = data.getData().get(Vars.SHIELD_COOLDOWN);
-
-        if (value > 0)
-        {
-            data.getData().set(Vars.SHIELD_COOLDOWN, (short) Math.max(0.0D, value - (110.0D / Math.max(1, cooldown))));
+            JsonObject shield = AbilityData.object(entry.get(entity, PowerProperty.SHIELD));
+            int delay = (int) number(shield, "recoveryDelay", 20);
+            float regeneration = number(shield, "regeneration", 10);
+            if (elapsed > delay && vars.get(Vars.SHIELD_DAMAGE) > 0)
+                vars.set(Vars.SHIELD_DAMAGE, Math.max(0, vars.get(Vars.SHIELD_DAMAGE) - Math.max(0, regeneration) / 20.0F));
         }
     }
+
 }
 
 /** Plasma blades and claws. */

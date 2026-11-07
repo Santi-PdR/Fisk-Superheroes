@@ -550,6 +550,50 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void suitShieldUsesCoverageHealthAndRecovery(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var vars = data.getData();
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.SHIELD;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        var shield = com.google.gson.JsonParser.parseString("""
+                {"health":10,"regeneration":20,"recoveryDelay":2,"cooldown":3}
+                """);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.SHIELD, shield);
+        player.setYRot(0);
+        player.setXRot(0);
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * 0.5D, player.getZ() + 2);
+        var source = player.damageSources().playerAttack(attacker);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHIELD, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING, true);
+        if (modifier.isImmuneTo(player, entry, player.damageSources().lava(), 4))
+        { helper.fail("A shield must not block sourceless environmental damage"); return; }
+        attacker.setPos(player.getX(), attacker.getY(), player.getZ() - 2);
+        if (modifier.isImmuneTo(player, entry, source, 4))
+        { helper.fail("A frontal shield must not block attacks from behind"); return; }
+        attacker.setPos(player.getX(), attacker.getY(), player.getZ() + 2);
+        if (!modifier.isImmuneTo(player, entry, source, 4)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 4.0F)
+        { helper.fail("A frontal hit must be absorbed and accumulate damage"); return; }
+        if (modifier.isImmuneTo(player, entry, source, 6)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 3)
+        { helper.fail("A hit that breaks the shield must pass through and start its cooldown"); return; }
+        if (modifier.isImmuneTo(player, entry, source, 1))
+        { helper.fail("A shield on cooldown must not block"); return; }
+        for (int i = 0; i < 3; ++i) modifier.tick(player, entry, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 0
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 10.0F)
+        { helper.fail("Shield cooldown must decrement in ticks without regenerating during cooldown"); return; }
+        modifier.tick(player, entry, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) - 9.0F) > 0.01F)
+            helper.fail("Shield damage must recover at its configured per-second rate after the delay");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void intangibilityRespectsItsDamageModes(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
