@@ -618,13 +618,50 @@ public final class PortRegressionTests
         { helper.fail("A hit that breaks the shield must pass through and start its cooldown"); return; }
         if (modifier.isImmuneTo(player, entry, source, 1))
         { helper.fail("A shield on cooldown must not block"); return; }
-        for (int i = 0; i < 3; ++i) modifier.tick(player, entry, data);
+        for (int i = 0; i < 3; ++i)
+            com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tickState(data, shield.getAsJsonObject());
         if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 0
                 || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 10.0F)
         { helper.fail("Shield cooldown must decrement in ticks without regenerating during cooldown"); return; }
-        modifier.tick(player, entry, data);
+        com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tickState(data, shield.getAsJsonObject());
         if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) - 9.0F) > 0.01F)
             helper.fail("Shield damage must recover at its configured per-second rate after the delay");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldCooldownContinuesWithoutTheSuit(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:guardian");
+        if (data == null || hero == null) { helper.fail("Guardian or player data missing"); return; }
+        for (int slot = 0; slot < 4; ++slot)
+        {
+            var item = com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                    com.fiskmods.heroes.common.item.ModItems.heroArmor[slot]);
+            player.setItemSlot(new net.minecraft.world.entity.EquipmentSlot[] {
+                    net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                    net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET }[slot], item);
+        }
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE, 10.0F);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN, (short) 2);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 1)
+        { helper.fail("A worn shield cooldown must tick exactly once"); return; }
+        for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET})
+            player.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+        if (data.getHero() != null || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 0
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 10.0F)
+        { helper.fail("Removing the suit must not freeze or skip the shield cooldown"); return; }
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tick(player);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) - 9.5F) > 0.001F)
+            helper.fail("An inactive shield must recover with the default rate even without a suit");
         else helper.succeed();
     }
 

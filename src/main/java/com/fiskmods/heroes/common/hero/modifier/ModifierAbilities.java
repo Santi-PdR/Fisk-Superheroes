@@ -252,18 +252,6 @@ class ModifierShield extends Modifier
                 vars.get(Vars.SHIELD) ? 1.0F : 0.0F, 0.1F));
         vars.set(Vars.SHIELD_BLOCKING_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_BLOCKING_TIMER),
                 vars.get(Vars.SHIELD_BLOCKING) && vars.get(Vars.SHIELD_COOLDOWN) == 0 ? 1.0F : 0.0F, 0.2F));
-        short elapsed = vars.get(Vars.TICKS_SINCE_SHIELD_DAMAGED);
-        if (elapsed < Short.MAX_VALUE) vars.set(Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) (elapsed + 1));
-        short cooldown = vars.get(Vars.SHIELD_COOLDOWN);
-        if (cooldown > 0) vars.set(Vars.SHIELD_COOLDOWN, (short) (cooldown - 1));
-        else
-        {
-            JsonObject shield = AbilityData.object(entry.get(entity, PowerProperty.SHIELD));
-            int delay = (int) number(shield, "recoveryDelay", 20);
-            float regeneration = number(shield, "regeneration", 10);
-            if (elapsed > delay && vars.get(Vars.SHIELD_DAMAGE) > 0)
-                vars.set(Vars.SHIELD_DAMAGE, Math.max(0, vars.get(Vars.SHIELD_DAMAGE) - Math.max(0, regeneration) / 20.0F));
-        }
     }
 
 }

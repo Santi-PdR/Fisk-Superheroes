@@ -29,6 +29,8 @@ public final class ModifierHandler
         }
 
         HeroTracker.update(entity);
+        if (!entity.level().isClientSide)
+            com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tick(entity, data);
         if (entity instanceof Player player)
             com.fiskmods.heroes.common.hero.modifier.InvisibilityState.update(player, data);
 
