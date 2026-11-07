@@ -180,11 +180,14 @@ def main():
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
             command('gamemode survival')
-            command('tp @s ~ 190 ~')
+            command('tp @s ~ 300 ~')
             xdo('key', 'F5')  # Third-person rear view.
             time.sleep(1)
-            xdo('key', 'space')
-            wait_for(r'Gliding input: player=Dev, active=true', 45, 'falling jump activates Batman glide', process)
+            xdo('keydown', 'space')
+            try:
+                wait_for(r'Gliding input: player=Dev, active=true', 45, 'falling jump activates Batman glide', process)
+            finally:
+                xdo('keyup', 'space')
             wait_for(r'Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape\.png',
                      45, 'client renders Batman deployed cape texture', process)
             subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)

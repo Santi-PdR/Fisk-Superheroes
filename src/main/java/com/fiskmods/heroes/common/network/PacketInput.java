@@ -75,7 +75,6 @@ public class PacketInput extends SHPacket
         // too, so a later authoritative data sync cannot bring it back.
         if (jump && !previousJump)
         {
-            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
             com.fiskmods.heroes.common.hero.ability.GlidingInputHandler.onJumpPressed(player);
             var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
             if (data != null && data.getHeroType() != null
