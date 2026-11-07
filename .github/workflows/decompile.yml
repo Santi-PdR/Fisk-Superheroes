@@ -41,6 +41,7 @@ jobs:
             echo "$name.txt: $(stat -c %s ".ci/reference/$name.txt") bytes" >> .ci/decompile-log.txt
           }
           dump common_core out/com/fiskmods/heroes/common/hero out/com/fiskmods/heroes/common/data out/com/fiskmods/heroes/common/spell
+          dump shield_events out/com/fiskmods/heroes/common/shield out/com/fiskmods/heroes/common/event out/com/fiskmods/heroes/asm
           dump common_world out/com/fiskmods/heroes/common/entity out/com/fiskmods/heroes/common/item out/com/fiskmods/heroes/common/block out/com/fiskmods/heroes/common/tileentity out/com/fiskmods/heroes/common/world out/com/fiskmods/heroes/common/network
           dump client_render out/com/fiskmods/heroes/client/render out/com/fiskmods/heroes/client/model out/com/fiskmods/heroes/client/animation out/com/fiskmods/heroes/client/particle out/com/fiskmods/heroes/client/texture
           dump client_misc out/com/fiskmods/heroes/client/gui out/com/fiskmods/heroes/client/hud out/com/fiskmods/heroes/client/keybinds out/com/fiskmods/heroes/client/sound out/com/fiskmods/heroes/client/pack
