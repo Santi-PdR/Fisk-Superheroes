@@ -505,6 +505,53 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void velocityNineDisintegratesTheUserNotTheTerrain(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:trajectory");
+        if (data == null || hero == null) { helper.fail("Trajectory or player data missing"); return; }
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("speed_disintegration"));
+        if (entry == null || entry.getFloat(player, com.fiskmods.heroes.common.hero.power.PowerProperty.FACTOR) != 30.0F)
+        { helper.fail("Velocity Nine must load its 30 metre disintegration factor"); return; }
+        data.setHero(hero.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SPEEDING, true);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SPEED, (byte) 5);
+        if (!entry.isModifierEnabled(player, data))
+        { helper.fail("Trajectory's disintegration must activate at high speed"); return; }
+        player.getAbilities().invulnerable = false;
+        player.setHealth(20.0F);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE));
+        var block = new net.minecraft.core.BlockPos(1, 1, 1);
+        helper.setBlock(block, net.minecraft.world.level.block.Blocks.OAK_PLANKS);
+        var pos = helper.absolutePos(block);
+        player.setPos(pos.getX(), pos.getY(), pos.getZ());
+        player.setDeltaMovement(1.0D, 0.25D, 0.5D);
+        var motion = player.getDeltaMovement();
+        var mod = entry.getModifier();
+        mod.tick(player, entry, data);
+        for (int i = 0; i < 3; ++i)
+        {
+            ++player.tickCount;
+            player.setPos(player.getX() + 11.0D, player.getY(), player.getZ());
+            mod.tick(player, entry, data);
+        }
+        if (Math.abs(player.getHealth() - 19.0F) > 0.001F || !player.getDeltaMovement().equals(motion))
+        { helper.fail("Fast movement must inflict armor-bypassing self-damage without changing motion"); return; }
+        if (!helper.getLevel().getBlockState(helper.absolutePos(block)).is(net.minecraft.world.level.block.Blocks.OAK_PLANKS))
+        { helper.fail("Speed disintegration must not destroy nearby blocks"); return; }
+        player.tickCount += 2;
+        player.setPos(player.getX() + 100.0D, player.getY(), player.getZ());
+        mod.tick(player, entry, data);
+        if (Math.abs(player.getHealth() - 19.0F) > 0.001F)
+        { helper.fail("Movement while the modifier was inactive must not be charged later"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SPEED, (byte) 4);
+        if (entry.isModifierEnabled(player, data)) helper.fail("Trajectory's lower speeds must not disintegrate the user");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void projectileDurabilityOnlyBlocksBulletsAndArrows(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

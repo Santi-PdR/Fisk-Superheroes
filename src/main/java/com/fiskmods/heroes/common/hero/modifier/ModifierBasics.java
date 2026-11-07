@@ -619,9 +619,21 @@ class ModifierSpiderSense extends Modifier
     }
 }
 
-/** Speedsters tear apart what they run into. */
+/** Unstable speed powers injure the user after sufficiently rapid movement. */
 class ModifierSpeedDisintegration extends Modifier
 {
+    private static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> DAMAGE_TYPE =
+            net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    new ResourceLocation("fiskheroes", "disintegrate"));
+    private final java.util.Map<LivingEntity, State> states = new java.util.WeakHashMap<>();
+
+    private static final class State
+    {
+        Vec3 position;
+        float distance;
+        int tick;
+    }
+
     ModifierSpeedDisintegration(ResourceLocation id)
     {
         super(id);
@@ -630,27 +642,45 @@ class ModifierSpeedDisintegration extends Modifier
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!(entity instanceof Player player) || player.level().isClientSide || !data.getData().get(Vars.SPEEDING))
+        if (entity.level().isClientSide) return;
+        State state = states.computeIfAbsent(entity, ignored -> new State());
+        Vec3 current = entity.position();
+        // ModifierHandler skips disabled modifiers. Never count movement while the power was
+        // suppressed, a different suit was worn, or the entity was unloaded.
+        if (state.position == null || state.tick != entity.tickCount - 1)
         {
+            state.position = current;
+            state.distance = 0;
+            state.tick = entity.tickCount;
+            return;
+        }
+        double moved = current.distanceTo(state.position);
+        state.position = current;
+        state.tick = entity.tickCount;
+        float factor = entry.getFloat(entity, PowerProperty.FACTOR);
+        if (!Float.isFinite(factor) || factor <= 0 || !Double.isFinite(moved))
+        {
+            state.distance = 0;
             return;
         }
 
-        if (player.getDeltaMovement().horizontalDistanceSqr() < 0.6D)
+        // The original subtracts one metre of accumulated movement per tick, so normal walking
+        // remains safe. The factor gives metres per point of self-damage; it does not break blocks.
+        // Bound work for pathological teleports or malformed custom factors instead of leaving
+        // an effectively infinite damage backlog on an invulnerable player.
+        double distance = Math.min(state.distance + moved, (double) factor * 64.0D);
+        int hits = (int) Math.floor(distance / factor);
+        distance -= hits * (double) factor;
+        state.distance = (float) Math.min(Float.MAX_VALUE, Math.max(0.0D, distance - 1.0D));
+        if (hits == 0) return;
+        var source = new net.minecraft.world.damagesource.DamageSource(entity.level().registryAccess()
+                .registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE).getHolderOrThrow(DAMAGE_TYPE));
+        Vec3 motion = entity.getDeltaMovement();
+        for (int i = 0; i < hits && entity.isAlive(); ++i)
         {
-            return;
-        }
-
-        net.minecraft.core.BlockPos origin = player.blockPosition();
-
-        for (int i = 0; i < 6; ++i)
-        {
-            net.minecraft.core.BlockPos pos = origin.offset(player.getRandom().nextInt(3) - 1, player.getRandom().nextInt(2), player.getRandom().nextInt(3) - 1);
-            net.minecraft.world.level.block.state.BlockState state = player.level().getBlockState(pos);
-
-            if (!state.isAir() && state.getDestroySpeed(player.level(), pos) >= 0 && state.getDestroySpeed(player.level(), pos) < 1.0F)
-            {
-                player.level().destroyBlock(pos, false, player);
-            }
+            entity.invulnerableTime = 0;
+            entity.hurt(source, 1.0F);
+            entity.setDeltaMovement(motion);
         }
     }
 }

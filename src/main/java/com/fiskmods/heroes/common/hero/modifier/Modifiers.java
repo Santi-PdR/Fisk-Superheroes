@@ -296,7 +296,8 @@ public final class Modifiers
                 .addProperty(PowerProperty.KEY, "SHIELD_THROW")
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));
-        SPEED_DISINTEGRATION = registry.register(new ModifierSpeedDisintegration(new ResourceLocation(FiskHeroes.MODID, "speed_disintegration")));
+        SPEED_DISINTEGRATION = registry.register(new ModifierSpeedDisintegration(new ResourceLocation(FiskHeroes.MODID, "speed_disintegration"))
+                .addProperty(PowerProperty.FACTOR, 0.25F));
         WALL_CRAWLING = registry.register(new ModifierWallCrawling(new ResourceLocation(FiskHeroes.MODID, "wall_crawling")));
         SPIDER_SENSE = registry.register(new ModifierSpiderSense(new ResourceLocation(FiskHeroes.MODID, "spider_sense")));
         TENTACLES = registry.register(new ModifierTentacles(new ResourceLocation(FiskHeroes.MODID, "tentacles"))
