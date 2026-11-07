@@ -1957,4 +1957,42 @@ public final class PortRegressionTests
         else helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void abilityHudLayoutFitsAndHitboxesDoNotOverlap(GameTestHelper helper)
+    {
+        for (int width : new int[] { 160, 320, 640 })
+        {
+            for (int height : new int[] { 80, 120, 240, 480 })
+            {
+                for (int count : new int[] { 0, 1, 5, 10 })
+                {
+                    var widths = new java.util.ArrayList<Integer>();
+                    for (int i = 0; i < count; ++i) widths.add(i % 2 == 0 ? 90 : 180);
+                    var layout = com.fiskmods.heroes.common.util.SuitHudLayout.calculate(width, height, widths);
+                    if (layout.rows().size() != count || layout.titleY() < 0)
+                    { helper.fail("HUD omitted rows or placed its title offscreen"); return; }
+                    for (int i = 0; i < count; ++i)
+                    {
+                        var a = layout.rows().get(i);
+                        if (a.x() < 0 || a.y() < 0 || a.x() + a.width() > width || a.y() + a.height() > height
+                                || a.y() < layout.titleY() + 10 || !a.contains(a.x() + 0.5D, a.y() + 0.5D))
+                        { helper.fail("HUD row out of bounds at " + width + "x" + height + ": " + a); return; }
+                        for (int j = i + 1; j < count; ++j)
+                        {
+                            var b = layout.rows().get(j);
+                            if (a.x() < b.x() + b.width() && b.x() < a.x() + a.width()
+                                    && a.y() < b.y() + b.height() && b.y() < a.y() + a.height())
+                            { helper.fail("HUD rows overlap at " + width + "x" + height); return; }
+                        }
+                    }
+                    if (height >= 120)
+                        for (var row : layout.rows())
+                            if (row.y() + row.height() > height - 60)
+                            { helper.fail("HUD overlaps the reserved vanilla bottom area"); return; }
+                }
+            }
+        }
+        helper.succeed();
+    }
+
 }

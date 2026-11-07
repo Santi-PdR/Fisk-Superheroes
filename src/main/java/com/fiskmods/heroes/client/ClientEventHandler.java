@@ -40,6 +40,9 @@ public class ClientEventHandler
     private static boolean abilityClickMode;
     private static long nextGunShotTick = Long.MIN_VALUE;
     private static int hudAbilityHeld = Integer.MIN_VALUE;
+    // One effective input per index, regardless of how many physical/HUD sources hold it.
+    private static final boolean[] sentAbilityInputs = new boolean[17]; // indices -1..15
+
     private static final boolean[] spellDirectionDown = new boolean[4];
     private static final StringBuilder spellSequence = new StringBuilder();
     private static boolean spellMenuWasDown;
@@ -66,6 +69,7 @@ public class ClientEventHandler
             }
             else
             {
+                releaseHudAbility(mc.player);
                 mc.mouseHandler.grabMouse();
                 mc.gui.setOverlayMessage(net.minecraft.network.chat.Component.translatable(
                         "hud.fiskheroes.ability_click_mode.disabled"), false);
@@ -171,6 +175,7 @@ public class ClientEventHandler
         if (player == null)
         {
             java.util.Arrays.fill(abilityKeysDown, false);
+            java.util.Arrays.fill(sentAbilityInputs, false);
             maskKeyDown = false;
             attackKeyDown = false;
             abilityClickMode = false;
@@ -188,7 +193,11 @@ public class ClientEventHandler
 
         Minecraft mc = Minecraft.getInstance();
         // Vanilla GUI screens own the pointer while open and re-capture it when they close.
-        if (mc.screen != null) abilityClickMode = false;
+        if (mc.screen != null)
+        {
+            abilityClickMode = false;
+            releaseHudAbility(player);
+        }
         updateSpellInput(mc, player);
         for (int i = 0; i < SHKeyBinds.ABILITY_COUNT; ++i)
         {
@@ -198,13 +207,12 @@ public class ClientEventHandler
 
         // In the original mod, key index -1 means the player's primary attack input. Several
         // packs bind AIM/SHOOT to this input rather than one of the five suit keys.
-        boolean attackDown = mc.screen == null && mc.options.keyAttack.isDown();
-        AbilityHandler.setClientKeyState(player, -1, attackDown);
+        boolean attackDown = mc.screen == null && !abilityClickMode && mc.options.keyAttack.isDown();
+        AbilityHandler.setClientKeyState(player, -1, attackDown || hudAbilityHeld == -1);
         if (attackDown != attackKeyDown)
         {
             attackKeyDown = attackDown;
-            SHNetwork.sendToServer(new PacketAbility(-1, attackDown));
-
+            syncAbilityInput(player, -1);
         }
 
         // Firearms shoot from primary attack input. Send an explicit request so the server can
@@ -222,7 +230,7 @@ public class ClientEventHandler
         if (maskDown != maskKeyDown)
         {
             maskKeyDown = maskDown;
-            SHNetwork.sendToServer(new PacketAbility(0, maskDown));
+            syncAbilityInput(player, 0);
         }
 
         if (mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)
@@ -281,6 +289,27 @@ public class ClientEventHandler
 
         abilityKeysDown[ability] = down;
         int index = ABILITY_INDICES[ability];
+        syncAbilityInput(player, index);
+    }
+
+    private static void releaseHudAbility(LocalPlayer player)
+    {
+        if (hudAbilityHeld == Integer.MIN_VALUE) return;
+        int index = hudAbilityHeld;
+        hudAbilityHeld = Integer.MIN_VALUE;
+        syncAbilityInput(player, index);
+    }
+
+    /** Combine sources before sending a transition, so releasing one doesn't release another. */
+    private static void syncAbilityInput(LocalPlayer player, int index)
+    {
+        if (index < -1 || index >= 16) return;
+        boolean physical = index == -1 ? attackKeyDown : index == 0 ? maskKeyDown
+                : index <= abilityKeysDown.length && abilityKeysDown[index - 1];
+        boolean down = physical || hudAbilityHeld == index;
+        int slot = index + 1;
+        if (sentAbilityInputs[slot] == down) return;
+        sentAbilityInputs[slot] = down;
         setAbilityInput(player, index, down);
     }
 
@@ -288,6 +317,7 @@ public class ClientEventHandler
     private static void setAbilityInput(LocalPlayer player, int index, boolean down)
     {
         AbilityHandler.setClientKeyState(player, index, down);
+        com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Ability input transition: index={}, pressed={}", index, down);
         if (down)
         {
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Ability input sent from client: index={}", index);
@@ -391,31 +421,27 @@ public class ClientEventHandler
     {
         Minecraft mc = Minecraft.getInstance();
 
-        // The original HUD presents these rows as controls. Let a click on a row trigger the same
-        // server-validated keybind as its displayed keyboard key, including AIM (-1).
-        if (mc.player != null && event.getButton() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1)
+        // The mouse is captured in normal gameplay; its stale raw coordinates must never
+        // activate a HUD row. Click mode releases the cursor and owns left clicks instead.
+        if (mc.player != null && event.getButton() == org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1 && abilityClickMode)
         {
             if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS && mc.screen == null)
             {
-                // Convert MouseHandler's raw window coordinates the same way vanilla converts
-                // them before dispatching clicks to screens. getWidth()/getHeight() are framebuffer
-                // dimensions and produce a shifted hit position on HiDPI or scaled displays.
                 double x = mc.mouseHandler.xpos() * mc.getWindow().getGuiScaledWidth() / mc.getWindow().getScreenWidth();
                 double y = mc.mouseHandler.ypos() * mc.getWindow().getGuiScaledHeight() / mc.getWindow().getScreenHeight();
                 int index = SuitHud.findKeyBindAt(x, y);
-                if (index != Integer.MIN_VALUE && index >= -1 && index < 16)
+                if (index >= -1 && index < 16)
                 {
+                    releaseHudAbility(mc.player);
                     hudAbilityHeld = index;
-                    setAbilityInput(mc.player, index, true);
-                    event.setCanceled(true);
-                    return;
+                    syncAbilityInput(mc.player, index);
                 }
+                event.setCanceled(true);
+                return;
             }
-            else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE && hudAbilityHeld != Integer.MIN_VALUE)
+            if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE)
             {
-                int index = hudAbilityHeld;
-                hudAbilityHeld = Integer.MIN_VALUE;
-                setAbilityInput(mc.player, index, false);
+                releaseHudAbility(mc.player);
                 event.setCanceled(true);
                 return;
             }
@@ -427,8 +453,7 @@ public class ClientEventHandler
             if (down != attackKeyDown)
             {
                 attackKeyDown = down;
-                AbilityHandler.setClientKeyState(mc.player, -1, down);
-                SHNetwork.sendToServer(new PacketAbility(-1, down));
+                syncAbilityInput(mc.player, -1);
             }
             if (down) requestGunShot(mc.player);
         }

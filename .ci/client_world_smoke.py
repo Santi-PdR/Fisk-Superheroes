@@ -237,6 +237,62 @@ def main():
             command('execute if data entity @e[type=minecraft:iron_golem,tag=fisk_melee_smoke,limit=1] {Health:84.5f} run say CROSSBONES_CHARGED_HIT_OK')
             wait_for(r'\[CHAT\].*CROSSBONES_CHARGED_HIT_OK', 45,
                      'real client charged punch deals the 15.5 damage profile', process)
+            # A five-control suit used to extend below the screen and overlap the hotbar.
+            # Read the same geometry used by the renderer and click hit testing, then use F6
+            # and click the third row to activate intangibility on the server.
+            command('suit fiskheroes:martian_manhunter_comics')
+            wait_for(r'Ability HUD layout: hero=fiskheroes:martian_manhunter_comics, screen=',
+                     45, 'five-row ability HUD layout', process)
+            hud = re.search(r'Ability HUD layout: hero=fiskheroes:martian_manhunter_comics, screen=(\d+)x(\d+), titleY=(\d+), rows=\[(.*)\]',
+                            log.read_text(errors='replace'))
+            if not hud:
+                raise RuntimeError('Missing ability HUD geometry')
+            gui_width, gui_height, title_y = map(int, hud.group(1, 2, 3))
+            rects = [tuple(map(int, values)) for values in re.findall(
+                r'Rect\[x=(\d+), y=(\d+), width=(\d+), height=(\d+)\]', hud.group(4))]
+            if len(rects) != 5:
+                raise RuntimeError(f'Expected five ability controls, got {rects}')
+            for x, y, w, h in rects:
+                if x < 0 or y <= title_y or x + w > gui_width or y + h > gui_height - 60:
+                    raise RuntimeError(f'Ability HUD row out of bounds or over the hotbar: {(x, y, w, h)}')
+            for i, a in enumerate(rects):
+                for b in rects[i + 1:]:
+                    if a[0] < b[0] + b[2] and b[0] < a[0] + a[2] and a[1] < b[1] + b[3] and b[1] < a[1] + a[3]:
+                        raise RuntimeError(f'Ability HUD rows overlap: {a}, {b}')
+            geometry = subprocess.check_output(['xdotool', 'getwindowgeometry', '--shell', window], text=True, timeout=30)
+            dimensions = dict(line.split('=', 1) for line in geometry.splitlines() if '=' in line)
+            win_width, win_height = int(dimensions['WIDTH']), int(dimensions['HEIGHT'])
+            x, y, w, h = rects[2]
+            xdo('key', 'F6')
+            time.sleep(1)
+            xdo('mousemove', '--window', window, str(int((x + w / 2) * win_width / gui_width)),
+                str(int((y + h / 2) * win_height / gui_height)))
+            xdo('mousedown', '1')
+            time.sleep(0.4)
+            xdo('mouseup', '1')
+            wait_for(r'Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY',
+                     45, 'click third ability row and activate intangibility', process)
+            # Holding B and the same HUD control at once must not send an early release
+            # when the mouse is released. Only the final B release ends the combined input.
+            transition = r'Ability input transition: index=3, pressed=(true|false)'
+            before = len(re.findall(transition, log.read_text(errors='replace')))
+            xdo('keydown', 'b')
+            time.sleep(2)
+            xdo('mousedown', '1')
+            time.sleep(0.5)
+            xdo('mouseup', '1')
+            time.sleep(2)
+            during = re.findall(transition, log.read_text(errors='replace'))[before:]
+            if during != ['true']:
+                raise RuntimeError(f'Overlapping keyboard/HUD holds emitted wrong transitions: {during}')
+            xdo('keyup', 'b')
+            wait_for(r'Ability input transition: index=3, pressed=false', 45,
+                     'ability key release is delivered', process)
+            time.sleep(1)
+            after = re.findall(transition, log.read_text(errors='replace'))[before:]
+            if after != ['true', 'false']:
+                raise RuntimeError(f'Combined input did not release exactly once: {after}')
+            xdo('key', 'F6')
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
