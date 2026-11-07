@@ -98,6 +98,18 @@ def main():
             wait_for(r'\[CHAT\].*PHASE_CROSSED_WALL', 45, 'client and server crossed the wall while phased', process)
             wait_for(r'Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit\.vision\.intangibility\.enable',
                      45, 'resolve Vision sound to its downloaded event', process)
+            # Guardian deploys a toggle shield with C; right click controls blocking separately.
+            command('suit fiskheroes:guardian')
+            wait_for(r'\[CHAT\] Equipped Guardian|\[Dev: Equipped Guardian', 45, 'equip Guardian', process)
+            xdo('key', 'c')
+            wait_for(r'Ability modifier executed: hero=fiskheroes:guardian, key=SHIELD', 45,
+                     'deploy Guardian shield', process)
+            xdo('mousedown', '3')
+            wait_for(r'Suit shield blocking changed: entity=Dev, blocking=true', 45,
+                     'use key raises the shield on the server', process)
+            xdo('mouseup', '3')
+            wait_for(r'Suit shield blocking changed: entity=Dev, blocking=false', 45,
+                     'releasing use lowers the shield on the server', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

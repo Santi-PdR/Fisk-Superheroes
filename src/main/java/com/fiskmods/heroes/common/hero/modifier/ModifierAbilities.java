@@ -244,7 +244,10 @@ class ModifierShield extends Modifier
         boolean blocking = vars.get(Vars.SHIELD) && wantsBlock && vars.get(Vars.SHIELD_COOLDOWN) == 0;
         vars.set(Vars.SHIELD_BLOCKING, blocking);
         if (blocking != previousBlocking && !entity.level().isClientSide)
+        {
+            com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Suit shield blocking changed: entity={}, blocking={}", entity.getName().getString(), blocking);
             AbilityData.playSound(entity, entry, blocking ? "BLOCK_START" : "BLOCK_STOP");
+        }
         vars.set(Vars.SHIELD_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_TIMER),
                 vars.get(Vars.SHIELD) ? 1.0F : 0.0F, 0.1F));
         vars.set(Vars.SHIELD_BLOCKING_TIMER, net.minecraft.util.Mth.approach(vars.get(Vars.SHIELD_BLOCKING_TIMER),
