@@ -133,7 +133,7 @@ class ModifierWeakness extends Modifier
     }
 }
 
-/** Immunity to projectiles; absolute immunity also blocks explosions and area effects. */
+/** Durability deflects bullets and arrows, except projectiles that can pierce it. */
 class ModifierProjectileImmunity extends Modifier
 {
     ModifierProjectileImmunity(ResourceLocation id)
@@ -144,17 +144,16 @@ class ModifierProjectileImmunity extends Modifier
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
-        if (source.is(DamageTypeTags.IS_PROJECTILE))
-        {
-            if (source.getDirectEntity() instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity arrow
-                    && arrow.canPierceDurability(entity))
-            {
-                return false;
-            }
-            return true;
-        }
+        var direct = source.getDirectEntity();
+        if (direct instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity arrow
+                && arrow.canPierceDurability(entity)) return false;
 
-        return entry.getBoolean(entity, PowerProperty.IS_ABSOLUTE) && (source.is(DamageTypeTags.IS_EXPLOSION) || source.getDirectEntity() == null);
+        boolean bullet = DamageGroups.profileHasType("BULLET") || DamageGroups.matchesDeclared(source, "BULLET");
+        boolean arrow = source.is(DamageTypeTags.IS_PROJECTILE)
+                && direct instanceof net.minecraft.world.entity.projectile.AbstractArrow;
+        if (!bullet && !arrow) return false;
+        if (!entity.level().isClientSide) AbilityData.playSound(entity, entry, "DEFLECT");
+        return true;
     }
 }
 
@@ -171,26 +170,9 @@ class ModifierArrowCatching extends Modifier
     {
         if (!(source.getDirectEntity() instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow)
                 || !canCatch(entity, arrow)) return false;
-        return catchArrow(entity, arrow);
-    }
-
-    @Override
-    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
-    {
-        if (entity.level().isClientSide || entity.tickCount % 5 != 0)
-        {
-            return;
-        }
-
-        for (net.minecraft.world.entity.Entity projectile : entity.level().getEntities(entity, entity.getBoundingBox().inflate(1.5D)))
-        {
-            if (projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && canCatch(entity, arrow))
-            {
-                if (catchArrow(entity, arrow))
-                    entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ITEM_PICKUP,
-                            net.minecraft.sounds.SoundSource.PLAYERS, 0.6F, 1.4F);
-            }
-        }
+        if (!catchArrow(entity, arrow)) return false;
+        if (!entity.level().isClientSide) AbilityData.playSound(entity, entry, "CATCH");
+        return true;
     }
 
     private static boolean canCatch(LivingEntity entity, net.minecraft.world.entity.projectile.AbstractArrow arrow)

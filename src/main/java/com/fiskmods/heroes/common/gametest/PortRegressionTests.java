@@ -505,6 +505,51 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void projectileDurabilityOnlyBlocksBulletsAndArrows(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.PROJECTILE_IMMUNITY;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.IS_ABSOLUTE, true);
+        var arrow = new net.minecraft.world.entity.projectile.Arrow(helper.getLevel(), attacker);
+        var snowball = new net.minecraft.world.entity.projectile.Snowball(helper.getLevel(), attacker);
+        var piercing = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), helper.getLevel(), attacker, "vibranium");
+        if (!modifier.isImmuneTo(player, entry, player.damageSources().arrow(arrow, attacker), 8)
+                || modifier.isImmuneTo(player, entry, player.damageSources().arrow(piercing, attacker), 8)
+                || modifier.isImmuneTo(player, entry, player.damageSources().thrown(snowball, attacker), 8)
+                || modifier.isImmuneTo(player, entry, player.damageSources().lava(), 8)
+                || modifier.isImmuneTo(player, entry, player.damageSources().explosion(attacker, attacker), 8))
+        { helper.fail("Durability must deflect arrows but not piercing arrows, other projectiles or environmental damage"); return; }
+        boolean[] blocked = { false };
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(java.util.Map.of("BULLET", 1.0D),
+                () -> blocked[0] = modifier.isImmuneTo(player, entry, player.damageSources().generic(), 8));
+        if (!blocked[0]) helper.fail("Durability must deflect bullet-typed hits even without a vanilla projectile entity");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void arrowCatchingWaitsForAHit(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.ARROW_CATCHING;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        var arrow = new net.minecraft.world.entity.projectile.Arrow(helper.getLevel(), attacker);
+        var pos = player.getEyePosition().add(player.getLookAngle());
+        arrow.setPos(pos.x, pos.y - arrow.getBbHeight() * 0.5D, pos.z);
+        helper.getLevel().addFreshEntity(arrow);
+        modifier.tick(player, entry, com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player));
+        if (arrow.isRemoved() || !player.getMainHandItem().isEmpty())
+        { helper.fail("An arrow merely passing nearby must not be caught"); return; }
+        if (!modifier.isImmuneTo(player, entry, player.damageSources().arrow(arrow, attacker), 8)
+                || !arrow.isRemoved() || !player.getMainHandItem().is(net.minecraft.world.item.Items.ARROW))
+            helper.fail("A looked-at arrow must be caught on impact when the main hand is empty");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void intangibilityRespectsItsDamageModes(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
