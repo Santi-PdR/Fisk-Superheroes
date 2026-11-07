@@ -98,7 +98,8 @@ public final class SuitIteratorMenu extends AbstractContainerMenu
         HeroIteration current = getCurrentIteration();
         if (current == null) return;
         Hero hero = current.getHero();
-        HeroIteration target = hero.getIteration(iterationKey);
+        HeroIteration target = iterationKey == null || iterationKey.isEmpty()
+                ? hero.getDefaultIteration() : hero.findIteration(iterationKey).orElse(null);
         if (target == null) return;
 
         // Reject the whole change if any inserted piece does not exist in the target

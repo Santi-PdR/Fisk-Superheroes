@@ -30,6 +30,44 @@ public final class MachineGameTests
     private MachineGameTests() {}
 
     @GameTest(template = "test_empty")
+    public static void suitIteratorChangesVersionsWithoutPartialOrUnknownChanges(GameTestHelper helper)
+    {
+        var hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        var other = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (hero == null || other == null || hero.findIteration("aou").isEmpty())
+        { helper.fail("Suit iterations missing"); return; }
+        var player = helper.makeMockPlayer();
+        var menu = new com.fiskmods.heroes.common.block.SuitIteratorMenu(1, player.getInventory(), BlockPos.ZERO);
+        for (int i = 0; i < 4; ++i)
+        {
+            var piece = ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[i]);
+            piece.getOrCreateTag().putString("IteratorTestTag", "preserved");
+            menu.armorInput.setItem(i, piece);
+        }
+        menu.applyIteration("aou");
+        var target = hero.findIteration("aou").orElseThrow();
+        for (int i = 0; i < 4; ++i)
+        {
+            var piece = menu.armorInput.getItem(i);
+            if (ItemHeroArmor.getHero(piece) != target || !"preserved".equals(piece.getTag().getString("IteratorTestTag")))
+            { helper.fail("Every piece must change to the selected version without losing its data"); return; }
+        }
+        menu.applyIteration("not_a_real_version");
+        if (ItemHeroArmor.getHero(menu.armorInput.getItem(0)) != target)
+        { helper.fail("Unknown version must not silently select the default"); return; }
+        menu.armorInput.setItem(0, ItemHeroArmor.create(other.getDefaultIteration(), ModItems.heroArmor[0]));
+        menu.applyIteration("");
+        if (ItemHeroArmor.getHero(menu.armorInput.getItem(1)) != target)
+        { helper.fail("Mixed heroes must not change part of a suit"); return; }
+        menu.armorInput.setItem(0, ItemHeroArmor.create(target, ModItems.heroArmor[0]));
+        menu.applyIteration("");
+        for (int i = 0; i < 4; ++i)
+            if (ItemHeroArmor.getHero(menu.armorInput.getItem(i)) != hero.getDefaultIteration())
+            { helper.fail("Empty version key must restore the default for all pieces"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void alloySmelteryConsumesIngredientsAndFuel(GameTestHelper helper)
     {
         BlockPos relative = new BlockPos(1, 1, 1);

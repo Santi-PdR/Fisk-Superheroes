@@ -112,7 +112,7 @@ public final class SuitIteratorScreen extends AbstractContainerScreen<SuitIterat
                 {
                     HeroIteration chosen = list.get(idx);
                     String key = chosen.getKey() != null ? chosen.getKey() : "";
-                    menu.applyIteration(key);
+                    // Only the server mutates inventory. Its slot update confirms the selection.
                     SHNetwork.sendToServer(new PacketSuitIteration(key));
                     Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
                     return true;
