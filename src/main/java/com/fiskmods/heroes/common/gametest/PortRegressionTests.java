@@ -505,6 +505,29 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void waterBreathingReplenishesAirWithoutCreatingPotion(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.WATER_BREATHING;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        player.setAirSupply(7);
+        modifier.tick(player, entry, data);
+        if (player.getAirSupply() != player.getMaxAirSupply()
+                || player.hasEffect(net.minecraft.world.effect.MobEffects.WATER_BREATHING))
+        { helper.fail("The suit must restore air without manufacturing a potion effect"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                net.minecraft.world.effect.MobEffects.WATER_BREATHING, 5, 1));
+        player.setAirSupply(-5);
+        modifier.tick(player, entry, data);
+        var external = player.getEffect(net.minecraft.world.effect.MobEffects.WATER_BREATHING);
+        if (player.getAirSupply() != player.getMaxAirSupply() || external == null
+                || external.getDuration() != 5 || external.getAmplifier() != 1)
+            helper.fail("The suit must preserve independent water-breathing potions without extending them");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void velocityNineDisintegratesTheUserNotTheTerrain(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
