@@ -61,6 +61,10 @@ public final class GlidingTravel
         }
         player.setDeltaMovement(motion);
         player.move(MoverType.SELF, motion);
+        if (player.horizontalCollision || player.tickCount % 20 == 0)
+            FiskHeroes.LOGGER.debug("Gliding travel diagnostic: player={}, side={}, pos={}, before={}, after={}, collision={}",
+                    player.getGameProfile().getName(), player.level().isClientSide ? "client" : "server",
+                    player.position(), before, player.getDeltaMovement(), player.horizontalCollision);
         GlidingCollision.apply(player, data, entry, horizontalSpeed);
         return true;
     }

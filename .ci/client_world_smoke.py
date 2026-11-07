@@ -180,6 +180,7 @@ def main():
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
             command('gamemode survival')
+            command('fill ~-10 -64 ~20 ~10 319 ~20 minecraft:stone')
             command('tp @s ~ 300 ~ 0 0')
             xdo('key', 'F5')  # Third-person rear view.
             time.sleep(1)
@@ -198,8 +199,7 @@ def main():
                      45, 'client renders Batman deployed cape texture', process)
             subprocess.run(['scrot', 'ci-batman-cape-screenshot.jpg'], check=True, timeout=30)
             # A real block impact should be processed by the server, not just by the local
-            # player's collision prediction. A tall wall intersects the glide at any altitude.
-            command('fill ~-10 -64 ~5 ~10 319 ~5 minecraft:stone')
+            # player's collision prediction. The wall was built before starting the glide.
             wait_for(r'Gliding wall impact: player=Dev, severity=[-+0-9.eE]+, stopped=true',
                      45, 'server stops Batman after a real gliding wall impact', process)
             text = log.read_text(errors='replace')
