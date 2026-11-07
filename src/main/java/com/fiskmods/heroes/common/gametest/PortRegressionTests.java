@@ -151,6 +151,117 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void glidingWallCollisionStopsAndHurtsOnlyWhenConfigured(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-wall-flags"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        var base = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("gliding")) : null;
+        if (data == null || base == null) { helper.fail("Gliding collision data is missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(base.getModifier(), null);
+        var property = com.fiskmods.heroes.common.hero.power.PowerProperty.COLLISION;
+        var active = com.fiskmods.heroes.common.data.var.Vars.GLIDING;
+        var config = com.google.gson.JsonParser.parseString("""
+                {"blocks":{"stopFlying":true,"takeDamage":false},"entities":{"dealDamage":false}}
+                """);
+        entry.setProperty(property, config);
+        if (entry.get(property) == null || !entry.get(property).isJsonObject()
+                || !com.fiskmods.heroes.common.hero.ability.GlidingCollision.flag(null, "blocks", "stopFlying"))
+        { helper.fail("Collision objects and their default flags must be retained"); return; }
+        player.getAbilities().invulnerable = false;
+        player.setHealth(20.0F);
+        player.horizontalCollision = true;
+        player.setDeltaMovement(0, 0, 0);
+        data.getData().set(active, true);
+        entry.setToggled(player, true);
+        com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 0.2D);
+        if (!data.getData().get(active) || player.getHealth() != 20.0F)
+        { helper.fail("A glancing collision below the speed threshold must not stop or hurt"); return; }
+        com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.0D);
+        if (data.getData().get(active) || entry.isToggled(player) || player.getHealth() != 20.0F)
+        { helper.fail("A hard impact must stop flight without damage when the pack disables it"); return; }
+        entry.setProperty(property, com.google.gson.JsonParser.parseString("""
+                {"blocks":{"stopFlying":false,"takeDamage":true},"entities":{"dealDamage":false}}
+                """));
+        data.getData().set(active, true);
+        com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.0D);
+        if (!data.getData().get(active) || player.getHealth() >= 20.0F)
+        { helper.fail("The damage and stop options must operate independently"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void glidingTravelDetectsActualWallImpact(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-wall-travel"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Batman is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("gliding"));
+        if (entry == null || entry.get(com.fiskmods.heroes.common.hero.power.PowerProperty.COLLISION) == null)
+        { helper.fail("Batman collision configuration was not loaded from the pack"); return; }
+        helper.setBlock(new net.minecraft.core.BlockPos(1, 8, 2), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(new net.minecraft.core.BlockPos(1, 9, 2), net.minecraft.world.level.block.Blocks.STONE);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 8, 1));
+        player.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        player.setOnGround(false);
+        player.getAbilities().invulnerable = false;
+        player.setHealth(20.0F);
+        player.setYRot(0); player.setXRot(0);
+        player.setDeltaMovement(0, 0, 1.2D);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, true);
+        entry.setToggled(player, true);
+        player.travel(Vec3.ZERO);
+        if (!player.horizontalCollision || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING)
+                || player.getHealth() >= 20.0F)
+        { helper.fail("Travel into a wall must apply Batman's configured impact and stop his glide"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void glidingEntityImpactDamagesKnocksBackAndStops(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-entity-impact"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        var base = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("gliding")) : null;
+        if (data == null || base == null) { helper.fail("Gliding collision data is missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(base.getModifier(), null);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 8, 1));
+        player.setPos(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5);
+        var target = net.minecraft.world.entity.EntityType.COW.create(helper.getLevel());
+        if (target == null) { helper.fail("Could not create target"); return; }
+        target.setPos(player.getX(), player.getY(), player.getZ() + 0.8D);
+        helper.getLevel().addFreshEntity(target);
+        try
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, true);
+            player.setDeltaMovement(0, 0, 0.2D);
+            com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 0.2D);
+            if (target.getHealth() != target.getMaxHealth() || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+            { helper.fail("A slow pass must not damage or stop flight"); return; }
+            player.setDeltaMovement(0, 0, 1.2D);
+            com.fiskmods.heroes.common.hero.ability.GlidingCollision.apply(player, data, entry, 1.2D);
+            if (target.getHealth() >= target.getMaxHealth() || target.getDeltaMovement().z <= 0.0D
+                    || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GLIDING))
+            { helper.fail("A fast entity impact must damage, knock back and stop the glide"); return; }
+        }
+        finally { target.discard(); }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void glidingTravelUsesPitchStallAndPoweredBoost(GameTestHelper helper)
     {
         var horizontalLook = new Vec3(0, 0, 1);

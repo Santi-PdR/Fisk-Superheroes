@@ -217,7 +217,10 @@ public final class Modifiers
                 .addProperty(PowerProperty.IS_INSTANT, true)
                 .addProperty(PowerProperty.IS_TOGGLE, true));
         GLIDING = registry.register(new ModifierGliding(new ResourceLocation(FiskHeroes.MODID, "gliding"))
-                .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.GLIDING);
+                .addProperty(PowerProperty.IS_TOGGLE, true)
+                .addProperty(PowerProperty.CAN_JUMP_ACTIVATE, true)
+                .addProperty(PowerProperty.BOOST_SPEED, 0.1F)
+                .addProperty(PowerProperty.KNOCKBACK, 0.75F)).setSoundState(Vars.GLIDING);
         TELEPORTATION = registry.register(new ModifierTeleportation(new ResourceLocation(FiskHeroes.MODID, "teleportation"))
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 20));

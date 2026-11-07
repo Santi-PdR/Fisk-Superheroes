@@ -42,11 +42,17 @@ public final class GlidingTravel
         double gravity = number(config, "gravity", 1.0D);
         double stall = number(config, "stall", 0.0D);
         Vec3 before = player.getDeltaMovement();
-        double horizontalSpeed = Math.sqrt(before.x * before.x + before.z * before.z);
-        double effectiveGravity = gravity * (1.0D + stall * (1.0D - Math.min(horizontalSpeed / 2.0D, 1.0D)));
+        Vec3 look = player.getLookAngle();
+        boolean boost = powered && player.isSprinting();
+        double boostSpeed = entry.getFloat(player, PowerProperty.BOOST_SPEED);
+        double pitch = Math.toRadians(player.getXRot());
+        double thrust = boost ? boostSpeed + (pitch < 0.0D ? (1.0D - Math.cos(pitch)) * 0.1D : 0.0D) : 0.0D;
+        double boostFactor = boost ? 0.98D : 1.0D;
+        double horizontalSpeed = Math.hypot(before.x * boostFactor + look.x * thrust,
+                before.z * boostFactor + look.z * thrust);
+        double effectiveGravity = gravity * (1.0D + Math.max(0.0D, stall) * (1.0D - Math.min(horizontalSpeed / 2.0D, 1.0D)));
         if (before.y > -0.5D * effectiveGravity) player.fallDistance = 0.0F;
-        Vec3 motion = step(before, player.getLookAngle(), player.getXRot(), speed, lift, gravity, stall,
-                powered && player.isSprinting(), entry.getFloat(player, PowerProperty.BOOST_SPEED));
+        Vec3 motion = step(before, look, player.getXRot(), speed, lift, gravity, stall, boost, boostSpeed);
         if (player.level().isClientSide && !loggedClientTravel)
         {
             loggedClientTravel = true;
@@ -55,6 +61,7 @@ public final class GlidingTravel
         }
         player.setDeltaMovement(motion);
         player.move(MoverType.SELF, motion);
+        GlidingCollision.apply(player, data, entry, horizontalSpeed);
         return true;
     }
 
