@@ -13,6 +13,12 @@ public final class DamageGroups
 {
     private static final ThreadLocal<java.util.Map<String, Double>> DAMAGE_PROFILE = new ThreadLocal<>();
 
+    /** The currently scoped attack profile, or null for an untyped vanilla hit. */
+    public static java.util.Map<String, Double> currentDamageProfile()
+    {
+        return DAMAGE_PROFILE.get();
+    }
+
     public static void useDamageProfile(java.util.Map<String, Double> profile)
     {
         if (profile == null || profile.isEmpty())
@@ -206,6 +212,22 @@ public final class DamageGroups
         }
 
         return null;
+    }
+
+    /** Match a declared pack type against native damage without treating bullets as all projectiles. */
+    static boolean matchesDeclared(DamageSource source, String declared)
+    {
+        if (declared == null || declared.isEmpty()) return false;
+        String type = declared.toUpperCase(java.util.Locale.ROOT);
+        return switch (type)
+        {
+            case "FIRE" -> source.is(DamageTypeTags.IS_FIRE);
+            case "COLD" -> source.is(DamageTypeTags.IS_FREEZING);
+            case "ELECTRICITY" -> source.is(DamageTypes.LIGHTNING_BOLT);
+            case "EXPLOSION" -> source.is(DamageTypeTags.IS_EXPLOSION);
+            default -> source.getMsgId().replace("_", "").toLowerCase(java.util.Locale.ROOT)
+                    .contains(declared.replace("_", "").toLowerCase(java.util.Locale.ROOT));
+        };
     }
 
     /** Returns the damage-type fraction carried by the current attack, if it names this group. */

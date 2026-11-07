@@ -134,6 +134,13 @@ public class Modifier
         return amount;
     }
 
+    /** Also provides the original incoming amount for effects such as damage reflection. */
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source,
+            float amount, float originalAmount)
+    {
+        return modifyDamage(entity, entry, source, amount);
+    }
+
     /** Allows a modifier to increase damage dealt by this entity before the target takes damage. */
     public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry,
             net.minecraft.world.entity.Entity target, net.minecraft.world.damagesource.DamageSource source, float amount)

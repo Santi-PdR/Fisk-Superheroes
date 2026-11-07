@@ -155,9 +155,14 @@ public final class ModifierHandler
             return 0.0F;
         }
 
-        java.util.Map<String, Double> profile = null;
+        // Explicit power/projectile profiles must survive the nested LivingHurtEvent.
+        // Restore the prior scope afterwards: retaliation can itself trigger another hurt event.
+        java.util.Map<String, Double> previousProfile = com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile();
+        java.util.Map<String, Double> profile = previousProfile;
         net.minecraft.world.entity.Entity attacker = source.getEntity();
-        if (attacker instanceof Player player && source.getDirectEntity() == attacker)
+        if (profile == null && attacker instanceof Player player && source.getDirectEntity() == attacker
+                && (source.is(net.minecraft.world.damagesource.DamageTypes.PLAYER_ATTACK)
+                        || source.is(net.minecraft.world.damagesource.DamageTypes.MOB_ATTACK)))
         {
             SHPlayerData attackerData = SHDataCapabilities.getPlayer(player);
             if (attackerData != null && attackerData.getHeroType() != null)
@@ -183,14 +188,14 @@ public final class ModifierHandler
                     return 0.0F;
                 }
 
-                result = entry.getModifier().modifyDamage(entity, entry, source, result);
+                result = entry.getModifier().modifyDamage(entity, entry, source, result, amount);
             }
 
             return Math.max(0.0F, result);
         }
         finally
         {
-            com.fiskmods.heroes.common.hero.modifier.DamageGroups.clearDamageProfile();
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.useDamageProfile(previousProfile);
         }
     }
 

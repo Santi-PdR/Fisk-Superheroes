@@ -85,7 +85,7 @@ class ModifierResistance extends Modifier
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction >= 0.0F)
         {
-            return profileFraction > 0.0F ? amount * (1.0F - entry.getFloat(entity, PowerProperty.FACTOR)) : amount;
+            return amount * (1.0F - profileFraction * (1.0F - entry.getFloat(entity, PowerProperty.FACTOR)));
         }
 
         String declared = entry.get(PowerProperty.DAMAGE_TYPE);
@@ -241,13 +241,7 @@ class ModifierDamageImmunity extends Modifier
             return false;
         }
 
-        Modifiers.DamageGroup group = DamageGroups.groupOf(source, declared);
-        return group != null && DamageGroups.groupOf(source, declared) == group && matches(source, declared);
-    }
-
-    private boolean matches(DamageSource source, String declared)
-    {
-        return source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT).replace("_", ""));
+        return DamageGroups.matchesDeclared(source, declared);
     }
 
     @Override
@@ -280,7 +274,7 @@ class ModifierDamageResistance extends Modifier
             return amount * (1.0F - profileFraction * (1.0F - entry.getFloat(entity, PowerProperty.FACTOR)));
         }
 
-        if (declared == null || declared.isEmpty() || source.getMsgId().toLowerCase(java.util.Locale.ROOT).contains(declared.toLowerCase(java.util.Locale.ROOT)))
+        if (declared == null || declared.isEmpty() || DamageGroups.matchesDeclared(source, declared))
         {
             return amount * entry.getFloat(entity, PowerProperty.FACTOR);
         }
@@ -440,13 +434,27 @@ class ModifierThorns extends Modifier
     }
 
     @Override
-    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
+    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount, float originalAmount)
     {
-        if (source.getEntity() instanceof LivingEntity attacker && attacker != entity)
+        // Retaliate against direct melee only, never projectiles, beams or another thorns hit.
+        // This also prevents recursive thorns-vs-thorns damage.
+        if (!entity.level().isClientSide && source.getEntity() instanceof LivingEntity attacker && attacker != entity
+                && source.getDirectEntity() == attacker
+                && (source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)))
         {
-            attacker.hurt(entity.damageSources().thorns(entity), entry.getFloat(entity, PowerProperty.AMOUNT));
+            float reflected = Math.max(originalAmount * entry.getFloat(entity, PowerProperty.FACTOR), 1.0F);
+            com.google.gson.JsonElement profile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+            if (profile == null)
+            {
+                com.google.gson.JsonObject types = new com.google.gson.JsonObject();
+                types.addProperty("THORNS", 1.0F);
+                com.google.gson.JsonObject fallback = new com.google.gson.JsonObject();
+                fallback.add("types", types);
+                profile = fallback;
+            }
+            if (DamageGroups.applyProfileDamage(attacker, entity, entity.damageSources().thorns(entity), reflected, profile))
+                AbilityData.playSound(attacker, entry, "APPLY");
         }
-
         return amount;
     }
 }

@@ -398,6 +398,98 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void typedProjectileDamageSurvivesTheHurtEvent(GameTestHelper helper)
+    {
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:senor_cactus");
+        if (data == null || hero == null) { helper.fail("Cactus hero or player data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        target.getAbilities().invulnerable = false;
+        attacker.getAbilities().invulnerable = false;
+        target.setHealth(20.0F);
+        attacker.setHealth(20.0F);
+        var projectile = new net.minecraft.world.entity.projectile.Arrow(helper.getLevel(), attacker);
+        var source = target.damageSources().arrow(projectile, attacker);
+        var types = new com.google.gson.JsonObject();
+        types.addProperty("CACTUS", 1.0F);
+        var profile = new com.google.gson.JsonObject();
+        profile.add("types", types);
+        boolean hit = com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        if (hit || target.getHealth() != 20.0F || attacker.getHealth() != 20.0F)
+        { helper.fail("A cactus-typed projectile must be immune and must not trigger thorns"); return; }
+        types.addProperty("CACTUS", 0.5F);
+        if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile)
+                || Math.abs(target.getHealth() - 16.0F) > 0.01F || attacker.getHealth() != 20.0F)
+        { helper.fail("Mixed projectile damage must retain its partial cactus immunity without retaliation"); return; }
+        if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile() != null)
+            helper.fail("Typed damage profile leaked beyond its scope");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void thornsReflectOnlyMeleeAndPreserveNestedProfiles(GameTestHelper helper)
+    {
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var targetData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var attackerData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(attacker);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:senor_cactus");
+        if (targetData == null || attackerData == null || hero == null)
+        { helper.fail("Cactus hero or player data missing"); return; }
+        targetData.setHero(hero.getDefaultIteration());
+        target.getAbilities().invulnerable = false;
+        attacker.getAbilities().invulnerable = false;
+        target.setHealth(20.0F);
+        attacker.setHealth(20.0F);
+        if (!target.hurt(target.damageSources().playerAttack(attacker), 8.0F)
+                || Math.abs(attacker.getHealth() - 18.0F) > 0.01F)
+        { helper.fail("Thorns must return 25 percent of a direct melee hit"); return; }
+        target.invulnerableTime = 0;
+        attacker.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        attacker.setHealth(20.0F);
+        var arrow = new net.minecraft.world.entity.projectile.Arrow(helper.getLevel(), attacker);
+        if (!target.hurt(target.damageSources().arrow(arrow, attacker), 8.0F) || attacker.getHealth() != 20.0F)
+        { helper.fail("Thorns must not retaliate against a ranged attacker"); return; }
+        target.invulnerableTime = 0;
+        attacker.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        attacker.setHealth(20.0F);
+        attackerData.setHero(hero.getDefaultIteration());
+        if (!target.hurt(target.damageSources().playerAttack(attacker), 8.0F)
+                || Math.abs(target.getHealth() - 13.6F) > 0.01F || attacker.getHealth() != 20.0F)
+        { helper.fail("Nested thorns must not recurse or erase the original 20 percent cactus attack profile"); return; }
+        if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile() != null)
+            helper.fail("Nested melee profile leaked beyond the hit");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void resistanceUsesNativeTagsAndMixedFractions(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:senor_cactus");
+        if (data == null || hero == null) { helper.fail("Cactus hero or player data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        float lava = com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().lava(), 8.0F);
+        float freeze = com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().freeze(), 8.0F);
+        if (Math.abs(lava - 4.0F) > 0.01F || Math.abs(freeze - 8.0F) > 0.01F)
+        { helper.fail("Fire resistance must apply to lava, not freezing"); return; }
+        var modifier = com.fiskmods.heroes.common.hero.modifier.Modifiers.FIRE_RESISTANCE;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.FACTOR, 0.8F);
+        float[] mixed = { 0.0F };
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(java.util.Map.of("FIRE", 0.25D, "BLUNT", 0.75D),
+                () -> mixed[0] = modifier.modifyDamage(player, entry, player.damageSources().generic(), 10.0F));
+        if (Math.abs(mixed[0] - 9.5F) > 0.01F)
+            helper.fail("Resistance must affect only the matching share of a mixed attack");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void defaultHeroModifiersTickWithoutExceptions(GameTestHelper helper)
     {
         int checked = 0;

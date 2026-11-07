@@ -266,7 +266,8 @@ public final class Modifiers
         EQUIPMENT = registry.register(new ModifierEquipment(new ResourceLocation(FiskHeroes.MODID, "equipment"))
                 .addProperty(PowerProperty.KEY, "UTILITY_BELT"));
         THORNS = registry.register(new ModifierThorns(new ResourceLocation(FiskHeroes.MODID, "thorns"))
-                .addProperty(PowerProperty.AMOUNT, 2.0F));
+                .addProperty(PowerProperty.FACTOR, 0.25F)
+                .addProperty(PowerProperty.DAMAGE_PROFILE));
         SPIKES = registry.register(new ModifierSpikeBurst(new ResourceLocation(FiskHeroes.MODID, "spike_burst"))
                 .addProperty(PowerProperty.AMOUNT, 4.0F)
                 .addProperty(PowerProperty.RANGE, 24.0F)
