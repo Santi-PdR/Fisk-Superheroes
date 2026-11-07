@@ -153,8 +153,8 @@ def main():
             subprocess.run(['scrot', 'ci-antman-screenshot.jpg'], check=True, timeout=30)
             # Mysterio shares V between AIM and a beam gated on the two-stage aim timer.
             # Keep the physical key down until the server actually starts the modifier.
-            command('suit fiskheroes:mysterio')
             command('clear @s')
+            command('suit fiskheroes:mysterio')
             wait_for(r'\[CHAT\] Equipped Mysterio|\[Dev: Equipped Mysterio', 45, 'equip Mysterio', process)
             time.sleep(4)
             xdo('keydown', 'v')
