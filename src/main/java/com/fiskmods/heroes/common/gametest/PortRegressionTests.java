@@ -1333,6 +1333,51 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void mysterioAimUnlocksHeldBeamAndRespectsRelease(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-aim-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:mysterio");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Mysterio or player data is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 20);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 2, true);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(player);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 2, false);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.ENERGY_PROJECTION))
+        { helper.fail("Releasing before aim settles must not bypass the beam predicate"); return; }
+        for (int i = 0; i < 20; ++i)
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 2, true);
+        for (int i = 0; i < 20; ++i)
+        {
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(player);
+        }
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.AIMED_TIMER) != 1.0F
+                || !vars.get(com.fiskmods.heroes.common.data.var.Vars.ENERGY_PROJECTION))
+        { helper.fail("Held aim must reach its second phase and activate Mysterio's beam"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 2, false);
+        for (int i = 0; i < 20; ++i)
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.ENERGY_PROJECTION)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.AIMED_TIMER) != 0.0F)
+        { helper.fail("Release must stop the beam and reset the aimed timer"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void speedKeyAndScrollAreValidatedOnServer(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

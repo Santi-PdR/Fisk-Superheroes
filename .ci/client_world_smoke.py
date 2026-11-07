@@ -151,6 +151,18 @@ def main():
             if not match or not 0.03 < float(match.group(1)) < 0.05:
                 raise RuntimeError(f'Unexpected client collision width after shrinking: {match.group(1) if match else "missing"}')
             subprocess.run(['scrot', 'ci-antman-screenshot.jpg'], check=True, timeout=30)
+            # Mysterio shares V between AIM and a beam gated on the two-stage aim timer.
+            # Keep the physical key down until the server actually starts the modifier.
+            command('suit fiskheroes:mysterio')
+            command('clear @s')
+            wait_for(r'\[CHAT\] Equipped Mysterio|\[Dev: Equipped Mysterio', 45, 'equip Mysterio', process)
+            time.sleep(4)
+            xdo('keydown', 'v')
+            try:
+                wait_for(r'Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION',
+                         60, 'held Mysterio aim activates the gated beam on the server', process)
+            finally:
+                xdo('keyup', 'v')
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

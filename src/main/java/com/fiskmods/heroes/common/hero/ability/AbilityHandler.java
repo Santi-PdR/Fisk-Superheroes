@@ -79,7 +79,7 @@ public final class AbilityHandler
             boolean scrolled = speedKey && SPEED_SCROLLED.remove(player.getUUID());
             if (speedWasHeld && !scrolled && !player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get()))
                 activate(player, data, iteration.getHero(), "SUPER_SPEED");
-            activatePendingAimAbilities(player, data, iteration, index);
+            cancelPendingAimAbilities(player, index);
             release(player, data, index);
             if (index == 0) return;
         }
@@ -115,7 +115,7 @@ public final class AbilityHandler
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Ability input accepted: hero={}, index={}, matching={}",
                     iteration.getRegistryName(), index, keys);
         }
-        if (hero.getKeyBinding("AIM") == index)
+        if (hero.hasKeyBind("AIM") && hero.getKeyBinding("AIM") == index)
         {
             updateAiming(player, data, hero, pressed);
         }
@@ -269,17 +269,13 @@ public final class AbilityHandler
         if (byIndex.isEmpty()) PENDING_AIM_ABILITIES.remove(player.getUUID());
     }
 
-    /** A short HUD click should still perform the shared-key shot when aim has not settled yet. */
-    private static void activatePendingAimAbilities(ServerPlayer player, SHPlayerData data,
-            HeroIteration iteration, int index)
+    /** Releasing a key cancels a pending shot; it must never bypass the pack's conditions. */
+    private static void cancelPendingAimAbilities(ServerPlayer player, int index)
     {
         Map<Integer, Set<String>> byIndex = PENDING_AIM_ABILITIES.get(player.getUUID());
-        Set<String> pending = byIndex != null ? byIndex.remove(index) : null;
-        if (byIndex != null && byIndex.isEmpty()) PENDING_AIM_ABILITIES.remove(player.getUUID());
-        if (pending == null || iteration == null
-                || player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get())) return;
-        Hero hero = iteration.getHero();
-        for (String key : pending) startAbility(player, data, hero, index, key);
+        if (byIndex == null) return;
+        byIndex.remove(index);
+        if (byIndex.isEmpty()) PENDING_AIM_ABILITIES.remove(player.getUUID());
     }
 
     private static void startAbility(ServerPlayer player, SHPlayerData data, Hero hero, int index, String key)
@@ -456,7 +452,7 @@ public final class AbilityHandler
     {
         HeroIteration iteration = HeroTracker.getHero(entity);
 
-        if (iteration != null && iteration.getHero().getKeyBinding("AIM") == index)
+        if (iteration != null && iteration.getHero().hasKeyBind("AIM") && iteration.getHero().getKeyBinding("AIM") == index)
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(entity);
             if (data != null)
@@ -542,9 +538,17 @@ public final class AbilityHandler
             data.getData().set(Vars.HAT_TIP, hatTip);
         }
 
-        float target = data.getData().get(Vars.AIMING) ? 1.0F : 0.0F;
+        // The original advances AIMED_TIMER from the previous AIMING_TIMER, then advances
+        // AIMING_TIMER. Pack predicates use the second phase to gate beams and repulsors.
         float current = data.getData().get(Vars.AIMING_TIMER);
-        float next = net.minecraft.util.Mth.approach(current, target, 0.2F);
+        float aimed = data.getData().get(Vars.AIMED_TIMER);
+        float nextAimed = net.minecraft.util.Mth.approach(aimed, current >= 1.0F ? 1.0F : 0.0F, 0.1F);
+        if (nextAimed != aimed)
+        {
+            data.getData().set(Vars.AIMED_TIMER, nextAimed);
+        }
+        float target = data.getData().get(Vars.AIMING) ? 1.0F : 0.0F;
+        float next = net.minecraft.util.Mth.approach(current, target, 0.25F);
         if (next != current)
         {
             data.getData().set(Vars.AIMING_TIMER, next);
