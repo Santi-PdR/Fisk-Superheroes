@@ -238,6 +238,9 @@ def main():
             subprocess.run(['scrot', 'ci-crossbones-screenshot.jpg'], check=True, timeout=30)
             # Exercise a full-strength charged punch through the real client, server and
             # Player.attack path. An unarmoured, stationary golem starts at 100 health.
+            # Teleport first so these absolute coordinates are in loaded chunks.
+            command('tp @s 0 165 0 0 0')
+            time.sleep(3)
             command('fill -4 159 -4 4 159 4 minecraft:stone')
             command('fill -4 160 -4 4 164 4 minecraft:air')
             command('tp @s 0 160 0 0 0')
