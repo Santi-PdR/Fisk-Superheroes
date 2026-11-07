@@ -52,12 +52,11 @@ class ModifierTransformation extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean transformed = entry.isToggled(entity);
-        boolean next = !transformed;
-        entry.setToggled(entity, next);
-
         JsonObject transformation = AbilityData.object(entry.get(PowerProperty.TRANSFORMATION));
         DataVar<Boolean> toggleData = AbilityData.toggle(transformation);
+        boolean transformed = toggleData != null ? data.getData().get(toggleData) : entry.isToggled(entity);
+        boolean next = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !transformed;
+        entry.setToggled(entity, next);
 
         if (toggleData != null)
         {
@@ -66,6 +65,18 @@ class ModifierTransformation extends Modifier
         }
 
         AbilityData.playSound(entity, entry, next ? "ENABLE" : "DISABLE");
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
+        {
+            DataVar<Boolean> toggleData = AbilityData.toggle(AbilityData.object(entry.get(PowerProperty.TRANSFORMATION)));
+            if (toggleData != null) data.getData().set(toggleData, false);
+            entry.setToggled(entity, false);
+            AbilityData.playSound(entity, entry, "DISABLE");
+        }
     }
 
     @Override
@@ -86,7 +97,8 @@ class ModifierTransformation extends Modifier
         {
             boolean active = data.getData().get(toggleData);
             float timer = data.getData().get(timerData);
-            float next = active ? Math.min(time, timer + 1.0F) : Math.max(0.0F, timer - 1.0F);
+            float step = 1.0F / Math.max(1, time);
+            float next = net.minecraft.util.Mth.clamp(timer + (active ? step : -step), 0.0F, 1.0F);
 
             if (next != timer)
             {
@@ -125,33 +137,29 @@ class ModifierCooldown extends Modifier
 
         boolean active = data.getData().get(toggleData);
         float value = data.getData().get(cooldownData);
-
-        if (active && value < duration)
+        if (duration < 0)
         {
-            value += 1.0F;
-            data.getData().set(cooldownData, value);
-
-            if (value >= duration)
+            data.getData().set(cooldownData, 0.0F);
+            return;
+        }
+        float step = 1.0F / Math.max(1, duration);
+        if (active && value < 1.0F)
+        {
+            if (value <= 0.0F) AbilityData.playSound(entity, entry, "START");
+            value = Math.min(1.0F, value + step);
+            if (value >= 1.0F)
             {
                 data.getData().set(toggleData, false);
-                data.getData().markDirty(toggleData);
                 AbilityData.playSound(entity, entry, "TIMEOUT");
-
-                // Switch the matching toggle modifier off as well
-                for (ModifierEntry other : data.getHeroType().getPowerContainer().getEntries())
-                {
-                    if (other.isToggled(entity) && other.getProperties().containsValue(toggleData))
-                    {
-                        other.setToggled(entity, false);
-                    }
-                }
             }
         }
-        else if (!active && value > 0)
+        else if (!active && value > 0.0F)
         {
             float recovery = cooldown.has("recovery") ? cooldown.get("recovery").getAsFloat() : 1.0F;
-            data.getData().set(cooldownData, Math.max(0.0F, value - recovery));
+            value = Math.max(0.0F, value - step * Math.max(0.0F, recovery));
+            if (value == 0.0F) AbilityData.playSound(entity, entry, "RECOVER");
         }
+        data.getData().set(cooldownData, net.minecraft.util.Mth.clamp(value, 0.0F, 1.0F));
     }
 }
 
@@ -369,25 +377,50 @@ class ModifierSizeManipulation extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
+        if (data.getData().get(Vars.SIZE_STATE) != 0) return;
+        float min = Math.max(0.01F, entry.getFloat(entity, PowerProperty.MIN_SIZE));
+        float max = Math.max(min, entry.getFloat(entity, PowerProperty.MAX_SIZE));
         float scale = data.getData().get(Vars.SCALE);
-        float min = entry.getFloat(entity, PowerProperty.MIN_SIZE);
-        float max = entry.getFloat(entity, PowerProperty.MAX_SIZE);
-        float next = scale <= (min + max) * 0.5F ? max : min;
-
-        data.getData().set(Vars.SCALE, next);
-        data.getData().set(Vars.SIZE_STATE, (byte) (next > 1.0F ? 1 : next < 1.0F ? -1 : 0));
-        data.getData().markDirty(Vars.SCALE);
-        data.getData().markDirty(Vars.SIZE_STATE);
+        byte direction = (byte) (scale > (min + max) * 0.5F ? -1 : 1);
+        data.getData().set(Vars.SIZE_STATE, direction);
+        AbilityData.playSound(entity, entry, direction > 0 ? "GROW" : "SHRINK");
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        float scale = data.getData().get(Vars.SCALE);
+        if (!(entity instanceof Player)) return;
+        float min = Math.max(0.01F, entry.getFloat(entity, PowerProperty.MIN_SIZE));
+        float max = Math.max(min, entry.getFloat(entity, PowerProperty.MAX_SIZE));
+        float scale = Math.max(0.01F, data.getData().get(Vars.SCALE));
+        byte direction = data.getData().get(Vars.SIZE_STATE);
+        if (direction != 0 && max > min)
+        {
+            boolean instant = entry.getBoolean(entity, PowerProperty.IS_INSTANT);
+            float step = (max - min) / (instant ? 7.0F : 60.0F);
+            if (!instant && direction < 0) step *= 2.0F;
+            float next = net.minecraft.util.Mth.clamp(scale + Math.signum(direction) * step, min, max);
+            if (next <= scale || canGrow(entity, scale, next))
+            {
+                data.getData().set(Vars.SCALE, next);
+                if (next == min || next == max) data.getData().set(Vars.SIZE_STATE, (byte) 0);
+                scale = next;
+            }
+        }
         float timer = data.getData().get(Vars.SHRINK_TIMER);
         float target = scale < 1.0F ? 1.0F : 0.0F;
         data.getData().set(Vars.SHRINK_TIMER, timer + (target - timer) * 0.2F);
     }
+
+    private static boolean canGrow(LivingEntity entity, float oldScale, float nextScale)
+    {
+        double width = entity.getBbWidth() * nextScale / oldScale;
+        double height = entity.getBbHeight() * nextScale / oldScale;
+        var box = new net.minecraft.world.phys.AABB(entity.getX() - width / 2, entity.getY(), entity.getZ() - width / 2,
+                entity.getX() + width / 2, entity.getY() + height, entity.getZ() + width / 2);
+        return entity.level().noCollision(entity, box);
+    }
+
 }
 
 /** Teleportation: blinks the wearer in the direction they are looking. */

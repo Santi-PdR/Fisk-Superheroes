@@ -87,8 +87,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
         poseStack.pushPose();
 
-        poseStack.scale(scale, scale, scale);
-
+        // PlayerSizeRenderer scales the complete wearer, including this suit layer.
         for (int slot = 0; slot < 4; ++slot)
         {
             // Resolve each worn piece independently. The chestplate still identifies the active

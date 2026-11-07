@@ -83,6 +83,7 @@ public class FiskHeroes
         modBus.addListener(SHAttributes::onAttributeModification);
 
         MinecraftForge.EVENT_BUS.register(com.fiskmods.heroes.common.event.CommonEventHandler.class);
+        MinecraftForge.EVENT_BUS.register(com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.class);
         MinecraftForge.EVENT_BUS.register(SHDataCapabilities.Events.class);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, SHConfig.SPEC);

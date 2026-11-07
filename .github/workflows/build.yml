@@ -99,7 +99,7 @@ jobs:
           timeout -k 20 600 ./gradlew runGameTestServer --no-daemon --console=plain 2>&1 | tee ci-gametest.log
           # A zero-test run can exit successfully; require our regression suite to run.
           count=$(sed -nE 's/.*All ([0-9]+) required tests passed.*/\1/p' ci-gametest.log | tail -1)
-          test "${count:-0}" -ge 42
+          test "${count:-0}" -ge 45
 
       - name: Publish GameTest log
         if: always() && hashFiles('ci-gametest.log') != ''

@@ -173,6 +173,7 @@ public class CommonEventHandler
             }
         }
         ModifierHandler.tick(entity);
+        com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(event.player);
 
         if (entity instanceof ServerPlayer serverPlayer)
         {

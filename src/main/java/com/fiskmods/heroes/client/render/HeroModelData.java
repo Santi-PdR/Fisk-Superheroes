@@ -55,10 +55,6 @@ public class HeroModelData
 
     private JsonElement texture;
     private JsonElement lights;
-    private final Map<Integer, JsonElement> renderLayerTextures = new LinkedHashMap<>();
-    private final Map<Integer, JsonElement> renderLayerLights = new LinkedHashMap<>();
-    private JsonElement defaultTexture;
-    private JsonElement defaultLights;
 
     public HeroModelData(ResourceLocation hero)
     {
@@ -160,13 +156,11 @@ public class HeroModelData
         if (json.has("texture"))
         {
             data.texture = json.get("texture");
-            readRenderLayers(data.texture, data.renderLayerTextures, data);
         }
 
         if (json.has("lights"))
         {
             data.lights = json.get("lights");
-            readRenderLayers(data.lights, data.renderLayerLights, data);
         }
 
         if (json.has("showModel"))
@@ -224,85 +218,19 @@ public class HeroModelData
         return data;
     }
 
-    private static void readRenderLayers(JsonElement tree, Map<Integer, JsonElement> output, HeroModelData data)
-    {
-        if (tree == null || !tree.isJsonObject())
-        {
-            return;
-        }
-
-        JsonObject json = tree.getAsJsonObject();
-
-        if (json.has("renderLayer") && json.get("renderLayer").isJsonObject())
-        {
-            for (Map.Entry<String, JsonElement> e : json.getAsJsonObject("renderLayer").entrySet())
-            {
-                int slot = slot(e.getKey());
-
-                if (slot != -1)
-                {
-                    output.put(slot, e.getValue());
-                }
-            }
-        }
-
-        if (json.has("default"))
-        {
-            if (tree == data.lights)
-            {
-                data.defaultLights = json.get("default");
-            }
-            else
-            {
-                data.defaultTexture = json.get("default");
-            }
-        }
-    }
-
-    /** Merges a parent model's values into this one; the child always wins. */
+    /** Merges a parent model's values into this one; texture trees replace, not merge. */
     public void inherit(HeroModelData parent)
     {
         parent.resources.forEach(resources::putIfAbsent);
         parent.vars.forEach(vars::putIfAbsent);
-        parent.showModel.forEach((part, slots) -> showModel.computeIfAbsent(part, k -> new java.util.LinkedHashSet<>()).addAll(slots));
+        if (showModel.isEmpty()) parent.showModel.forEach((part, slots) ->
+                showModel.put(part, new java.util.LinkedHashSet<>(slots)));
         parent.custom.forEach(custom::putIfAbsent);
         parent.animations.forEach(animations::putIfAbsent);
         parent.itemIcons.forEach(itemIcons::putIfAbsent);
-        parent.fixHatLayer.forEach(slot -> fixHatLayer.add(slot));
-        parent.renderLayerTextures.forEach(renderLayerTextures::putIfAbsent);
-        parent.renderLayerLights.forEach(renderLayerLights::putIfAbsent);
-
-        if (defaultTexture == null)
-        {
-            defaultTexture = parent.defaultTexture;
-        }
-
-        if (defaultLights == null)
-        {
-            defaultLights = parent.defaultLights;
-        }
-
-        // Parent trees feed the child's own tree
-        texture = merge(texture, parent.texture);
-        lights = merge(lights, parent.lights);
-    }
-
-    private static JsonElement merge(JsonElement child, JsonElement parent)
-    {
-        if (child == null)
-        {
-            return parent;
-        }
-
-        if (parent == null || !child.isJsonObject() || !parent.isJsonObject())
-        {
-            return child;
-        }
-
-        JsonObject result = new JsonObject();
-        parent.getAsJsonObject().entrySet().forEach(e -> result.add(e.getKey(), e.getValue()));
-        child.getAsJsonObject().entrySet().forEach(e -> result.add(e.getKey(), e.getValue()));
-        return result;
+        if (fixHatLayer.isEmpty()) fixHatLayer.addAll(parent.fixHatLayer);
+        if (texture == null) texture = parent.texture;
+        if (lights == null) lights = parent.lights;
     }
 
     /* --- Resolution --- */
@@ -311,7 +239,7 @@ public class HeroModelData
     @Nullable
     public ResourceLocation getTexture(int slot, Entity entity)
     {
-        String key = resolve(slot == -1 ? defaultTexture : renderLayerTextures.getOrDefault(slot, defaultTexture), entity);
+        String key = resolve(texture, entity, slot);
         return resolveResource(key, entity, slot);
     }
 
@@ -319,8 +247,7 @@ public class HeroModelData
     @Nullable
     public ResourceLocation getLights(int slot, Entity entity)
     {
-        JsonElement tree = renderLayerLights.getOrDefault(slot, defaultLights);
-        String key = resolve(tree, entity);
+        String key = resolve(lights, entity, slot);
         return resolveResource(key, entity, slot);
     }
 
@@ -389,110 +316,15 @@ public class HeroModelData
         return result instanceof Number number ? number.floatValue() : defaultValue;
     }
 
-    /** Whether the given armour slot has an emissive layer at all. */
-    public boolean hasLights(int slot)
-    {
-        JsonElement tree = renderLayerLights.getOrDefault(slot, defaultLights);
-
-        if (tree == null)
-        {
-            return false;
-        }
-
-        if (tree.isJsonPrimitive())
-        {
-            return !"null".equals(tree.getAsString());
-        }
-
-        return true;
-    }
-
-    /**
-     * Walks a condition tree and returns the resource name it selects for the entity.
-     * <p>
-     * Leaves may be a resource name or {@code "null"} (nothing to draw); conditions are
-     * {@code vars:NAME} nodes whose {@code true}/{@code false} branches are followed.
-     */
+    /** Walks the original ordered texture tree using this wearer and armor slot. */
     @Nullable
-    public String resolve(JsonElement node, Entity entity)
+    public String resolve(JsonElement node, Entity entity, int slot)
     {
-        if (node == null)
-        {
-            return null;
-        }
-
-        if (node.isJsonPrimitive())
-        {
-            String value = node.getAsString();
-            return "null".equals(value) ? null : value;
-        }
-
-        if (!node.isJsonObject())
-        {
-            return null;
-        }
-
-        for (Map.Entry<String, JsonElement> e : node.getAsJsonObject().entrySet())
-        {
-            String key = e.getKey();
-
-            if (key.startsWith("vars:"))
-            {
-                if (evaluate(key.substring("vars:".length()), entity))
-                {
-                    String value = resolve(e.getValue(), entity);
-
-                    if (value != null)
-                    {
-                        return value;
-                    }
-                }
-                else if (e.getValue().isJsonObject() && e.getValue().getAsJsonObject().has("false"))
-                {
-                    String value = resolve(e.getValue().getAsJsonObject().get("false"), entity);
-
-                    if (value != null)
-                    {
-                        return value;
-                    }
-                }
-            }
-            else if (e.getValue().isJsonObject())
-            {
-                String selected = selectorValue(key, entity);
-                JsonElement branch = selected != null ? e.getValue().getAsJsonObject().get(selected) : null;
-
-                if (branch != null)
-                {
-                    String value = resolve(branch, entity);
-
-                    if (value != null)
-                    {
-                        return value;
-                    }
-                }
-            }
-        }
-
-        if (node.getAsJsonObject().has("default"))
-        {
-            String value = resolve(node.getAsJsonObject().get("default"), entity);
-
-            if (value != null)
-            {
-                return value;
-            }
-        }
-
-        // A direct true/false pair without a name (used by some render layers)
-        JsonObject json = node.getAsJsonObject();
-
-        if (json.has("true"))
-        {
-            return resolve(json.get("true"), entity);
-        }
-
-        return null;
+        return com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(node, key -> {
+            if (key.equals("renderLayer")) return slot >= 0 && slot < 4 ? slotName(slot) : null;
+            if (key.startsWith("vars:")) return Boolean.toString(evaluate(key.substring(5), entity));
+            return selectorValue(key, entity);
+        });
     }
 
     /** Resolves the data-backed selectors used by the original texture trees. */

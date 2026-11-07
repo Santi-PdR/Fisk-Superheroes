@@ -20,6 +20,104 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void armorTextureTreesRespectConditionsAndNull(GameTestHelper helper)
+    {
+        var tree = com.google.gson.JsonParser.parseString("""
+                {"vars:SPEEDING":{"true":{"renderLayer":{"LEGGINGS":"layer2_on"},"default":"layer1_on"}},
+                 "renderLayer":{"LEGGINGS":"layer2"},"default":"layer1"}
+                """);
+        java.util.Map<String, String> vars = new java.util.HashMap<>();
+        vars.put("vars:SPEEDING", "false");
+        vars.put("renderLayer", "LEGGINGS");
+        if (!"layer2".equals(com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, vars::get)))
+        { helper.fail("Inactive armor must select the normal leggings texture"); return; }
+        vars.put("vars:SPEEDING", "true");
+        if (!"layer2_on".equals(com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, vars::get)))
+        { helper.fail("Active armor must select the conditional leggings texture"); return; }
+        vars.put("renderLayer", "HELMET");
+        if (!"layer1_on".equals(com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, vars::get)))
+        { helper.fail("Active armor must use the conditional default for other slots"); return; }
+        tree = com.google.gson.JsonParser.parseString("""
+                {"vars:MASK_OPEN":{"true":{"renderLayer":{"HELMET":"null"}}},"default":"lights"}
+                """);
+        vars.put("vars:MASK_OPEN", "true");
+        if (!"null".equals(com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, vars::get)))
+        { helper.fail("A selected null texture must not fall back to glowing closed-mask eyes"); return; }
+        vars.put("renderLayer", "CHESTPLATE");
+        if (!"lights".equals(com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, vars::get)))
+        { helper.fail("An unmatched nested branch must fall through to the default"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void transformationTimersAndCooldownsAreNormalized(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:ant_man");
+        if (data == null || hero == null) { helper.fail("Ant-Man data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var transform = hero.getPowerContainer().getEntry(FiskHeroes.id("transformation"));
+        var cooldown = hero.getPowerContainer().getEntry(FiskHeroes.id("cooldown"));
+        if (transform == null || cooldown == null) { helper.fail("Transformation or cooldown missing"); return; }
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE, true);
+        for (int i = 0; i < 5; ++i) transform.getModifier().tick(player, transform, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER) - 0.5F) > 0.001F)
+        { helper.fail("Ten-tick transformation must reach half after five ticks"); return; }
+        cooldown.getModifier().tick(player, cooldown, data);
+        float elapsed = vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN);
+        if (Math.abs(elapsed - 1.0F / 2400.0F) > 0.00001F)
+        { helper.fail("Cooldown must be a normalized fraction of duration"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN, 0.9999F);
+        cooldown.getModifier().tick(player, cooldown, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN) != 1.0F)
+        { helper.fail("A full cooldown must switch giant mode off at one"); return; }
+        cooldown.getModifier().tick(player, cooldown, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN) - (1.0F - 1.0F / 2400.0F)) > 0.00001F)
+        { helper.fail("Cooldown recovery must use the normalized recovery rate"); return; }
+        transform.getModifier().tick(player, transform, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER) - 0.4F) > 0.001F)
+        { helper.fail("Transformation must reverse in normalized steps"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void sizeManipulationChangesPlayerDimensions(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:ant_man");
+        if (data == null || hero == null) { helper.fail("Ant-Man data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        var entry = hero.getPowerContainer().getEntries().stream()
+                .filter(e -> e.getModifier().getId().equals(FiskHeroes.id("size_manipulation")) && "small".equals(e.getCard()))
+                .findFirst().orElse(null);
+        if (entry == null || !entry.isModifierEnabled(player, data)) { helper.fail("Small-size card missing"); return; }
+        float initialWidth = player.getBbWidth();
+        float initialEye = player.getEyeHeight();
+        entry.getModifier().onActivate(player, entry, data);
+        for (int i = 0; i < 8; ++i)
+        {
+            entry.getModifier().tick(player, entry, data);
+            com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        }
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SCALE) - 0.0625F) > 0.001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE) != 0
+                || Math.abs(player.getBbWidth() - initialWidth * 0.0625F) > 0.001F
+                || Math.abs(player.getEyeHeight() - initialEye * 0.0625F) > 0.001F)
+        { helper.fail("Shrink must finish and update both collision width and eye height"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        if (Math.abs(player.getBbWidth() - initialWidth) > 0.001F)
+        { helper.fail("Restoring scale must restore collision dimensions"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureMasksAndHue(GameTestHelper helper)
     {
         int red = 0xFF0000FF; // NativeImage stores ABGR, not ARGB.

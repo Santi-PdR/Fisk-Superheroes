@@ -212,8 +212,9 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 24.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));
         SIZE_MANIPULATION = registry.register(new ModifierSizeManipulation(new ResourceLocation(FiskHeroes.MODID, "size_manipulation"))
-                .addProperty(PowerProperty.MIN_SIZE, 0.0F)
+                .addProperty(PowerProperty.MIN_SIZE, 0.5F)
                 .addProperty(PowerProperty.MAX_SIZE, 1.0F)
+                .addProperty(PowerProperty.IS_INSTANT, true)
                 .addProperty(PowerProperty.IS_TOGGLE, true));
         GLIDING = registry.register(new ModifierGliding(new ResourceLocation(FiskHeroes.MODID, "gliding"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.GLIDING);
