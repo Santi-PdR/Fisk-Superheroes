@@ -170,6 +170,15 @@ public final class HeroTracker
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("shield"), false);
         }
 
+        if (!hasModifier(current, "size_manipulation"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SIZE_STATE, (byte) 0);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHRINK_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER, 0.0F);
+        }
+
         if (!hasModifier(current, "web_swinging"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WEB_SWINGING, false);

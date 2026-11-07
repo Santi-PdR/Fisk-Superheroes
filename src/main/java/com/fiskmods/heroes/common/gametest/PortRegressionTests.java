@@ -110,10 +110,12 @@ public final class PortRegressionTests
                 || Math.abs(player.getBbWidth() - initialWidth * 0.0625F) > 0.001F
                 || Math.abs(player.getEyeHeight() - initialEye * 0.0625F) > 0.001F)
         { helper.fail("Shrink must finish and update both collision width and eye height"); return; }
-        vars.set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        // Removing the suit must undo the scale even though SCALE is a persisted data variable.
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
         com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
-        if (Math.abs(player.getBbWidth() - initialWidth) > 0.001F)
-        { helper.fail("Restoring scale must restore collision dimensions"); return; }
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SCALE) != 1.0F
+                || Math.abs(player.getBbWidth() - initialWidth) > 0.001F)
+        { helper.fail("Removing the suit must restore scale and collision dimensions"); return; }
         helper.succeed();
     }
 

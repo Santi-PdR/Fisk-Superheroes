@@ -13,7 +13,10 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 /** Applies the synchronized suit scale to collision dimensions and eye height on both sides. */
 public final class PlayerSizeHandler
 {
-    private static final Map<Player, Float> LAST_SCALE = java.util.Collections.synchronizedMap(new WeakHashMap<>());
+    // Integrated clients and servers have distinct Player objects with the same entity id;
+    // Entity.equals compares ids, so a shared map would incorrectly treat them as the same key.
+    private static final Map<Player, Float> LAST_CLIENT_SCALE = java.util.Collections.synchronizedMap(new WeakHashMap<>());
+    private static final Map<Player, Float> LAST_SERVER_SCALE = java.util.Collections.synchronizedMap(new WeakHashMap<>());
 
     private PlayerSizeHandler() {}
 
@@ -37,7 +40,8 @@ public final class PlayerSizeHandler
     public static void refreshIfChanged(Player player)
     {
         float scale = scale(player);
-        Float previous = LAST_SCALE.put(player, scale);
+        Map<Player, Float> previousScales = player.level().isClientSide ? LAST_CLIENT_SCALE : LAST_SERVER_SCALE;
+        Float previous = previousScales.put(player, scale);
         if (previous == null || Float.compare(previous, scale) != 0)
         {
             player.refreshDimensions();
