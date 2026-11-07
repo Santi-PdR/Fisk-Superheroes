@@ -803,26 +803,62 @@ class ModifierChargedPunch extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.isToggled(entity);
+        if (!entity.getMainHandItem().isEmpty()) return;
+        boolean state = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !data.getData().get(Vars.PUNCHMODE);
         entry.setToggled(entity, state);
         data.getData().set(Vars.PUNCHMODE, state);
+        if (!state) data.getData().set(Vars.PUNCH_CHARGED, false);
+    }
+
+    @Override
+    public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE))
+        {
+            entry.setToggled(entity, false);
+            data.getData().set(Vars.PUNCHMODE, false);
+            data.getData().set(Vars.PUNCH_CHARGED, false);
+        }
     }
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!data.getData().get(Vars.PUNCHMODE))
+        boolean mode = data.getData().get(Vars.PUNCHMODE);
+        if (mode && !entity.getMainHandItem().isEmpty())
         {
-            return;
+            mode = false;
+            entry.setToggled(entity, false);
+            data.getData().set(Vars.PUNCHMODE, false);
         }
-
-        int timer = data.getData().get(Vars.PUNCH_TIMER);
-
-        if (entity instanceof Player player && player.getAttackStrengthScale(0.0F) >= 1.0F)
+        if (!mode) data.getData().set(Vars.PUNCH_CHARGED, false);
+        float timer = data.getData().get(Vars.PUNCHMODE_TIMER);
+        data.getData().set(Vars.PUNCHMODE_TIMER, net.minecraft.util.Mth.clamp(timer + (mode ? 0.2F : -0.2F), 0.0F, 1.0F));
+        float charge = data.getData().get(Vars.PUNCH_CHARGE);
+        boolean charging = mode && (entity.isShiftKeyDown() || data.getData().get(Vars.PUNCH_CHARGED));
+        float step = 1.0F / Math.max(1, entry.getInt(entity, PowerProperty.CHARGE_TIME));
+        charge = net.minecraft.util.Mth.clamp(charge + (charging ? step : -step), 0.0F, 1.0F);
+        data.getData().set(Vars.PUNCH_CHARGE, charge);
+        if (mode && entity.isShiftKeyDown() && charge >= 1.0F && !data.getData().get(Vars.PUNCH_CHARGED))
         {
-            data.getData().set(Vars.PUNCH_TIMER, Math.min(entry.getInt(entity, PowerProperty.CHARGE_TIME), timer + 1));
+            data.getData().set(Vars.PUNCH_CHARGED, true);
+            AbilityData.playSound(entity, entry, "CHARGED");
         }
     }
+
+    @Override
+    public float modifyOutgoingDamage(LivingEntity entity, ModifierEntry entry, net.minecraft.world.entity.Entity target,
+            net.minecraft.world.damagesource.DamageSource source, float amount)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        if (!entity.level().isClientSide && amount > 0.0F && data != null && data.getData().get(Vars.PUNCH_CHARGED))
+        {
+            data.getData().set(Vars.PUNCH_CHARGED, false);
+            AbilityData.playSound(entity, entry, "PUNCH");
+        }
+        return amount;
+    }
+
 }
 
 /** Abilities which destroy terrain around the wearer. */

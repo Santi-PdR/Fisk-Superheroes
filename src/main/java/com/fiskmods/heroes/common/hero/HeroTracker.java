@@ -179,6 +179,15 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_TIMER, 0.0F);
         }
 
+        if (!hasModifier(current, "charged_punch"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGE, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("charged_punch"), false);
+        }
+
         if (!hasModifier(current, "gliding"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GLIDING, false);

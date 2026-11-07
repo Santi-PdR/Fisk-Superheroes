@@ -1812,4 +1812,51 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void crossbonesPunchChargesAndConsumesOnMelee(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var target = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:crossbones");
+        if (data == null || hero == null) { helper.fail("Crossbones or player data missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var entry = hero.getPowerContainer().getEntries().stream()
+                .filter(e -> e.getModifier().getId().getPath().equals("charged_punch")).findFirst().orElse(null);
+        if (entry == null) { helper.fail("Charged punch missing"); return; }
+        var mod = entry.getModifier();
+        var vars = data.getData();
+        mod.onActivate(player, entry, data);
+        for (int i = 0; i < 5; i++) mod.tick(player, entry, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE_TIMER) < 0.99F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGE) != 0.0F)
+        { helper.fail("Mode should animate without charging while standing"); return; }
+        player.setShiftKeyDown(true);
+        for (int i = 0; i < 3; i++) mod.tick(player, entry, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGE) < 0.99F)
+        { helper.fail("Crouching should charge the punch in three ticks"); return; }
+        var profile = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
+        if (profile.get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE).amount() != 14.5D)
+        { helper.fail("Charged mode should select the PUNCH attribute profile"); return; }
+        player.setShiftKeyDown(false);
+        mod.tick(player, entry, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED))
+        { helper.fail("Charge should persist after releasing crouch"); return; }
+        mod.modifyOutgoingDamage(player, entry, target, player.damageSources().playerAttack(player), 3.0F);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED))
+        { helper.fail("Melee hit should consume the charge"); return; }
+        mod.onActivate(player, entry, data);
+        for (int i = 0; i < 5; i++) mod.tick(player, entry, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE_TIMER) > 0.001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGE) > 0.001F)
+        { helper.fail("Disabled punch mode should retract and clear its charge"); return; }
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK));
+        mod.onActivate(player, entry, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCHMODE))
+            helper.fail("Punch mode must require an empty hand");
+        else helper.succeed();
+    }
+
 }

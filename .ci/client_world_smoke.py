@@ -202,6 +202,26 @@ def main():
             # player's collision prediction. The wall was built before starting the glide.
             wait_for(r'Gliding wall impact: player=Dev, severity=[-+0-9.eE]+, stopped=true',
                      45, 'server stops Batman after a real gliding wall impact', process)
+            # Crossbones: exercise the actual overlay in both camera modes and observe the
+            # dynamic texture change driven by the server's punch-mode timer.
+            command('gamemode creative')
+            command('clear @s')
+            command('suit fiskheroes:crossbones')
+            wait_for(r'Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1\.png',
+                     45, 'Crossbones third-person right gauntlet render', process)
+            wait_for(r'Suit arm overlay rendered: effect=fiskheroes:arm_overlay\|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1\.png',
+                     45, 'Crossbones third-person left gauntlet render', process)
+            xdo('key', 'c')
+            wait_for(r'Ability modifier executed: hero=fiskheroes:crossbones, key=CHARGED_PUNCH',
+                     45, 'activate Crossbones punch mode on server', process)
+            wait_for(r'Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6\.png',
+                     45, 'Crossbones gauntlet animation reaches its active texture', process)
+            xdo('key', 'F5')
+            time.sleep(1)
+            xdo('key', 'F5')
+            wait_for(r'Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=true, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6\.png',
+                     45, 'Crossbones first-person gauntlet render', process)
+            subprocess.run(['scrot', 'ci-crossbones-screenshot.jpg'], check=True, timeout=30)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

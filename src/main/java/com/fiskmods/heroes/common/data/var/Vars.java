@@ -135,10 +135,10 @@ public final class Vars
     public static final DataVar<Float> PREV_WEB_RAPPEL_TIMER = register("prev_web_rappel_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> PREV_WEB_SWINGING_TIMER = register("prev_web_swinging_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> PREV_WING_ANIMATION_TIMER = register("prev_wing_animation_timer", DataType.FLOAT, 0.0F, false);
-    public static final DataVar<Float> PUNCH_CHARGE = register("punch_charge", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> PUNCH_CHARGE = register("punch_charge", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<Boolean> PUNCH_CHARGED = register("punch_charged", DataType.BOOLEAN, false, false);
     public static final DataVar<Boolean> PUNCHMODE = register("punchmode", DataType.BOOLEAN, false, false);
-    public static final DataVar<Float> PUNCHMODE_TIMER = register("punchmode_timer", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> PUNCHMODE_TIMER = register("punchmode_timer", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<String> QR_ORIGIN = register("qr_origin", DataType.STRING, "", false);
     public static final DataVar<Float> QR_TIMER = register("qr_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> RECOIL = register("recoil", DataType.FLOAT, 0.0F, false);

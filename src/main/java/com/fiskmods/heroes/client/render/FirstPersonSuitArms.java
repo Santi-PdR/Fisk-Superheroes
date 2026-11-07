@@ -62,6 +62,12 @@ public final class FirstPersonSuitArms
             arm.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
             sleeve.render(pose, vertex, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, opacity);
         }
+        for (var effect : data.getCustom().entrySet())
+        {
+            if (effect.getKey().startsWith("fiskheroes:arm_overlay"))
+                ArmOverlaySuitRenderer.render(effect.getKey(), effect.getValue(), pose, buffers, packedLight,
+                        player, playerRenderer.getModel(), data, 1, opacity, right);
+        }
         if (DIAGNOSTICS.add(iteration.getRegistryName().toString()))
             FiskHeroes.LOGGER.info("First-person suit arm rendered: hero={}, texture={}, poseAligned={}", iteration.getRegistryName(), texture,
                     arm.x == originalArm.x && arm.y == originalArm.y && arm.z == originalArm.z
