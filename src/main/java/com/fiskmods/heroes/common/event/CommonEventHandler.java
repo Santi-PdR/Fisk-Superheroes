@@ -268,16 +268,40 @@ public class CommonEventHandler
             return;
         }
 
-        double resistance = entity.getAttributeValue(SHAttributes.FALL_RESISTANCE.get());
-        double immuneTime = resistance * 4.0D;
-
-        if (event.getDistance() <= immuneTime)
+        var data = SHDataCapabilities.getPlayer(player);
+        if (data != null && data.getHeroType() != null)
         {
-            event.setCanceled(true);
-            return;
+            var flight = data.getHeroType().getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("flight"));
+            if (flight != null && flight.isEnabled() && flight.isModifierEnabled(entity, data))
+            {
+                event.setCanceled(true);
+                return;
+            }
         }
 
-        event.setDamageMultiplier(event.getDamageMultiplier() * Math.max(0.0F, 1.0F - (float) resistance / 10.0F));
+        // Original ArmorAttribute.FALL_RESISTANCE is inverse: compute the attribute against the
+        // fall distance, then subtract its contribution from that distance. Multipliers operate
+        // before flat values (1.7's AttributeWrapper), rather than using a percent damage cap.
+        double distance = event.getDistance();
+        var attribute = entity.getAttribute(SHAttributes.FALL_RESISTANCE.get());
+        if (attribute != null)
+        {
+            double modified = distance;
+            for (var modifier : attribute.getModifiers())
+                if (modifier.getOperation() != net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION)
+                    modified *= 1.0D + modifier.getAmount();
+            modified += attribute.getBaseValue();
+            for (var modifier : attribute.getModifiers())
+                if (modifier.getOperation() == net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION)
+                    modified += modifier.getAmount();
+            distance = 2.0D * distance - modified;
+        }
+        if (data != null)
+        {
+            float scale = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SCALE);
+            if (scale > 1.0F) distance /= scale;
+        }
+        event.setDistance((float) distance);
     }
 
     @SubscribeEvent

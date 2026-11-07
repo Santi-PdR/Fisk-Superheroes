@@ -505,6 +505,49 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void fallResistanceUsesDistanceAndFlightRules(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var vision = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        var obsidian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:obsidian");
+        if (data == null || flash == null || vision == null || obsidian == null)
+        { helper.fail("Fall test heroes or player data missing"); return; }
+        data.setHero(flash.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 20.0F, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (fall.isCanceled() || Math.abs(fall.getDistance() - 16.0F) > 0.001F || fall.getDamageMultiplier() != 1.0F)
+        { helper.fail("The Flash's flat four-block resistance must subtract four from fall distance"); return; }
+        data.setHero(vision.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 100.0F, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (fall.isCanceled() || Math.abs(fall.getDistance()) > 0.001F)
+        { helper.fail("Vision's multiplicative resistance must negate the fall distance"); return; }
+        data.setHero(obsidian.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, false);
+        fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 20.0F, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (fall.isCanceled() || Math.abs(fall.getDistance() - 16.0F) > 0.001F)
+        { helper.fail("Disabled flight must not grant fall immunity"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, true);
+        fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 20.0F, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (!fall.isCanceled()) { helper.fail("Enabled flight must cancel fall damage"); return; }
+        data.setHero(flash.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 2.0F);
+        fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 20.0F, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (Math.abs(fall.getDistance() - 8.0F) > 0.001F)
+            helper.fail("Giant scale must divide the distance remaining after resistance");
+        else helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void jumpingUsesHeroHeightAndActiveLeapCard(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
