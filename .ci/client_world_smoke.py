@@ -307,6 +307,28 @@ def main():
             if after != ['true', 'false']:
                 raise RuntimeError(f'Combined input did not release exactly once: {after}')
             xdo('key', 'F6')
+            # Repulsors are an interaction while aiming, not an extra suit key. Verify a
+            # real use click reaches the authoritative server, and cannot fire after release.
+            command('clear @s')
+            command('suit fiskheroes:iron_man')
+            command('tp @s 0 250 0 0 0')
+            wait_for(r'\[CHAT\] Equipped Iron Man|\[Dev: Equipped Iron Man', 45, 'equip Iron Man', process)
+            time.sleep(2)
+            shot = r'Aimed suit shot: player=Dev, modifier=fiskheroes:repulsor_blast'
+            before_shots = len(re.findall(shot, log.read_text(errors='replace')))
+            xdo('keydown', 'c')
+            try:
+                wait_for(r'Ability input accepted: hero=fiskheroes:iron_man, index=1', 45, 'Iron Man aims', process)
+                time.sleep(1)
+                xdo('click', '3')
+                wait_for_count(shot, before_shots + 1, 45, 'aimed use fires an Iron Man repulsor', process)
+            finally:
+                xdo('keyup', 'c')
+            time.sleep(2)
+            xdo('click', '3')
+            time.sleep(2)
+            if len(re.findall(shot, log.read_text(errors='replace'))) != before_shots + 1:
+                raise RuntimeError('Iron Man fired a repulsor after releasing aim')
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
