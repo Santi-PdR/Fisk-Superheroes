@@ -256,6 +256,9 @@ public final class ModifierHandler
         var attribute = entity.getAttribute(com.fiskmods.heroes.common.hero.attribute.SHAttributes.JUMP_HEIGHT.get());
         double height = attribute != null ? attribute.getValue() : 1.0D;
         entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.15D * (height - 1.0D) + 0.185D * (scale - 1.0D), 0));
+        com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Suit jump hero={} side={} vertical={}",
+                data.getHeroType().getRegistryName(), entity.level().isClientSide ? "client" : "server",
+                entity.getDeltaMovement().y);
         if (data.getHeroType().getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging"))
                 && data.getData().get(Vars.TICKS_SINCE_SWINGING) < 5)
             data.getData().set(Vars.TICKS_SINCE_SWINGING, (short) 5);

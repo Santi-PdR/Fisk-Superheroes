@@ -110,6 +110,25 @@ def main():
             xdo('mouseup', '3')
             wait_for(r'Suit shield blocking changed: entity=Dev, blocking=false', 45,
                      'releasing use lowers the shield on the server', process)
+            # Check the local-player jump event after a real keypress. This measures the
+            # initial impulse only, not the resulting trajectory or maximum height.
+            command('fill ~-3 119 ~-3 ~3 119 ~3 minecraft:stone')
+            command('tp @s ~ 120 ~')
+            command('suit fiskheroes:spider_man')
+            wait_for(r'\[CHAT\] Equipped Spider-Man|\[Dev: Equipped Spider-Man', 45,
+                     'equip Spider-Man', process)
+            command('gamemode survival')
+            time.sleep(4)  # Wait for the player to land and the suit attributes to sync.
+            xdo('keydown', 'space')
+            time.sleep(0.3)
+            xdo('keyup', 'space')
+            wait_for(r'Suit jump hero=fiskheroes:spider_man side=client vertical=', 45,
+                     'Spider-Man jump event on the client', process)
+            match = re.search(r'Suit jump hero=fiskheroes:spider_man side=client vertical=([-+0-9.eE]+)',
+                              log.read_text(errors='replace'))
+            if not match or float(match.group(1)) < 0.75:
+                raise RuntimeError(f'Spider-Man jump impulse too small: {match.group(1) if match else "missing"}')
+            print('PASS: Spider-Man local jump impulse', match.group(1), flush=True)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
