@@ -124,20 +124,37 @@ final class ParticleEmitterRenderer
         double spread = firstPerson ? 1.2D : 0.2D;
         double motionFactor = firstPerson ? -0.5D : 1.0D;
         Random random = new Random();
-        float[] color = cloudColor(definition, random);
-        var particle = new DustParticleOptions(new Vector3f(color[0], color[1], color[2]), 1.0F);
         Vec3 velocity = player.getDeltaMovement().scale(motionFactor);
-        Level level = player.level();
-        if (firstPerson && FIRST_PERSON_CLOUD_DIAGNOSTICS.add(id.toString()))
-            FiskHeroes.LOGGER.info("First-person particle cloud emitted: {}", id);
         for (int i = 0; i < amount; ++i)
         {
-            level.addParticle(particle,
-                    player.getX() + randomOffset(random, spread),
+            Vec3 point = new Vec3(player.getX() + randomOffset(random, spread),
                     player.getY() + player.getBbHeight() * 0.5D + randomOffset(random, spread),
-                    player.getZ() + randomOffset(random, spread),
-                    velocity.x, velocity.y, velocity.z);
+                    player.getZ() + randomOffset(random, spread));
+            if (spawnCloudSmoke(point, velocity, cloudColor(definition, random), firstPerson)
+                    && firstPerson && FIRST_PERSON_CLOUD_DIAGNOSTICS.add(id.toString()))
+                FiskHeroes.LOGGER.info("First-person particle cloud emitted: {}", id);
         }
+    }
+
+    /** Use the animated smoke sprite rather than a solid dust square, retaining pack color. */
+    private static boolean spawnCloudSmoke(Vec3 point, Vec3 velocity, float[] color, boolean firstPerson)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null) return false;
+        double distance = mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(point);
+        // Vanilla applies the same 32-block cutoff and particle setting to normal particles.
+        // Avoid spawning a billboard on top of the camera in first person.
+        if (distance > 1024.0D || firstPerson && distance < 0.49D) return false;
+        var setting = mc.options.particles().get();
+        if (setting == net.minecraft.client.ParticleStatus.MINIMAL
+                || setting == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0)
+            return false;
+        var particle = mc.particleEngine.createParticle(ParticleTypes.SMOKE, point.x, point.y, point.z,
+                velocity.x, velocity.y, velocity.z);
+        if (particle == null) return false;
+        particle.setColor(color[0], color[1], color[2]);
+        if (firstPerson) particle.scale(0.6F);
+        return true;
     }
 
     private static JsonObject loadCloud(ResourceLocation id)
@@ -164,6 +181,17 @@ final class ParticleEmitterRenderer
         float[] randoms = { random.nextFloat(), random.nextFloat(), random.nextFloat() };
         JsonObject channels = definition.has("color") && definition.get("color").isJsonObject()
                 ? definition.getAsJsonObject("color") : new JsonObject();
+        // Some clouds (for example the Monitor) use whole-color hex endpoints
+        // instead of per-channel objects.
+        if (channels.has("start") && channels.has("end")
+                && channels.get("start").isJsonPrimitive() && channels.get("end").isJsonPrimitive()
+                && channels.get("start").getAsJsonPrimitive().isString()
+                && channels.get("end").getAsJsonPrimitive().isString())
+        {
+            float[] color = com.fiskmods.heroes.common.util.CloudColorMath.hexGradient(
+                    channels.get("start").getAsString(), channels.get("end").getAsString());
+            if (color != null) return color;
+        }
         JsonElement[] specs = new JsonElement[3];
         int[] links = { 0, 1, 2 };
         String[] names = { "red", "green", "blue" };
@@ -305,10 +333,8 @@ final class ParticleEmitterRenderer
                     .add(control2.scale(3.0D * inv * t * t))
                     .add(end.scale(t * t * t));
             float[] color = cloud != null ? cloudColor(cloud, random) : null;
-            ParticleOptions particle = color != null
-                    ? new DustParticleOptions(new Vector3f(color[0], color[1], color[2]), 1.0F)
-                    : ParticleTypes.SMOKE;
-            player.level().addParticle(particle, point.x, point.y, point.z, 0.0D, 0.005D, 0.0D);
+            if (color != null) spawnCloudSmoke(point, new Vec3(0.0D, 0.005D, 0.0D), color, firstPerson);
+            else player.level().addParticle(ParticleTypes.SMOKE, point.x, point.y, point.z, 0.0D, 0.005D, 0.0D);
         }
     }
 

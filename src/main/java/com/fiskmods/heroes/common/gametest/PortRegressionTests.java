@@ -627,6 +627,17 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void cloudHexColorsPreserveMonitorBlue(GameTestHelper helper)
+    {
+        float[] color = com.fiskmods.heroes.common.util.CloudColorMath.hexGradient("0x00B8FF", "0x004BB2");
+        if (color == null || color[0] != 0.0F || Math.abs(color[1] - 259.0F / 510.0F) > 0.0001F
+                || Math.abs(color[2] - 433.0F / 510.0F) > 0.0001F
+                || com.fiskmods.heroes.common.util.CloudColorMath.hexGradient("invalid", "0x004BB2") != null)
+        { helper.fail("Hex cloud gradients must retain the configured RGB values"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void glidingPoseOpensAndFoldsOnDive(GameTestHelper helper)
     {
         float folded = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(0.0F, 0.0D, 0.0D);

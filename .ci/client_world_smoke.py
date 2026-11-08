@@ -202,6 +202,7 @@ def main():
                      45, 'first-person suit arm matches the actual vanilla arm pose', process)
             # Obsidian disappears in shadowform, including the local hand. Its cloud
             # must still emit in first person without relying on a hand/player render.
+            command('tp @s 0 180 0 0 0')
             command('suit fiskheroes:obsidian')
             wait_for(r'\[CHAT\] Equipped Obsidian|\[Dev: Equipped Obsidian', 45, 'equip Obsidian', process)
             xdo('key', 'c')
@@ -209,6 +210,7 @@ def main():
                      'activate Obsidian shadowform', process)
             wait_for(r'First-person particle cloud emitted: fiskheroes:shadow_smoke', 45,
                      'shadow cloud emits without a rendered first-person hand', process)
+            time.sleep(2)
             subprocess.run(['scrot', 'ci-shadow-screenshot.jpg'], check=True, timeout=30)
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
