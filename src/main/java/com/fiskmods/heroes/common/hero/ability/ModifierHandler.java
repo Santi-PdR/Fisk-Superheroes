@@ -80,6 +80,8 @@ public final class ModifierHandler
                     || "potion_immunity".equals(entry.getModifier().getId().getPath())) continue;
             if (!entry.isEnabled() || !entry.isModifierEnabled(entity, data))
             {
+                if (entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("wall_crawling")))
+                    data.getData().set(Vars.WALL_CRAWLING, (byte) 0);
                 continue;
             }
 

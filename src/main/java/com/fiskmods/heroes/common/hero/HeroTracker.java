@@ -147,6 +147,8 @@ public final class HeroTracker
         // particular, a speed toggle left behind used to survive taking the suit off.
         if (!hasModifier(current, "super_speed"))
             com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.disable(player);
+        if (!hasModifier(current, "wall_crawling"))
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING, (byte) 0);
         if (!hasModifier(current, "slow_motion"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SLOW_MOTION, false);

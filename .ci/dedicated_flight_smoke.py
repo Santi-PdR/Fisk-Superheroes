@@ -188,6 +188,45 @@ def main():
                          SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
                 raise RuntimeError('Player disconnected during passive flight or its descent')
             print('PASS: dedicated passive flight smoke completed', flush=True)
+            # Test actual client prediction and synchronized movement keys on a tall wall.
+            command('gamemode creative Dev')
+            command('tp Dev 0 180 20 0 0')
+            command('fill -2 179 18 2 179 26 minecraft:stone')
+            command('fill -2 180 18 2 210 26 minecraft:air')
+            command('fill -2 180 22 2 210 22 minecraft:stone')
+            command('suit fiskheroes:spider_man')
+            wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Spider-Man', 30, 'Spider-Man equipped on dedicated server', client)
+            command('tp Dev 0.5 180 21.65 0 0')
+            command('gamemode survival Dev')
+            command('execute store result score #crawlstart flight_test run data get entity Dev Pos[1] 100')
+            xdo('keydown', 'w')
+            xdo('keydown', 'space')
+            time.sleep(0.3)
+            xdo('keyup', 'space')
+            time.sleep(3)
+            xdo('keyup', 'w')
+            command('execute store result score #crawltop flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #crawldelta flight_test = #crawltop flight_test')
+            command('scoreboard players operation #crawldelta flight_test -= #crawlstart flight_test')
+            command('execute if score #crawldelta flight_test matches 200.. run say WALL_CLIMB_UP_OK')
+            wait_for(SERVER_LOG, r'WALL_CLIMB_UP_OK', 20, 'Spider-Man climbs a wall in survival', server)
+            # No directional input: contact should survive without repeated horizontal collisions.
+            time.sleep(6)
+            command('execute store result score #crawlrest flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #crawldelta flight_test = #crawlrest flight_test')
+            command('scoreboard players operation #crawldelta flight_test -= #crawltop flight_test')
+            command('execute if score #crawldelta flight_test matches -100..100 run say WALL_CLIMB_REST_OK')
+            wait_for(SERVER_LOG, r'WALL_CLIMB_REST_OK', 20, 'Spider-Man stays attached while idle', server)
+            xdo('keydown', 's')
+            time.sleep(2)
+            xdo('keyup', 's')
+            command('execute store result score #crawloff flight_test run data get entity Dev Pos[1] 100')
+            command('execute if score #crawloff flight_test < #crawlrest flight_test run say WALL_CLIMB_RELEASE_OK')
+            wait_for(SERVER_LOG, r'WALL_CLIMB_RELEASE_OK', 20, 'moving away releases the wall', server)
+            if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
+                         SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
+                raise RuntimeError('Player disconnected during wall crawling')
+            print('PASS: dedicated wall crawl smoke completed', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

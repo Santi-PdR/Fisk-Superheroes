@@ -616,42 +616,52 @@ class ModifierWallCrawling extends Modifier
         super(id);
     }
 
-    /** Crawl states stored in the {@code wall_crawling} data variable. */
+    /** This port currently implements vertical wall contact, not ceiling orientation. */
     static final byte CRAWL_NONE = 0;
     static final byte CRAWL_WALL = 1;
-    static final byte CRAWL_CEILING = 2;
 
     @Override
     public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!(entity instanceof Player player) || player.onGround())
-        {
-            data.getData().set(Vars.WALL_CRAWLING, CRAWL_NONE);
-            return;
-        }
-
-        data.getData().set(Vars.WALL_CRAWLING, player.horizontalCollision ? CRAWL_WALL : CRAWL_NONE);
-
-        if (player.horizontalCollision)
-        {
-            Vec3 motion = player.getDeltaMovement();
-
-            if (player.zza > 0)
-            {
-                player.setDeltaMovement(motion.x, 0.2D, motion.z);
-            }
-            else if (player.isShiftKeyDown())
-            {
-                player.setDeltaMovement(motion.x, -0.2D, motion.z);
-            }
-            else
-            {
-                player.setDeltaMovement(motion.x, 0.0D, motion.z);
-            }
-
-            player.fallDistance = 0.0F;
-        }
+        if (entity instanceof Player player) update(player, data);
     }
+
+    @Override
+    public void tickClient(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        // Remote players are driven by the server; only predict the controlling player's motion.
+        if (entity instanceof Player player && player.isLocalPlayer()) update(player, data);
+    }
+
+    private void update(Player player, SHPlayerData data)
+    {
+        boolean attached = !player.onGround() && !player.isPassenger() && !player.getAbilities().flying
+                && !player.isFallFlying() && !player.isInWater()
+                && (player.horizontalCollision || data.getData().get(Vars.WALL_CRAWLING) == CRAWL_WALL
+                    && touchingWall(player));
+        data.getData().set(Vars.WALL_CRAWLING, attached ? CRAWL_WALL : CRAWL_NONE);
+        if (!attached) return;
+
+        Vec3 motion = player.getDeltaMovement();
+        // Vanilla movement axes on a dedicated server are not the local client's key state.
+        // PacketInput maintains independent snapshots for the controlling client and server.
+        double y = com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player) > 0 ? 0.2D
+                : com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player) ? -0.2D : 0.0D;
+        player.setDeltaMovement(motion.x, y, motion.z);
+        player.fallDistance = 0.0F;
+    }
+
+    private static boolean touchingWall(Player player)
+    {
+        // Collision flags disappear while stationary. Retain contact only while an actual
+        // block collision shape is within five centimetres of the player's bounding box.
+        var box = player.getBoundingBox();
+        return player.level().getBlockCollisions(player, box.move(0.05D, 0, 0)).iterator().hasNext()
+                || player.level().getBlockCollisions(player, box.move(-0.05D, 0, 0)).iterator().hasNext()
+                || player.level().getBlockCollisions(player, box.move(0, 0, 0.05D)).iterator().hasNext()
+                || player.level().getBlockCollisions(player, box.move(0, 0, -0.05D)).iterator().hasNext();
+    }
+
 }
 
 /** Alerts the wearer of incoming danger. */

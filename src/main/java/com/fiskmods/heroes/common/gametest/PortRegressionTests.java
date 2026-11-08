@@ -88,6 +88,62 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void wallCrawlingUsesSyncedInputAndReleasesContact(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || spider == null || flash == null)
+        { helper.fail("Wall crawl setup missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                    spider.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var entry = spider.getPowerContainer().getEntry(FiskHeroes.id("wall_crawling"));
+        if (entry == null) { helper.fail("Spider-Man wall crawl missing"); return; }
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 1, 1), net.minecraft.world.level.block.Blocks.STONE);
+        helper.setBlock(new net.minecraft.core.BlockPos(2, 2, 1), net.minecraft.world.level.block.Blocks.STONE);
+        var wall = helper.absolutePos(new net.minecraft.core.BlockPos(2, 1, 1));
+        player.setPos(wall.getX() - 0.3D, wall.getY(), wall.getZ() + 0.5D);
+        player.setOnGround(false);
+        player.horizontalCollision = true;
+        player.zza = 0;
+        player.fallDistance = 9;
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 1, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y - 0.2D) > 0.0001D || player.fallDistance != 0
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 1)
+        { helper.fail("Server climb must use synchronized forward input on wall contact"); return; }
+        player.horizontalCollision = false;
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (player.getDeltaMovement().y != 0.0D
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 1)
+        { helper.fail("Standing still against the wall must retain contact"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, true, 0, 0);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y + 0.2D) > 0.0001D)
+        { helper.fail("Synchronized sneak must climb down"); return; }
+        player.setPos(wall.getX() - 1.0D, wall.getY(), wall.getZ() + 0.5D);
+        entry.getModifier().tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0)
+        { helper.fail("Wall crawl must release when leaving collision geometry"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING, (byte) 1);
+        for (int i = 0; i < 4; ++i)
+            player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                    flash.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0)
+        { helper.fail("Changing suits must clear wall crawl state"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shadowformInvisibilityPreservesPotionsAndEndsOnSuitChange(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
