@@ -20,6 +20,12 @@ public final class FlightKickGuard
         boolean active = SuitTravel.controlledFlightEntry(player) != null || ModifierFlight.hasActiveFlight(player)
                 || WallCrawlContact.hasActiveContact(player);
         Descent descent = DESCENTS.get(player);
+        if (player.getGameProfile().getName().equals("Dev") && player.tickCount % 20 == 0
+                && player.getY() > 100 && player.getZ() > 15 && player.getZ() < 25)
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("CRAWL_DEBUG y={} z={} onGround={} near={} eligible={} active={} tracked={} floating={} dy={}",
+                    player.getY(), player.getZ(), player.onGround(), WallCrawlContact.touchingWall(player),
+                    WallCrawlContact.canCrawl(player), active, descent != null,
+                    player.connection.aboveGroundTickCount, player.getDeltaMovement().y);
         if (active && descent == null)
         {
             descent = new Descent(player.getY());
