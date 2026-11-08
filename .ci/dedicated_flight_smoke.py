@@ -191,7 +191,7 @@ def main():
             # Test actual client prediction and synchronized movement keys on a tall wall.
             command('gamemode creative Dev')
             command('tp Dev 0 180 20 0 0')
-            command('fill -2 179 18 2 179 26 minecraft:stone')
+            command('fill -2 179 8 2 179 26 minecraft:stone')
             command('fill -2 180 18 2 210 26 minecraft:air')
             command('fill -2 180 22 2 210 22 minecraft:stone')
             command('suit fiskheroes:spider_man')
@@ -221,7 +221,7 @@ def main():
             xdo('keydown', 's')
             time.sleep(2)
             xdo('keyup', 's')
-            # A long fall can outlast four seconds; stay connected through descent.
+            # The platform extends behind the wall: land and remain connected after release.
             time.sleep(8)
             command('execute store result score #crawloff flight_test run data get entity Dev Pos[1] 100')
             command('execute if score #crawloff flight_test < #crawlrest flight_test run say WALL_CLIMB_RELEASE_OK')

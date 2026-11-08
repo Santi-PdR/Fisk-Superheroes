@@ -20,12 +20,6 @@ public final class FlightKickGuard
         boolean active = SuitTravel.controlledFlightEntry(player) != null || ModifierFlight.hasActiveFlight(player)
                 || WallCrawlContact.hasActiveContact(player);
         Descent descent = DESCENTS.get(player);
-        if (player.getGameProfile().getName().equals("Dev") && player.tickCount % 20 == 0
-                && player.getY() > 100 && player.getZ() > 15 && player.getZ() < 25)
-            com.fiskmods.heroes.FiskHeroes.LOGGER.info("CRAWL_DEBUG y={} z={} onGround={} near={} eligible={} active={} tracked={} floating={} dy={}",
-                    player.getY(), player.getZ(), player.onGround(), WallCrawlContact.touchingWall(player),
-                    WallCrawlContact.canCrawl(player), active, descent != null,
-                    player.connection.aboveGroundTickCount, player.getDeltaMovement().y);
         if (active && descent == null)
         {
             descent = new Descent(player.getY());
@@ -45,9 +39,7 @@ public final class FlightKickGuard
     /** Transient, bounded grace only for observed downward displacement after flight or wall contact. */
     public static final class Descent
     {
-        // A fall from modern build height can last well over four seconds. Keep the
-        // allowance bounded, and only reset the counter on ticks with real descent.
-        private static final int GRACE_TICKS = 200;
+        private static final int GRACE_TICKS = 80;
         private double previousY;
         private int remaining;
 

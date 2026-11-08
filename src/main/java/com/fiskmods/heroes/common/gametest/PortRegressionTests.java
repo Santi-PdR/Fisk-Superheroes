@@ -27,7 +27,7 @@ public final class PortRegressionTests
                 || state.update(false, 201.0D, false) || !state.update(false, 200.5D, false))
         { helper.fail("Only active flight or real downward motion may reset the floating counter"); return; }
         double y = 200.5D;
-        for (int i = 0; i < 200; ++i) state.update(false, y -= 0.5D, false);
+        for (int i = 0; i < 80; ++i) state.update(false, y -= 0.5D, false);
         if (!state.isFinished() || state.update(false, y - 1.0D, false))
         { helper.fail("Post-flight descent exemption must expire"); return; }
         var landed = new com.fiskmods.heroes.common.hero.ability.FlightKickGuard.Descent(100.0D);
