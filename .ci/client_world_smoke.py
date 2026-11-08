@@ -332,6 +332,35 @@ def main():
             time.sleep(2)
             if len(re.findall(shot, log.read_text(errors='replace'))) != before_shots + 1:
                 raise RuntimeError('Iron Man fired a repulsor after releasing aim')
+            # Vision's charged beam should pass through two targets, stop at a wall and
+            # render via the charged-beam model rather than the arm-projection effect.
+            command('suit fiskheroes:vision')
+            command('tp @s 0 180 0 0 0')
+            time.sleep(2)
+            command('fill -2 179 0 2 179 14 minecraft:stone')
+            command('fill -2 180 0 2 184 14 minecraft:air')
+            command('fill -1 181 10 1 183 10 minecraft:stone')
+            command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,NoGravity:1b,Tags:["beam_first"]}')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Tags:["beam_second"]}')
+            command('summon minecraft:iron_golem 0.5 180 12.5 {NoAI:1b,NoGravity:1b,Tags:["beam_blocked"]}')
+            command('tp @s 0 180 0 0 0')
+            time.sleep(2)
+            firing = r'Charged beam firing: entity=Dev, charge=1\.0'
+            before_firing = len(re.findall(firing, log.read_text(errors='replace')))
+            xdo('keydown', 'c')
+            try:
+                wait_for_count(firing, before_firing + 1, 60, 'Vision charged beam fires', process)
+                wait_for(r'Charged beam render path: hero=fiskheroes:vision, length=', 45,
+                         'Vision charged beam reaches the client render path', process)
+                time.sleep(2)
+            finally:
+                xdo('keyup', 'c')
+            command('scoreboard objectives add beam_health dummy')
+            for tag, name in [('beam_first', '#first'), ('beam_second', '#second'), ('beam_blocked', '#blocked')]:
+                command(f'execute store result score {name} beam_health run data get entity @e[type=minecraft:iron_golem,tag={tag},limit=1] Health 1')
+            command('execute if score #first beam_health matches ..99 if score #second beam_health matches ..99 if score #blocked beam_health matches 100 run say VISION_BEAM_TARGETS_OK')
+            wait_for(r'\[CHAT\].*VISION_BEAM_TARGETS_OK', 45,
+                     'charged beam damages both targets and does not pass the wall', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')

@@ -25,6 +25,8 @@ import net.minecraftforge.fml.common.Mod;
 @Mod.EventBusSubscriber(modid = FiskHeroes.MODID, value = Dist.CLIENT)
 public final class ProjectionBeamRenderHandler
 {
+    private static final java.util.Set<net.minecraft.resources.ResourceLocation> LOGGED_CHARGED_BEAMS = new java.util.HashSet<>();
+
     private ProjectionBeamRenderHandler()
     {
     }
@@ -120,6 +122,11 @@ public final class ProjectionBeamRenderHandler
             VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
             drawRibbon(consumer, poseStack.last(), start, end, right.scale(width), color, alpha);
             drawRibbon(consumer, poseStack.last(), start, end, up.scale(width * 0.55D), color, alpha);
+            if (chargedActivity > 0.0F && effect == model.getCustom().get("fiskheroes:charged_beam")
+                    && LOGGED_CHARGED_BEAMS.add(iteration.getRegistryName()))
+            {
+                FiskHeroes.LOGGER.info("Charged beam render path: hero={}, length={}", iteration.getRegistryName(), length);
+            }
             poseStack.popPose();
             rendered = true;
         }
