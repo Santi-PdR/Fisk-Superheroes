@@ -112,6 +112,27 @@ def main():
                      45, 'Deadpool stowed pistols use the suit livery', process)
             time.sleep(2)
             subprocess.run(['scrot', 'ci-equipped-deadpool.jpg'], check=True, timeout=30)
+            command('item replace entity @s weapon.mainhand with fiskheroes:katana{Dual:1b}')
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
+                     45, 'Deadpool held katana uses livery in third person', process)
+            xdo('key', 'F5')
+            time.sleep(1)
+            xdo('key', 'F5')
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
+                     45, 'Deadpool held katana uses livery in first person', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-held-katana.jpg'], check=True, timeout=30)
+            command('item replace entity @s weapon.mainhand with fiskheroes:desert_eagle')
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun\.png',
+                     45, 'Deadpool held pistol uses suit livery', process)
+            command('suit fiskheroes:deathstroke_dceu')
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun\.png',
+                     45, 'changing suits changes held weapon livery', process)
+            command('suit fiskheroes:the_flash')
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default',
+                     45, 'weapon without livery restores its default texture', process)
+            command('clear @s')
+            xdo('key', 'F5')  # Restore third-person rear view.
             command('suit fiskheroes:batman_dceu')
             wait_for(r'Equipped suit item rendered: hero=fiskheroes:batman_dceu, item=fiskheroes:grappling_gun',
                      45, 'Batman stowed grappling gun renders', process)

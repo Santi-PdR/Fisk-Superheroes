@@ -461,7 +461,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 poseStack.translate(0.0F, 0.3F, 0.0F);
             }
             ResourceLocation itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-            ResourceLocation livery = resolveStowedLivery(model, player, itemId);
+            ResourceLocation livery = SuitItemRenderContext.resolveLivery(model, player, itemId);
             if (EQUIPPED_ITEM_DIAGNOSTICS.add(iteration.getRegistryName() + "|" + itemId))
             {
                 var itemScale = poseStack.last().pose().getScale(new org.joml.Vector3f());
@@ -481,16 +481,6 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.KATANA.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN.get());
-    }
-
-    private static ResourceLocation resolveStowedLivery(HeroModelData model, AbstractClientPlayer player, ResourceLocation itemId)
-    {
-        var liveries = model.getCustom().get("fiskheroes:livery");
-        if (liveries == null || !itemId.getNamespace().equals("fiskheroes") || !liveries.has(itemId.getPath())) return null;
-        var alias = liveries.get(itemId.getPath());
-        if (!alias.isJsonPrimitive() || !alias.getAsJsonPrimitive().isString()) return null;
-        String resource = model.getResources().get(alias.getAsString());
-        return com.fiskmods.heroes.client.texture.TextureResolver.resolve(resource, player);
     }
 
     private static final java.util.Set<String> EQUIPPED_ITEM_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
