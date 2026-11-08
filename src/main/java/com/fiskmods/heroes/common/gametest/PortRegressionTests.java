@@ -678,6 +678,8 @@ public final class PortRegressionTests
         player.setXRot(0.0F);
         player.setDeltaMovement(Vec3.ZERO);
         data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLYING, true);
+        if (com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlightEntry(player) == null)
+        { helper.fail("Active controlled flight must qualify for the floating exemption"); return; }
         double y = player.getY();
         for (int i = 0; i < 100; ++i)
             if (!com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlight(player))
@@ -700,6 +702,8 @@ public final class PortRegressionTests
         { helper.fail("Creative flight must retain vanilla travel"); return; }
         player.getAbilities().flying = false;
         data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLYING, false);
+        if (com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlightEntry(player) != null)
+        { helper.fail("Inactive suit flight must not qualify for the floating exemption"); return; }
         if (com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlight(player))
         { helper.fail("Disabled suit flight must retain vanilla travel"); return; }
         com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);

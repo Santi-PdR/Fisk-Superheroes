@@ -7,6 +7,7 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.modifier.ModEffects;
 import com.fiskmods.heroes.common.hero.modifier.ModifierControlledFlight;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
+import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
@@ -23,18 +24,25 @@ public final class SuitTravel
         return controlledFlight(entity) || GlidingTravel.travel(entity);
     }
 
-    public static boolean controlledFlight(LivingEntity entity)
+    /** Exactly the same eligibility is used by movement and the server floating exemption. */
+    public static ModifierEntry controlledFlightEntry(Player player)
     {
-        if (!(entity instanceof Player player) || entity.level().isClientSide && !player.isLocalPlayer()
-                || player.isPassenger() || player.getAbilities().flying || player.isFallFlying()
-                || player.hasEffect(ModEffects.TUTRIDIUM.get())) return false;
+        if (player.level().isClientSide && !player.isLocalPlayer() || player.isPassenger()
+                || player.getAbilities().flying || player.isFallFlying()
+                || player.hasEffect(ModEffects.TUTRIDIUM.get())) return null;
         var data = SHDataCapabilities.getPlayer(player);
         var hero = data != null ? data.getHeroType() : null;
-        if (hero == null || !data.getData().get(Vars.FLYING)) return false;
-        var entry = hero.getPowerContainer().getEntries().stream()
+        if (hero == null || !data.getData().get(Vars.FLYING)) return null;
+        return hero.getPowerContainer().getEntries().stream()
                 .filter(candidate -> candidate.getModifier() instanceof ModifierControlledFlight
                         && candidate.isEnabled() && candidate.isModifierEnabled(player, data))
                 .findFirst().orElse(null);
+    }
+
+    public static boolean controlledFlight(LivingEntity entity)
+    {
+        if (!(entity instanceof Player player)) return false;
+        var entry = controlledFlightEntry(player);
         if (entry == null) return false;
 
         boolean boost = entry.getBoolean(player, PowerProperty.CAN_BOOST) && player.isSprinting();
