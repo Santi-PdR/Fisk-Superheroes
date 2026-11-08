@@ -150,13 +150,19 @@ def main():
             wait_for(SERVER_LOG, r'TENTACLE_HIT_OK', 20, 'dedicated tentacle jab hits exposed target', server)
             print('PASS: dedicated client tentacle smoke completed', flush=True)
             # Passive flight has different physics and is gated by Obsidian's shadowform.
+            # Stage on a high platform before enabling the power, so its velocity updates
+            # cannot interfere with the long teleport acknowledgement.
+            command('tp Dev 0 230 0 0 0')
+            command('fill -2 229 -2 2 229 2 minecraft:stone')
+            command('tp Dev 0 230 0 0 0')
             command('suit fiskheroes:obsidian')
             wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Obsidian', 30, 'Obsidian suit equipped', client)
+            command('gamemode survival Dev')
             xdo('key', 'c')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM',
                      30, 'activate shadowform through real client', server)
-            command('gamemode survival Dev')
-            command('tp Dev 0 230 0 0 0')
+            # Remove the platform and capture a genuinely airborne starting position.
+            command('fill -2 229 -2 2 229 2 minecraft:air')
             command('execute store result score #start flight_test run data get entity Dev Pos[1] 100')
             xdo('keydown', 'space')
             time.sleep(3)
