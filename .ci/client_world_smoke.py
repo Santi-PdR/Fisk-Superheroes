@@ -319,6 +319,9 @@ def main():
             # real use click reaches the authoritative server, and cannot fire after release.
             command('clear @s')
             command('suit fiskheroes:iron_man')
+            # Stand on a small high platform so this shooting test does not rely on a
+            # previous hero leaving flight active or on falling past the target area.
+            command('setblock 0 249 0 minecraft:stone')
             command('tp @s 0 250 0 0 0')
             wait_for(r'\[CHAT\] Equipped Iron Man|\[Dev: Equipped Iron Man', 45, 'equip Iron Man', process)
             time.sleep(2)
