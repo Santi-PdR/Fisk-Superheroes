@@ -443,8 +443,9 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
 
             poseStack.pushPose();
             anchor.translateAndRotate(poseStack);
-            poseStack.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
-            translate(poseStack, item.get("offset"));
+            // Only the pack's anchor offset is in model pixels. ItemRenderer consumes
+            // block units; scaling its entire pose by 1/16 makes the weapon microscopic.
+            translatePixels(poseStack, item.get("offset"));
             rotate(poseStack, item.get("rotation"));
             float scale = item.has("scale") ? item.get("scale").getAsFloat() : 1.0F;
             poseStack.scale(scale, scale, scale);
@@ -456,10 +457,28 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-50.0F));
             poseStack.scale(2.0F / 3.0F, 2.0F / 3.0F, 2.0F / 3.0F);
             poseStack.translate(0.0F, 0.3F, 0.0F);
+            if (EQUIPPED_ITEM_DIAGNOSTICS.add(iteration.getRegistryName().toString()))
+            {
+                var itemScale = poseStack.last().pose().getScale(new org.joml.Vector3f());
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Equipped suit item rendered: hero={}, item={}, poseScale={}",
+                        iteration.getRegistryName(), net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()), itemScale.x);
+            }
             Minecraft.getInstance().getItemRenderer().renderStatic(player, stack,
                     net.minecraft.world.item.ItemDisplayContext.NONE, false, poseStack, buffer,
                     player.level(), packedLight, OverlayTexture.NO_OVERLAY, player.getId());
             poseStack.popPose();
+        }
+    }
+
+    private static final java.util.Set<String> EQUIPPED_ITEM_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    private static void translatePixels(PoseStack pose, com.google.gson.JsonElement value)
+    {
+        if (value != null && value.isJsonArray() && value.getAsJsonArray().size() >= 3)
+        {
+            var vector = value.getAsJsonArray();
+            pose.translate(vector.get(0).getAsDouble() / 16.0D, vector.get(1).getAsDouble() / 16.0D,
+                    vector.get(2).getAsDouble() / 16.0D);
         }
     }
 

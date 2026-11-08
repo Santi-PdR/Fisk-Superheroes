@@ -16,9 +16,10 @@ def wait_for(pattern, seconds, label, process):
     deadline = time.monotonic() + seconds
     while time.monotonic() < deadline:
         text = log.read_text(errors='replace') if log.exists() else ''
-        if expression.search(text):
+        match = expression.search(text)
+        if match:
             print('PASS:', label, flush=True)
-            return
+            return match
         if process.poll() is not None:
             raise RuntimeError(f'Client exited before {label}, code {process.returncode}')
         time.sleep(1)
@@ -86,6 +87,14 @@ def main():
             wait_for(r'Ability input accepted: hero=fiskheroes:the_flash, index=1', 45,
                      'server received the speedster ability key', process)
             time.sleep(3)
+            # The shield stowed on Captain America's suit is rendered with the item
+            # renderer, whose units are blocks rather than model pixels.
+            command('suit fiskheroes:captain_america')
+            match = wait_for(r'Equipped suit item rendered: hero=fiskheroes:captain_america, item=fiskheroes:captain_americas_shield, poseScale=([-+0-9.eE]+)',
+                             45, 'Captain America stowed shield render', process)
+            if not 0.60 < float(match.group(1)) < 0.65:
+                raise RuntimeError(f'Unexpected equipped shield scale: {match.group(1)}')
+            subprocess.run(['scrot', 'ci-equipped-shield.jpg'], check=True, timeout=30)
             command('suit fiskheroes:vision')
             wait_for(r'\[CHAT\] Equipped Vision|\[Dev: Equipped Vision', 45, 'equip Vision', process)
             # A high platform and a short wall make the movement test independent of terrain.
