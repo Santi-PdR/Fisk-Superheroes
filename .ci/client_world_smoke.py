@@ -205,9 +205,11 @@ def main():
                      45, 'first-person suit arm matches the actual vanilla arm pose', process)
             # Obsidian disappears in shadowform, including the local hand. Its cloud
             # must still emit in first person without relying on a hand/player render.
-            command('tp @s 0 180 0 0 0')
+            command('tp @s 0 185 0 0 0')
+            command('fill -4 179 -4 4 179 4 minecraft:stone')
             command('suit fiskheroes:obsidian')
             wait_for(r'\[CHAT\] Equipped Obsidian|\[Dev: Equipped Obsidian', 45, 'equip Obsidian', process)
+            command('tp @s 0 180 0 0 0')
             xdo('key', 'c')
             wait_for(r'Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM', 45,
                      'activate Obsidian shadowform', process)
