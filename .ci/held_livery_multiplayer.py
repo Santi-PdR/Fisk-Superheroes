@@ -39,7 +39,7 @@ def main():
             # Flat-world slimes can kill the observer while the second client starts.
             server.stdin.write('difficulty peaceful\n')
             server.stdin.flush()
-            wait_for(server_log, r'(?i)set game difficulty to peaceful', 30, 'prevent hostile mobs during startup', server)
+            wait_for(server_log, r'(?i)difficulty has been set to peaceful', 30, 'prevent hostile mobs during startup', server)
             observer = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-livery-observer',
                                          '-PciUsername=Dev', '-PquickPlayServer=127.0.0.1:25565', *common],
                                         stdout=oout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
