@@ -184,6 +184,10 @@ public final class Vars
     public static final DataVar<String> TELEPORT_DEST = register("teleport_dest", DataType.STRING, "", false);
     public static final DataVar<Float> TELEPORT_TIMER = register("teleport_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> TENTACLE_EXTEND_TIMER = register("tentacle_extend_timer", DataType.FLOAT, 0.0F, false);
+    // Transient render state for the current approximation of the mechanical arms.
+    public static final DataVar<Integer> TENTACLE_VISUAL_ACTION = register("port/tentacle_visual_action", DataType.INT, 0, true);
+    public static final DataVar<Integer> TENTACLE_VISUAL_INDEX = register("port/tentacle_visual_index", DataType.INT, 0, true);
+    public static final DataVar<Float> TENTACLE_VISUAL_TIMER = register("port/tentacle_visual_timer", DataType.FLOAT_INTERP, 0.0F, true);
     public static final DataVar<Boolean> TENTACLE_LIFT = register("tentacle_lift", DataType.BOOLEAN, false, false);
     public static final DataVar<String> TENTACLES = register("tentacles", DataType.STRING, "", false);
     public static final DataVar<Boolean> TENTACLES_RETRACTING = register("tentacles_retracting", DataType.BOOLEAN, false, false);

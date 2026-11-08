@@ -143,18 +143,28 @@ def main():
             command('summon minecraft:iron_golem 0.5 180 5.5 {NoAI:1b,NoGravity:1b,Tags:["tentacle_smoke"]}')
             command('setblock 0 181 2 minecraft:stone')
             command('tp Dev 0 180 0 0 0')
+            xdo('key', 'F5')  # Render the local player and all four mechanical arms.
             xdo('key', 'g')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLES',
                      30, 'deploy tentacles through real client', server)
+            time.sleep(2)
             xdo('key', 'c')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_JAB',
                      30, 'send tentacle jab through real client', server)
+            wait_for(CLIENT_LOG, r'Tentacle action pose rendered: player=Dev, action=1, arm=[0-3]',
+                     30, 'dedicated server jab animates the client tentacle', client)
+            xdo('key', 'v')
+            wait_for(CLIENT_LOG, r'Octopus claw grab pose applied', 30,
+                     'grab opens the actual animated claw model', client)
             command('execute if data entity @e[type=minecraft:iron_golem,tag=tentacle_smoke,limit=1] {Health:100.0f} run say TENTACLE_BLOCKED_OK')
             wait_for(SERVER_LOG, r'TENTACLE_BLOCKED_OK', 20, 'dedicated tentacle jab is blocked by wall', server)
             command('setblock 0 181 2 minecraft:air')
             xdo('keydown', 'b')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_STRIKE',
                      30, 'charge tentacle strike through real client', server)
+            wait_for(CLIENT_LOG, r'Octopus claw strike pose applied', 30,
+                     'charging animates the original claw blade model', client)
+            subprocess.run(['scrot', 'ci-tentacle-charge.jpg'], check=True, timeout=30)
             time.sleep(2)
             xdo('key', 'g')
             time.sleep(1)
@@ -170,6 +180,9 @@ def main():
             command('execute if score #tentacle flight_test matches ..99 run say TENTACLE_HIT_OK')
             wait_for(SERVER_LOG, r'TENTACLE_HIT_OK', 20, 'dedicated tentacle jab hits exposed target', server)
             print('PASS: dedicated client tentacle smoke completed', flush=True)
+            xdo('key', 'F5')
+            time.sleep(1)
+            xdo('key', 'F5')  # Return to first person for the remaining tests.
             # Passive flight has different physics and is gated by Obsidian's shadowform.
             # Reuse the existing high platform, avoiding large teleports while velocity
             # packets from the previous scenario can still be in flight.

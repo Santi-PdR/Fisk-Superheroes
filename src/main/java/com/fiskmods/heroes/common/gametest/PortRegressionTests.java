@@ -578,6 +578,61 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void tentacleVisualStatesSyncAndClear(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-tentacle-visual"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:doctor_octopus");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("tentacles")) : null;
+        if (data == null || entry == null || !(entry.getModifier() instanceof
+                com.fiskmods.heroes.common.hero.modifier.ModifierTentacles tentacles))
+        { helper.fail("Doctor Octopus tentacle power is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        tentacles.activateKey(player, entry, data, "TENTACLES");
+        tentacles.activateKey(player, entry, data, "TENTACLE_JAB");
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION)
+                != com.fiskmods.heroes.common.util.TentacleVisualMath.JAB)
+        { helper.fail("A jab, including a miss, must start its visual action"); return; }
+        for (int i = 0; i < 8; ++i) tentacles.tick(player, entry, data);
+        float progress = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_TIMER);
+        var received = new com.fiskmods.heroes.common.data.var.DataContainer();
+        received.readUpdate(data.getData().writeDirty());
+        if (Math.abs(progress - 0.5F) > 0.0001F
+                || received.get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION)
+                    != com.fiskmods.heroes.common.util.TentacleVisualMath.JAB
+                || Math.abs(received.get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_TIMER) - progress) > 0.0001F
+                || com.fiskmods.heroes.common.util.TentacleVisualMath.reach(
+                    com.fiskmods.heroes.common.util.TentacleVisualMath.JAB, progress) < 0.99F)
+        { helper.fail("Tentacle action and progress must serialize and produce a lunge"); return; }
+        for (int i = 0; i < 8; ++i) tentacles.tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION) != 0)
+        { helper.fail("Finished tentacle actions must clear"); return; }
+        tentacles.activateKey(player, entry, data, "TENTACLE_STRIKE");
+        player.getPersistentData().putLong("FiskHeroesTentacleStrikeStart", level.getGameTime() - 20);
+        tentacles.tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_TIMER) < 0.99F)
+        { helper.fail("Charging must open the strike blades"); return; }
+        tentacles.onToggle(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION)
+                != com.fiskmods.heroes.common.util.TentacleVisualMath.STRIKE)
+        { helper.fail("A fully charged release must start the strike pose"); return; }
+        tentacles.activateKey(player, entry, data, "TENTACLE_STRIKE");
+        com.fiskmods.heroes.common.hero.modifier.ModifierTentacles.cancelStrike(player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION) != 0)
+        { helper.fail("Cancelling a charge must clear its pose"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void capeSegmentsAreContinuousAndHaveCorrectLength(GameTestHelper helper)
     {
         float length = 24.0F;

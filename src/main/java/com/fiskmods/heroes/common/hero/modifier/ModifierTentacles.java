@@ -1,6 +1,7 @@
 package com.fiskmods.heroes.common.hero.modifier;
 
 import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.util.TentacleVisualMath;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
@@ -46,14 +47,22 @@ public final class ModifierTentacles extends Modifier
 
         switch (key)
         {
-        case "TENTACLE_JAB" -> attack(entity, entry, entry.get(PowerProperty.DAMAGE_PROFILE),
-                entry.getFloat(PowerProperty.RANGE), "JAB_START");
-        case "TENTACLE_GRAB" -> grab(entity, entry);
+        case "TENTACLE_JAB" ->
+        {
+            startVisual(entity, data, TentacleVisualMath.JAB, true);
+            attack(entity, entry, entry.get(PowerProperty.DAMAGE_PROFILE), entry.getFloat(PowerProperty.RANGE), "JAB_START");
+        }
+        case "TENTACLE_GRAB" ->
+        {
+            startVisual(entity, data, TentacleVisualMath.GRAB, true);
+            grab(entity, entry);
+        }
         case "TENTACLE_STRIKE" ->
         {
             if (entity instanceof Player player)
             {
                 player.getPersistentData().putLong(STRIKE_START_TICK, player.level().getGameTime());
+                startVisual(entity, data, TentacleVisualMath.CHARGE, true);
                 player.getPersistentData().remove(STRIKE_CHARGED_SOUND);
                 AbilityData.playSound(entity, entry, "STRIKE_START");
             }
@@ -76,16 +85,21 @@ public final class ModifierTentacles extends Modifier
         persistent.remove(STRIKE_CHARGED_SOUND);
         if (!data.getData().get(Vars.TENTACLES_ACTIVE) || !entry.isEnabled()
                 || !entry.isModifierEnabled(player, data)
-                || player.hasEffect(ModEffects.TUTRIDIUM.get())) return;
+                || player.hasEffect(ModEffects.TUTRIDIUM.get()))
+        {
+            clearVisual(data);
+            return;
+        }
 
         JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
-        if (strike == null) return;
+        if (strike == null) { clearVisual(data); return; }
 
         int chargeTime = Math.max(1, strike.has("chargeTime") ? strike.get("chargeTime").getAsInt() : 20);
         float charge = net.minecraft.util.Mth.clamp((player.level().getGameTime() - started) / (float) chargeTime, 0.0F, 1.0F);
         float damageScale = charge * charge;
         // The source only releases the attack after the tentacle's squared charge exceeds 0.3.
-        if (damageScale <= 0.3F) return;
+        if (damageScale <= 0.3F) { clearVisual(data); return; }
+        startVisual(entity, data, TentacleVisualMath.STRIKE, false);
 
         LivingEntity target = findTarget(player, entry.getFloat(PowerProperty.RANGE));
         if (target == null) return;
@@ -107,6 +121,20 @@ public final class ModifierTentacles extends Modifier
         AbilityData.playSound(entity, entry, deployed ? "ENABLE" : "DISABLE");
     }
 
+    private static void startVisual(LivingEntity entity, SHPlayerData data, int action, boolean chooseArm)
+    {
+        if (entity.level().isClientSide) return;
+        if (chooseArm) data.getData().set(Vars.TENTACLE_VISUAL_INDEX, Math.floorMod(entity.tickCount, 4));
+        data.getData().set(Vars.TENTACLE_VISUAL_ACTION, action);
+        data.getData().set(Vars.TENTACLE_VISUAL_TIMER, 0.0F);
+    }
+
+    private static void clearVisual(SHPlayerData data)
+    {
+        data.getData().set(Vars.TENTACLE_VISUAL_ACTION, TentacleVisualMath.NONE);
+        data.getData().set(Vars.TENTACLE_VISUAL_TIMER, 0.0F);
+    }
+
     /** Cancel rather than release a charged attack on retraction, suit change or disconnect. */
     public static void cancelStrike(LivingEntity entity)
     {
@@ -114,6 +142,11 @@ public final class ModifierTentacles extends Modifier
         {
             player.getPersistentData().remove(STRIKE_START_TICK);
             player.getPersistentData().remove(STRIKE_CHARGED_SOUND);
+            if (!player.level().isClientSide)
+            {
+                SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+                if (data != null) clearVisual(data);
+            }
         }
     }
 
@@ -132,6 +165,29 @@ public final class ModifierTentacles extends Modifier
             {
                 persistent.putBoolean(STRIKE_CHARGED_SOUND, true);
                 AbilityData.playSound(player, entry, "STRIKE_CHARGED");
+            }
+        }
+
+        if (!entity.level().isClientSide)
+        {
+            int action = data.getData().get(Vars.TENTACLE_VISUAL_ACTION);
+            if (action == TentacleVisualMath.CHARGE && entity instanceof Player player)
+            {
+                if (!player.getPersistentData().contains(STRIKE_START_TICK)) clearVisual(data);
+                else
+                {
+                    JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
+                    int duration = strike != null && strike.has("chargeTime") ? Math.max(1, strike.get("chargeTime").getAsInt()) : 20;
+                    long start = player.getPersistentData().getLong(STRIKE_START_TICK);
+                    data.getData().set(Vars.TENTACLE_VISUAL_TIMER,
+                            net.minecraft.util.Mth.clamp((player.level().getGameTime() - start) / (float) duration, 0.0F, 1.0F));
+                }
+            }
+            else if (action != TentacleVisualMath.NONE)
+            {
+                float timer = data.getData().get(Vars.TENTACLE_VISUAL_TIMER) + 1.0F / TentacleVisualMath.ACTION_TICKS;
+                if (timer >= 1.0F) clearVisual(data);
+                else data.getData().set(Vars.TENTACLE_VISUAL_TIMER, timer);
             }
         }
 

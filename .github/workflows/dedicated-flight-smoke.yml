@@ -53,6 +53,7 @@ jobs:
             ci-dedicated-test.log
             ci-dedicated-server.log
             ci-dedicated-client.log
+            ci-tentacle-charge.jpg
           if-no-files-found: ignore
       - name: Publish diagnostic summary
         if: always()
@@ -61,7 +62,9 @@ jobs:
           { cat ci-dedicated-test.log 2>/dev/null || true; echo '==== server tail ===='; tail -200 ci-dedicated-server.log 2>/dev/null || true; echo '==== client tail ===='; tail -120 ci-dedicated-client.log 2>/dev/null || true; } > .ci/dedicated-flight-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+          cp ci-tentacle-charge.jpg .ci/inspection-tentacle.jpg 2>/dev/null || true
           git add -f .ci/dedicated-flight-log.txt
+          test ! -f .ci/inspection-tentacle.jpg || git add -f .ci/inspection-tentacle.jpg
           git diff --cached --quiet || git commit -m 'ci: dedicated flight smoke log [skip ci]' --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true

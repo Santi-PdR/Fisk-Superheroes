@@ -213,6 +213,8 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TENTACLES_ACTIVE, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TENTACLES_RETRACTING, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_EXTEND_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_ACTION, 0);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TENTACLE_VISUAL_TIMER, 0.0F);
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("tentacles"), false);
             com.fiskmods.heroes.common.hero.modifier.ModifierTentacles.cancelStrike(player);
         }

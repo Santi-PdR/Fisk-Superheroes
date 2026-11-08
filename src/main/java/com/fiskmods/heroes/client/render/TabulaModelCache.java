@@ -49,6 +49,19 @@ final class TabulaModelCache
     static void render(String modelType, PoseStack pose, VertexConsumer vertex, int light,
             float red, float green, float blue, float alpha, float hatTip)
     {
+        render(modelType, pose, vertex, light, red, green, blue, alpha, hatTip, null);
+    }
+
+    static void renderAnimated(String modelType, PoseStack pose, VertexConsumer vertex, int light,
+            float red, float green, float blue, float alpha, java.util.function.Consumer<ModelPart> animation)
+    {
+        render(modelType, pose, vertex, light, red, green, blue, alpha, 0.0F, animation);
+    }
+
+    private static void render(String modelType, PoseStack pose, VertexConsumer vertex, int light,
+            float red, float green, float blue, float alpha, float hatTip,
+            java.util.function.Consumer<ModelPart> animation)
+    {
         ResourceLocation id = ResourceLocation.tryParse(modelType);
         if (id == null) id = FiskHeroes.id(modelType);
         ModelPart model = MODELS.computeIfAbsent(id, TabulaModelCache::load);
@@ -72,6 +85,7 @@ final class TabulaModelCache
                     }
                 }
             }
+            if (animation != null) animation.accept(model);
             model.render(pose, vertex, light,
                     net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY, red, green, blue, alpha);
         }
@@ -121,7 +135,8 @@ final class TabulaModelCache
         JsonArray offset = array(cube, "offset", 3);
         JsonArray position = array(cube, "position", 3);
         JsonArray rotation = array(cube, "rotation", 3);
-        JsonArray scale = array(cube, "scale", 3);
+        JsonArray scale = cube.has("scale") && cube.get("scale").isJsonArray()
+                && cube.getAsJsonArray("scale").size() >= 3 ? cube.getAsJsonArray("scale") : null;
 
         float sx = (float) parentScale.x * number(scale, 0, 1.0F);
         float sy = (float) parentScale.y * number(scale, 1, 1.0F);
