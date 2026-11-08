@@ -27,6 +27,7 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
 {
     private static final ResourceLocation TEXTURE = FiskHeroes.id("textures/models/tonfa.png");
     private static TacticalTonfaItemRenderer instance;
+    private static final java.util.Set<String> POSE_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final ModelPart handle;
 
     private TacticalTonfaItemRenderer()
@@ -48,6 +49,11 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // Suit placement already supplies the anchor and rotation.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
                 pose.translate(0.5D, 0.55D, 0.5D);
@@ -66,6 +72,7 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
                 pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.66D : 0.34D, 0.5D, 0.45D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(150.0F));
+                applyHandPose(pose, context);
                 pose.scale(1.25F, -1.25F, -1.25F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
@@ -73,6 +80,7 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
                 pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.52D : 0.48D, 0.48D, 0.46D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(142.0F));
+                applyHandPose(pose, context);
                 pose.scale(1.2F, -1.2F, -1.2F);
             }
             default ->
@@ -89,6 +97,29 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
             handle.render(pose, consumer, light, overlay);
         }
         pose.popPose();
+    }
+
+    private static void applyHandPose(PoseStack pose, ItemDisplayContext context)
+    {
+        var wearer = SuitItemRenderContext.wearer();
+        if (wearer != null)
+        {
+            boolean left = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                    || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(wearer);
+            byte state = data != null ? data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE) : 0;
+            boolean swingLeft = wearer.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT;
+            if (wearer.swingingArm == net.minecraft.world.InteractionHand.OFF_HAND) swingLeft = !swingLeft;
+            boolean swinging = wearer.swinging && swingLeft == left;
+            float progress = swinging ? wearer.getAttackAnim(Minecraft.getInstance().getFrameTime()) : 0.0F;
+            float rotation = com.fiskmods.heroes.common.util.TonfaPoseMath.rotation(state, left, progress, swinging);
+            pose.mulPose(Axis.YP.rotationDegrees(rotation));
+            boolean toggled = (state & com.fiskmods.heroes.common.util.TonfaPoseMath.mask(left)) != 0;
+            String key = wearer.getUUID() + "|" + context + "|" + toggled;
+            if (POSE_DIAGNOSTICS.add(key))
+                FiskHeroes.LOGGER.info("Tonfa hand pose: wearer={}, context={}, toggled={}",
+                        wearer.getName().getString(), context, toggled);
+        }
     }
 
     private static ModelPart createModel()

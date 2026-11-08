@@ -24,6 +24,7 @@ import net.minecraft.world.level.Level;
 public final class SuitItemRenderContext
 {
     private static final ThreadLocal<ResourceLocation> TEXTURE = new ThreadLocal<>();
+    private static final ThreadLocal<LivingEntity> WEARER = new ThreadLocal<>();
     private static final Set<String> HELD_DIAGNOSTICS = ConcurrentHashMap.newKeySet();
 
     private SuitItemRenderContext() {}
@@ -58,8 +59,17 @@ public final class SuitItemRenderContext
                         wearer.getName().getString(), heroName, itemId, context, livery != null ? livery : "default");
             }
         }
-        withTexture(livery, () -> renderer.renderStatic(wearer, stack, context, leftHand, pose, buffers,
-                level, light, overlay, seed));
+        LivingEntity previous = WEARER.get();
+        WEARER.set(wearer);
+        try
+        {
+            withTexture(livery, () -> renderer.renderStatic(wearer, stack, context, leftHand, pose, buffers,
+                    level, light, overlay, seed));
+        }
+        finally
+        {
+            if (previous == null) WEARER.remove(); else WEARER.set(previous);
+        }
     }
 
     static void withTexture(@Nullable ResourceLocation texture, Runnable render)
@@ -74,6 +84,12 @@ public final class SuitItemRenderContext
         {
             if (previous == null) TEXTURE.remove(); else TEXTURE.set(previous);
         }
+    }
+
+    @Nullable
+    static LivingEntity wearer()
+    {
+        return WEARER.get();
     }
 
     static ResourceLocation textureOr(ResourceLocation fallback)

@@ -143,6 +143,30 @@ def main():
                      45, 'weapon without livery restores its default texture', process)
             command('clear @s')
             xdo('key', 'F5')  # Restore third-person rear view.
+            command('suit fiskheroes:black_canary')
+            wait_for(r'Equipped suit item rendered: hero=fiskheroes:black_canary, item=fiskheroes:tactical_tonfa, poseScale=([-+0-9.eE]+)',
+                     45, 'Black Canary stowed tonfas use centered poses', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-canary-stowed.jpg'], check=True, timeout=30)
+            command('item replace entity @s weapon.mainhand with fiskheroes:tactical_tonfa{Dual:1b}')
+            wait_for(r'Tonfa hand pose: wearer=Dev, context=THIRD_PERSON_LEFT_HAND, toggled=false',
+                     45, 'Black Canary renders the second tonfa in third person', process)
+            xdo('key', 'F5')
+            time.sleep(1)
+            xdo('key', 'F5')
+            wait_for(r'Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=false',
+                     45, 'first-person tonfa starts in the normal pose', process)
+            wait_for(r'Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_LEFT_HAND, toggled=false',
+                     45, 'first-person second tonfa uses its own state', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-tonfa-before.jpg'], check=True, timeout=30)
+            xdo('click', '1')
+            wait_for(r'Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=true',
+                     45, 'swing flips the right tonfa pose', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-tonfa-after.jpg'], check=True, timeout=30)
+            command('clear @s')
+            xdo('key', 'F5')  # Return to third-person rear view.
             command('suit fiskheroes:batman_dceu')
             wait_for(r'Equipped suit item rendered: hero=fiskheroes:batman_dceu, item=fiskheroes:grappling_gun',
                      45, 'Batman stowed grappling gun renders', process)

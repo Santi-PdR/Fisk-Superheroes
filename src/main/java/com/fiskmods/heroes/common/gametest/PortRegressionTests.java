@@ -20,6 +20,44 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void tonfaSwingUsesIndependentPhysicalHandBits(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "tonfa-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var item = com.fiskmods.heroes.common.item.ModItems.TACTICAL_TONFA.get();
+        var main = new net.minecraft.world.item.ItemStack(item);
+        var off = new net.minecraft.world.item.ItemStack(item);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, main);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, off);
+        item.onEntitySwing(main, player);
+        byte right = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE);
+        item.onEntitySwing(off, player);
+        byte both = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE);
+        if (right != 2 || both != 3)
+        { helper.fail("Tonfa swings must flip the right and left bits independently"); return; }
+        var receiver = new com.fiskmods.heroes.common.data.var.DataContainer();
+        receiver.readUpdate(data.getData().writeDirty());
+        if (receiver.get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE) != 3)
+        { helper.fail("Tonfa state must be included in dirty synchronization"); return; }
+        player.setMainArm(net.minecraft.world.entity.HumanoidArm.LEFT);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE, (byte) 0);
+        item.onEntitySwing(main, player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE) != 1)
+        { helper.fail("A left-handed main-hand swing must flip the left tonfa"); return; }
+        item.onEntitySwing(off, player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TONFA_STATE) != 3)
+        { helper.fail("A left-handed offhand swing must flip the right tonfa"); return; }
+        float rightRest = com.fiskmods.heroes.common.util.TonfaPoseMath.rotation((byte) 0, false, 0, false);
+        float rightEnd = com.fiskmods.heroes.common.util.TonfaPoseMath.rotation((byte) 2, false, 1, true);
+        float leftRest = com.fiskmods.heroes.common.util.TonfaPoseMath.rotation((byte) 2, true, 0, false);
+        if (Math.abs(rightRest + 181) > 0.001F || Math.abs(rightEnd + 1) > 0.001F || Math.abs(leftRest - 181) > 0.001F)
+        { helper.fail("Tonfa flip curve must follow the correct independent hand bit"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void flightKickGuardOnlyExemptsBoundedPostFlightDescent(GameTestHelper helper)
     {
         if (!com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 198, false)

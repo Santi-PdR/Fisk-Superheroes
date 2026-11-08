@@ -45,12 +45,21 @@ def main():
                                         stdout=oout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
             processes.append(observer)
             wait_for(server_log, r'Dev\[/.*logged in with entity id', 360, 'observer joined', observer)
+            time.sleep(4)
+            observer_windows = set(subprocess.check_output(['xdotool', 'search', '--onlyvisible', '--name', 'Minecraft'],
+                                                          text=True, timeout=30).strip().splitlines())
             wearer = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-livery-wearer',
                                        '-PciUsername=Partner', '-PquickPlayServer=127.0.0.1:25565', *common],
                                       stdout=wout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
             processes.append(wearer)
             wait_for(server_log, r'Partner\[/.*logged in with entity id', 360, 'second player joined', wearer)
             time.sleep(8)
+            windows = set(subprocess.check_output(['xdotool', 'search', '--onlyvisible', '--name', 'Minecraft'],
+                                                  text=True, timeout=30).strip().splitlines())
+            partner_windows = windows - observer_windows
+            if len(partner_windows) != 1:
+                raise RuntimeError(f'Cannot identify second Minecraft window: {partner_windows}')
+            partner_window = partner_windows.pop()
 
             def command(line):
                 if any(p.poll() is not None for p in processes):
@@ -88,6 +97,17 @@ def main():
             wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied',
                      60, 'observer respects remote real offhand item', observer)
             command('item replace entity Partner weapon.offhand with minecraft:air')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:tactical_tonfa{Dual:1b}')
+            wait_for(observer_log, r'Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false',
+                     60, 'observer sees remote tonfa initial pose', observer)
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'],
+                           check=True, timeout=30)
+            time.sleep(1)
+            subprocess.run(['xdotool', 'click', '1'], check=True, timeout=30)
+            wait_for(observer_log, r'Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true',
+                     60, 'observer sees remote tonfa flip after swing', observer)
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
             command('execute as Partner run suit fiskheroes:deathstroke_dceu')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun\.png',

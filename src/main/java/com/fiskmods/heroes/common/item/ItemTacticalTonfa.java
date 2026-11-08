@@ -41,8 +41,12 @@ public final class ItemTacticalTonfa extends SwordItem
         SHPlayerData data = SHDataCapabilities.getPlayer(entity);
         if (data != null)
         {
+            // Original bit zero is LEFT and bit one is RIGHT. Map Minecraft's
+            // logical hand to the physical arm, including left-handed players.
+            boolean offhand = stack == entity.getOffhandItem();
+            boolean left = (entity.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT) != offhand;
             byte current = data.getData().get(Vars.TONFA_STATE);
-            data.getData().set(Vars.TONFA_STATE, (byte) (current ^ 1));
+            data.getData().set(Vars.TONFA_STATE, com.fiskmods.heroes.common.util.TonfaPoseMath.flip(current, left));
         }
         return super.onEntitySwing(stack, entity);
     }
