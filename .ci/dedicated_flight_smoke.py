@@ -224,11 +224,15 @@ def main():
             wait_for(SERVER_LOG, r'Ability callback executed: hero=fiskheroes:spider_man, key=func_WEB_SWINGING',
                      30, 'enable web swinging through real client', server)
             time.sleep(2)
+            command('execute store result score #webstart flight_test run data get entity Dev Pos[2] 100')
             xdo('mousedown', '3')
             time.sleep(2)
             xdo('mouseup', '3')
             command('execute if data entity Dev ForgeData.FiskHeroesWebSwingAnchor{Type:"block"} run say WEB_BLOCK_ATTACH_OK')
             wait_for(SERVER_LOG, r'WEB_BLOCK_ATTACH_OK', 20, 'long-range empty-hand web attaches to block once while held', server)
+            command('execute store result score #webend flight_test run data get entity Dev Pos[2] 100')
+            command('execute if score #webend flight_test > #webstart flight_test run say WEB_LAUNCH_OK')
+            wait_for(SERVER_LOG, r'WEB_LAUNCH_OK', 20, 'web launch impulse moves the real client', server)
             xdo('click', '3')
             command('execute unless data entity Dev ForgeData.FiskHeroesWebSwingAnchor run say WEB_RELEASE_OK')
             wait_for(SERVER_LOG, r'WEB_RELEASE_OK', 20, 'second use releases web', server)
@@ -247,6 +251,7 @@ def main():
             wait_for(SERVER_LOG, r'WEB_ENTITY_RELEASE_OK', 20, 'entity web releases cleanly', server)
             xdo('key', 'b')
             command('kill @e[tag=web_target]')
+            command('setblock 0 181 12 minecraft:air')
             print('PASS: dedicated long-range web interactions completed', flush=True)
             # Test actual client prediction and synchronized movement keys on a tall wall.
             command('gamemode creative Dev')
