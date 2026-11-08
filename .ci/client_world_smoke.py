@@ -95,6 +95,22 @@ def main():
             if not 0.90 < float(match.group(1)) < 0.96:
                 raise RuntimeError(f'Unexpected equipped shield scale: {match.group(1)}')
             subprocess.run(['scrot', 'ci-equipped-shield.jpg'], check=True, timeout=30)
+            # Use a controlled, unobstructed third-person view for stowed equipment.
+            command('time set day')
+            command('tp @s 0 185 0 0 0')
+            time.sleep(3)
+            command('fill -5 179 -5 5 179 5 minecraft:stone')
+            command('tp @s 0 180 0 0 0')
+            command('suit fiskheroes:deadpool_xmen')
+            wait_for(r'Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana',
+                     45, 'Deadpool stowed katanas render', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-equipped-deadpool.jpg'], check=True, timeout=30)
+            command('suit fiskheroes:batman_dceu')
+            wait_for(r'Equipped suit item rendered: hero=fiskheroes:batman_dceu, item=fiskheroes:grappling_gun',
+                     45, 'Batman stowed grappling gun renders', process)
+            time.sleep(2)
+            subprocess.run(['scrot', 'ci-equipped-batman.jpg'], check=True, timeout=30)
             command('suit fiskheroes:vision')
             wait_for(r'\[CHAT\] Equipped Vision|\[Dev: Equipped Vision', 45, 'equip Vision', process)
             # A high platform and a short wall make the movement test independent of terrain.
