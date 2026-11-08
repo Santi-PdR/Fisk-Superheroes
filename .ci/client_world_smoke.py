@@ -376,6 +376,23 @@ def main():
             command('execute if score #first beam_health matches ..99 if score #second beam_health matches ..99 if score #blocked beam_health matches 100 run say VISION_BEAM_TARGETS_OK')
             wait_for(r'\[CHAT\].*VISION_BEAM_TARGETS_OK', 45,
                      'charged beam damages both targets and does not pass the wall', process)
+            # An unanchored player must hover while suit flight is active. Measure actual
+            # server positions rather than merely checking velocity calculations in isolation.
+            command('setblock 0 182 0 minecraft:air')
+            command('tp @s 0 240 0 0 0')
+            xdo('key', 'v')  # Vision's intangibility enables controlled flight.
+            wait_for_count(r'Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY',
+                           2, 45, 'activate Vision flight for hover test', process)
+            time.sleep(3)
+            command('scoreboard objectives add flight_test dummy')
+            command('execute store result score #start flight_test run data get entity @s Pos[1] 100')
+            time.sleep(3)
+            command('execute store result score #end flight_test run data get entity @s Pos[1] 100')
+            command('scoreboard players operation #delta flight_test = #end flight_test')
+            command('scoreboard players operation #delta flight_test -= #start flight_test')
+            command('scoreboard players get #delta flight_test')
+            command('execute if score #delta flight_test matches -75..75 run say SUIT_FLIGHT_HOVER_OK')
+            wait_for(r'\[CHAT\].*SUIT_FLIGHT_HOVER_OK', 45, 'unanchored controlled flight hovers', process)
             text = log.read_text(errors='replace')
             if 'Downloading the FiskHeroes sound repository' not in text or not Path('run/fiskheroes_sounds/sound-events.json').is_file():
                 raise RuntimeError('Legacy sound cache was not migrated from the original archive')
