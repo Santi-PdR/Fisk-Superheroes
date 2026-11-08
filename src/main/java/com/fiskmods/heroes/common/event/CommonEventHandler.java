@@ -44,21 +44,7 @@ public class CommonEventHandler
     {
         if (!(event.getEntity() instanceof ServerPlayer player) || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
                 || !event.getItemStack().isEmpty()) return;
-        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player)
-                || EquipmentHelper.useUtilityBelt(player))
-        {
-            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
-            event.setCanceled(true);
-        }
-    }
-
-    /** Starts/releases a web tether when the active web-swing mode right-clicks an entity. */
-    @SubscribeEvent
-    public static void onEntityWebSwing(PlayerInteractEvent.EntityInteract event)
-    {
-        if (!(event.getEntity() instanceof ServerPlayer player) || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
-                || !player.getMainHandItem().isEmpty()) return;
-        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player))
+        if (EquipmentHelper.useUtilityBelt(player))
         {
             event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             event.setCanceled(true);
@@ -70,12 +56,6 @@ public class CommonEventHandler
     public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
     {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player))
-        {
-            event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
-            event.setCanceled(true);
-            return;
-        }
         if (player.isShiftKeyDown()) return;
 
         var iteration = HeroTracker.getHero(player);

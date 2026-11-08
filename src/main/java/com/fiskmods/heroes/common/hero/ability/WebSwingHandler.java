@@ -34,9 +34,20 @@ public final class WebSwingHandler
     private static final String OFFSET_Y = "OffsetY";
     private static final String OFFSET_Z = "OffsetZ";
     private static final String LENGTH = "Length";
+    private static final java.util.Map<ServerPlayer, Long> NEXT_REQUEST = new java.util.WeakHashMap<>();
 
     private WebSwingHandler()
     {
+    }
+
+    /** Rate-limit the empty packet independently of client input and resolve everything server-side. */
+    public static boolean request(ServerPlayer player)
+    {
+        if (!player.isAlive() || player.isSpectator() || player.isPassenger()) return false;
+        long now = player.level().getGameTime();
+        if (now < NEXT_REQUEST.getOrDefault(player, 0L)) return false;
+        NEXT_REQUEST.put(player, now + 5L);
+        return interact(player);
     }
 
     /** Starts a block/entity grapple, or releases the current rope when clicked again. */
@@ -58,7 +69,9 @@ public final class WebSwingHandler
         if (entry == null) return false;
 
         float range = Math.max(1.0F, entry.getFloat(player, PowerProperty.RANGE));
-        HitResult hit = player.pick(range, 0.0F, false);
+        HitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnViewVector(
+                player, target -> target instanceof LivingEntity && target != player
+                        && target.isAlive() && target.isPickable(), range);
         Vec3 anchor = hit.getLocation();
         var tag = new net.minecraft.nbt.CompoundTag();
         tag.putString(DIMENSION, player.level().dimension().location().toString());
@@ -102,6 +115,7 @@ public final class WebSwingHandler
         Vec3 towardAnchor = anchor.subtract(center).normalize();
         player.setDeltaMovement(player.getDeltaMovement().add(towardAnchor.scale(0.28D)).add(0.0D, 0.12D, 0.0D));
         player.hasImpulse = true;
+        player.hurtMarked = true; // send the initial impulse to the controlling client
         AbilityData.playSound(player, entry, "SHOOT");
         return true;
     }
@@ -172,6 +186,7 @@ public final class WebSwingHandler
         double correction = Math.min(0.65D, 0.06D + (distance - ropeLength) * 0.22D);
         player.setDeltaMovement(velocity.subtract(radial.scale(correction)));
         player.hasImpulse = true;
+        player.hurtMarked = true; // the controlling client needs the constraint correction too
         player.fallDistance = 0.0F;
     }
 

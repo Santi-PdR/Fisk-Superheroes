@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 6 adds the aimed suit-shot request; both sides must register the same packets.
-    private static final String PROTOCOL = "6";
+    // Version 7 adds the server-validated web swing interaction request.
+    private static final String PROTOCOL = "7";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

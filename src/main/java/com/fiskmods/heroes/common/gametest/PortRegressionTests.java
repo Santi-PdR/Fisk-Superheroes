@@ -95,6 +95,65 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void webSwingTargetsLivingEntitiesAndRespectsBlocks(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-web-target-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || spider == null) { helper.fail("Web swing test setup missing"); return; }
+        data.setHero(spider.getDefaultIteration());
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.WEB_SWINGING, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) -1);
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setYRot(0);
+        player.setXRot(0);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Unable to create web target"); return; }
+        target.setNoAi(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 5);
+        level.addFreshEntity(target);
+        var wall = base.offset(0, 1, 8);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        player.hurtMarked = false;
+        if (!com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player)
+                || !"entity".equals(player.getPersistentData().getCompound("FiskHeroesWebSwingAnchor").getString("Type"))
+                || !vars.get(com.fiskmods.heroes.common.data.var.Vars.WEB_RAPPEL) || !player.hurtMarked)
+        { helper.fail("Web must target a living entity before a farther block and send its launch impulse"); return; }
+        double initialX = vars.get(com.fiskmods.heroes.common.data.var.Vars.WEB_ANCHOR_X);
+        target.setPos(target.getX() + 1.0, target.getY(), target.getZ());
+        player.setPos(player.getX(), player.getY(), player.getZ() - 12);
+        player.setDeltaMovement(0, 0, -1);
+        player.hurtMarked = false;
+        player.fallDistance = 12;
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(player);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.WEB_ANCHOR_X) - initialX - 1.0) > 0.001
+                || !player.hurtMarked || player.fallDistance != 0)
+        { helper.fail("Moving entity anchors and rope correction must sync to the client"); return; }
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.release(player);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.WEB_RAPPEL))
+        { helper.fail("Release must clear the tether"); return; }
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 5);
+        var blocker = base.offset(0, 1, 3);
+        level.setBlockAndUpdate(blocker, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        if (!com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player)
+                || !"block".equals(player.getPersistentData().getCompound("FiskHeroesWebSwingAnchor").getString("Type"))
+                || player.getPersistentData().getCompound("FiskHeroesWebSwingAnchor").getLong("Block") != blocker.asLong())
+        { helper.fail("Web must hit the blocking wall before the entity"); return; }
+        com.fiskmods.heroes.common.hero.ability.WebSwingHandler.release(player);
+        level.removeBlock(blocker, false);
+        level.removeBlock(wall, false);
+        target.discard();
+        if (com.fiskmods.heroes.common.hero.ability.WebSwingHandler.interact(player))
+        { helper.fail("Web must not attach when there is no target in range"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void wallCrawlingUsesSyncedInputAndReleasesContact(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

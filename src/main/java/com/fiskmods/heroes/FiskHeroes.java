@@ -133,6 +133,8 @@ public class FiskHeroes
 
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketAimedSuitShot.class,
                     com.fiskmods.heroes.common.network.PacketAimedSuitShot::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketWebSwing.class,
+                    com.fiskmods.heroes.common.network.PacketWebSwing::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
             com.fiskmods.heroes.common.block.FabricatorRecipes.ensureLoaded();

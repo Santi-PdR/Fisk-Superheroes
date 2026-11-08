@@ -37,6 +37,7 @@ public class ClientEventHandler
     private static boolean weaponKeyHeld;
     private static boolean maskKeyDown;
     private static boolean attackKeyDown;
+    private static boolean webUseDown;
     private static boolean abilityClickMode;
     private static long nextGunShotTick = Long.MIN_VALUE;
     private static int hudAbilityHeld = Integer.MIN_VALUE;
@@ -186,6 +187,7 @@ public class ClientEventHandler
             java.util.Arrays.fill(sentAbilityInputs, false);
             maskKeyDown = false;
             attackKeyDown = false;
+            webUseDown = false;
             abilityClickMode = false;
             nextGunShotTick = Long.MIN_VALUE;
             hudAbilityHeld = Integer.MIN_VALUE;
@@ -258,6 +260,7 @@ public class ClientEventHandler
         boolean jump = activeInput && mc.options.keyJump.isDown();
         boolean sneak = activeInput && mc.options.keyShift.isDown();
         boolean use = activeInput && mc.options.keyUse.isDown();
+        if (!use) webUseDown = false;
         int forward = activeInput ? (mc.options.keyUp.isDown() ? 1 : 0) - (mc.options.keyDown.isDown() ? 1 : 0) : 0;
         int strafe = activeInput ? (mc.options.keyLeft.isDown() ? 1 : 0) - (mc.options.keyRight.isDown() ? 1 : 0) : 0;
         com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, jump, sneak, forward, strafe, use);
@@ -422,6 +425,28 @@ public class ClientEventHandler
                 }
             }
         }
+    }
+
+    /** Web use has its own long-range server raycast, not vanilla's short interaction reach. */
+    @SubscribeEvent
+    public static void onUseWeb(InputEvent.InteractionKeyMappingTriggered event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (!event.isUseItem() || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || abilityClickMode || mc.screen != null || mc.player == null
+                || !mc.player.getMainHandItem().isEmpty()) return;
+        var data = SHDataCapabilities.getPlayer(mc.player);
+        var hero = data != null ? data.getHeroType() : null;
+        if (hero == null || !data.getData().get(Vars.WEB_SWINGING)
+                || !hero.getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging"))) return;
+        if (!webUseDown)
+        {
+            webUseDown = true;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketWebSwing());
+        }
+        // Do not also send a vanilla block/entity interaction, which would toggle twice.
+        event.setCanceled(true);
+        event.setSwingHand(false);
     }
 
     /** Iron Man's repulsor and Mark 50 cannon fire on use in air while aiming. */
