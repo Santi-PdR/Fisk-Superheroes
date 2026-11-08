@@ -51,7 +51,7 @@ jobs:
         if: always()
         run: |
           mkdir -p .ci
-          { cat ci-held-multiplayer-test.log 2>/dev/null || true; for f in server observer wearer; do echo "==== $f launch ===="; grep -E 'CI launch identity|Setting user:|logged in with entity' "ci-held-multiplayer-$f.log" 2>/dev/null || true; echo "==== $f tail ===="; tail -100 "ci-held-multiplayer-$f.log" 2>/dev/null || true; done; } > .ci/held-livery-multiplayer-log.txt
+          { cat ci-held-multiplayer-test.log 2>/dev/null || true; for f in server observer wearer; do echo "==== $f launch ===="; grep -E 'CI launch identity|Setting user:|logged in with entity|Held weapon livery|Drawing suit' "ci-held-multiplayer-$f.log" 2>/dev/null || true; echo "==== $f tail ===="; tail -100 "ci-held-multiplayer-$f.log" 2>/dev/null || true; done; } > .ci/held-livery-multiplayer-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/held-livery-multiplayer-log.txt
