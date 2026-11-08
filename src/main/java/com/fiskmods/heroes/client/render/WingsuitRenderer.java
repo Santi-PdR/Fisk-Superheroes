@@ -22,6 +22,7 @@ final class WingsuitRenderer
 {
     private static final float TEXTURE_WIDTH = 0.390625F;
     private static final float TEXTURE_HEIGHT = 0.5F;
+    private static final java.util.Set<String> DIAGNOSTICS = new java.util.HashSet<>();
 
     private WingsuitRenderer() { }
 
@@ -38,6 +39,8 @@ final class WingsuitRenderer
         float unfold = Mth.clamp(suit.evaluateRenderData(effect.get("data"), player, 1.0F), 0.0F, 1.0F);
         float opacity = Mth.clamp(effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F, 0.0F, 1.0F);
         if (unfold <= 0.0F || opacity <= 0.0F) return;
+        if (DIAGNOSTICS.add(texture.toString()))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Drawing wingsuit membrane: texture={}", texture);
 
         // Compute all six corners through the live body/arm poses, so the fabric follows
         // ordinary player animation as well as the suit's wing-fold timer.
@@ -92,15 +95,25 @@ final class WingsuitRenderer
             Vector3f a, Vector3f b, Vector3f c, float au, float av, float bu, float bv, float cu, float cv,
             int packedLight, float opacity)
     {
-        Vector3f normal = new Vector3f(b).sub(a).cross(new Vector3f(c).sub(a)).normalize();
+        Vector3f normal = new Vector3f(b).sub(a).cross(new Vector3f(c).sub(a));
+        // At the start/end of the fold two corners can coincide. Normalizing zero
+        // would send NaNs to the lighting shader.
+        if (normal.lengthSquared() < 1.0E-12F) return;
+        normal.normalize();
+        Vector3f backNormal = new Vector3f(normal).negate();
+        Vector3f[] corners = {a, b, c};
+        float[] u = {au, bu, cu};
+        float[] v = {av, bv, cv};
         float alpha = opacity * 255.0F;
-        point(vertex, pose, normalMatrix, a, au, av, normal, packedLight, alpha);
-        point(vertex, pose, normalMatrix, b, bu, bv, normal, packedLight, alpha);
-        point(vertex, pose, normalMatrix, c, cu, cv, normal, packedLight, alpha);
-        normal.negate();
-        point(vertex, pose, normalMatrix, c, cu, cv, normal, packedLight, alpha);
-        point(vertex, pose, normalMatrix, b, bu, bv, normal, packedLight, alpha);
-        point(vertex, pose, normalMatrix, a, au, av, normal, packedLight, alpha);
+        // entityTranslucent uses QUADS, not TRIANGLES. Six vertices corrupt the
+        // primitive grouping (and the next effect sharing this buffer).
+        for (int i = 0; i < com.fiskmods.heroes.common.util.TriangleQuad.vertexCount(); ++i)
+        {
+            int corner = com.fiskmods.heroes.common.util.TriangleQuad.corner(i);
+            point(vertex, pose, normalMatrix, corners[corner], u[corner], v[corner],
+                    com.fiskmods.heroes.common.util.TriangleQuad.backFace(i) ? backNormal : normal,
+                    packedLight, alpha);
+        }
     }
 
     private static void point(VertexConsumer vertex, Matrix4f pose, Matrix3f normalMatrix, Vector3f point,

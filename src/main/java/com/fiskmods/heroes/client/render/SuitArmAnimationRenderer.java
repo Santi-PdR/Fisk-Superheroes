@@ -30,6 +30,9 @@ public final class SuitArmAnimationRenderer
         apply(suit, model, player, limbSwingAmount);
         model.rightSleeve.copyFrom(model.rightArm);
         model.leftSleeve.copyFrom(model.leftArm);
+        model.hat.copyFrom(model.head);
+        model.rightPants.copyFrom(model.rightLeg);
+        model.leftPants.copyFrom(model.leftLeg);
         if (Math.abs(model.rightArm.xRot - before) > 0.01F
                 && DIAGNOSTICS.add(iteration.getRegistryName().toString()))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shared suit arm pose applied: hero={}, sleeveAligned={}",
@@ -41,6 +44,7 @@ public final class SuitArmAnimationRenderer
 
     static void apply(HeroModelData suit, PlayerModel<?> model, Player player, float limbSwingAmount)
     {
+        applyGlidingPose(suit, model, player);
         JsonObject animationEffect = suit.getCustom().get("fiskheroes:animation");
         if (animationEffect != null && animationEffect.has("animation")
                 && "fiskheroes:hat_tip_player".equals(animationEffect.get("animation").getAsString()))
@@ -81,6 +85,45 @@ public final class SuitArmAnimationRenderer
         ResourceLocation aimingLeft = animation(suit, "AIMING_LEFT");
         if (aimingLeft != null) apply(aimingLeft, model, leftPose, limbSwingAmount);
     }
+
+    /** Mirrors the original gliding pose for capes and wing membranes. */
+    private static void applyGlidingPose(HeroModelData suit, PlayerModel<?> model, Player player)
+    {
+        boolean wingsuit = suit.getCustom().containsKey("fiskheroes:wingsuit");
+        boolean cape = suit.getCustom().containsKey("fiskheroes:cape");
+        if (!wingsuit && !cape) return;
+        float timer = data(suit, player, "fiskheroes:gliding_timer");
+        if (timer <= 0.0F) return;
+        float progress = com.fiskmods.heroes.common.util.GlidingPoseMath.curve(timer);
+        var motion = player.getDeltaMovement();
+        float spread = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(timer, motion.y, motion.length());
+        float swing = player.getAttackAnim(net.minecraft.client.Minecraft.getInstance().getFrameTime());
+        float rightSwing = 1.0F - Math.min(swing, 1.0F - swing) * 2.0F;
+        model.head.xRot = lerp(model.head.xRot, -(float) Math.PI / 4.0F, progress);
+        if (wingsuit || player.getMainHandItem().isEmpty())
+        {
+            model.rightArm.zRot += spread * 0.8F * rightSwing;
+            model.rightArm.xRot += progress * (wingsuit ? 0.25F : -0.025F) * rightSwing;
+        }
+        if (wingsuit || player.getOffhandItem().isEmpty())
+        {
+            model.leftArm.zRot -= spread * 0.8F;
+            model.leftArm.xRot += progress * (wingsuit ? 0.25F : -0.025F);
+        }
+        if (wingsuit)
+        {
+            model.rightLeg.zRot += spread * 0.1F * rightSwing;
+            model.leftLeg.zRot -= spread * 0.1F;
+            model.rightLeg.xRot += progress * 0.15F * rightSwing;
+            model.leftLeg.xRot += progress * 0.15F;
+        }
+        var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getWornSuit(player);
+        if (iteration != null && GLIDE_DIAGNOSTICS.add(iteration.getRegistryName().toString()))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Gliding suit pose applied: hero={}, wingsuit={}",
+                    iteration.getRegistryName(), wingsuit);
+    }
+
+    private static final java.util.Set<String> GLIDE_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private static float data(HeroModelData suit, Player player, String variable)
     {

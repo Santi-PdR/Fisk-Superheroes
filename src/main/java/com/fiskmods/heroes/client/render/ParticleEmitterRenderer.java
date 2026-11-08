@@ -43,6 +43,7 @@ final class ParticleEmitterRenderer
     private static final Map<ResourceLocation, JsonObject> CLOUDS = new HashMap<>();
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_TICK = new HashMap<>();
+    private static final java.util.Set<String> FIRST_PERSON_CLOUD_DIAGNOSTICS = new java.util.HashSet<>();
 
     private ParticleEmitterRenderer() { }
 
@@ -52,6 +53,8 @@ final class ParticleEmitterRenderer
         CLOUDS.clear();
         CONDITIONS.clear();
         LAST_TICK.clear();
+        FIRST_PERSON_CLOUD_DIAGNOSTICS.clear();
+        LocalParticleEmitter.clear();
     }
 
     static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale)
@@ -125,6 +128,8 @@ final class ParticleEmitterRenderer
         var particle = new DustParticleOptions(new Vector3f(color[0], color[1], color[2]), 1.0F);
         Vec3 velocity = player.getDeltaMovement().scale(motionFactor);
         Level level = player.level();
+        if (firstPerson && FIRST_PERSON_CLOUD_DIAGNOSTICS.add(id.toString()))
+            FiskHeroes.LOGGER.info("First-person particle cloud emitted: {}", id);
         for (int i = 0; i < amount; ++i)
         {
             level.addParticle(particle,
@@ -285,17 +290,25 @@ final class ParticleEmitterRenderer
         Vec3 control1 = start.add(delta.scale(0.33D)).add(bend);
         Vec3 control2 = start.add(delta.scale(0.66D)).add(bend);
 
-        // A low particle budget keeps this attached effect light even with several players nearby.
-        for (int i = 1; i <= 5; ++i)
+        ResourceLocation cloudId = effect.has("particles") && effect.get("particles").isJsonPrimitive()
+                ? ResourceLocation.tryParse(effect.get("particles").getAsString()) : null;
+        JsonObject cloud = cloudId != null ? CLOUDS.computeIfAbsent(cloudId, ParticleEmitterRenderer::loadCloud) : null;
+        Random random = new Random();
+        // Maintain a reasonably continuous chain at varying distances while bounding cost.
+        int count = Mth.clamp((int) Math.ceil(delta.length() * 2.0D), 5, 24);
+        for (int i = 1; i <= count; ++i)
         {
-            double t = i / 6.0D;
+            double t = (double) i / (count + 1);
             double inv = 1.0D - t;
             Vec3 point = start.scale(inv * inv * inv)
                     .add(control1.scale(3.0D * inv * inv * t))
                     .add(control2.scale(3.0D * inv * t * t))
                     .add(end.scale(t * t * t));
-            player.level().addParticle(ParticleTypes.SMOKE, point.x, point.y, point.z,
-                    0.0D, 0.005D, 0.0D);
+            float[] color = cloud != null ? cloudColor(cloud, random) : null;
+            ParticleOptions particle = color != null
+                    ? new DustParticleOptions(new Vector3f(color[0], color[1], color[2]), 1.0F)
+                    : ParticleTypes.SMOKE;
+            player.level().addParticle(particle, point.x, point.y, point.z, 0.0D, 0.005D, 0.0D);
         }
     }
 

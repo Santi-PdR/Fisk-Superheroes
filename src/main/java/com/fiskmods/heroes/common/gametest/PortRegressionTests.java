@@ -612,6 +612,33 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void wingsuitTrianglesFillTwoQuads(GameTestHelper helper)
+    {
+        int[] expected = {0, 1, 2, 2, 2, 1, 0, 0};
+        if (com.fiskmods.heroes.common.util.TriangleQuad.vertexCount() != expected.length)
+        { helper.fail("Each two-sided triangle must fill exactly two quads"); return; }
+        for (int i = 0; i < expected.length; ++i)
+        {
+            if (com.fiskmods.heroes.common.util.TriangleQuad.corner(i) != expected[i]
+                    || com.fiskmods.heroes.common.util.TriangleQuad.backFace(i) != (i >= 4))
+            { helper.fail("Quad corners or face winding are incorrect"); return; }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void glidingPoseOpensAndFoldsOnDive(GameTestHelper helper)
+    {
+        float folded = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(0.0F, 0.0D, 0.0D);
+        float level = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(1.0F, 0.0D, 1.0D);
+        float diving = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(1.0F, -1.0D, 1.0D);
+        if (Math.abs(folded) > 0.0001F || Math.abs(level - Math.PI / 2) > 0.0001F
+                || Math.abs(diving - Math.PI / 12) > 0.0001F)
+        { helper.fail("Gliding limb spread must deploy, and narrow during a steep dive"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void fallingJumpDeploysBatmanCapeAndLandingResets(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

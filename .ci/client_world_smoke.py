@@ -143,6 +143,15 @@ def main():
             if not match or float(match.group(1)) < 0.75:
                 raise RuntimeError(f'Spider-Man jump impulse too small: {match.group(1) if match else "missing"}')
             print('PASS: Spider-Man local jump impulse', match.group(1), flush=True)
+            # Exercise the actual web wings and model pose in third person, well above
+            # the terrain so the suit has time to unfold before reaching the ground.
+            command('tp @s 0 300 0 0 0')
+            xdo('key', 'g')
+            wait_for(r'Gliding suit pose applied: hero=fiskheroes:spider_man, wingsuit=true', 45,
+                     'Spider-Man gliding pose affects the shared player model', process)
+            wait_for(r'Drawing wingsuit membrane: texture=fiskheroes:textures/heroes/spider_man_wings\.png',
+                     45, 'web-wing membrane enters the renderer', process)
+            subprocess.run(['scrot', 'ci-wingsuit-screenshot.jpg'], check=True, timeout=30)
             # The comics suit changes both its equipped base texture and emissive layer when
             # speeding. Check real client resource selection before and after the ability key.
             command('gamemode creative')
@@ -191,6 +200,16 @@ def main():
             xdo('key', 'F5')
             wait_for(r'First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1\.png, poseAligned=true',
                      45, 'first-person suit arm matches the actual vanilla arm pose', process)
+            # Obsidian disappears in shadowform, including the local hand. Its cloud
+            # must still emit in first person without relying on a hand/player render.
+            command('suit fiskheroes:obsidian')
+            wait_for(r'\[CHAT\] Equipped Obsidian|\[Dev: Equipped Obsidian', 45, 'equip Obsidian', process)
+            xdo('key', 'c')
+            wait_for(r'Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM', 45,
+                     'activate Obsidian shadowform', process)
+            wait_for(r'First-person particle cloud emitted: fiskheroes:shadow_smoke', 45,
+                     'shadow cloud emits without a rendered first-person hand', process)
+            subprocess.run(['scrot', 'ci-shadow-screenshot.jpg'], check=True, timeout=30)
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
             # Prepare the wall while invulnerable, in a loaded, fixed area. Otherwise the
