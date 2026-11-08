@@ -186,10 +186,11 @@ class ModifierEnergyProjection extends Modifier
 
         if ("repulsor_blast".equals(entry.getModifier().getId().getPath()))
         {
-            float speed = entry.getFloat(entity, PowerProperty.SPEED);
+            float scale = Math.max(0.0F, data.getData().get(Vars.SCALE));
+            float speed = entry.getFloat(entity, PowerProperty.SPEED) * scale;
             var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(entity,
-                    damageProfile, damage, false, speed > 0.0F ? speed : 20.0F,
-                    entry.getFloat(entity, PowerProperty.SPREAD));
+                    damageProfile, damage, false, speed,
+                    entry.getFloat(entity, PowerProperty.SPREAD), Math.max(0.0F, range) * scale);
             level.addFreshEntity(bolt);
             AbilityData.playSound(entity, entry, "SHOOT");
             return;

@@ -209,8 +209,11 @@ public final class Modifiers
                 .addProperty(PowerProperty.RANGE, 32.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.HEAT_VISION);
         REPULSOR_BLAST = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "repulsor_blast"))
-                .addProperty(PowerProperty.RANGE, 24.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 10));
+                .addProperty(PowerProperty.RANGE, 48.0F)
+                .addProperty(PowerProperty.SPEED, 20.0F)
+                .addProperty(PowerProperty.SPREAD, 0.0F)
+                .addProperty(PowerProperty.RADIUS, 0.0F)
+                .addProperty(PowerProperty.COOLDOWN_TIME, 30));
         SIZE_MANIPULATION = registry.register(new ModifierSizeManipulation(new ResourceLocation(FiskHeroes.MODID, "size_manipulation"))
                 .addProperty(PowerProperty.MIN_SIZE, 0.5F)
                 .addProperty(PowerProperty.MAX_SIZE, 1.0F)

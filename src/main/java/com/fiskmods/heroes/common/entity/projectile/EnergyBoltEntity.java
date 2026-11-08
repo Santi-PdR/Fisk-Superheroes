@@ -22,6 +22,10 @@ public final class EnergyBoltEntity extends ThrowableProjectile
     private float damage = 6.0F;
     private boolean explosive;
     private float knockback;
+    // Negative means unbounded (legacy energy bolts and guns). Repulsors have a finite
+    // pack-configured range, even when one tick of motion is longer than that range.
+    private double maxDistance = -1.0D;
+    private double distanceTravelled;
 
     public EnergyBoltEntity(EntityType<? extends EnergyBoltEntity> type, Level level)
     {
@@ -41,6 +45,14 @@ public final class EnergyBoltEntity extends ThrowableProjectile
                 Math.max(0.1F, speed), Math.max(0.0F, spread));
     }
 
+    public EnergyBoltEntity(LivingEntity shooter, JsonElement profile, float damage, boolean explosive,
+            float speed, float spread, double maxDistance)
+    {
+        this(shooter, profile, damage, explosive, speed, spread);
+        this.maxDistance = Math.max(0.0D, maxDistance);
+        setNoGravity(true);
+    }
+
     @Override
     protected void defineSynchedData()
     {
@@ -55,8 +67,29 @@ public final class EnergyBoltEntity extends ThrowableProjectile
     @Override
     public void tick()
     {
+        if (!level().isClientSide && maxDistance >= 0.0D)
+        {
+            double remaining = maxDistance - distanceTravelled;
+            if (remaining <= 1.0E-7D)
+            {
+                discard();
+                return;
+            }
+            var motion = getDeltaMovement();
+            double length = motion.length();
+            if (length > remaining) setDeltaMovement(motion.scale(remaining / length));
+        }
+        var before = position();
         super.tick();
-        if (!level().isClientSide && tickCount > 120) discard();
+        if (!level().isClientSide)
+        {
+            if (maxDistance >= 0.0D)
+            {
+                distanceTravelled += before.distanceTo(position());
+                if (distanceTravelled >= maxDistance - 1.0E-7D) discard();
+            }
+            if (tickCount > 120) discard();
+        }
     }
 
     @Override
@@ -138,6 +171,8 @@ public final class EnergyBoltEntity extends ThrowableProjectile
         tag.putFloat("Damage", damage);
         tag.putBoolean("Explosive", explosive);
         tag.putFloat("Knockback", knockback);
+        tag.putDouble("MaxDistance", maxDistance);
+        tag.putDouble("DistanceTravelled", distanceTravelled);
     }
 
     @Override
@@ -148,5 +183,7 @@ public final class EnergyBoltEntity extends ThrowableProjectile
         damage = tag.contains("Damage") ? tag.getFloat("Damage") : 6.0F;
         explosive = tag.getBoolean("Explosive");
         knockback = Math.max(0.0F, tag.getFloat("Knockback"));
+        maxDistance = tag.contains("MaxDistance") ? tag.getDouble("MaxDistance") : -1.0D;
+        distanceTravelled = Math.max(0.0D, tag.getDouble("DistanceTravelled"));
     }
 }

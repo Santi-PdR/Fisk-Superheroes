@@ -63,6 +63,71 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void repulsorShotRespectsRangeEvenWithinSingleTick(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (player == null) { helper.fail("Could not create repulsor shooter"); return; }
+        player.setNoAi(true);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        player.setYRot(0.0F);
+        player.setXRot(0.0F);
+        level.addFreshEntity(player);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create repulsor target"); return; }
+        target.setNoAi(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 6.0D);
+        level.addFreshEntity(target);
+        var shot = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                player, null, 12.0F, false, 20.0F, 0.0F, 4.0D);
+        level.addFreshEntity(shot);
+        shot.tick();
+        if (!shot.isRemoved() || target.getHealth() != 100.0F)
+        { helper.fail("Fast repulsor traveled or damaged a target beyond its range"); return; }
+        target.setPos(player.getX(), player.getY(), player.getZ() + 2.0D);
+        var inRange = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                player, null, 12.0F, false, 20.0F, 0.0F, 4.0D);
+        level.addFreshEntity(inRange);
+        inRange.tick();
+        if (!inRange.isRemoved() || target.getHealth() >= 100.0F)
+        { helper.fail("Repulsor did not hit a target within its range"); return; }
+        target.discard();
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void repulsorRangePersistsAcrossSave(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (player == null) { helper.fail("Could not create repulsor shooter"); return; }
+        player.setNoAi(true);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        player.setYRot(0.0F);
+        player.setXRot(0.0F);
+        level.addFreshEntity(player);
+        var shot = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                player, null, 12.0F, false, 2.0F, 0.0F, 3.0D);
+        level.addFreshEntity(shot);
+        shot.tick();
+        if (shot.isRemoved()) { helper.fail("Repulsor expired before its range"); return; }
+        var tag = new net.minecraft.nbt.CompoundTag();
+        shot.saveWithoutId(tag);
+        shot.discard();
+        var loaded = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.ENERGY_BOLT.get(), level);
+        loaded.load(tag);
+        loaded.tick();
+        if (!loaded.isRemoved() || loaded.position().distanceTo(player.getEyePosition()) > 3.1D)
+        { helper.fail("Saved repulsor forgot its remaining travel distance"); return; }
+        player.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void chargedBeamTracesMultipleTargetsAndStopsAtWalls(GameTestHelper helper)
     {
         var level = helper.getLevel();
