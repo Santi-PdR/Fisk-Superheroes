@@ -38,6 +38,56 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void flightAndShadowStatesFollowSuitAndTimeout(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-flight-state-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var vision = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        var obsidian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:obsidian");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || vision == null || obsidian == null || flash == null)
+        { helper.fail("Expected test suits are missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        java.util.function.Consumer<com.fiskmods.heroes.common.hero.Hero> equip = hero -> {
+            for (int i = 0; i < 4; ++i)
+                player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                        hero.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        };
+        var vars = data.getData();
+        equip.accept(vision);
+        var intangibility = vision.getPowerContainer().getEntry(FiskHeroes.id("intangibility"));
+        var flight = vision.getPowerContainer().getEntry(FiskHeroes.id("controlled_flight"));
+        if (intangibility == null || flight == null) { helper.fail("Vision powers missing"); return; }
+        intangibility.getModifier().onActivate(player, intangibility, data);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, false); // timed out
+        intangibility.getModifier().onActivate(player, intangibility, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE))
+        { helper.fail("A timed-out intangibility must reactivate on the next press"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.FLYING, true);
+        flight.setToggled(player, true);
+        equip.accept(flash);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.FLYING) || flight.isToggled(player))
+        { helper.fail("Switching to a suit without controlled flight must clear flight state"); return; }
+        equip.accept(obsidian);
+        var shadow = obsidian.getPowerContainer().getEntry(FiskHeroes.id("shadowform"));
+        if (shadow == null) { helper.fail("Shadowform power missing"); return; }
+        shadow.getModifier().onActivate(player, shadow, data);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, false); // timed out
+        shadow.getModifier().onActivate(player, shadow, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM))
+        { helper.fail("A timed-out shadowform must reactivate on the next press"); return; }
+        equip.accept(flash);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM) || shadow.isToggled(player))
+        { helper.fail("Switching to a suit without shadowform must clear its state"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void passiveFlightUsesExtraGravityAndRespectsShadowform(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

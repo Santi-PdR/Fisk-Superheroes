@@ -161,6 +161,24 @@ public final class HeroTracker
             com.fiskmods.heroes.common.hero.modifier.IntangibilityPhysics.release(player, data);
         }
 
+        if (!hasModifier(current, "shadowform"))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM_TIMER, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("shadowform"), false);
+        }
+
+        boolean hasControlledFlight = current != null && current.getHero().getPowerContainer().getEntries().stream()
+                .anyMatch(entry -> entry.getModifier() instanceof com.fiskmods.heroes.common.hero.modifier.ModifierControlledFlight);
+        if (!hasControlledFlight)
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLYING, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST_TIMER, 0.0F);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("controlled_flight"), false);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("propelled_flight"), false);
+        }
+
         if (!hasModifier(current, "shield"))
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD, false);

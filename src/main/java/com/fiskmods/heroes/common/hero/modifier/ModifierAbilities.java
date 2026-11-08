@@ -298,7 +298,7 @@ class ModifierIntangibility extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !entry.isToggled(entity);
+        boolean state = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !data.getData().get(Vars.INTANGIBLE);
         setActive(entity, entry, data, state);
     }
 
@@ -514,7 +514,9 @@ class ModifierShadowform extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        boolean state = !entry.isToggled(entity);
+        // Cooldowns can turn the data variable off without a key press. The variable,
+        // not the separately cached toggle, is the authoritative current state.
+        boolean state = !data.getData().get(Vars.SHADOWFORM);
         entry.setToggled(entity, state);
         data.getData().set(Vars.SHADOWFORM, state);
         data.getData().markDirty(Vars.SHADOWFORM);
