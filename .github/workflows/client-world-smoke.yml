@@ -59,7 +59,9 @@ jobs:
           echo 'fiskheroes:old.filename=old/filename.ogg' > run/fiskheroes_sounds/sounds.index
           echo '{"old.filename":{"sounds":["old/filename"]}}' > run/fiskheroes_sounds/pack/assets/fiskheroes/sounds.json
       - name: Exercise Flash and Vision in a real client world
-        run: xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/client_world_smoke.py
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/client_world_smoke.py 2>&1 | tee ci-world-test.log
       - name: Upload world screenshot for visual inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -75,7 +77,7 @@ jobs:
         if: always() && hashFiles('ci-client-world.log') != ''
         run: |
           mkdir -p .ci
-          { grep -iE 'fiskheroes|logged in|joined the game|issued server command|error|exception|failed|fatal|Drawing suit' ci-client-world.log | tail -300 || true; tail -100 ci-client-world.log; } > .ci/client-world-log.txt
+          { cat ci-world-test.log 2>/dev/null || true; grep -iE 'fiskheroes|logged in|joined the game|issued server command|error|exception|failed|fatal|Drawing suit' ci-client-world.log | tail -300 || true; tail -100 ci-client-world.log; } > .ci/client-world-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/client-world-log.txt
