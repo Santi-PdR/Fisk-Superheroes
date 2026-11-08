@@ -68,6 +68,66 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void redstoneIteratorSkipsVanityAndRejectsMixedOrInvalidPieces(GameTestHelper helper)
+    {
+        var hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        var other = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var rip = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:rip_hunter");
+        if (hero == null || other == null || rip == null || hero.findIteration("aou").isEmpty()
+                || hero.findIteration("canada").isEmpty() || hero.findIteration("museum").isEmpty())
+        { helper.fail("Required iterations missing"); return; }
+        var aou = hero.findIteration("aou").orElseThrow();
+        var museum = hero.findIteration("museum").orElseThrow();
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET };
+        BlockPos relative = new BlockPos(1, 5, 1);
+        helper.setBlock(relative, ModBlocks.SUIT_ITERATOR.get());
+        var level = helper.getLevel();
+        BlockPos pos = helper.absolutePos(relative);
+        var stand = net.minecraft.world.entity.EntityType.ARMOR_STAND.create(level);
+        if (stand == null) { helper.fail("Could not create armor stand"); return; }
+        stand.setPos(pos.getX() + 0.5D, pos.getY() + 1, pos.getZ() + 0.5D);
+        stand.setNoGravity(true);
+        for (int i = 0; i < 4; ++i)
+        {
+            var stack = ItemHeroArmor.create(aou, ModItems.heroArmor[i]);
+            stack.getOrCreateTag().putString("IteratorTestTag", "preserved");
+            stand.setItemSlot(slots[i], stack);
+        }
+        level.addFreshEntity(stand);
+        // A rising edge after aou should skip the vanity-only canada and select museum.
+        helper.setBlock(relative.west(), net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK);
+        for (int i = 0; i < 4; ++i)
+            if (ItemHeroArmor.getHero(stand.getItemBySlot(slots[i])) != museum
+                    || !"preserved".equals(stand.getItemBySlot(slots[i]).getTag().getString("IteratorTestTag")))
+            { helper.fail("Redstone must skip vanity and preserve every piece's data"); return; }
+        var block = (com.fiskmods.heroes.common.block.SuitIteratorBlock) ModBlocks.SUIT_ITERATOR.get();
+        block.neighborChanged(level.getBlockState(pos), level, pos, net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK,
+                pos.west(), false);
+        if (ItemHeroArmor.getHero(stand.getItemBySlot(slots[0])) != museum)
+        { helper.fail("A held redstone signal must not cycle twice"); return; }
+        helper.setBlock(relative.west(), net.minecraft.world.level.block.Blocks.AIR);
+        stand.setItemSlot(slots[0], ItemHeroArmor.create(other.getDefaultIteration(), ModItems.heroArmor[0]));
+        helper.setBlock(relative.west(), net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK);
+        if (ItemHeroArmor.getHero(stand.getItemBySlot(slots[1])) != museum)
+        { helper.fail("Mixed hero suits must not be partially changed"); return; }
+        helper.setBlock(relative.west(), net.minecraft.world.level.block.Blocks.AIR);
+        // Rip Hunter has no helmet in either version. A malformed helmet must never be
+        // converted to an iteration that does not support the equipped piece.
+        stand.setItemSlot(slots[0], ItemHeroArmor.create(rip.getDefaultIteration(), ModItems.heroArmor[0]));
+        stand.setItemSlot(slots[1], ItemHeroArmor.create(rip.getDefaultIteration(), ModItems.heroArmor[1]));
+        stand.setItemSlot(slots[2], ItemStack.EMPTY);
+        stand.setItemSlot(slots[3], ItemStack.EMPTY);
+        helper.setBlock(relative.west(), net.minecraft.world.level.block.Blocks.REDSTONE_BLOCK);
+        if (ItemHeroArmor.getHero(stand.getItemBySlot(slots[0])) != rip.getDefaultIteration()
+                || ItemHeroArmor.getHero(stand.getItemBySlot(slots[1])) != rip.getDefaultIteration())
+        { helper.fail("Incompatible iterations must not partially change the suit"); return; }
+        stand.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void alloySmelteryConsumesIngredientsAndFuel(GameTestHelper helper)
     {
         BlockPos relative = new BlockPos(1, 1, 1);

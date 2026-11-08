@@ -86,30 +86,52 @@ public final class SuitIteratorBlock extends Block
         if (stands.isEmpty()) return;
         ArmorStand stand = stands.get(0);
         HeroIteration current = null;
-        for (EquipmentSlot slot : ARMOR_SLOTS)
+        // Match the GUI's all-or-nothing behavior: never partially cycle mixed hero suits.
+        for (int i = 0; i < ARMOR_SLOTS.length; ++i)
         {
-            HeroIteration it = ItemHeroArmor.getHero(stand.getItemBySlot(slot));
-            if (it != null)
-            {
-                current = it;
-                break;
-            }
+            ItemStack piece = stand.getItemBySlot(ARMOR_SLOTS[i]);
+            if (!ItemHeroArmor.isSuitPiece(piece)) continue;
+            if (((ItemHeroArmor) piece.getItem()).getSlot() != i) return;
+            HeroIteration iteration = ItemHeroArmor.getHero(piece);
+            if (current == null) current = iteration;
+            else if (!current.getHero().equals(iteration.getHero())) return;
         }
         if (current == null) return;
 
         List<HeroIteration> all = new ArrayList<>(current.getHero().getIterations().values());
-        if (all.size() <= 1) return;
         int idx = all.indexOf(current);
-        HeroIteration next = all.get((idx + 1) % all.size());
-        for (int i = 0; i < 4; ++i)
+        if (idx < 0) return;
+        HeroIteration next = null;
+        // Bounded search also handles a pack with no usable non-vanity alternative.
+        for (int offset = 1; offset < all.size(); ++offset)
         {
-            ItemStack piece = stand.getItemBySlot(ARMOR_SLOTS[i]);
-            if (ItemHeroArmor.isSuitPiece(piece) && ItemHeroArmor.getHero(piece) != null
-                    && ItemHeroArmor.getHero(piece).getHero().equals(current.getHero()))
+            HeroIteration candidate = all.get((idx + offset) % all.size());
+            if (candidate.getVanity() != null) continue;
+            boolean compatible = true;
+            for (int i = 0; i < ARMOR_SLOTS.length; ++i)
+            {
+                if (ItemHeroArmor.isSuitPiece(stand.getItemBySlot(ARMOR_SLOTS[i]))
+                        && !candidate.hasPieceOfSet(i))
+                {
+                    compatible = false;
+                    break;
+                }
+            }
+            if (compatible)
+            {
+                next = candidate;
+                break;
+            }
+        }
+        if (next == null) return;
+        for (EquipmentSlot slot : ARMOR_SLOTS)
+        {
+            ItemStack piece = stand.getItemBySlot(slot);
+            if (ItemHeroArmor.isSuitPiece(piece))
             {
                 ItemStack copy = piece.copy();
                 ItemHeroArmor.setHero(copy, next);
-                stand.setItemSlot(ARMOR_SLOTS[i], copy);
+                stand.setItemSlot(slot, copy);
             }
         }
     }
