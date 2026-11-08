@@ -92,7 +92,7 @@ def main():
             command('suit fiskheroes:captain_america')
             match = wait_for(r'Equipped suit item rendered: hero=fiskheroes:captain_america, item=fiskheroes:captain_americas_shield, poseScale=([-+0-9.eE]+)',
                              45, 'Captain America stowed shield render', process)
-            if not 0.60 < float(match.group(1)) < 0.65:
+            if not 0.90 < float(match.group(1)) < 0.96:
                 raise RuntimeError(f'Unexpected equipped shield scale: {match.group(1)}')
             subprocess.run(['scrot', 'ci-equipped-shield.jpg'], check=True, timeout=30)
             command('suit fiskheroes:vision')

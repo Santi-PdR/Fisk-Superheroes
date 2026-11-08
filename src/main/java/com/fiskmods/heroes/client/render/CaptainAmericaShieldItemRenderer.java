@@ -65,6 +65,12 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // ItemRenderer subtracts half a block before invoking a custom renderer.
+                // Cancel that translation; the suit layer supplies the back anchor and rotation.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
                 pose.translate(0.5D, 0.5D, 0.5D);

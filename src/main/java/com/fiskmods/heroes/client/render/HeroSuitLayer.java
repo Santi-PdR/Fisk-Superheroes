@@ -450,13 +450,16 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             float scale = item.has("scale") ? item.get("scale").getAsFloat() : 1.0F;
             poseStack.scale(scale, scale, scale);
 
-            // Match the original EQUIPPED_SUIT transform and keep rendering delegated to Minecraft
-            // so item model overrides, NBT variants and custom item renderers are honored.
-            poseStack.translate(0.9375F, 0.0625F, 0.0F);
-            poseStack.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-335.0F));
-            poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-50.0F));
-            poseStack.scale(2.0F / 3.0F, 2.0F / 3.0F, 2.0F / 3.0F);
-            poseStack.translate(0.0F, 0.3F, 0.0F);
+            // The shield renderer has a centered stowed-suit pose. Generic item renderers
+            // still need the 1.7 EQUIPPED_SUIT transform and their own display adjustment.
+            if (!stack.is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()))
+            {
+                poseStack.translate(0.9375F, 0.0625F, 0.0F);
+                poseStack.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-335.0F));
+                poseStack.mulPose(com.mojang.math.Axis.YP.rotationDegrees(-50.0F));
+                poseStack.scale(2.0F / 3.0F, 2.0F / 3.0F, 2.0F / 3.0F);
+                poseStack.translate(0.0F, 0.3F, 0.0F);
+            }
             if (EQUIPPED_ITEM_DIAGNOSTICS.add(iteration.getRegistryName().toString()))
             {
                 var itemScale = poseStack.last().pose().getScale(new org.joml.Vector3f());
