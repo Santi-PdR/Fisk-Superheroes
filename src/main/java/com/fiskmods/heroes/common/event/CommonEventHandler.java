@@ -182,6 +182,15 @@ public class CommonEventHandler
             }
         }
         ModifierHandler.tick(entity);
+        var debugData = SHDataCapabilities.getPlayer(entity);
+        if (debugData != null && debugData.getHeroType() != null
+                && debugData.getHeroType().getRegistryName().getPath().equals("obsidian") && entity.tickCount % 20 == 0)
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("PASSIVE_DEBUG side={} y={} velocity={} shadow={} cooldown={} eligible={} ground={} counter={}",
+                    entity.level().isClientSide ? "client" : "server", entity.getY(), entity.getDeltaMovement().y,
+                    debugData.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM),
+                    debugData.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM_COOLDOWN),
+                    com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(event.player),
+                    event.player.onGround(), entity instanceof ServerPlayer p ? p.connection.aboveGroundTickCount : -1);
         com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(event.player);
 
         if (entity instanceof ServerPlayer serverPlayer)
