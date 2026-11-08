@@ -34,6 +34,8 @@ jobs:
           chmod +x gradlew
           mkdir -p run-dedicated run-dedicated-client
           echo 'eula=true' > run-dedicated/eula.txt
+          # The offline Dev identity is granted operator permissions only in this CI server.
+          python3 -c 'import hashlib,uuid,json; u=uuid.UUID(bytes=hashlib.md5(b"OfflinePlayer:Dev").digest(),version=3); open("run-dedicated/ops.json","w").write(json.dumps([{"uuid":str(u),"name":"Dev","level":4,"bypassesPlayerLimit":False}]))'
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=false\nview-distance=3\nsimulation-distance=3\n' > run-dedicated/server.properties
           ./gradlew classes --no-daemon --console=plain
       - name: Test survival flight on dedicated server

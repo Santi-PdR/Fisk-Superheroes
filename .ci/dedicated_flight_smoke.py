@@ -54,15 +54,18 @@ def main():
             time.sleep(2)
 
             def command(text):
-                if server.poll() is not None:
-                    raise RuntimeError('Dedicated server exited')
-                server.stdin.write(text + '\n')
-                server.stdin.flush()
-                time.sleep(0.5)
+                if server.poll() is not None or client.poll() is not None:
+                    raise RuntimeError('Dedicated server or client exited')
+                xdo('key', '--clearmodifiers', 'slash')
+                time.sleep(0.8)
+                xdo('type', '--clearmodifiers', '--delay', '15', text)
+                time.sleep(0.4)
+                xdo('key', 'Return')
+                time.sleep(1)
 
             command('gamemode survival Dev')
-            command('execute as Dev run suit fiskheroes:vision')
-            wait_for(SERVER_LOG, r'Equipped Vision', 30, 'Vision suit equipped on dedicated server', server)
+            command('suit fiskheroes:vision')
+            wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Vision', 30, 'Vision suit equipped on dedicated server', client)
             command('tp Dev 0 220 0 0 0')
             xdo('key', 'v')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY',
@@ -77,9 +80,10 @@ def main():
             command('scoreboard players operation #delta flight_test = #end flight_test')
             command('scoreboard players operation #delta flight_test -= #start flight_test')
             command('scoreboard players get #delta flight_test')
-            wait_for(SERVER_LOG, r'#delta has (-?\d+) \[flight_test\]', 20, 'server measured hover delta', server)
+            wait_for(CLIENT_LOG, r'#delta has (-?\d+) \[flight_test\]', 20, 'server measured hover delta', client)
             text = SERVER_LOG.read_text(errors='replace')
-            value = int(re.findall(r'#delta has (-?\d+) \[flight_test\]', text)[-1])
+            client_text = CLIENT_LOG.read_text(errors='replace')
+            value = int(re.findall(r'#delta has (-?\d+) \[flight_test\]', client_text)[-1])
             if abs(value) > 100:
                 raise RuntimeError(f'Dedicated server hover drifted by {value / 100:.2f} blocks')
             if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked', text, re.IGNORECASE):
