@@ -345,6 +345,9 @@ def main():
             command('fill -2 179 0 2 179 14 minecraft:stone')
             command('fill -2 180 0 2 184 14 minecraft:air')
             command('fill -1 181 10 1 183 10 minecraft:stone')
+            # Keep the shooter at target height even if an earlier suit left flight active.
+            # The beam leaves below this roof; it must still hit the two targets and the wall.
+            command('setblock 0 182 0 minecraft:stone')
             command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,NoGravity:1b,Tags:["beam_first"]}')
             command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Tags:["beam_second"]}')
             command('summon minecraft:iron_golem 0.5 180 12.5 {NoAI:1b,NoGravity:1b,Tags:["beam_blocked"]}')
