@@ -165,6 +165,10 @@ def main():
             wait_for(CLIENT_LOG, r'Octopus claw strike pose applied', 30,
                      'charging animates the original claw blade model', client)
             subprocess.run(['scrot', 'ci-tentacle-charge.jpg'], check=True, timeout=30)
+            dimensions = subprocess.check_output(['identify', '-format', '%wx%h', 'ci-tentacle-charge.jpg'],
+                                                 text=True, timeout=30).strip()
+            if dimensions != '1280x720':
+                raise RuntimeError(f'Unexpected screenshot dimensions: {dimensions}')
             # In this fixed third-person scene the upper arms cross clear sky in
             # both regions. Logs alone missed a 1/16 scale regression: require
             # substantial dark geometry on both sides, not merely a rendered part.
