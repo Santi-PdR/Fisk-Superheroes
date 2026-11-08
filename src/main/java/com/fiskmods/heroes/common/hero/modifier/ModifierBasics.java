@@ -635,10 +635,10 @@ class ModifierWallCrawling extends Modifier
 
     private void update(Player player, SHPlayerData data)
     {
-        boolean attached = !player.onGround() && !player.isPassenger() && !player.getAbilities().flying
-                && !player.isFallFlying() && !player.isInWater()
-                && (player.horizontalCollision || data.getData().get(Vars.WALL_CRAWLING) == CRAWL_WALL
-                    && touchingWall(player));
+        boolean nearWall = com.fiskmods.heroes.common.hero.ability.WallCrawlContact.touchingWall(player);
+        boolean attached = com.fiskmods.heroes.common.hero.ability.WallCrawlContact.canCrawl(player)
+                && (player.horizontalCollision || nearWall && (data.getData().get(Vars.WALL_CRAWLING) == CRAWL_WALL
+                    || com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player) > 0));
         data.getData().set(Vars.WALL_CRAWLING, attached ? CRAWL_WALL : CRAWL_NONE);
         if (!attached) return;
 
@@ -651,16 +651,6 @@ class ModifierWallCrawling extends Modifier
         player.fallDistance = 0.0F;
     }
 
-    private static boolean touchingWall(Player player)
-    {
-        // Collision flags disappear while stationary. Retain contact only while an actual
-        // block collision shape is within five centimetres of the player's bounding box.
-        var box = player.getBoundingBox();
-        return player.level().getBlockCollisions(player, box.move(0.05D, 0, 0)).iterator().hasNext()
-                || player.level().getBlockCollisions(player, box.move(-0.05D, 0, 0)).iterator().hasNext()
-                || player.level().getBlockCollisions(player, box.move(0, 0, 0.05D)).iterator().hasNext()
-                || player.level().getBlockCollisions(player, box.move(0, 0, -0.05D)).iterator().hasNext();
-    }
 
 }
 

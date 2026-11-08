@@ -7,7 +7,7 @@ import com.fiskmods.heroes.common.hero.modifier.ModifierFlight;
 
 import net.minecraft.server.level.ServerPlayer;
 
-/** Limits vanilla's floating counter for actual suit flight and the immediate descent after it. */
+/** Limits vanilla's floating counter for suit flight, wall contact and their immediate descent. */
 public final class FlightKickGuard
 {
     private static final Map<ServerPlayer, Descent> DESCENTS = new IdentityHashMap<>();
@@ -17,7 +17,8 @@ public final class FlightKickGuard
     /** Call at server tick END, after vanilla has restored the position reported by the client. */
     public static void tick(ServerPlayer player)
     {
-        boolean active = SuitTravel.controlledFlightEntry(player) != null || ModifierFlight.hasActiveFlight(player);
+        boolean active = SuitTravel.controlledFlightEntry(player) != null || ModifierFlight.hasActiveFlight(player)
+                || WallCrawlContact.hasActiveContact(player);
         Descent descent = DESCENTS.get(player);
         if (active && descent == null)
         {

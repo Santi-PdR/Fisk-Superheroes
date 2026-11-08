@@ -118,6 +118,8 @@ public final class PortRegressionTests
         if (Math.abs(player.getDeltaMovement().y - 0.2D) > 0.0001D || player.fallDistance != 0
                 || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 1)
         { helper.fail("Server climb must use synchronized forward input on wall contact"); return; }
+        if (!com.fiskmods.heroes.common.hero.ability.WallCrawlContact.hasActiveContact(player))
+        { helper.fail("Actual crawl-capable wall contact should qualify for the floating guard"); return; }
         player.horizontalCollision = false;
         com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
         entry.getModifier().tick(player, entry, data);
@@ -130,15 +132,18 @@ public final class PortRegressionTests
         { helper.fail("Synchronized sneak must climb down"); return; }
         player.setPos(wall.getX() - 1.0D, wall.getY(), wall.getZ() + 0.5D);
         entry.getModifier().tick(player, entry, data);
-        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0)
-        { helper.fail("Wall crawl must release when leaving collision geometry"); return; }
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0
+                || com.fiskmods.heroes.common.hero.ability.WallCrawlContact.hasActiveContact(player))
+        { helper.fail("Wall crawl and floating exemption must release away from collision geometry"); return; }
+        player.setPos(wall.getX() - 0.3D, wall.getY(), wall.getZ() + 0.5D);
         data.getData().set(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING, (byte) 1);
         for (int i = 0; i < 4; ++i)
             player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
                     flash.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
         com.fiskmods.heroes.common.hero.HeroTracker.update(player);
-        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0)
-        { helper.fail("Changing suits must clear wall crawl state"); return; }
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.WALL_CRAWLING) != 0
+                || com.fiskmods.heroes.common.hero.ability.WallCrawlContact.hasActiveContact(player))
+        { helper.fail("Changing suits must clear wall crawl and its floating exemption"); return; }
         com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
         helper.succeed();
     }
