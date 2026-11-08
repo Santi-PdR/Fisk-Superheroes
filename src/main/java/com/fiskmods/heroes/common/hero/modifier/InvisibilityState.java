@@ -15,10 +15,12 @@ public final class InvisibilityState
     public static void update(Player player, SHPlayerData data)
     {
         if (data == null || player.level().isClientSide) return;
-        boolean active = data.getHeroType() != null && data.getData().get(Vars.INVISIBLE)
-                && data.getHeroType().getPowerContainer().getEntries().stream()
-                        .anyMatch(entry -> entry.getModifier().getId().equals(FiskHeroes.id("invisibility"))
-                                && entry.isEnabled() && entry.isModifierEnabled(player, data));
+        boolean active = data.getHeroType() != null && data.getHeroType().getPowerContainer().getEntries().stream()
+                .anyMatch(entry -> entry.isEnabled() && entry.isModifierEnabled(player, data)
+                        && (entry.getModifier().getId().equals(FiskHeroes.id("invisibility"))
+                                && data.getData().get(Vars.INVISIBLE)
+                            || entry.getModifier().getId().equals(FiskHeroes.id("shadowform"))
+                                && data.getData().get(Vars.SHADOWFORM)));
         if (active)
         {
             if (!data.isSuitInvisibilityApplied())

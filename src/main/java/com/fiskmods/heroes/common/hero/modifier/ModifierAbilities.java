@@ -520,6 +520,7 @@ class ModifierShadowform extends Modifier
         entry.setToggled(entity, state);
         data.getData().set(Vars.SHADOWFORM, state);
         data.getData().markDirty(Vars.SHADOWFORM);
+        if (entity instanceof Player player) InvisibilityState.update(player, data);
         // DataVarShadowform in the original adds a 0.55 upward impulse when enabled
         // on the ground. Send a one-shot velocity update to the controlling client;
         // continuous flight itself remains client-predicted.
@@ -577,10 +578,10 @@ class ModifierShadowform extends Modifier
         float timer = data.getData().get(Vars.SHADOWFORM_TIMER);
         data.getData().set(Vars.SHADOWFORM_TIMER,
                 net.minecraft.util.Mth.approach(timer, data.getData().get(Vars.SHADOWFORM) ? 1.0F : 0.0F, 0.2F));
+        if (entity instanceof Player player) InvisibilityState.update(player, data);
 
         if (data.getData().get(Vars.SHADOWFORM))
         {
-            entity.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, 10, 0, true, false, false));
             entity.clearFire();
         }
     }

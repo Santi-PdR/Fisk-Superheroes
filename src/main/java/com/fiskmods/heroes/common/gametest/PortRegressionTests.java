@@ -88,6 +88,48 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void shadowformInvisibilityPreservesPotionsAndEndsOnSuitChange(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var obsidian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:obsidian");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || obsidian == null || flash == null)
+        { helper.fail("Shadowform test setup missing"); return; }
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(obsidian.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        var entry = obsidian.getPowerContainer().getEntry(FiskHeroes.id("shadowform"));
+        if (entry == null) { helper.fail("Shadowform missing"); return; }
+        var modifier = entry.getModifier();
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        if (!player.isInvisible() || player.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY))
+        { helper.fail("Shadowform should set invisibility without creating a potion"); return; }
+        modifier.onActivate(player, entry, data);
+        if (player.isInvisible())
+        { helper.fail("Leaving shadowform should restore visibility immediately"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.INVISIBILITY, 200));
+        modifier.onActivate(player, entry, data);
+        modifier.tick(player, entry, data);
+        modifier.onActivate(player, entry, data);
+        var potion = player.getEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
+        if (!player.isInvisible() || potion == null || potion.getDuration() != 200)
+        { helper.fail("Shadowform must not overwrite or remove an independent invisibility potion"); return; }
+        player.removeEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY);
+        player.setInvisible(false);
+        modifier.onActivate(player, entry, data);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST,
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(flash.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        if (player.isInvisible() || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM))
+        { helper.fail("Changing to a suit without shadowform must restore visibility"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shadowformTakeoffOnlyOccursWhenEnabledOnGround(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

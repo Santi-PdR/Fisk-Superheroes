@@ -241,8 +241,9 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INVISIBLE, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INVISIBILITY_TIMER, 0.0F);
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("invisibility"), false);
-            com.fiskmods.heroes.common.hero.modifier.InvisibilityState.release(player, data);
         }
+        // Shadowform and invisibility can independently own the same entity flag.
+        com.fiskmods.heroes.common.hero.modifier.InvisibilityState.update(player, data);
 
         if (previous != null && !player.level().isClientSide)
         {
