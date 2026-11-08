@@ -350,6 +350,13 @@ def main():
             command('summon minecraft:iron_golem 0.5 180 12.5 {NoAI:1b,NoGravity:1b,Tags:["beam_blocked"]}')
             command('tp @s 0 180 0 0 0')
             time.sleep(2)
+            # Record actual setup coordinates and orientation to distinguish input/movement
+            # problems from beam collision errors when this end-to-end check fails.
+            command('data get entity @s Pos')
+            command('data get entity @s Rotation')
+            command('data get entity @e[type=minecraft:iron_golem,tag=beam_first,limit=1] Pos')
+            command('data get entity @e[type=minecraft:iron_golem,tag=beam_second,limit=1] Pos')
+            command('tp @s 0 180 0 0 0')
             firing = r'Charged beam firing: entity=Dev, charge=1\.0'
             before_firing = len(re.findall(firing, log.read_text(errors='replace')))
             xdo('keydown', 'c')
