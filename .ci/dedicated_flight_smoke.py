@@ -251,6 +251,21 @@ def main():
                          SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
                 raise RuntimeError('Player disconnected during wall crawling')
             print('PASS: dedicated wall crawl smoke completed', flush=True)
+            # Reproduce the original failure: land after crawling, then walk off the
+            # high platform and fall for several seconds with no wall or flight active.
+            command('fill -2 179 -20 2 179 7 minecraft:air')
+            command('execute store result score #ledge flight_test run data get entity Dev Pos[1] 100')
+            xdo('keydown', 's')
+            time.sleep(4)
+            xdo('keyup', 's')
+            time.sleep(7)
+            command('execute store result score #below flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #ledge flight_test -= #below flight_test')
+            command('execute if score #ledge flight_test matches 10000.. run say POST_WALL_LONG_FALL_OK')
+            wait_for(SERVER_LOG, r'POST_WALL_LONG_FALL_OK', 20, 'long fall after wall landing stays connected', server)
+            if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
+                         SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
+                raise RuntimeError('Player disconnected after leaving the wall platform')
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
