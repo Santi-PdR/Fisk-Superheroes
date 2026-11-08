@@ -160,6 +160,15 @@ def main():
             xdo('key', 'c')
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM',
                      30, 'activate shadowform through real client', server)
+            # Rapidly sample airborne state before the small takeoff hop ends, without
+            # pressing jump. This distinguishes the original ground impulse from flight input.
+            xdo('key', '--clearmodifiers', 'slash')
+            time.sleep(0.35)
+            xdo('type', '--clearmodifiers', '--delay', '1',
+                'execute if entity @a[name=Dev,nbt={OnGround:0b}] run say SHADOWFORM_TAKEOFF_OK')
+            time.sleep(0.2)
+            xdo('key', 'Return')
+            wait_for(SERVER_LOG, r'SHADOWFORM_TAKEOFF_OK', 20, 'shadowform lifts player from ground without jumping', server)
             command('fill -2 179 0 2 179 8 minecraft:air')
             command('execute store result score #start flight_test run data get entity Dev Pos[1] 100')
             xdo('keydown', 'space')

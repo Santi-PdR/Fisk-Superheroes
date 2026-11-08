@@ -88,6 +88,34 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void shadowformTakeoffOnlyOccursWhenEnabledOnGround(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-shadow-takeoff"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:obsidian");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("shadowform")) : null;
+        if (data == null || entry == null) { helper.fail("Obsidian shadowform missing"); return; }
+        player.setOnGround(true);
+        player.setDeltaMovement(0.1D, -0.08D, 0.2D);
+        player.hurtMarked = false;
+        entry.getModifier().onActivate(player, entry, data);
+        var motion = player.getDeltaMovement();
+        if (Math.abs(motion.y - 0.47D) > 0.00001D || motion.x != 0.1D || motion.z != 0.2D || !player.hurtMarked)
+        { helper.fail("Enabling grounded shadowform must add and synchronize one takeoff impulse"); return; }
+        player.hurtMarked = false;
+        entry.getModifier().onActivate(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y - 0.47D) > 0.00001D || player.hurtMarked)
+        { helper.fail("Disabling shadowform must not launch the player"); return; }
+        player.setOnGround(false);
+        player.setDeltaMovement(0.0D, -0.2D, 0.0D);
+        entry.getModifier().onActivate(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y + 0.2D) > 0.00001D || player.hurtMarked)
+        { helper.fail("Enabling shadowform midair must not add a takeoff impulse"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void passiveFlightUsesExtraGravityAndRespectsShadowform(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
@@ -718,6 +746,11 @@ public final class PortRegressionTests
         if (vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE)
                 || vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN) != 1.0F)
         { helper.fail("A full cooldown must switch giant mode off at one"); return; }
+        // A stale or externally re-enabled toggle must not remain permanently active at 100%.
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE, true);
+        cooldown.getModifier().tick(player, cooldown, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE))
+        { helper.fail("A toggle at a full cooldown must immediately time out"); return; }
         cooldown.getModifier().tick(player, cooldown, data);
         if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.GIANT_MODE_COOLDOWN) - (1.0F - 1.0F / 2400.0F)) > 0.00001F)
         { helper.fail("Cooldown recovery must use the normalized recovery rate"); return; }

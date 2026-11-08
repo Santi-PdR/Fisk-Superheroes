@@ -143,7 +143,7 @@ class ModifierCooldown extends Modifier
             return;
         }
         float step = 1.0F / Math.max(1, duration);
-        if (active && value < 1.0F)
+        if (active)
         {
             if (value <= 0.0F) AbilityData.playSound(entity, entry, "START");
             value = Math.min(1.0F, value + step);
@@ -520,6 +520,14 @@ class ModifierShadowform extends Modifier
         entry.setToggled(entity, state);
         data.getData().set(Vars.SHADOWFORM, state);
         data.getData().markDirty(Vars.SHADOWFORM);
+        // DataVarShadowform in the original adds a 0.55 upward impulse when enabled
+        // on the ground. Send a one-shot velocity update to the controlling client;
+        // continuous flight itself remains client-predicted.
+        if (state && entity.isAlive() && entity.onGround() && !entity.level().isClientSide)
+        {
+            entity.setDeltaMovement(entity.getDeltaMovement().add(0.0D, 0.55D, 0.0D));
+            entity.hurtMarked = true;
+        }
     }
 
     @Override
