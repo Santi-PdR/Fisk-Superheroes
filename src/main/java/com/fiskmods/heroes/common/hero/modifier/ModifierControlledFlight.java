@@ -72,6 +72,10 @@ public class ModifierControlledFlight extends Modifier
                     com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player),
                     com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player),
                     boosting, speed, boostSpeed);
+            // Creative/spectator flight and no-gravity entities do not receive vanilla gravity.
+            // The normal hover compensation would therefore accelerate them upward indefinitely.
+            if (!boosting && (player.getAbilities().flying || player.isNoGravity()))
+                motion = motion.add(0.0D, -0.08D, 0.0D);
             player.setDeltaMovement(motion);
             player.fallDistance = 0.0F;
             player.hurtMarked = true;

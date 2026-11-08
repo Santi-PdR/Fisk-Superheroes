@@ -661,6 +661,35 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void controlledFlightDoesNotRiseWithoutGravity(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-creative-flight-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("controlled_flight")) : null;
+        if (data == null || entry == null) { helper.fail("Flight data or modifier missing"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLYING, true);
+        player.getAbilities().flying = true;
+        player.setDeltaMovement(Vec3.ZERO);
+        for (int i = 0; i < 50; ++i) entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y) > 1.0E-7D)
+        { helper.fail("Creative flight without input must not accelerate upward"); return; }
+        player.getAbilities().flying = false;
+        player.setNoGravity(true);
+        player.setDeltaMovement(Vec3.ZERO);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y) > 1.0E-7D)
+        { helper.fail("No-gravity flight must not add gravity compensation"); return; }
+        player.setNoGravity(false);
+        player.setDeltaMovement(Vec3.ZERO);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y - 0.08D) > 1.0E-7D)
+        { helper.fail("Normal flight must retain gravity compensation"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void dataVariablesRoundTripAndFirstSync(GameTestHelper helper)
     {
         var source = new com.fiskmods.heroes.common.data.var.DataContainer();
