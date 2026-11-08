@@ -62,23 +62,10 @@ public class ModifierControlledFlight extends Modifier
 
         if (flying)
         {
-            float speed = entry.getFloat(entity, PowerProperty.SPEED);
-            float boostSpeed = entry.getFloat(entity, PowerProperty.BOOST_SPEED);
-            boolean canBoost = entry.getBoolean(entity, PowerProperty.CAN_BOOST);
-            boolean boosting = canBoost && player.isSprinting();
-            Vec3 motion = controlledMotion(player.getDeltaMovement(), player.getLookAngle(), player.getYRot(),
-                    com.fiskmods.heroes.common.data.PlayerInputTracker.forward(player),
-                    com.fiskmods.heroes.common.data.PlayerInputTracker.strafe(player),
-                    com.fiskmods.heroes.common.data.PlayerInputTracker.isJumping(player),
-                    com.fiskmods.heroes.common.data.PlayerInputTracker.isSneaking(player),
-                    boosting, speed, boostSpeed);
-            // Creative/spectator flight and no-gravity entities do not receive vanilla gravity.
-            // The normal hover compensation would therefore accelerate them upward indefinitely.
-            if (!boosting && (player.getAbilities().flying || player.isNoGravity()))
-                motion = motion.add(0.0D, -0.08D, 0.0D);
-            player.setDeltaMovement(motion);
+            // Motion is applied inside LivingEntity.travel on the local player. Server-side
+            // velocity packets every tick would override that prediction and create drift.
             player.fallDistance = 0.0F;
-            player.hurtMarked = true;
+            boolean boosting = entry.getBoolean(entity, PowerProperty.CAN_BOOST) && player.isSprinting();
             data.getData().set(Vars.BOOSTER_TIMER, Math.min(20.0F, timer + 1.0F));
 
             if (boosting)
@@ -110,10 +97,10 @@ public class ModifierControlledFlight extends Modifier
         if (length > 1.0D) { x /= length; z /= length; }
         double targetY = look.y * Integer.signum(forward) * speed
                 + (jump ? speed : 0.0D) - (sneak ? speed : 0.0D);
-        // Smooth toward the desired velocity. Add the vanilla gravity amount so idle flight
-        // hovers instead of accelerating forever or drifting forward without input.
+        // This runs in the travel hook, so vanilla gravity does not run a second time.
+        // With no input, velocity decays to zero rather than accumulating upward lift.
         return new Vec3(motion.x * 0.8D + x * speed * 0.2D,
-                motion.y * 0.8D + targetY * 0.2D + 0.08D,
+                motion.y * 0.8D + targetY * 0.2D,
                 motion.z * 0.8D + z * speed * 0.2D);
     }
 

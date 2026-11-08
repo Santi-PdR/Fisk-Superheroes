@@ -8,8 +8,8 @@ var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode');
 var FrameNode = Java.type('org.objectweb.asm.tree.FrameNode');
 var InsnNode = Java.type('org.objectweb.asm.tree.InsnNode');
 
-// Replace vanilla travel only while an enabled suit is actually gliding. The original mod
-// used the same hook before vanilla travel, avoiding double gravity and duplicate movement.
+// Replace vanilla travel only while an enabled suit is flying or gliding. The original mod
+// used a travel hook for both, avoiding double gravity and duplicate movement.
 function initializeCoreMod() {
     return {
         'fiskheroes_gliding_travel': {
@@ -29,7 +29,7 @@ function initializeCoreMod() {
                 var hook = new InsnList();
                 hook.add(new VarInsnNode(Opcodes.ALOAD, 0));
                 hook.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    'com/fiskmods/heroes/common/hero/ability/GlidingTravel', 'travel',
+                    'com/fiskmods/heroes/common/hero/ability/SuitTravel', 'travel',
                     '(Lnet/minecraft/world/entity/LivingEntity;)Z', false));
                 hook.add(new JumpInsnNode(Opcodes.IFEQ, vanilla));
                 hook.add(new InsnNode(Opcodes.RETURN));
