@@ -151,6 +151,9 @@ def main():
                      'Spider-Man gliding pose affects the shared player model', process)
             wait_for(r'Drawing wingsuit membrane: texture=fiskheroes:textures/heroes/spider_man_wings\.png',
                      45, 'web-wing membrane enters the renderer', process)
+            wait_for(r'Gliding body rotation applied: hero=fiskheroes:spider_man', 45,
+                     'web wings rotate the complete player while gliding', process)
+            time.sleep(2)
             subprocess.run(['scrot', 'ci-wingsuit-screenshot.jpg'], check=True, timeout=30)
             # The comics suit changes both its equipped base texture and emissive layer when
             # speeding. Check real client resource selection before and after the ability key.

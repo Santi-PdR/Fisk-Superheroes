@@ -11,6 +11,11 @@ public final class GlidingPoseMath
         return (float) ((Math.sin((value * 2.0F - 1.0F) * Math.PI / 2.0D) + 1.0D) * 0.5D);
     }
 
+    public static float bodyPitch(float timer, float lookPitchDegrees)
+    {
+        return curve(timer) * (-90.0F - lookPitchDegrees);
+    }
+
     public static float spread(float timer, double verticalVelocity, double speed)
     {
         double level = verticalVelocity < 0.0D && speed > 1.0E-8D

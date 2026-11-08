@@ -644,8 +644,11 @@ public final class PortRegressionTests
         float level = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(1.0F, 0.0D, 1.0D);
         float diving = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(1.0F, -1.0D, 1.0D);
         if (Math.abs(folded) > 0.0001F || Math.abs(level - Math.PI / 2) > 0.0001F
-                || Math.abs(diving - Math.PI / 12) > 0.0001F)
-        { helper.fail("Gliding limb spread must deploy, and narrow during a steep dive"); return; }
+                || Math.abs(diving - Math.PI / 12) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.GlidingPoseMath.bodyPitch(0.0F, 0.0F)) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.GlidingPoseMath.bodyPitch(1.0F, 0.0F) + 90.0F) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.GlidingPoseMath.bodyPitch(1.0F, 45.0F) + 135.0F) > 0.0001F)
+        { helper.fail("Gliding limbs and body must deploy, and the limbs narrow during a steep dive"); return; }
         helper.succeed();
     }
 
