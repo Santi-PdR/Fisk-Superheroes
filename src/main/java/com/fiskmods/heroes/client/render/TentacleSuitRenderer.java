@@ -158,7 +158,7 @@ final class TentacleSuitRenderer
             pose.pushPose();
             pose.translate(point.x, point.y, point.z);
             faceUp(pose, tangent);
-            pose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+            // ModelPart already converts Tabula pixel coordinates to blocks.
             TabulaModelCache.render(modelType, pose, vertex, light, 1.0F, 1.0F, 1.0F, 1.0F);
             pose.popPose();
         }
@@ -190,7 +190,7 @@ final class TentacleSuitRenderer
                 playerModel.body.translateAndRotate(pose);
                 pose.translate(arm.end().x, arm.end().y, arm.end().z);
                 faceUp(pose, tangent);
-                pose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+                // ModelPart.render performs the pixel-to-block conversion itself.
                 if (ock) TabulaModelCache.renderAnimated(modelType, pose, vertex, light, 1.0F, 1.0F, 1.0F, 1.0F,
                         claw -> OckClawAnimation.apply(claw, armIndex, extension, arm.grab(), arm.strike()));
                 else TabulaModelCache.render(modelType, pose, vertex, light, 1.0F, 1.0F, 1.0F, 1.0F);
