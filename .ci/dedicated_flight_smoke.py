@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Drive a real Forge client against an offline dedicated Forge server in survival mode."""
+"""Drive real Forge client flight and tentacle interactions on a dedicated server."""
 import os
 import re
 import signal
@@ -111,6 +111,44 @@ def main():
             if re.search(r'Dev lost connection|flying is not enabled|#@!@# Game crashed|\[.*?/FATAL\]', text, re.IGNORECASE):
                 raise RuntimeError('Client/server reported a flight disconnect or crash')
             print('PASS: dedicated client flight smoke completed', flush=True)
+            # Exercise actual key packets and server-side tentacle targeting as well. The
+            # target is immobilized so the wall and health checks remain deterministic.
+            command('gamemode creative Dev')
+            command('tp Dev 0 180 0 0 0')
+            command('fill -2 179 0 2 179 8 minecraft:stone')
+            command('fill -2 180 0 2 184 8 minecraft:air')
+            command('suit fiskheroes:doctor_octopus')
+            wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Doctor Octopus', 30, 'Doctor Octopus suit equipped', client)
+            command('summon minecraft:iron_golem 0.5 180 5.5 {NoAI:1b,NoGravity:1b,Tags:["tentacle_smoke"]}')
+            command('setblock 0 181 2 minecraft:stone')
+            command('tp Dev 0 180 0 0 0')
+            xdo('key', 'g')
+            wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLES',
+                     30, 'deploy tentacles through real client', server)
+            xdo('key', 'c')
+            wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_JAB',
+                     30, 'send tentacle jab through real client', server)
+            command('execute if data entity @e[type=minecraft:iron_golem,tag=tentacle_smoke,limit=1] {Health:100.0f} run say TENTACLE_BLOCKED_OK')
+            wait_for(SERVER_LOG, r'TENTACLE_BLOCKED_OK', 20, 'dedicated tentacle jab is blocked by wall', server)
+            command('setblock 0 181 2 minecraft:air')
+            xdo('keydown', 'b')
+            wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_STRIKE',
+                     30, 'charge tentacle strike through real client', server)
+            time.sleep(2)
+            xdo('key', 'g')
+            time.sleep(1)
+            xdo('keyup', 'b')
+            time.sleep(2)
+            command('execute if data entity @e[type=minecraft:iron_golem,tag=tentacle_smoke,limit=1] {Health:100.0f} run say TENTACLE_CANCEL_OK')
+            wait_for(SERVER_LOG, r'TENTACLE_CANCEL_OK', 20, 'retracting cancels held strike on server', server)
+            xdo('key', 'g')
+            time.sleep(1)
+            xdo('key', 'c')
+            time.sleep(2)
+            command('execute store result score #tentacle flight_test run data get entity @e[type=minecraft:iron_golem,tag=tentacle_smoke,limit=1] Health 1')
+            command('execute if score #tentacle flight_test matches ..99 run say TENTACLE_HIT_OK')
+            wait_for(SERVER_LOG, r'TENTACLE_HIT_OK', 20, 'dedicated tentacle jab hits exposed target', server)
+            print('PASS: dedicated client tentacle smoke completed', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
