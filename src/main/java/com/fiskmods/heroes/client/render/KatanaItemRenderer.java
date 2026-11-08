@@ -88,7 +88,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
 
         var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         sword.render(pose, consumer, light, overlay);
-        boolean secondCopy = context != ItemDisplayContext.NONE && ItemDualSword.isDual(stack);
+        boolean secondCopy = ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED);
         if (context == ItemDisplayContext.NONE && ItemDualSword.isDual(stack) && !loggedStowedDual)
         {
             loggedStowedDual = true;

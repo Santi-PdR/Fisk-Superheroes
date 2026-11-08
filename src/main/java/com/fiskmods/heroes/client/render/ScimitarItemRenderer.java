@@ -84,7 +84,7 @@ public final class ScimitarItemRenderer extends BlockEntityWithoutLevelRenderer
         }
         VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
         root.render(pose, consumer, light, overlay);
-        if (context != ItemDisplayContext.NONE && ItemDualSword.isDual(stack))
+        if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {
             pose.translate(0.0D, 0.0D, 0.28D);
             root.render(pose, consumer, light, overlay);

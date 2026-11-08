@@ -79,6 +79,16 @@ def main():
                      90, 'observer without a livery uses the default', observer)
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun\.png',
                      90, 'observer sees remote Deadpool pistol livery', observer)
+            command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
+            wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
+                     90, 'observer sees remote dual katana in offhand', observer)
+            command('execute unless data entity Partner Inventory[{Slot:-106b}] run say REMOTE_DUAL_EMPTY_OK')
+            wait_for(server_log, r'REMOTE_DUAL_EMPTY_OK', 30, 'remote dual offhand does not change server inventory', server)
+            command('item replace entity Partner weapon.offhand with minecraft:torch')
+            wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied',
+                     60, 'observer respects remote real offhand item', observer)
+            command('item replace entity Partner weapon.offhand with minecraft:air')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
             command('execute as Partner run suit fiskheroes:deathstroke_dceu')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun\.png',
                      90, 'observer sees remote suit change update the pistol livery', observer)

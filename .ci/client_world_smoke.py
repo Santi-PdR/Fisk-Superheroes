@@ -120,8 +120,18 @@ def main():
             xdo('key', 'F5')
             wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      45, 'Deadpool held katana uses livery in first person', process)
+            wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
+                     45, 'dual katana renders in the first-person offhand', process)
+            command('execute unless data entity @s Inventory[{Slot:-106b}] run say DUAL_OFFHAND_EMPTY_OK')
+            wait_for(r'\[CHAT\].*DUAL_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only on the server', process)
             time.sleep(2)
             subprocess.run(['scrot', 'ci-held-katana.jpg'], check=True, timeout=30)
+            command('item replace entity @s weapon.offhand with minecraft:torch')
+            wait_for(r'Dual visual offhand: player=Dev, item=fiskheroes:katana, mode=occupied',
+                     45, 'real offhand item takes precedence over visual duplicate', process)
+            command('item replace entity @s weapon.offhand with minecraft:air')
+            wait_for_count(r'Dual visual offhand: player=Dev, item=fiskheroes:katana, mode=synthetic', 2,
+                           45, 'dual visual offhand returns when real offhand is empty', process)
             command('item replace entity @s weapon.mainhand with fiskheroes:desert_eagle')
             wait_for(r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun\.png',
                      45, 'Deadpool held pistol uses suit livery', process)
