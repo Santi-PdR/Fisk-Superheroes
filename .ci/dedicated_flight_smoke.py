@@ -63,6 +63,23 @@ def main():
                 xdo('key', 'Return')
                 time.sleep(1)
 
+            # Baseline: fall for over four seconds with no suit, before any flight
+            # or wall-crawl grace state has ever existed for this player.
+            command('gamemode creative Dev')
+            command('tp Dev 0 260 0 0 0')
+            command('fill -1 259 -1 1 259 1 minecraft:stone')
+            command('tp Dev 0.5 260 0.5 0 0')
+            command('gamemode survival Dev')
+            command('effect give Dev minecraft:resistance 120 255 true')
+            xdo('keydown', 'w')
+            time.sleep(2)
+            xdo('keyup', 'w')
+            time.sleep(7)
+            command('execute if entity Dev run say ORDINARY_LONG_FALL_OK')
+            wait_for(SERVER_LOG, r'ORDINARY_LONG_FALL_OK', 20, 'ordinary long fall without a suit', server)
+            if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
+                         SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
+                raise RuntimeError('Player disconnected during ordinary long fall')
             command('gamemode survival Dev')
             command('suit fiskheroes:vision')
             wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Vision', 30, 'Vision suit equipped on dedicated server', client)
