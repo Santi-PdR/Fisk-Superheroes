@@ -49,7 +49,7 @@ final class WingsuitRenderer
                 transformedPoint(pose, model.body, 4.0F, 17.0F, 0.0F)
         };
         ModelPart[] arms = {model.rightArm, model.leftArm};
-        VertexConsumer vertex = buffers.getBuffer(RenderType.entityTranslucent(texture));
+        VertexConsumer vertex = buffers.getBuffer(RenderType.entityTranslucentCull(texture));
         Matrix4f identity = new Matrix4f();
         Matrix3f identityNormal = new Matrix3f();
 
@@ -105,7 +105,7 @@ final class WingsuitRenderer
         float[] u = {au, bu, cu};
         float[] v = {av, bv, cv};
         float alpha = opacity * 255.0F;
-        // entityTranslucent uses QUADS, not TRIANGLES. Six vertices corrupt the
+        // entityTranslucentCull uses QUADS, not TRIANGLES. Six vertices corrupt the
         // primitive grouping (and the next effect sharing this buffer).
         for (int i = 0; i < com.fiskmods.heroes.common.util.TriangleQuad.vertexCount(); ++i)
         {
