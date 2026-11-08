@@ -149,6 +149,25 @@ def main():
             command('execute if score #tentacle flight_test matches ..99 run say TENTACLE_HIT_OK')
             wait_for(SERVER_LOG, r'TENTACLE_HIT_OK', 20, 'dedicated tentacle jab hits exposed target', server)
             print('PASS: dedicated client tentacle smoke completed', flush=True)
+            # Passive flight has different physics and is gated by Obsidian's shadowform.
+            command('suit fiskheroes:obsidian')
+            wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Obsidian', 30, 'Obsidian suit equipped', client)
+            xdo('key', 'c')
+            wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM',
+                     30, 'activate shadowform through real client', server)
+            command('gamemode survival Dev')
+            command('tp Dev 0 230 0 0 0')
+            command('execute store result score #start flight_test run data get entity Dev Pos[1] 100')
+            xdo('keydown', 'space')
+            time.sleep(3)
+            xdo('keyup', 'space')
+            command('execute store result score #end flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #delta flight_test = #end flight_test')
+            command('scoreboard players operation #delta flight_test -= #start flight_test')
+            command('scoreboard players get #delta flight_test')
+            command('execute if score #delta flight_test matches 50.. run say PASSIVE_FLIGHT_UP_OK')
+            wait_for(SERVER_LOG, r'PASSIVE_FLIGHT_UP_OK', 20, 'Obsidian shadowform ascends in survival', server)
+            print('PASS: dedicated passive flight smoke completed', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
