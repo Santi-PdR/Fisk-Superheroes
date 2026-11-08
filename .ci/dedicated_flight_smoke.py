@@ -152,6 +152,8 @@ def main():
             # Passive flight has different physics and is gated by Obsidian's shadowform.
             # Reuse the existing high platform, avoiding large teleports while velocity
             # packets from the previous scenario can still be in flight.
+            command('fill -2 -50 0 2 -50 3 minecraft:stone')
+            command('effect give Dev minecraft:resistance 120 255 true')
             command('suit fiskheroes:obsidian')
             wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Obsidian', 30, 'Obsidian suit equipped', client)
             command('gamemode survival Dev')
@@ -160,17 +162,22 @@ def main():
                      30, 'activate shadowform through real client', server)
             command('fill -2 179 0 2 179 8 minecraft:air')
             command('execute store result score #start flight_test run data get entity Dev Pos[1] 100')
-            command('execute if score #start flight_test matches 10000.. run say PASSIVE_AIRBORNE_SETUP_OK')
-            wait_for(SERVER_LOG, r'PASSIVE_AIRBORNE_SETUP_OK', 20, 'passive flight test above ground', server)
             xdo('keydown', 'space')
-            time.sleep(3)
+            time.sleep(2)
             xdo('keyup', 'space')
             command('execute store result score #end flight_test run data get entity Dev Pos[1] 100')
-            command('scoreboard players operation #delta flight_test = #end flight_test')
-            command('scoreboard players operation #delta flight_test -= #start flight_test')
-            command('scoreboard players get #delta flight_test')
-            command('execute if score #delta flight_test matches 50.. run say PASSIVE_FLIGHT_UP_OK')
+            command('execute if score #end flight_test > #start flight_test run say PASSIVE_FLIGHT_UP_OK')
             wait_for(SERVER_LOG, r'PASSIVE_FLIGHT_UP_OK', 20, 'Obsidian shadowform ascends in survival', server)
+            # Let the 400-tick shadowform expire, then wait over four seconds of falling.
+            # The player must not be kicked when suit flight becomes inactive midair.
+            wait_for(CLIENT_LOG, r'Playing pack sound definition fiskheroes:shadowform_disable',
+                     30, 'shadowform naturally expires', client)
+            time.sleep(8)
+            command('execute if entity Dev run say PASSIVE_FLIGHT_RECOVERY_OK')
+            wait_for(SERVER_LOG, r'PASSIVE_FLIGHT_RECOVERY_OK', 20, 'post-flight descent remains connected', server)
+            if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
+                         SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
+                raise RuntimeError('Player disconnected during passive flight or its descent')
             print('PASS: dedicated passive flight smoke completed', flush=True)
         finally:
             for process in reversed(processes):

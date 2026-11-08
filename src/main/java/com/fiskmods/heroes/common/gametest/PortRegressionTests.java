@@ -20,6 +20,24 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void flightKickGuardOnlyExemptsBoundedPostFlightDescent(GameTestHelper helper)
+    {
+        var state = new com.fiskmods.heroes.common.hero.ability.FlightKickGuard.Descent(200.0D);
+        if (!state.update(true, 200.0D, false) || state.update(false, 200.0D, false)
+                || state.update(false, 201.0D, false) || !state.update(false, 200.5D, false))
+        { helper.fail("Only active flight or real downward motion may reset the floating counter"); return; }
+        double y = 200.5D;
+        for (int i = 0; i < 80; ++i) state.update(false, y -= 0.5D, false);
+        if (!state.isFinished() || state.update(false, y - 1.0D, false))
+        { helper.fail("Post-flight descent exemption must expire"); return; }
+        var landed = new com.fiskmods.heroes.common.hero.ability.FlightKickGuard.Descent(100.0D);
+        landed.update(true, 100.0D, false);
+        if (landed.update(false, 99.0D, true) || !landed.isFinished())
+        { helper.fail("Landing or riding must end the descent exemption"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void passiveFlightUsesExtraGravityAndRespectsShadowform(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
