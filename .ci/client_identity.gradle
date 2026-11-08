@@ -1,0 +1,28 @@
+// CI only: give concurrent development clients distinct offline identities and
+// bound their heaps. This mutates the final merged run config before ForgeGradle
+// launches the process, so inherited default --username arguments are replaced.
+allprojects { project ->
+    afterEvaluate {
+        def requestedName = project.findProperty('ciUsername')
+        ['runClient', 'runServer'].each { taskName ->
+            def runTask = tasks.findByName(taskName)
+            if (runTask != null) {
+                runTask.doFirst {
+                    def config = runTask.getRunConfig().get()
+                    config.getJvmArgs().add('-Xmx768m')
+                    if (taskName == 'runClient' && requestedName) {
+                        def args = config.getArgs()
+                        for (int i = args.size() - 2; i >= 0; --i) {
+                            if (args[i] == '--username' || args[i] == '--uuid') {
+                                args.remove(i + 1)
+                                args.remove(i)
+                            }
+                        }
+                        args.add('--username')
+                        args.add(requestedName.toString())
+                    }
+                }
+            }
+        }
+    }
+}
