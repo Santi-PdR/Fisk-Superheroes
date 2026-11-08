@@ -22,6 +22,13 @@ public final class PortRegressionTests
     @GameTest(template = "test_empty")
     public static void flightKickGuardOnlyExemptsBoundedPostFlightDescent(GameTestHelper helper)
     {
+        if (!com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 198, false)
+                || com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 199.9, false)
+                || com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 200, false)
+                || com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 202, false)
+                || com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 198, true)
+                || com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(Double.NaN, 198, false))
+        { helper.fail("Only rapid observed freefall may bypass the floating counter without suit flight"); return; }
         var state = new com.fiskmods.heroes.common.hero.ability.FlightKickGuard.Descent(200.0D);
         if (!state.update(true, 200.0D, false) || state.update(false, 200.0D, false)
                 || state.update(false, 201.0D, false) || !state.update(false, 200.5D, false))

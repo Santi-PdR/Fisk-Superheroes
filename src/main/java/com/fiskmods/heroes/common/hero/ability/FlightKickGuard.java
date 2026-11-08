@@ -11,12 +11,22 @@ import net.minecraft.server.level.ServerPlayer;
 public final class FlightKickGuard
 {
     private static final Map<ServerPlayer, Descent> DESCENTS = new IdentityHashMap<>();
+    private static final Map<ServerPlayer, Double> LAST_POSITIONS = new IdentityHashMap<>();
 
     private FlightKickGuard() { }
 
     /** Call at server tick END, after vanilla has restored the position reported by the client. */
     public static void tick(ServerPlayer player)
     {
+        Double previousY = LAST_POSITIONS.put(player, player.getY());
+        // In 1.20.1 the vanilla floating flag may remain set during a long ordinary
+        // fall. Only reset it for very rapid *observed* descent, not slow descent,
+        // hovering or ascent. A dropped player rapidly reaches this speed under
+        // normal gravity; at two blocks/tick this cannot sustain hovering.
+        if (previousY != null && isRapidDescent(previousY, player.getY(), player.onGround() || player.isPassenger())
+                && !player.noPhysics && player.connection != null)
+            player.connection.aboveGroundTickCount = 0;
+
         boolean active = SuitTravel.controlledFlightEntry(player) != null || ModifierFlight.hasActiveFlight(player)
                 || WallCrawlContact.hasActiveContact(player);
         Descent descent = DESCENTS.get(player);
@@ -31,9 +41,16 @@ public final class FlightKickGuard
         if (descent.isFinished()) DESCENTS.remove(player);
     }
 
+    public static boolean isRapidDescent(double previousY, double currentY, boolean landedOrRiding)
+    {
+        return !landedOrRiding && Double.isFinite(previousY) && Double.isFinite(currentY)
+                && currentY - previousY <= -2.0D;
+    }
+
     public static void clear(ServerPlayer player)
     {
         DESCENTS.remove(player);
+        LAST_POSITIONS.remove(player);
     }
 
     /** Transient, bounded grace only for observed downward displacement after flight or wall contact. */

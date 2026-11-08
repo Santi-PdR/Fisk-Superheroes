@@ -67,15 +67,20 @@ def main():
             # or wall-crawl grace state has ever existed for this player.
             command('gamemode creative Dev')
             command('tp Dev 0 260 0 0 0')
+            command('fill -8 -50 -8 8 -50 8 minecraft:stone')
             command('fill -1 259 -1 1 259 1 minecraft:stone')
             command('tp Dev 0.5 260 0.5 0 0')
             command('gamemode survival Dev')
             command('effect give Dev minecraft:resistance 120 255 true')
+            command('scoreboard objectives add flight_test dummy')
+            command('execute store result score #fallstart flight_test run data get entity Dev Pos[1] 100')
             xdo('keydown', 'w')
             time.sleep(2)
             xdo('keyup', 'w')
             time.sleep(7)
-            command('execute if entity Dev run say ORDINARY_LONG_FALL_OK')
+            command('execute store result score #fallend flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #fallstart flight_test -= #fallend flight_test')
+            command('execute if score #fallstart flight_test matches 10000.. run say ORDINARY_LONG_FALL_OK')
             wait_for(SERVER_LOG, r'ORDINARY_LONG_FALL_OK', 20, 'ordinary long fall without a suit', server)
             if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
                          SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
@@ -88,7 +93,6 @@ def main():
             wait_for(SERVER_LOG, r'Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY',
                      30, 'flight activation reached dedicated server', server)
             time.sleep(3)
-            command('scoreboard objectives add flight_test dummy')
             command('execute store result score #start flight_test run data get entity Dev Pos[1] 100')
             # Vanilla rejects sustained flight after roughly four seconds when allow-flight is
             # false. Stay airborne substantially longer and verify the client remains connected.
