@@ -30,7 +30,7 @@ jobs:
       - name: Install headless client dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
+          sudo apt-get install -y -qq xvfb xdotool scrot imagemagick libgl1-mesa-dri libflite1
       - name: Prepare isolated dedicated server and client
         run: |
           chmod +x gradlew
@@ -62,9 +62,7 @@ jobs:
           { cat ci-dedicated-test.log 2>/dev/null || true; echo '==== server tail ===='; tail -200 ci-dedicated-server.log 2>/dev/null || true; echo '==== client tail ===='; tail -120 ci-dedicated-client.log 2>/dev/null || true; } > .ci/dedicated-flight-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          cp ci-tentacle-charge.jpg .ci/inspection-tentacle.jpg 2>/dev/null || true
           git add -f .ci/dedicated-flight-log.txt
-          test ! -f .ci/inspection-tentacle.jpg || git add -f .ci/inspection-tentacle.jpg
           git diff --cached --quiet || git commit -m 'ci: dedicated flight smoke log [skip ci]' --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true

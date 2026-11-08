@@ -83,9 +83,7 @@ jobs:
           { cat ci-world-test.log 2>/dev/null || true; grep -iE 'fiskheroes|logged in|joined the game|issued server command|error|exception|failed|fatal|Drawing suit' ci-client-world.log | tail -300 || true; tail -100 ci-client-world.log; } > .ci/client-world-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          cp ci-equipped-shield.jpg .ci/inspection-shield.jpg 2>/dev/null || true
           git add -f .ci/client-world-log.txt
-          test ! -f .ci/inspection-shield.jpg || git add -f .ci/inspection-shield.jpg
           git diff --cached --quiet || git commit -m 'ci: client world smoke log [skip ci]' --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
