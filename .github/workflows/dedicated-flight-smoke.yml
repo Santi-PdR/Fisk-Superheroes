@@ -1,0 +1,66 @@
+name: Dedicated Flight Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/dedicated_flight_smoke.py'
+      - '.github/workflows/dedicated-flight-smoke.yml'
+
+concurrency:
+  group: dedicated-flight-smoke-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  multiplayer:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless client dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
+      - name: Prepare isolated dedicated server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-dedicated run-dedicated-client
+          echo 'eula=true' > run-dedicated/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=false\nview-distance=3\nsimulation-distance=3\n' > run-dedicated/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Test survival flight on dedicated server
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/dedicated_flight_smoke.py 2>&1 | tee ci-dedicated-test.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dedicated-flight-diagnostics
+          path: |
+            ci-dedicated-test.log
+            ci-dedicated-server.log
+            ci-dedicated-client.log
+          if-no-files-found: ignore
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          mkdir -p .ci
+          { cat ci-dedicated-test.log 2>/dev/null || true; echo '==== server tail ===='; tail -200 ci-dedicated-server.log 2>/dev/null || true; echo '==== client tail ===='; tail -120 ci-dedicated-client.log 2>/dev/null || true; } > .ci/dedicated-flight-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/dedicated-flight-log.txt
+          git diff --cached --quiet || git commit -m 'ci: dedicated flight smoke log [skip ci]' --no-verify
+          for i in 1 2 3 4 5; do
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
+            git push && break
+            sleep 5
+          done

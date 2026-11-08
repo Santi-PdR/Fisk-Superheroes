@@ -22,7 +22,7 @@ minecraft {
 
     runs {
         configureEach {
-            workingDirectory project.file('run')
+            workingDirectory project.file(project.findProperty('ciRunDir') ?: 'run')
             property 'forge.logging.markers', 'REGISTRIES'
             property 'forge.logging.console.level', 'debug'
             mods {
@@ -36,6 +36,9 @@ minecraft {
             // Optional CI-only path: open a pre-generated world directly for interaction tests.
             if (project.findProperty('quickPlayWorld')) {
                 args '--quickPlaySingleplayer', project.property('quickPlayWorld').toString()
+            }
+            if (project.findProperty('quickPlayServer')) {
+                args '--quickPlayMultiplayer', project.property('quickPlayServer').toString()
             }
         }
         server {
