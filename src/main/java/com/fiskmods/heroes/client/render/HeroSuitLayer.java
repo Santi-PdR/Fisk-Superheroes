@@ -450,9 +450,9 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             float scale = item.has("scale") ? item.get("scale").getAsFloat() : 1.0F;
             poseStack.scale(scale, scale, scale);
 
-            // The shield renderer has a centered stowed-suit pose. Generic item renderers
-            // still need the 1.7 EQUIPPED_SUIT transform and their own display adjustment.
-            if (!stack.is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()))
+            // Centered stowed poses are provided by these custom item renderers.
+            // Other item types retain the legacy fallback until their poses are adapted.
+            if (!hasCenteredStowedPose(stack))
             {
                 poseStack.translate(0.9375F, 0.0625F, 0.0F);
                 poseStack.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-335.0F));
@@ -460,17 +460,37 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 poseStack.scale(2.0F / 3.0F, 2.0F / 3.0F, 2.0F / 3.0F);
                 poseStack.translate(0.0F, 0.3F, 0.0F);
             }
-            if (EQUIPPED_ITEM_DIAGNOSTICS.add(iteration.getRegistryName().toString()))
+            ResourceLocation itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+            ResourceLocation livery = resolveStowedLivery(model, player, itemId);
+            if (EQUIPPED_ITEM_DIAGNOSTICS.add(iteration.getRegistryName() + "|" + itemId))
             {
                 var itemScale = poseStack.last().pose().getScale(new org.joml.Vector3f());
-                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Equipped suit item rendered: hero={}, item={}, poseScale={}",
-                        iteration.getRegistryName(), net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()), itemScale.x);
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Equipped suit item rendered: hero={}, item={}, poseScale={}, livery={}",
+                        iteration.getRegistryName(), itemId, itemScale.x, livery);
             }
-            Minecraft.getInstance().getItemRenderer().renderStatic(player, stack,
+            SuitItemRenderContext.withTexture(livery, () -> Minecraft.getInstance().getItemRenderer().renderStatic(player, stack,
                     net.minecraft.world.item.ItemDisplayContext.NONE, false, poseStack, buffer,
-                    player.level(), packedLight, OverlayTexture.NO_OVERLAY, player.getId());
+                    player.level(), packedLight, OverlayTexture.NO_OVERLAY, player.getId()));
             poseStack.popPose();
         }
+    }
+
+    private static boolean hasCenteredStowedPose(ItemStack stack)
+    {
+        return stack.is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.KATANA.get())
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get())
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN.get());
+    }
+
+    private static ResourceLocation resolveStowedLivery(HeroModelData model, AbstractClientPlayer player, ResourceLocation itemId)
+    {
+        var liveries = model.getCustom().get("fiskheroes:livery");
+        if (liveries == null || !itemId.getNamespace().equals("fiskheroes") || !liveries.has(itemId.getPath())) return null;
+        var alias = liveries.get(itemId.getPath());
+        if (!alias.isJsonPrimitive() || !alias.getAsJsonPrimitive().isString()) return null;
+        String resource = model.getResources().get(alias.getAsString());
+        return com.fiskmods.heroes.client.texture.TextureResolver.resolve(resource, player);
     }
 
     private static final java.util.Set<String> EQUIPPED_ITEM_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();

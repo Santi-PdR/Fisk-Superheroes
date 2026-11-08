@@ -48,6 +48,12 @@ public final class GrapplingGunItemRenderer extends BlockEntityWithoutLevelRende
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // The suit layer already applies the pack's anchor and rotation.
+                // Cancel ItemRenderer's half-block origin shift without adding a GUI pose.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
                 pose.translate(0.52D, 0.55D, 0.5D);

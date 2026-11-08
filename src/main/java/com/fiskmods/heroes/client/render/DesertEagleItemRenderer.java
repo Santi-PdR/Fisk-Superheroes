@@ -44,6 +44,12 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // The suit layer already applies the pack's anchor and rotation.
+                // Cancel ItemRenderer's half-block origin shift without adding a GUI pose.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
                 pose.translate(0.5D, 0.52D, 0.5D);
@@ -78,9 +84,9 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
             }
         }
 
-        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         root.render(pose, consumer, light, overlay);
-        if (ItemDualSword.isDual(stack))
+        if (context != ItemDisplayContext.NONE && ItemDualSword.isDual(stack))
         {
             pose.translate(-0.34D, 0.0D, 0.0D);
             root.render(pose, consumer, light, overlay);

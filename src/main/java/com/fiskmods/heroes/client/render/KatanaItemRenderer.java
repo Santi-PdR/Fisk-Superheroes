@@ -23,6 +23,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
 {
     private static final ResourceLocation TEXTURE = FiskHeroes.id("textures/models/katana.png");
     private static KatanaItemRenderer instance;
+    private static boolean loggedStowedDual;
     private final ModelPart sword;
 
     private KatanaItemRenderer()
@@ -44,6 +45,12 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // The suit layer already applies the pack's anchor and rotation.
+                // Cancel ItemRenderer's half-block origin shift without adding a GUI pose.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
                 pose.translate(0.5D, 0.5D, 0.5D);
@@ -79,9 +86,15 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             }
         }
 
-        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         sword.render(pose, consumer, light, overlay);
-        if (ItemDualSword.isDual(stack))
+        boolean secondCopy = context != ItemDisplayContext.NONE && ItemDualSword.isDual(stack);
+        if (context == ItemDisplayContext.NONE && ItemDualSword.isDual(stack) && !loggedStowedDual)
+        {
+            loggedStowedDual = true;
+            FiskHeroes.LOGGER.info("Stowed dual katana meshes per anchor: {}", secondCopy ? 2 : 1);
+        }
+        if (secondCopy)
         {
             pose.translate(0.0D, 0.0D, 0.26D);
             sword.render(pose, consumer, light, overlay);

@@ -104,6 +104,12 @@ def main():
             command('suit fiskheroes:deadpool_xmen')
             wait_for(r'Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana',
                      45, 'Deadpool stowed katanas render', process)
+            wait_for(r'Stowed dual katana meshes per anchor: 1', 45,
+                     'one katana mesh per stowed anchor', process)
+            wait_for(r'Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=[-+0-9.eE]+, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png',
+                     45, 'Deadpool katana uses the suit livery', process)
+            wait_for(r'Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=[-+0-9.eE]+, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png',
+                     45, 'Deadpool stowed pistols use the suit livery', process)
             time.sleep(2)
             subprocess.run(['scrot', 'ci-equipped-deadpool.jpg'], check=True, timeout=30)
             command('suit fiskheroes:batman_dceu')
