@@ -55,7 +55,9 @@ public final class ProjectionBeamRenderHandler
                 continue;
             }
 
-            float activity = Mth.clamp(data.getData().get(Vars.ENERGY_PROJECTION_TIMER), 0.0F, 1.0F);
+            float chargedActivity = Mth.clamp(data.getData().get(Vars.BEAM_SHOOTING_TIMER), 0.0F, 1.0F);
+            float activity = Math.max(chargedActivity,
+                    Mth.clamp(data.getData().get(Vars.ENERGY_PROJECTION_TIMER), 0.0F, 1.0F));
             double length = data.getData().get(Vars.HEAT_VISION_LENGTH);
             if (activity <= 0.0F || length <= 0.0D)
             {
@@ -74,11 +76,11 @@ public final class ProjectionBeamRenderHandler
                 rendered = true;
             }
 
-            JsonObject effect = model.getCustom().get("fiskheroes:energy_projection");
-            if (effect == null)
-            {
-                effect = model.getCustom().get("fiskheroes:charged_beam");
-            }
+            // A suit such as Mysterio has both effects: use the charged beam's head anchor
+            // while it is firing, rather than the energy projection's arm anchor.
+            JsonObject effect = chargedActivity > 0.0F ? model.getCustom().get("fiskheroes:charged_beam") : null;
+            if (effect == null) effect = model.getCustom().get("fiskheroes:energy_projection");
+            if (effect == null) effect = model.getCustom().get("fiskheroes:charged_beam");
             if (effect == null)
             {
                 // Black Lightning and Shazam use the same hitscan ability, but their model

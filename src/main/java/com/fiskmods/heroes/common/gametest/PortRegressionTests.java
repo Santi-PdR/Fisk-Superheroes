@@ -63,6 +63,67 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void chargedBeamTracesMultipleTargetsAndStopsAtWalls(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-beam-target-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("charged_beam")) : null;
+        if (data == null || entry == null) { helper.fail("Vision beam or data missing"); return; }
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F);
+        player.setXRot(0.0F);
+        var a = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var b = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var blocked = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var offAxis = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (a == null || b == null || blocked == null || offAxis == null)
+        { helper.fail("Could not create beam targets"); return; }
+        var targets = new net.minecraft.world.entity.animal.IronGolem[] {a, b, blocked, offAxis};
+        int[] xs = {0, 0, 0, 3};
+        int[] zs = {2, 4, 8, 3};
+        for (int i = 0; i < targets.length; ++i)
+        {
+            targets[i].setNoAi(true);
+            targets[i].setPos(player.getX() + xs[i], player.getY(), player.getZ() + zs[i]);
+            level.addFreshEntity(targets[i]);
+        }
+        var wall = base.offset(0, 1, 6);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGING, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.BEAM_CHARGE, 1.0F);
+        player.tickCount = 1;
+        entry.getModifier().tick(player, entry, data);
+        if (a.getHealth() != 100.0F || vars.get(com.fiskmods.heroes.common.data.var.Vars.HEAT_VISION_LENGTH) != 0.0D)
+        { helper.fail("Beam must start at zero length before extending"); return; }
+        entry.getModifier().tick(player, entry, data);
+        double growingLength = vars.get(com.fiskmods.heroes.common.data.var.Vars.HEAT_VISION_LENGTH);
+        if (Math.abs(growingLength - 32.0D / 7.0D) > 0.01D
+                || Math.abs(a.getHealth() - 93.0F) > 0.01F || Math.abs(b.getHealth() - 93.0F) > 0.01F)
+        { helper.fail("Extending beam must apply the configured 7 damage to both targets"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.BEAM_SHOOTING, 0.5F);
+        player.tickCount = 2;
+        entry.getModifier().tick(player, entry, data);
+        double stoppedLength = vars.get(com.fiskmods.heroes.common.data.var.Vars.HEAT_VISION_LENGTH);
+        if (stoppedLength < 5.0D || stoppedLength > 6.0D || a.getHealth() != 93.0F || b.getHealth() != 93.0F
+                || blocked.getHealth() != 100.0F || offAxis.getHealth() != 100.0F)
+        { helper.fail("Wall, radius or vanilla hurt resistance was ignored"); return; }
+        player.tickCount = 6;
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(a.getHealth() - 86.0F) > 0.01F || Math.abs(b.getHealth() - 86.0F) > 0.01F
+                || blocked.getHealth() != 100.0F || a.getDeltaMovement().z <= 0.0D)
+        { helper.fail("Beam must refresh damage every six ticks and push targets forward"); return; }
+        for (var target : targets) target.discard();
+        level.removeBlock(wall, false);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void capeSegmentsAreContinuousAndHaveCorrectLength(GameTestHelper helper)
     {
         float length = 24.0F;

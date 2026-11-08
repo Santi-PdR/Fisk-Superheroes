@@ -549,11 +549,18 @@ class ModifierChargedBeam extends ModifierEnergyProjection
         // timed shooting phase separate so its animation can run only after charging.
         if (firing)
         {
-            if (shooting == 0.0F && entity.level() instanceof ServerLevel)
-                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Charged beam firing: entity={}, charge={}", entity.getName().getString(), charge);
-            if (entity.level() instanceof ServerLevel level
-                    && entity.tickCount % Math.max(1, duration / 8) == 0)
-                fire(entity, entry, data, level, true);
+            if (entity.level() instanceof ServerLevel level)
+            {
+                if (shooting == 0.0F)
+                {
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Charged beam firing: entity={}, charge={}", entity.getName().getString(), charge);
+                    AbilityData.playSound(entity, entry, "SHOOT");
+                    AbilityData.playSound(entity, entry, "BEAM_AMBIENT");
+                }
+                // The original extends the beam over its first seven firing ticks, then keeps
+                // tracing all targets each tick; vanilla hurt resistance controls damage cadence.
+                fireChargedBeam(entity, entry, data, level, Math.min(shooting * duration / 7.0F, 1.0F));
+            }
             shooting = Math.min(1.0F, shooting + 1.0F / duration);
             data.getData().set(Vars.BEAM_SHOOTING, shooting);
         }
@@ -561,9 +568,12 @@ class ModifierChargedBeam extends ModifierEnergyProjection
         {
             charging = false;
             data.getData().set(Vars.BEAM_CHARGING, false);
+            stopBeamSound(entity, entry);
+            data.getData().set(Vars.BEAM_SHOOTING, 0.0F);
         }
         else if (!charging && shooting != 0.0F)
         {
+            stopBeamSound(entity, entry);
             data.getData().set(Vars.BEAM_SHOOTING, 0.0F);
         }
 
@@ -572,6 +582,49 @@ class ModifierChargedBeam extends ModifierEnergyProjection
         float timer = data.getData().get(Vars.BEAM_SHOOTING_TIMER);
         data.getData().set(Vars.BEAM_SHOOTING_TIMER,
                 net.minecraft.util.Mth.approach(timer, firing ? 1.0F : 0.0F, 0.25F));
+    }
+
+    private void stopBeamSound(LivingEntity entity, ModifierEntry entry)
+    {
+        if (!(entity.level() instanceof ServerLevel)) return;
+        AbilityData.stopSoundLoops(entity, entry, "BEAM_AMBIENT");
+        AbilityData.playSound(entity, entry, "SHOOT_STOP");
+    }
+
+    private void fireChargedBeam(LivingEntity entity, ModifierEntry entry, SHPlayerData data,
+            ServerLevel level, float progress)
+    {
+        float scale = data.getData().get(Vars.SCALE);
+        if (scale <= 0.0F) scale = 1.0F;
+        double range = Math.max(0.0F, entry.getFloat(entity, PowerProperty.RANGE)) * scale * progress;
+        double radius = Math.max(0.0F, entry.getFloat(entity, PowerProperty.RADIUS)) * scale;
+        Vec3 start = entity.getEyePosition();
+        Vec3 direction = entity.getLookAngle().normalize();
+        Vec3 end = start.add(direction.scale(range));
+        var blockHit = level.clip(new net.minecraft.world.level.ClipContext(start, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, entity));
+        if (blockHit.getType() != HitResult.Type.MISS) end = blockHit.getLocation();
+        data.getData().set(Vars.HEAT_VISION_LENGTH, start.distanceTo(end));
+        if (start.distanceToSqr(end) < 1.0E-10D) return;
+
+        JsonElement profile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
+        float damage = DamageGroups.profileDamage(profile, entry.getFloat(entity, PowerProperty.AMOUNT));
+        if (damage <= 0.0F) damage = 6.0F;
+        AABB bounds = new AABB(start, end).inflate(radius + 0.01D);
+        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, bounds,
+                candidate -> candidate != entity && candidate.isAlive()))
+        {
+            AABB hitbox = target.getBoundingBox().inflate(radius);
+            if (!hitbox.contains(start) && hitbox.clip(start, end).isEmpty()) continue;
+            if (entity.tickCount % 6 == 0) target.invulnerableTime = 0;
+            DamageGroups.applyProfileDamage(target, entity, entity.damageSources().indirectMagic(entity, entity),
+                    damage, profile);
+            double push = 0.2D * progress * Math.sqrt(scale);
+            target.setDeltaMovement(target.getDeltaMovement().add(direction.x * push,
+                    direction.y * push + 0.01D * scale, direction.z * push));
+            target.hurtMarked = true;
+        }
     }
 }
 
