@@ -36,10 +36,12 @@ public final class FlightKickGuard
         DESCENTS.remove(player);
     }
 
-    /** Transient, bounded grace only for observed downward displacement after a suit flight. */
+    /** Transient, bounded grace only for observed downward displacement after flight or wall contact. */
     public static final class Descent
     {
-        private static final int GRACE_TICKS = 80;
+        // A fall from modern build height can last well over four seconds. Keep the
+        // allowance bounded, and only reset the counter on ticks with real descent.
+        private static final int GRACE_TICKS = 200;
         private double previousY;
         private int remaining;
 

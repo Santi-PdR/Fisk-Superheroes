@@ -198,6 +198,7 @@ def main():
             wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Spider-Man', 30, 'Spider-Man equipped on dedicated server', client)
             command('tp Dev 0.5 180 21.65 0 0')
             command('gamemode survival Dev')
+            command('effect give Dev minecraft:resistance 120 255 true')
             command('execute store result score #crawlstart flight_test run data get entity Dev Pos[1] 100')
             xdo('keydown', 'w')
             xdo('keydown', 'space')
@@ -220,6 +221,8 @@ def main():
             xdo('keydown', 's')
             time.sleep(2)
             xdo('keyup', 's')
+            # A long fall can outlast four seconds; stay connected through descent.
+            time.sleep(8)
             command('execute store result score #crawloff flight_test run data get entity Dev Pos[1] 100')
             command('execute if score #crawloff flight_test < #crawlrest flight_test run say WALL_CLIMB_RELEASE_OK')
             wait_for(SERVER_LOG, r'WALL_CLIMB_RELEASE_OK', 20, 'moving away releases the wall', server)
