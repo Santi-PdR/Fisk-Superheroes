@@ -193,9 +193,14 @@ def main():
                      45, 'first-person suit arm matches the actual vanilla arm pose', process)
             # Batman's jump while falling deploys the cape; watch the client render the wing mesh.
             command('suit fiskheroes:batman_dceu')
+            # Prepare the wall while invulnerable, in a loaded, fixed area. Otherwise the
+            # player can drift into the wall or die while commands are being entered.
+            command('gamemode creative')
+            command('tp @s 0 300 0 0 0')
+            time.sleep(3)
+            command('fill -10 -64 20 10 319 20 minecraft:stone')
             command('gamemode survival')
-            command('fill ~-10 -64 ~20 ~10 319 ~20 minecraft:stone')
-            command('tp @s ~ 300 ~ 0 0')
+            command('tp @s 0 300 0 0 0')
             xdo('key', 'F5')  # Third-person rear view.
             time.sleep(1)
             xdo('keydown', 'space')
