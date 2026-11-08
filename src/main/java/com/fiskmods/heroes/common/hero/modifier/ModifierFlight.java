@@ -32,11 +32,27 @@ public class ModifierFlight extends Modifier
         if (entity instanceof Player player) update(player, entry, data, false);
     }
 
+    /** Shared by the movement update and the server's narrowly scoped floating exemption. */
+    public static boolean eligible(Player player, ModifierEntry entry, SHPlayerData data)
+    {
+        return !player.getAbilities().flying && !player.isPassenger() && !player.isFallFlying()
+                && !player.hasEffect(ModEffects.TUTRIDIUM.get()) && entry.isEnabled()
+                && entry.isModifierEnabled(player, data);
+    }
+
+    public static boolean hasActiveFlight(Player player)
+    {
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = data != null ? data.getHeroType() : null;
+        if (hero == null) return false;
+        return hero.getPowerContainer().getEntries().stream().anyMatch(entry ->
+                entry.getModifier() instanceof ModifierFlight && eligible(player, entry, data));
+    }
+
     private static void update(Player player, ModifierEntry entry, SHPlayerData data, boolean server)
     {
         boolean previousGround = data.getData().get(Vars.PREV_ON_GROUND);
-        boolean creativeFlying = player.getAbilities().mayfly && player.getAbilities().flying;
-        boolean airborne = !player.onGround() && !creativeFlying;
+        boolean airborne = !player.onGround() && eligible(player, entry, data);
 
         if (server && airborne && previousGround)
         {
@@ -59,7 +75,9 @@ public class ModifierFlight extends Modifier
                     PlayerInputTracker.strafe(player), 0.0D, PlayerInputTracker.forward(player)));
 
             Vec3 motion = player.getDeltaMovement();
-            double gravity = 0.08D;
+            // The original subtracts *extra* gravity, not vanilla's 0.08 gravity.
+            // The port currently uses standard gravity in all supported dimensions.
+            double gravity = 0.0D;
             double y = motion.y;
             float verticalScale = 1.0F + (speed - 1.0F) / 3.0F;
 
@@ -86,7 +104,6 @@ public class ModifierFlight extends Modifier
 
             player.setDeltaMovement(motion.x, y, motion.z);
             player.fallDistance = 0.0F;
-            if (server) player.hurtMarked = true;
         }
 
         data.getData().set(Vars.PREV_ON_GROUND, player.onGround());

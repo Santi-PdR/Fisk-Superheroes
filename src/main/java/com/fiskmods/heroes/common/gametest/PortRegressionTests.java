@@ -20,6 +20,52 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void passiveFlightUsesExtraGravityAndRespectsShadowform(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-passive-flight-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:obsidian");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("flight")) : null;
+        if (data == null || entry == null) { helper.fail("Obsidian passive flight missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                    hero.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var flightPos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(flightPos.getX() + 0.5D, flightPos.getY(), flightPos.getZ() + 0.5D);
+        player.setOnGround(false);
+        if (com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(player))
+        { helper.fail("Passive flight must not bypass the shadowform predicate"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, true);
+        if (!com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(player))
+        { helper.fail("Active shadowform must enable passive flight"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, false, false, 0, 0);
+        player.setDeltaMovement(0.0D, -0.3D, 0.0D);
+        player.hurtMarked = false;
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y - (-0.23D)) > 0.0001D || player.hurtMarked)
+        { helper.fail("Passive flight must apply lift without reapplying vanilla gravity or velocity packets"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.set(player, true, false, 0, 0);
+        player.setDeltaMovement(0.0D, -0.3D, 0.0D);
+        entry.getModifier().tick(player, entry, data);
+        if (Math.abs(player.getDeltaMovement().y - (-0.105D)) > 0.0001D)
+        { helper.fail("Jump input must add the original passive-flight thrust"); return; }
+        player.getAbilities().flying = true;
+        if (com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(player))
+        { helper.fail("Creative flight must not use the suit-flight exemption"); return; }
+        player.getAbilities().flying = false;
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHADOWFORM, false);
+        if (com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(player))
+        { helper.fail("Ending shadowform must restore the normal floating check"); return; }
+        com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void tentacleAttacksRespectWallsAndCancelledCharge(GameTestHelper helper)
     {
         var level = helper.getLevel();

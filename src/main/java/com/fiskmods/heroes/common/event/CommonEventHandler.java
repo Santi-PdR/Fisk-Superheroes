@@ -188,7 +188,8 @@ public class CommonEventHandler
         {
             // Keep vanilla's floating check for everyone else; suit flight is not creative flight.
             if (serverPlayer.connection != null
-                    && com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlightEntry(serverPlayer) != null)
+                    && (com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlightEntry(serverPlayer) != null
+                        || com.fiskmods.heroes.common.hero.modifier.ModifierFlight.hasActiveFlight(serverPlayer)))
                 serverPlayer.connection.aboveGroundTickCount = 0;
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(serverPlayer);
             com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(serverPlayer);
