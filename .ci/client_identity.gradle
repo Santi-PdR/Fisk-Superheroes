@@ -10,6 +10,7 @@ allprojects { project ->
                 runTask.doFirst {
                     def config = runTask.getRunConfig().get()
                     config.getJvmArgs().add('-Xmx768m')
+                    if (taskName == 'runServer') runTask.setStandardInput(System.in)
                     if (taskName == 'runClient' && requestedName) {
                         def args = config.getArgs()
                         for (int i = args.size() - 2; i >= 0; --i) {
@@ -20,6 +21,7 @@ allprojects { project ->
                         }
                         args.add('--username')
                         args.add(requestedName.toString())
+                        println("CI launch identity ${requestedName}: ${args}")
                     }
                 }
             }

@@ -55,6 +55,8 @@ def main():
                 server.stdin.flush()
                 time.sleep(1)
 
+            command('say LIVERY_COMMAND_CHANNEL_OK')
+            wait_for(server_log, r'LIVERY_COMMAND_CHANNEL_OK', 30, 'server command channel accepts input', server)
             command('gamemode creative Dev')
             command('gamemode creative Partner')
             command('tp Dev 0 185 0 0 0')
