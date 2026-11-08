@@ -1,28 +1,24 @@
-// CI only: give concurrent development clients distinct offline identities and
-// bound their heaps. This mutates the final merged run config before ForgeGradle
-// launches the process, so inherited default --username arguments are replaced.
+// CI only: configure ForgeGradle's lazily-created run tasks when they appear.
+// Replace any inherited username and cap the three concurrent game JVMs.
 allprojects { project ->
-    afterEvaluate {
-        def requestedName = project.findProperty('ciUsername')
-        ['runClient', 'runServer'].each { taskName ->
-            def runTask = tasks.findByName(taskName)
-            if (runTask != null) {
-                runTask.doFirst {
-                    def config = runTask.getRunConfig().get()
-                    config.getJvmArgs().add('-Xmx768m')
-                    if (taskName == 'runServer') runTask.setStandardInput(System.in)
-                    if (taskName == 'runClient' && requestedName) {
-                        def args = config.getArgs()
-                        for (int i = args.size() - 2; i >= 0; --i) {
-                            if (args[i] == '--username' || args[i] == '--uuid') {
-                                args.remove(i + 1)
-                                args.remove(i)
-                            }
+    tasks.configureEach { runTask ->
+        if (runTask.name == 'runClient' || runTask.name == 'runServer') {
+            runTask.doFirst {
+                def config = runTask.getRunConfig().get()
+                config.getJvmArgs().add('-Xmx768m')
+                if (runTask.name == 'runServer') runTask.setStandardInput(System.in)
+                def requestedName = project.findProperty('ciUsername')
+                if (runTask.name == 'runClient' && requestedName) {
+                    def args = config.getArgs()
+                    for (int i = args.size() - 2; i >= 0; --i) {
+                        if (args[i] == '--username' || args[i] == '--uuid') {
+                            args.remove(i + 1)
+                            args.remove(i)
                         }
-                        args.add('--username')
-                        args.add(requestedName.toString())
-                        println("CI launch identity ${requestedName}: ${args}")
                     }
+                    args.add('--username')
+                    args.add(requestedName.toString())
+                    println("CI launch identity ${requestedName}: ${args}")
                 }
             }
         }
