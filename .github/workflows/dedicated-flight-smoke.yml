@@ -30,7 +30,7 @@ jobs:
       - name: Install headless client dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
       - name: Prepare isolated dedicated server and client
         run: |
           chmod +x gradlew
