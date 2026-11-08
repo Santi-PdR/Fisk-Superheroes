@@ -2,6 +2,7 @@ PASS: integrated player login
 PASS: suit command
 PASS: third-person suit render path
 PASS: server received the speedster ability key
+PASS: Captain America stowed shield render
 PASS: equip Vision
 PASS: wall blocks normal movement
 PASS: activate intangibility on the server
@@ -52,299 +53,313 @@ PASS: Vision charged beam fires
 PASS: Vision charged beam reaches the client render path
 PASS: charged beam damages both targets and does not pass the wall
 PASS: activate Vision flight for hover test
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main:fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main from env
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{fiskheroes=[/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main]}]
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from main, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from , it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from mclanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from javafmllanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from fmlcore-1.20.1-47.4.10.jar, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from lowcodelanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_food_regeneration with Javascript path coremods/food_regeneration.js
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_suit_pose with Javascript path coremods/player_suit_pose.js
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_first_person_suit with Javascript path coremods/first_person_suit.js
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_gliding_travel with Javascript path coremods/gliding_travel.js
-[17:54:43] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_glide_rotation with Javascript path coremods/player_glide_rotation.js
-[17:54:45] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
-[17:54:45] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
-[17:54:45] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
-[17:54:45] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
-[17:54:45] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
-[17:54:45] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[17:54:45] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[17:54:45] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+PASS: unanchored controlled flight hovers
+PASS: jump input moves the flying player upward
+PASS: forward input steers the flying player
+PASS: client world smoke completed
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main:fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main from env
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{fiskheroes=[/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main]}]
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from main, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from , it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from mclanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from javafmllanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from fmlcore-1.20.1-47.4.10.jar, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from lowcodelanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_food_regeneration with Javascript path coremods/food_regeneration.js
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_suit_pose with Javascript path coremods/player_suit_pose.js
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_first_person_suit with Javascript path coremods/first_person_suit.js
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_gliding_travel with Javascript path coremods/gliding_travel.js
+[18:06:39] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_glide_rotation with Javascript path coremods/player_glide_rotation.js
+[18:06:41] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
+[18:06:41] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
+[18:06:41] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
+[18:06:41] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
+[18:06:41] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
+[18:06:41] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[18:06:41] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[18:06:41] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[17:54:51] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.fiskmods.heroes.FiskHeroes
-[17:54:52] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Config file fiskheroes-common.toml for fiskheroes tracking
-[17:54:52] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for fiskheroes
-[17:54:52] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[17:54:53] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[17:54:53] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
-[17:54:53] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
-[17:54:53] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml for changes
-[17:54:53] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
-[17:54:53] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
-[17:54:54] [Worker-Main-3/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
-[17:54:58] [Render thread/WARN] [ne.mi.fm.DeferredWorkQueue/LOADING]: Mod 'fiskheroes' took 3.500 s to run a deferred task.
-[17:54:58] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: Downloading the FiskHeroes sound repository (https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip)
+[18:06:48] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.fiskmods.heroes.FiskHeroes
+[18:06:48] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Config file fiskheroes-common.toml for fiskheroes tracking
+[18:06:48] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for fiskheroes
+[18:06:48] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[18:06:49] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
+[18:06:49] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
+[18:06:49] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
+[18:06:49] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml for changes
+[18:06:49] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
+[18:06:49] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
+[18:06:50] [Worker-Main-2/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[18:06:54] [Render thread/WARN] [ne.mi.fm.DeferredWorkQueue/LOADING]: Mod 'fiskheroes' took 3.078 s to run a deferred task.
+[18:06:54] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: Downloading the FiskHeroes sound repository (https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip)
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[17:55:01] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[17:55:01] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository ready: 424 sounds
-[17:55:02] [Render thread/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[17:55:05] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[17:55:05] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[17:55:05] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
-[17:55:06] [Worker-Main-1/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[18:06:56] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
+[18:06:56] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository ready: 424 sounds
+[18:06:57] [Render thread/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[18:07:00] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[18:07:00] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
+[18:07:00] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
+[18:07:01] [Worker-Main-1/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[18:07:17] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge]
+[18:07:17] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '7' from server : ACCEPTED
+[18:07:17] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge]
+[18:07:17] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '7' from client : ACCEPTED
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[17:55:23] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge]
-[17:55:23] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '7' from server : ACCEPTED
-[17:55:23] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge]
-[17:55:23] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '7' from client : ACCEPTED
-[17:55:23] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:3e8fcdff] logged in with entity id 1 at (-13.5, 70.0, -19.5)
-[17:55:23] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[17:55:40] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
-[17:55:40] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
-[17:55:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
-[17:55:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
-[17:55:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
-[17:55:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
-[17:55:46] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
-[17:55:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
-[17:55:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:helmet from fiskheroes:textures/heroes/vision_layer1.png
-[17:55:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:chestplate from fiskheroes:textures/heroes/vision_layer1.png
-[17:55:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:leggings from fiskheroes:textures/heroes/vision_layer2.png
-[17:55:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:boots from fiskheroes:textures/heroes/vision_layer1.png
-[17:55:52] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:vision, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
-[17:56:12] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
-[17:56:12] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:56:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
-[17:56:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
-[17:56:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
-[17:56:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:helmet from fiskheroes:textures/heroes/guardian_layer1.png
-[17:56:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:chestplate from fiskheroes:textures/heroes/guardian_layer1.png
-[17:56:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:leggings from fiskheroes:textures/heroes/guardian_layer2.png
-[17:56:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:boots from fiskheroes:textures/heroes/guardian_layer1.png
-[17:56:24] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:guardian, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[17:56:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:guardian, index=1, matching=[SHIELD]
-[17:56:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:guardian, key=SHIELD, modifier=fiskheroes:shield
-[17:56:26] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:guardian, sleeveAligned=true
-[17:56:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:helmet from fiskheroes:textures/heroes/spider_man_layer1.png
-[17:56:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:chestplate from fiskheroes:textures/heroes/spider_man_layer1.png
-[17:56:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:leggings from fiskheroes:textures/heroes/spider_man_layer2.png
-[17:56:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:boots from fiskheroes:textures/heroes/spider_man_layer1.png
-[17:56:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:spider_man, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=154, height=10], Rect[x=4, y=135, width=154, height=10], Rect[x=4, y=146, width=154, height=10], Rect[x=4, y=157, width=154, height=10], Rect[x=4, y=168, width=154, height=10]]
-[17:56:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=client vertical=0.7949999868869781
-[17:56:42] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=0.7949999868869781
-[17:56:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:spider_man, index=5, matching=[func_WEB_WINGS]
-[17:56:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability callback executed: hero=fiskheroes:spider_man, key=func_WEB_WINGS
-[17:56:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:web_wings_open as fiskheroes:modifier.gliding.webwings.enable
-[17:56:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:gliding as fiskheroes:ambient.flight
-[17:56:45] [Render thread/INFO] [Fisk's Superheroes/]: Gliding body rotation applied: hero=fiskheroes:spider_man
-[17:56:45] [Render thread/INFO] [Fisk's Superheroes/]: Gliding suit pose applied: hero=fiskheroes:spider_man, wingsuit=true
-[17:56:45] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:spider_man, sleeveAligned=true
-[17:56:45] [Render thread/INFO] [Fisk's Superheroes/]: Drawing wingsuit membrane: texture=fiskheroes:textures/heroes/spider_man_wings.png
-[17:56:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:helmet from fiskheroes:textures/heroes/godspeed_comics_layer1.png
-[17:56:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1.png
-[17:56:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:leggings from fiskheroes:textures/heroes/godspeed_comics_layer2.png
-[17:56:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:boots from fiskheroes:textures/heroes/godspeed_comics_layer1.png
-[17:56:52] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:godspeed_comics, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
-[17:56:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:godspeed_comics, index=1, matching=[SUPER_SPEED]
-[17:56:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:godspeed_comics, key=SUPER_SPEED, modifier=fiskheroes:super_speed
-[17:56:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:helmet from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
-[17:56:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
-[17:56:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:leggings from fiskheroes:textures/heroes/godspeed_comics_layer2_on.png
-[17:56:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:boots from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
-[17:56:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:ant_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[17:56:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:helmet from fiskheroes:textures/heroes/ant_man_layer1.png
-[17:56:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:chestplate from fiskheroes:textures/heroes/ant_man_layer1.png
-[17:56:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:leggings from fiskheroes:textures/heroes/ant_man_layer2.png
-[17:56:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:boots from fiskheroes:textures/heroes/ant_man_layer1.png
-[17:57:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
-[17:57:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
-[17:57:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_shrink as fiskheroes:suit.pym.shrink
-[17:57:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:helmet from fiskheroes:textures/heroes/mysterio_layer1.png
-[17:57:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:chestplate from fiskheroes:textures/heroes/mysterio_layer1.png
-[17:57:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:leggings from fiskheroes:textures/heroes/mysterio_layer2.png
-[17:57:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:boots from fiskheroes:textures/heroes/mysterio_layer1.png
-[17:57:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:mysterio, screen=427x240, titleY=124, rows=[Rect[x=4, y=135, width=110, height=10], Rect[x=4, y=146, width=110, height=10], Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
-[17:57:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
-[17:57:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
-[17:57:10] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:mysterio, sleeveAligned=true
-[17:57:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
-[17:57:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_beam_start as fiskheroes:suit.mysterio.beam.start
-[17:57:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=1, matching=[CHARGED_BEAM, func_BOOST]
-[17:57:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
-[17:57:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=func_BOOST, reason=hero_condition
-[17:57:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_charge as fiskheroes:suit.mysterio.beam.aim
-[17:57:12] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:mysterio, length=3.316146519577444
-[17:57:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_stop1 as fiskheroes:suit.mysterio.chargedbeam.stop
-[17:57:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_stop2 as fiskheroes:suit.mysterio.beam.stop
-[17:57:14] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1.png, poseAligned=true
-[17:57:22] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:obsidian, texture=fiskheroes:textures/heroes/obsidian_layer1.png, poseAligned=true
-[17:57:22] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:obsidian, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=117, height=10], Rect[x=4, y=157, width=117, height=10], Rect[x=4, y=168, width=117, height=10]]
-[17:57:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:obsidian, index=1, matching=[SHADOWFORM]
-[17:57:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM, modifier=fiskheroes:shadowform
-[17:57:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_enable as fiskheroes:modifier.shadowform.enable
-[17:57:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_loop as fiskheroes:modifier.shadowform.loop
-[17:57:25] [Render thread/INFO] [Fisk's Superheroes/]: First-person particle cloud emitted: fiskheroes:shadow_smoke
-[17:57:30] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:batman_dceu, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=136, height=10]]
-[17:57:30] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:batman_dceu, texture=fiskheroes:textures/heroes/batman_dceu_layer1.png, poseAligned=true
-[17:57:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/batman_dceu_layer1.png
-[17:57:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/batman_dceu_layer1.png
-[17:57:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/batman_dceu_layer2.png
-[17:57:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/batman_dceu_layer1.png
-[17:57:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:cape_open as fiskheroes:modifier.gliding.cape.enable
-[17:57:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:gliding as fiskheroes:ambient.flight
-[17:57:47] [Render thread/INFO] [Fisk's Superheroes/]: Gliding body rotation applied: hero=fiskheroes:batman_dceu
-[17:57:47] [Render thread/INFO] [Fisk's Superheroes/]: Gliding suit pose applied: hero=fiskheroes:batman_dceu, wingsuit=false
-[17:57:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape.png
-[17:57:47] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:batman_dceu, sleeveAligned=true
-[17:57:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_impact_block as fiskheroes:modifier.flight.impact.block
-[17:57:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:cape_close as fiskheroes:modifier.gliding.cape.disable
-[17:57:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:helmet from fiskheroes:textures/heroes/crossbones_layer1.png
-[17:57:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:chestplate from fiskheroes:textures/heroes/crossbones_layer1.png
-[17:57:55] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1.png, progress=0.0
-[17:57:55] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1.png, progress=0.0
-[17:57:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:leggings from fiskheroes:textures/heroes/crossbones_layer2.png
-[17:57:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:boots from fiskheroes:textures/heroes/crossbones_layer1.png
-[17:57:55] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:crossbones, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=129, height=10]]
-[17:57:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:crossbones, index=1, matching=[CHARGED_PUNCH]
-[17:57:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:crossbones, key=CHARGED_PUNCH, modifier=fiskheroes:charged_punch
-[17:57:56] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_5.png, progress=0.6
-[17:57:56] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_5.png, progress=0.0
-[17:57:56] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=1.0
-[17:57:56] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=0.0
-[17:57:58] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=true, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=1.0
-[17:57:58] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:crossbones, texture=fiskheroes:textures/heroes/crossbones_layer1.png, poseAligned=true
-[17:58:18] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:crossbones, index=-1, matching=[]
-[17:58:25] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:martian_manhunter_comics, texture=fiskheroes:textures/heroes/martian_manhunter_comics_layer1.png, poseAligned=true
-[17:58:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:martian_manhunter_comics, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=110, height=10], Rect[x=4, y=135, width=110, height=10], Rect[x=4, y=146, width=110, height=10], Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
-[17:58:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
-[17:58:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:58:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
-[17:58:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
-[17:58:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
-[17:58:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:58:35] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:iron_man, texture=fiskheroes:textures/heroes/iron_man_layer1.png, poseAligned=true
-[17:58:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:iron_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[17:58:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
-[17:58:43] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:iron_man, sleeveAligned=true
-[17:58:45] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=Dev, modifier=fiskheroes:repulsor_blast
-[17:58:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:repulsor_blast as fiskheroes:modifier.repulsor.blast
-[17:58:51] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:vision, texture=fiskheroes:textures/heroes/vision_layer1.png, poseAligned=true
-[17:59:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=1, matching=[CHARGED_BEAM]
-[17:59:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
-[17:59:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_charge as fiskheroes:suit.vision.mindstone.charge
-[17:59:35] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:vision, length=4.5714287757873535
-[17:59:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_stop as fiskheroes:suit.vision.mindstone.stop
-[17:59:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
-[17:59:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
-[18:00:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_off as fiskheroes:suit.vision.intangibility.disable
-[17:58:23] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] CROSSBONES_CHARGED_HIT_OK
-[17:58:25] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Martian Manhunter.]
-[17:58:25] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Martian Manhunter.
-[17:58:25] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:martian_manhunter_comics, texture=fiskheroes:textures/heroes/martian_manhunter_comics_layer1.png, poseAligned=true
-[17:58:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:martian_manhunter_comics, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=110, height=10], Rect[x=4, y=135, width=110, height=10], Rect[x=4, y=146, width=110, height=10], Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
-[17:58:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
-[17:58:27] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
-[17:58:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=3
-[17:58:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
-[17:58:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:58:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
-[17:58:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
-[17:58:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
-[17:58:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
-[17:58:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
-[17:58:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=3
-[17:58:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
-[17:58:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:58:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
-[17:58:32] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Removed 4 item(s) from player Dev]
-[17:58:32] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Removed 4 item(s) from player Dev
-[17:58:35] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Iron Man.]
-[17:58:35] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Iron Man.
-[17:58:35] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:iron_man, texture=fiskheroes:textures/heroes/iron_man_layer1.png, poseAligned=true
-[17:58:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:iron_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[17:58:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 249, 0]
-[17:58:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 249, 0
-[17:58:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 250.000000, 0.500000]
-[17:58:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 250.000000, 0.500000
-[17:58:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[17:58:43] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[17:58:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[17:58:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
-[17:58:43] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:iron_man, sleeveAligned=true
-[17:58:45] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=Dev, modifier=fiskheroes:repulsor_blast
-[17:58:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:repulsor_blast as fiskheroes:modifier.repulsor.blast
-[17:58:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[17:58:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Vision.]
-[17:58:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Vision.
-[17:58:51] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:vision, texture=fiskheroes:textures/heroes/vision_layer1.png, poseAligned=true
-[17:58:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
-[17:58:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
-[17:58:58] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 50 block(s)]
-[17:58:58] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 50 block(s)
-[17:59:01] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] No blocks were filled
-[17:59:03] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 9 block(s)]
-[17:59:03] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 9 block(s)
-[17:59:06] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 182, 0]
-[17:59:06] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 182, 0
-[17:59:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
-[17:59:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
-[17:59:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
-[17:59:12] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
-[17:59:15] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
-[17:59:15] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
-[17:59:18] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
-[17:59:18] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
-[17:59:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has the following entity data: [0.5d, 180.0d, 0.5d]
-[17:59:25] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has the following entity data: [0.0f, 0.0f]
-[17:59:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Iron Golem has the following entity data: [0.5d, 180.0d, 4.5d]
-[17:59:31] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Iron Golem has the following entity data: [0.5d, 180.0d, 7.5d]
-[17:59:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
-[17:59:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
-[17:59:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[17:59:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[17:59:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[17:59:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=1, matching=[CHARGED_BEAM]
-[17:59:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
-[17:59:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_charge as fiskheroes:suit.vision.mindstone.charge
-[17:59:35] [Server thread/INFO] [Fisk's Superheroes/]: Charged beam firing: entity=Dev, charge=1.0
-[17:59:35] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:vision, length=4.5714287757873535
-[17:59:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_stop as fiskheroes:suit.vision.mindstone.stop
-[17:59:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[17:59:39] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Created new objective [beam_health]]
-[17:59:39] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Created new objective [beam_health]
-[17:59:43] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 51
-[17:59:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 51
-[17:59:50] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 100
-[17:59:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] VISION_BEAM_TARGETS_OK
-[17:59:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] VISION_BEAM_TARGETS_OK
-[17:59:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 182, 0]
-[17:59:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 182, 0
-[17:59:58] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 240.000000, 0.500000]
-[17:59:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 240.000000, 0.500000
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=true
-[17:59:59] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=2
-[17:59:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=2
-[17:59:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
-[17:59:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=false
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
-[17:59:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
-[18:00:04] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Created new objective [flight_test]]
-[18:00:04] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Created new objective [flight_test]
-[18:00:07] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22154
-[18:00:13] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22154
-[18:00:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_off as fiskheroes:suit.vision.intangibility.disable
-[18:00:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 22154]
-[18:00:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 22154
+[18:07:17] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:3aad904b] logged in with entity id 2 at (-4.5, 110.0, -4.5)
+[18:07:18] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[18:07:35] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
+[18:07:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[18:07:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[18:07:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[18:07:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[18:07:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[18:07:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[18:07:42] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[18:07:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_america_layer1.png
+[18:07:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_america_layer1.png
+[18:07:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:captain_america, item=fiskheroes:captain_americas_shield, poseScale=0.625
+[18:07:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_america_layer2.png
+[18:07:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:boots from fiskheroes:textures/heroes/captain_america_layer1.png
+[18:07:47] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[18:07:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:helmet from fiskheroes:textures/heroes/vision_layer1.png
+[18:07:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:chestplate from fiskheroes:textures/heroes/vision_layer1.png
+[18:07:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:leggings from fiskheroes:textures/heroes/vision_layer2.png
+[18:07:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:vision slot fiskheroes:boots from fiskheroes:textures/heroes/vision_layer1.png
+[18:07:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:vision, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
+[18:08:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
+[18:08:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[18:08:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
+[18:08:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
+[18:08:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
+[18:08:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:helmet from fiskheroes:textures/heroes/guardian_layer1.png
+[18:08:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:chestplate from fiskheroes:textures/heroes/guardian_layer1.png
+[18:08:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:leggings from fiskheroes:textures/heroes/guardian_layer2.png
+[18:08:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:guardian slot fiskheroes:boots from fiskheroes:textures/heroes/guardian_layer1.png
+[18:08:22] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:guardian, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[18:08:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:guardian, index=1, matching=[SHIELD]
+[18:08:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:guardian, key=SHIELD, modifier=fiskheroes:shield
+[18:08:24] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:guardian, sleeveAligned=true
+[18:08:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:helmet from fiskheroes:textures/heroes/spider_man_layer1.png
+[18:08:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:chestplate from fiskheroes:textures/heroes/spider_man_layer1.png
+[18:08:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:leggings from fiskheroes:textures/heroes/spider_man_layer2.png
+[18:08:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:spider_man slot fiskheroes:boots from fiskheroes:textures/heroes/spider_man_layer1.png
+[18:08:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:spider_man, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=154, height=10], Rect[x=4, y=135, width=154, height=10], Rect[x=4, y=146, width=154, height=10], Rect[x=4, y=157, width=154, height=10], Rect[x=4, y=168, width=154, height=10]]
+[18:08:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=client vertical=0.7949999868869781
+[18:08:40] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=0.7949999868869781
+[18:08:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:spider_man, index=5, matching=[func_WEB_WINGS]
+[18:08:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability callback executed: hero=fiskheroes:spider_man, key=func_WEB_WINGS
+[18:08:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:web_wings_open as fiskheroes:modifier.gliding.webwings.enable
+[18:08:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:gliding as fiskheroes:ambient.flight
+[18:08:43] [Render thread/INFO] [Fisk's Superheroes/]: Gliding body rotation applied: hero=fiskheroes:spider_man
+[18:08:43] [Render thread/INFO] [Fisk's Superheroes/]: Gliding suit pose applied: hero=fiskheroes:spider_man, wingsuit=true
+[18:08:43] [Render thread/INFO] [Fisk's Superheroes/]: Drawing wingsuit membrane: texture=fiskheroes:textures/heroes/spider_man_wings.png
+[18:08:43] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:spider_man, sleeveAligned=true
+[18:08:50] [Render thread/INFO] [Fisk's Superheroes/]: Gliding body rotation applied: hero=fiskheroes:godspeed_comics
+[18:08:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:helmet from fiskheroes:textures/heroes/godspeed_comics_layer1.png
+[18:08:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1.png
+[18:08:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:leggings from fiskheroes:textures/heroes/godspeed_comics_layer2.png
+[18:08:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:boots from fiskheroes:textures/heroes/godspeed_comics_layer1.png
+[18:08:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:godspeed_comics, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[18:08:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:godspeed_comics, index=1, matching=[SUPER_SPEED]
+[18:08:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:godspeed_comics, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[18:08:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:helmet from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
+[18:08:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:chestplate from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
+[18:08:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:leggings from fiskheroes:textures/heroes/godspeed_comics_layer2_on.png
+[18:08:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:godspeed_comics slot fiskheroes:boots from fiskheroes:textures/heroes/godspeed_comics_layer1_on.png
+[18:08:54] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:ant_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[18:08:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:helmet from fiskheroes:textures/heroes/ant_man_layer1.png
+[18:08:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:chestplate from fiskheroes:textures/heroes/ant_man_layer1.png
+[18:08:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:leggings from fiskheroes:textures/heroes/ant_man_layer2.png
+[18:08:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:ant_man slot fiskheroes:boots from fiskheroes:textures/heroes/ant_man_layer1.png
+[18:08:58] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
+[18:08:58] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
+[18:08:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_shrink as fiskheroes:suit.pym.shrink
+[18:09:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:helmet from fiskheroes:textures/heroes/mysterio_layer1.png
+[18:09:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:chestplate from fiskheroes:textures/heroes/mysterio_layer1.png
+[18:09:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:leggings from fiskheroes:textures/heroes/mysterio_layer2.png
+[18:09:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:mysterio slot fiskheroes:boots from fiskheroes:textures/heroes/mysterio_layer1.png
+[18:09:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:mysterio, screen=427x240, titleY=124, rows=[Rect[x=4, y=135, width=110, height=10], Rect[x=4, y=146, width=110, height=10], Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
+[18:09:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
+[18:09:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
+[18:09:08] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:mysterio, sleeveAligned=true
+[18:09:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
+[18:09:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_beam_start as fiskheroes:suit.mysterio.beam.start
+[18:09:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=1, matching=[CHARGED_BEAM, func_BOOST]
+[18:09:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
+[18:09:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=func_BOOST, reason=hero_condition
+[18:09:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_charge as fiskheroes:suit.mysterio.beam.aim
+[18:09:10] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:mysterio, length=13.714285850524902
+[18:09:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_stop1 as fiskheroes:suit.mysterio.chargedbeam.stop
+[18:09:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mysterio_charged_beam_stop2 as fiskheroes:suit.mysterio.beam.stop
+[18:09:12] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:mysterio, texture=fiskheroes:textures/heroes/mysterio_layer1.png, poseAligned=true
+[18:09:20] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:obsidian, texture=fiskheroes:textures/heroes/obsidian_layer1.png, poseAligned=true
+[18:09:20] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:obsidian, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=117, height=10], Rect[x=4, y=157, width=117, height=10], Rect[x=4, y=168, width=117, height=10]]
+[18:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:obsidian, index=1, matching=[SHADOWFORM]
+[18:09:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM, modifier=fiskheroes:shadowform
+[18:09:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_enable as fiskheroes:modifier.shadowform.enable
+[18:09:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_loop as fiskheroes:modifier.shadowform.loop
+[18:09:23] [Render thread/INFO] [Fisk's Superheroes/]: First-person particle cloud emitted: fiskheroes:shadow_smoke
+[18:09:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:batman_dceu, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=136, height=10]]
+[18:09:28] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:batman_dceu, texture=fiskheroes:textures/heroes/batman_dceu_layer1.png, poseAligned=true
+[18:09:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/batman_dceu_layer1.png
+[18:09:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/batman_dceu_layer1.png
+[18:09:44] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:batman_dceu, item=fiskheroes:grappling_gun, poseScale=0.43750003
+[18:09:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/batman_dceu_layer2.png
+[18:09:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:batman_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/batman_dceu_layer1.png
+[18:09:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:cape_open as fiskheroes:modifier.gliding.cape.enable
+[18:09:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:gliding as fiskheroes:ambient.flight
+[18:09:45] [Render thread/INFO] [Fisk's Superheroes/]: Gliding body rotation applied: hero=fiskheroes:batman_dceu
+[18:09:45] [Render thread/INFO] [Fisk's Superheroes/]: Gliding suit pose applied: hero=fiskheroes:batman_dceu, wingsuit=false
+[18:09:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing deployed cape for Dev with texture fiskheroes:textures/heroes/batman_dceu_cape.png
+[18:09:46] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:batman_dceu, sleeveAligned=true
+[18:09:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_impact_block as fiskheroes:modifier.flight.impact.block
+[18:09:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:cape_close as fiskheroes:modifier.gliding.cape.disable
+[18:09:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:helmet from fiskheroes:textures/heroes/crossbones_layer1.png
+[18:09:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:chestplate from fiskheroes:textures/heroes/crossbones_layer1.png
+[18:09:53] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1.png, progress=0.0
+[18:09:53] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_1.png, progress=0.0
+[18:09:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:leggings from fiskheroes:textures/heroes/crossbones_layer2.png
+[18:09:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:crossbones slot fiskheroes:boots from fiskheroes:textures/heroes/crossbones_layer1.png
+[18:09:53] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:crossbones, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=129, height=10]]
+[18:09:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:crossbones, index=1, matching=[CHARGED_PUNCH]
+[18:09:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:crossbones, key=CHARGED_PUNCH, modifier=fiskheroes:charged_punch
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_3.png, progress=0.2
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_3.png, progress=0.0
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_5.png, progress=0.6
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_5.png, progress=0.0
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=0.8
+[18:09:54] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay|left, side=LEFT, firstPerson=null, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=0.0
+[18:09:56] [Render thread/INFO] [Fisk's Superheroes/]: Suit arm overlay rendered: effect=fiskheroes:arm_overlay, side=RIGHT, firstPerson=true, texture=fiskheroes:textures/heroes/crossbones_gauntlets_6.png, progress=1.0
+[18:09:56] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:crossbones, texture=fiskheroes:textures/heroes/crossbones_layer1.png, poseAligned=true
+[18:10:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:crossbones, index=-1, matching=[]
+[18:10:24] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:martian_manhunter_comics, texture=fiskheroes:textures/heroes/martian_manhunter_comics_layer1.png, poseAligned=true
+[18:10:24] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:martian_manhunter_comics, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=110, height=10], Rect[x=4, y=135, width=110, height=10], Rect[x=4, y=146, width=110, height=10], Rect[x=4, y=157, width=110, height=10], Rect[x=4, y=168, width=110, height=10]]
+[18:10:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
+[18:10:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[18:10:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
+[18:10:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
+[18:10:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:martian_manhunter_comics, index=3, matching=[INTANGIBILITY]
+[18:10:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:martian_manhunter_comics, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[18:10:33] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:iron_man, texture=fiskheroes:textures/heroes/iron_man_layer1.png, poseAligned=true
+[18:10:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:iron_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[18:10:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
+[18:10:41] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:iron_man, sleeveAligned=true
+[18:10:43] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=Dev, modifier=fiskheroes:repulsor_blast
+[18:10:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:repulsor_blast as fiskheroes:modifier.repulsor.blast
+[18:10:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:vision, texture=fiskheroes:textures/heroes/vision_layer1.png, poseAligned=true
+[18:11:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=1, matching=[CHARGED_BEAM]
+[18:11:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
+[18:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_charge as fiskheroes:suit.vision.mindstone.charge
+[18:11:34] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:vision, length=4.5714287757873535
+[18:11:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_stop as fiskheroes:suit.vision.mindstone.stop
+[18:11:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
+[18:11:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
+[18:12:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_off as fiskheroes:suit.vision.intangibility.disable
+[18:10:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 249, 0]
+[18:10:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 249, 0
+[18:10:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 250.000000, 0.500000]
+[18:10:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 250.000000, 0.500000
+[18:10:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[18:10:41] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[18:10:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[18:10:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
+[18:10:41] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:iron_man, sleeveAligned=true
+[18:10:43] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=Dev, modifier=fiskheroes:repulsor_blast
+[18:10:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:repulsor_blast as fiskheroes:modifier.repulsor.blast
+[18:10:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[18:10:49] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Vision.]
+[18:10:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Vision.
+[18:10:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:vision, texture=fiskheroes:textures/heroes/vision_layer1.png, poseAligned=true
+[18:10:52] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[18:10:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[18:10:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 50 block(s)]
+[18:10:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 50 block(s)
+[18:10:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] No blocks were filled
+[18:11:02] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 9 block(s)]
+[18:11:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 9 block(s)
+[18:11:05] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 182, 0]
+[18:11:05] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 182, 0
+[18:11:08] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
+[18:11:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
+[18:11:11] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
+[18:11:11] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
+[18:11:14] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
+[18:11:14] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
+[18:11:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[18:11:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[18:11:21] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has the following entity data: [0.5d, 180.0d, 0.5d]
+[18:11:23] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has the following entity data: [0.0f, 0.0f]
+[18:11:26] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Iron Golem has the following entity data: [0.5d, 180.0d, 4.5d]
+[18:11:29] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Iron Golem has the following entity data: [0.5d, 180.0d, 7.5d]
+[18:11:32] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[18:11:32] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[18:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[18:11:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[18:11:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[18:11:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=1, matching=[CHARGED_BEAM]
+[18:11:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
+[18:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_charge as fiskheroes:suit.vision.mindstone.charge
+[18:11:34] [Server thread/INFO] [Fisk's Superheroes/]: Charged beam firing: entity=Dev, charge=1.0
+[18:11:34] [Render thread/INFO] [Fisk's Superheroes/]: Charged beam render path: hero=fiskheroes:vision, length=4.5714287757873535
+[18:11:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:mind_stone_stop as fiskheroes:suit.vision.mindstone.stop
+[18:11:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[18:11:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Created new objective [beam_health]]
+[18:11:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Created new objective [beam_health]
+[18:11:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 44
+[18:11:45] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 51
+[18:11:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 100
+[18:11:52] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] VISION_BEAM_TARGETS_OK
+[18:11:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] VISION_BEAM_TARGETS_OK
+[18:11:55] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 182, 0]
+[18:11:55] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 182, 0
+[18:11:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 240.000000, 0.500000]
+[18:11:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 240.000000, 0.500000
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=true
+[18:11:59] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=2
+[18:11:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=2
+[18:11:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
+[18:11:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=false
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_on as fiskheroes:suit.vision.intangibility.enable
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_loop as fiskheroes:ambient.flight
+[18:11:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:flight_cape_loop as fiskheroes:modifier.flight.cape.loop
+[18:12:04] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Created new objective [flight_test]]
+[18:12:04] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Created new objective [flight_test]
+[18:12:07] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22003
+[18:12:13] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22003
+[18:12:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:vision_intang_off as fiskheroes:suit.vision.intangibility.disable
+[18:12:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 22003]
+[18:12:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 22003
+[18:12:19] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 0]
+[18:12:19] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 0
+[18:12:21] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
+[18:12:21] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[18:12:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] #delta has 0 [flight_test]
+[18:12:25] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] SUIT_FLIGHT_HOVER_OK
+[18:12:25] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] SUIT_FLIGHT_HOVER_OK
+[18:12:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22003
+[18:12:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 22412
+[18:12:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 22412]
+[18:12:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 22412
+[18:12:39] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 409]
+[18:12:39] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 409
+[18:12:42] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] #delta has 409 [flight_test]
+[18:12:45] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] SUIT_FLIGHT_ASCENT_OK
+[18:12:45] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] SUIT_FLIGHT_ASCENT_OK
+[18:12:48] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[2] on Dev after scale factor of 100.00 is 50
+[18:12:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[2] on Dev after scale factor of 100.00 is 458
+[18:12:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 458]
+[18:12:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 458
+[18:13:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 408]
+[18:13:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #delta to 408
+[18:13:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] #delta has 408 [flight_test]
+[18:13:06] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] SUIT_FLIGHT_FORWARD_OK
+[18:13:06] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] SUIT_FLIGHT_FORWARD_OK
