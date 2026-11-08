@@ -440,6 +440,7 @@ public final class AbilityHandler
     public static void clear(ServerPlayer player)
     {
         SPEED_SCROLLED.remove(player.getUUID());
+        ModifierTentacles.cancelStrike(player);
         SERVER_PRESSED_KEYS.remove(player.getUUID());
         PENDING_AIM_ABILITIES.remove(player.getUUID());
         ABILITY_COOLDOWNS.remove(player.getUUID());

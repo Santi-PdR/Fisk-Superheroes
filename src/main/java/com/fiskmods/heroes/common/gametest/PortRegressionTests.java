@@ -20,6 +20,84 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void tentacleAttacksRespectWallsAndCancelledCharge(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-tentacle-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:doctor_octopus");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = hero != null ? hero.getPowerContainer().getEntry(FiskHeroes.id("tentacles")) : null;
+        if (data == null || entry == null || !(entry.getModifier() instanceof
+                com.fiskmods.heroes.common.hero.modifier.ModifierTentacles tentacles))
+        { helper.fail("Doctor Octopus or tentacles missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            player.setItemSlot(slots[i], com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                    hero.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F);
+        player.setXRot(0.0F);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create tentacle target"); return; }
+        target.setNoAi(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 5.0D);
+        level.addFreshEntity(target);
+        var wall = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        tentacles.activateKey(player, entry, data, "TENTACLES");
+        float health = target.getHealth();
+        target.setDeltaMovement(Vec3.ZERO);
+        tentacles.activateKey(player, entry, data, "TENTACLE_JAB");
+        tentacles.activateKey(player, entry, data, "TENTACLE_GRAB");
+        if (target.getHealth() != health || target.getDeltaMovement().lengthSqr() != 0.0D)
+        { helper.fail("A wall must block tentacle jab and grab"); return; }
+        tentacles.activateKey(player, entry, data, "TENTACLE_STRIKE");
+        player.getPersistentData().putLong("FiskHeroesTentacleStrikeStart", level.getGameTime() - 40);
+        tentacles.onToggle(player, entry, data);
+        if (target.getHealth() != health)
+        { helper.fail("A wall must block a charged tentacle strike"); return; }
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+        tentacles.activateKey(player, entry, data, "TENTACLE_STRIKE");
+        player.getPersistentData().putLong("FiskHeroesTentacleStrikeStart", level.getGameTime() - 40);
+        tentacles.activateKey(player, entry, data, "TENTACLES");
+        tentacles.onToggle(player, entry, data);
+        if (target.getHealth() != health)
+        { helper.fail("Retracting tentacles must cancel a held strike"); return; }
+        tentacles.activateKey(player, entry, data, "TENTACLES");
+        tentacles.activateKey(player, entry, data, "TENTACLE_JAB");
+        if (target.getHealth() >= health)
+        { helper.fail("Jab must hit an unobstructed target in range"); return; }
+        float afterJab = target.getHealth();
+        target.invulnerableTime = 0;
+        tentacles.activateKey(player, entry, data, "TENTACLE_STRIKE");
+        player.getPersistentData().putLong("FiskHeroesTentacleStrikeStart", level.getGameTime() - 40);
+        tentacles.onToggle(player, entry, data);
+        if (target.getHealth() >= afterJab)
+        { helper.fail("An active charged strike must hit an unobstructed target"); return; }
+        target.invulnerableTime = 0;
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 3, true);
+        if (!player.getPersistentData().contains("FiskHeroesTentacleStrikeStart"))
+        { helper.fail("Strike key must begin charging"); return; }
+        player.getPersistentData().putLong("FiskHeroesTentacleStrikeStart", level.getGameTime() - 40);
+        float beforeClear = target.getHealth();
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        tentacles.onToggle(player, entry, data);
+        if (target.getHealth() != beforeClear || player.getPersistentData().contains("FiskHeroesTentacleStrikeStart"))
+        { helper.fail("Cancelling held abilities must not release a strike"); return; }
+        for (var slot : slots) player.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.TENTACLES_ACTIVE))
+        { helper.fail("Removing the suit must reset tentacle state"); return; }
+        target.discard();
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void chargedBeamUsesNormalizedAnimationAndCooldown(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

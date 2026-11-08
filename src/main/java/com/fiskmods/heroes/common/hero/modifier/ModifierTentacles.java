@@ -74,6 +74,9 @@ public final class ModifierTentacles extends Modifier
         long started = persistent.getLong(STRIKE_START_TICK);
         persistent.remove(STRIKE_START_TICK);
         persistent.remove(STRIKE_CHARGED_SOUND);
+        if (!data.getData().get(Vars.TENTACLES_ACTIVE) || !entry.isEnabled()
+                || !entry.isModifierEnabled(player, data)
+                || player.hasEffect(ModEffects.TUTRIDIUM.get())) return;
 
         JsonObject strike = object(entry.get(PowerProperty.TENTACLE_STRIKE));
         if (strike == null) return;
@@ -96,11 +99,22 @@ public final class ModifierTentacles extends Modifier
 
     private static void setDeployed(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean deployed)
     {
+        if (!deployed) cancelStrike(entity);
         data.getData().set(Vars.TENTACLES_ACTIVE, deployed);
         data.getData().set(Vars.TENTACLES_RETRACTING, !deployed);
         data.getData().set(Vars.TENTACLE_EXTEND_TIMER, deployed ? 0.0F : 20.0F);
         entry.setToggled(entity, deployed);
         AbilityData.playSound(entity, entry, deployed ? "ENABLE" : "DISABLE");
+    }
+
+    /** Cancel rather than release a charged attack on retraction, suit change or disconnect. */
+    public static void cancelStrike(LivingEntity entity)
+    {
+        if (entity instanceof Player player)
+        {
+            player.getPersistentData().remove(STRIKE_START_TICK);
+            player.getPersistentData().remove(STRIKE_CHARGED_SOUND);
+        }
     }
 
     @Override
@@ -159,19 +173,28 @@ public final class ModifierTentacles extends Modifier
 
     private static LivingEntity findTarget(Player player, float range)
     {
+        if (range <= 0.0F) return null;
         Vec3 eye = player.getEyePosition();
         Vec3 look = player.getLookAngle().normalize();
-        AABB search = player.getBoundingBox().expandTowards(look.scale(range)).inflate(1.0D);
+        Vec3 end = eye.add(look.scale(range));
+        // The original moving tentacles collide with blocks before searching for entities.
+        // Clip the instant approximation as well, so a jab, grab or strike cannot reach
+        // through an opaque collision shape. Fluids do not block the arm.
+        var wall = player.level().clip(new net.minecraft.world.level.ClipContext(eye, end,
+                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                net.minecraft.world.level.ClipContext.Fluid.NONE, player));
+        if (wall.getType() != net.minecraft.world.phys.HitResult.Type.MISS) end = wall.getLocation();
+        final Vec3 rayEnd = end;
+        AABB search = player.getBoundingBox().expandTowards(rayEnd.subtract(eye)).inflate(1.0D);
         return player.level().getEntitiesOfClass(LivingEntity.class, search,
                 target -> target != player && target.isAlive() && target.isPickable()).stream()
-                .filter(target -> {
-                    Vec3 delta = target.getBoundingBox().getCenter().subtract(eye);
-                    double along = delta.dot(look);
-                    if (along < 0.0D || along > range) return false;
-                    Vec3 nearest = eye.add(look.scale(along));
-                    return target.getBoundingBox().inflate(0.55D).contains(nearest);
-                })
-                .min(java.util.Comparator.comparingDouble(target -> target.distanceToSqr(player)))
+                .filter(target -> target.getBoundingBox().inflate(0.55D).contains(eye)
+                        || target.getBoundingBox().inflate(0.55D).clip(eye, rayEnd).isPresent())
+                .min(java.util.Comparator.comparingDouble(target -> {
+                    AABB box = target.getBoundingBox().inflate(0.55D);
+                    return box.contains(eye) ? 0.0D
+                            : box.clip(eye, rayEnd).map(eye::distanceToSqr).orElse(Double.MAX_VALUE);
+                }))
                 .orElse(null);
     }
 
