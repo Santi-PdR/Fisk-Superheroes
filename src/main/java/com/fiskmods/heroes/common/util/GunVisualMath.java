@@ -12,6 +12,13 @@ public final class GunVisualMath
         return ((magazineSize - ammo) & 1) != 0;
     }
 
+    /** Smooth reload dip: remaining fraction runs from one to zero on the server. */
+    public static float reloadPose(float remaining)
+    {
+        if (!Float.isFinite(remaining) || remaining <= 0.0F || remaining >= 1.0F) return 0.0F;
+        return (float) Math.sin(Math.PI * remaining);
+    }
+
     public static float envelope(float age, float duration)
     {
         if (!Float.isFinite(age) || !Float.isFinite(duration) || age < 0.0F || duration <= 0.0F || age >= duration)

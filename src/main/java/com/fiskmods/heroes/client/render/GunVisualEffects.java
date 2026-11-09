@@ -7,6 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.item.ModItems;
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.util.GunVisualMath;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,6 +25,7 @@ public final class GunVisualEffects
 {
     private static final Map<Player, Shots> SHOTS = new WeakHashMap<>();
     private static final Set<String> DIAGNOSTICS = ConcurrentHashMap.newKeySet();
+    private static final Set<String> RELOAD_DIAGNOSTICS = ConcurrentHashMap.newKeySet();
     private static final double NEVER = Double.NEGATIVE_INFINITY;
 
     private GunVisualEffects() {}
@@ -53,6 +56,22 @@ public final class GunVisualEffects
         boolean offhand = (right ? HumanoidArm.RIGHT : HumanoidArm.LEFT) != player.getMainArm();
         // The visual duplicate exists only if the real offhand is empty.
         if (offhand && (!com.fiskmods.heroes.common.item.ItemDualSword.isDual(player.getMainHandItem()) || !player.getOffhandItem().isEmpty())) return;
+        var data = SHDataCapabilities.getPlayer(player);
+        if (data != null)
+        {
+            float remaining = data.getData().getInterpolated(Vars.RELOAD_TIMER, Minecraft.getInstance().getFrameTime());
+            float reload = GunVisualMath.reloadPose(remaining);
+            if (reload > 0.0F)
+            {
+                // Rotate about the grip, rather than translating the pistol out of the hand.
+                pose.mulPose(Axis.ZP.rotationDegrees((right ? -1.0F : 1.0F) * 35.0F * reload));
+                pose.mulPose(Axis.XP.rotationDegrees(20.0F * reload));
+                String key = player.getUUID() + "|" + context;
+                if (RELOAD_DIAGNOSTICS.add(key))
+                    FiskHeroes.LOGGER.info("Desert eagle reload pose: wearer={}, hand={}, context={}",
+                            player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
+            }
+        }
         Shots shots = SHOTS.get(player);
         if (shots == null) return;
         double start = offhand ? shots.off : shots.main;

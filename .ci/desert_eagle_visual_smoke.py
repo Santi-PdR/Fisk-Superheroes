@@ -102,6 +102,32 @@ def main():
                     raise RuntimeError(f'Muzzle flash not visible in captured frames: warm-pixel increase {best}')
                 print(f'PASS: visible muzzle flash, warm-pixel increase: {best}', flush=True)
 
+            def capture_reload(label, regions):
+                screenshot(label + '-before')
+                base = Image.open('ci-desert_eagle-' + label + '-before.png').convert('RGB')
+                def mask(image, region):
+                    return [r > 90 and b > 90 and g < 50 and abs(r - b) < 40
+                            for r, g, b in image.crop(region).get_flattened_data()]
+                reference = [mask(base, region) for region in regions]
+                maxima = [0] * len(regions)
+                best = -1
+                xdo('key', 'c')
+                for _ in range(14):
+                    Path('ci-desert_eagle-sample.png').unlink(missing_ok=True)
+                    subprocess.run(['scrot', 'ci-desert_eagle-sample.png'], check=True, timeout=30)
+                    frame = Image.open('ci-desert_eagle-sample.png').convert('RGB')
+                    changes = [sum(a != b for a, b in zip(old, mask(frame, region)))
+                               for old, region in zip(reference, regions)]
+                    maxima = [max(a, b) for a, b in zip(maxima, changes)]
+                    if sum(changes) > best:
+                        best = sum(changes)
+                        shutil.copyfile('ci-desert_eagle-sample.png', 'ci-desert_eagle-' + label + '-motion.png')
+                    time.sleep(0.04)
+                Path('ci-desert_eagle-sample.png').unlink(missing_ok=True)
+                if min(maxima) < 100:
+                    raise RuntimeError(f'{label} reload did not visibly move each pistol: {maxima}')
+                print(f'PASS: {label} reload moved pistol pixels: {maxima}', flush=True)
+
             command('difficulty peaceful')
             command('gamemode creative Dev')
             command('time set day')
@@ -130,6 +156,11 @@ def main():
                      60, 'main-hand shot effect rendered', client)
             wait_for(client_log, r'Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND',
                      60, 'dual offhand shot effect rendered', client)
+            capture_reload('dual-reload', [(430, 340, 570, 545), (710, 340, 850, 545)])
+            wait_for(client_log, r'Desert eagle reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND',
+                     60, 'main-hand reload pose rendered', client)
+            wait_for(client_log, r'Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND',
+                     60, 'dual offhand reload pose rendered', client)
             command('execute unless data entity Dev Inventory[{Slot:-106b}] run say EAGLE_OFFHAND_EMPTY_OK')
             wait_for(server_log, r'EAGLE_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
             command('item replace entity Dev weapon.offhand with minecraft:torch')
@@ -154,8 +185,7 @@ def main():
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:4} run say EAGLE_SHOT_OK')
             wait_for(server_log, r'EAGLE_SHOT_OK', 30, 'gun fires and consumes exactly one round', server)
-            xdo('key', 'c')
-            time.sleep(2)
+            capture_reload('single-reload', [(710, 340, 850, 545)])
             command('execute if data entity Dev SelectedItem.tag{Ammo:8} run say EAGLE_RELOAD_OK')
             wait_for(server_log, r'EAGLE_RELOAD_OK', 30, 'gun reload restores magazine', server)
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Ammo:0}')

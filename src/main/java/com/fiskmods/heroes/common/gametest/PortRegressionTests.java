@@ -2791,6 +2791,13 @@ public final class PortRegressionTests
                 || com.fiskmods.heroes.common.util.GunVisualMath.envelope(-1, 5) != 0.0F
                 || com.fiskmods.heroes.common.util.GunVisualMath.envelope(Float.NaN, 5) != 0.0F)
         { helper.fail("Gun visual envelopes must expire and reject invalid ages"); return; }
+        if (com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(0.0F) != 0.0F
+                || com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(1.0F) != 0.0F
+                || com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(Float.NaN) != 0.0F
+                || Math.abs(com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(0.5F) - 1.0F) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(0.25F)
+                        - com.fiskmods.heroes.common.util.GunVisualMath.reloadPose(0.75F)) > 0.0001F)
+        { helper.fail("Gun reload visual must be bounded and return to rest"); return; }
         helper.succeed();
     }
 

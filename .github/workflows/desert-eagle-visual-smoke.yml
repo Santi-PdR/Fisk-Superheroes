@@ -65,7 +65,7 @@ jobs:
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/desert_eagle.png src/main/resources/assets/fiskheroes/textures/heroes/deadpool_xmen_gun.png
           mkdir -p .ci
-          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'Gun shot effect|First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
+          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'Desert eagle reload pose|Gun shot effect|First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/desert_eagle-visual-log.txt
