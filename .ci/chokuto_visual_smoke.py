@@ -62,6 +62,8 @@ def main():
             command('item replace entity Dev weapon.mainhand with fiskheroes:chokuto{Dual:1b}')
             screenshot('dual-front')
             xdo('key', 'F5')
+            wait_for(client_log, r'First-person chokuto arm rendered: RIGHT', 60, 'main-hand chokuto arm', client)
+            wait_for(client_log, r'First-person chokuto arm rendered: LEFT', 60, 'synthetic offhand chokuto arm', client)
             screenshot('dual-first')
             xdo('key', 'e')
             screenshot('inventory-dual')
