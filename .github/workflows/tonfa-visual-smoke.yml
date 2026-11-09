@@ -34,7 +34,9 @@ jobs:
       - name: Use a high-contrast diagnostic texture on the runner only
         run: |
           chmod +x gradlew
-          mkdir -p run-tonfa-server run-tonfa-client
+          mkdir -p run-tonfa-server run-tonfa-client/config
+          # Avoid Forge's early splash creating a competing GL context on Xvfb.
+          printf 'earlyWindowControl = false\n' > run-tonfa-client/config/fml.toml
           echo 'eula=true' > run-tonfa-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-tonfa-server/server.properties
           convert src/main/resources/assets/fiskheroes/textures/models/tonfa.png -channel RGB -fill '#ff00ff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/models/tonfa.png
@@ -58,7 +60,7 @@ jobs:
           git restore src/main/resources/assets/fiskheroes/textures/models/tonfa.png
           mkdir -p .ci
           for f in ci-tonfa-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
-          { cat ci-tonfa-test.log 2>/dev/null || true; grep -E 'Tonfa hand pose|First-person tonfa arm|Equipped suit item rendered|ERROR|Exception' ci-tonfa-client.log 2>/dev/null || true; } > .ci/tonfa-visual-log.txt
+          { cat ci-tonfa-test.log 2>/dev/null || true; grep -E 'Tonfa hand pose|First-person tonfa arm|Equipped suit item rendered|ERROR|Exception' ci-tonfa-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-tonfa-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-tonfa-server.log 2>/dev/null || true; } > .ci/tonfa-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/tonfa-visual-log.txt
