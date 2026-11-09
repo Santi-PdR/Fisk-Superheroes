@@ -53,7 +53,9 @@ jobs:
       - name: Prepare dedicated server and clients
         run: |
           chmod +x gradlew
-          mkdir -p run-livery-server run-livery-observer run-livery-wearer
+          mkdir -p run-livery-server run-livery-observer/config run-livery-wearer/config
+          printf 'earlyWindowControl = false\n' > run-livery-observer/config/fml.toml
+          printf 'earlyWindowControl = false\n' > run-livery-wearer/config/fml.toml
           echo 'eula=true' > run-livery-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-livery-server/server.properties
           ./gradlew classes --no-daemon --console=plain
