@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Capture a bo staff with a runner-only high-contrast diagnostic texture."""
 import os
+import shutil
 import signal
 import subprocess
 import time
@@ -66,6 +67,28 @@ def main():
                 subprocess.run(['scrot', 'ci-staff-' + name + '.png'], check=True, timeout=30)
                 print('Captured:', name, flush=True)
 
+            def capture_swing():
+                reference = Image.open('ci-staff-first.png').crop((600, 140, 1000, 550)).convert('RGB')
+                reference_mask = [(r > 90 and b > 90 and g < 50) for r, g, b in reference.getdata()]
+                best = 0
+                xdo('mousedown', '1')
+                try:
+                    for _ in range(12):
+                        time.sleep(0.06)
+                        subprocess.run(['scrot', 'ci-staff-sample.png'], check=True, timeout=30)
+                        frame = Image.open('ci-staff-sample.png').crop((600, 140, 1000, 550)).convert('RGB')
+                        mask = [(r > 90 and b > 90 and g < 50) for r, g, b in frame.getdata()]
+                        changed = sum(a != b for a, b in zip(reference_mask, mask))
+                        if sum(mask) > 200 and changed > best:
+                            best = changed
+                            shutil.copyfile('ci-staff-sample.png', 'ci-staff-swing.png')
+                finally:
+                    xdo('mouseup', '1')
+                    Path('ci-staff-sample.png').unlink(missing_ok=True)
+                if best < 500:
+                    raise RuntimeError(f'Staff did not visibly move during attack: {best} changed pixels')
+                print(f'PASS: first-person staff swing changes {best} diagnostic pixels', flush=True)
+
             command('difficulty peaceful')
             command('gamemode creative Dev')
             command('time set day')
@@ -77,7 +100,7 @@ def main():
             wait_for(server_log, r'Replaced a slot on Dev with .*Bo.Staff', 30, 'staff equipped', server)
             wait_for(client_log, r'First-person bo staff arm rendered: RIGHT', 60, 'first-person staff arm rendered', client)
             screenshot('first')
-            xdo('click', '1')
+            capture_swing()
             wait_for(client_log, r'Bo staff swing pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND',
                      60, 'first-person staff swing animation', client)
             xdo('key', 'F5')
