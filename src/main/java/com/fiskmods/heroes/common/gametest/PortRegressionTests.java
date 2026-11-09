@@ -58,6 +58,19 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void staffSwingFollowsBoundedAttackCurve(GameTestHelper helper)
+    {
+        if (Math.abs(com.fiskmods.heroes.common.util.StaffSwingMath.amount(0.0F)) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.StaffSwingMath.amount(0.5F) - 1.0F) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.StaffSwingMath.amount(1.0F)) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.StaffSwingMath.amount(-2.0F)) > 0.0001F
+                || Math.abs(com.fiskmods.heroes.common.util.StaffSwingMath.amount(2.0F)) > 0.0001F
+                || com.fiskmods.heroes.common.util.StaffSwingMath.amount(Float.NaN) != 0.0F)
+        { helper.fail("Staff swing must peak at mid-attack and settle at both ends"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void flightKickGuardOnlyExemptsBoundedPostFlightDescent(GameTestHelper helper)
     {
         if (!com.fiskmods.heroes.common.hero.ability.FlightKickGuard.isRapidDescent(200, 198, false)

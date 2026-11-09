@@ -1,20 +1,18 @@
 package com.fiskmods.heroes.client.render;
 
 import com.fiskmods.heroes.FiskHeroes;
-import com.fiskmods.heroes.common.item.ItemDualSword;
+import com.fiskmods.heroes.common.util.StaffSwingMath;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
-import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -27,6 +25,7 @@ public final class BoStaffItemRenderer extends BlockEntityWithoutLevelRenderer
 {
     private static final ResourceLocation TEXTURE = FiskHeroes.id("textures/models/bo_staff.png");
     private static BoStaffItemRenderer instance;
+    private static final java.util.Set<String> SWING_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final ModelPart shape1;
     private final ModelPart shape2;
     private final ModelPart shape3;
@@ -70,15 +69,17 @@ public final class BoStaffItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.52D, 0.45D);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 70.0F : -70.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(1.15F, -1.15F, -1.15F);
+                animateSwing(pose, context);
+                pose.scale(0.65F, -0.65F, -0.65F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
                 pose.translate(0.5D, 0.55D, 0.5D);
                 pose.mulPose(Axis.XP.rotationDegrees(15.0F));
+                animateSwing(pose, context);
                 pose.scale(1.35F, -1.35F, -1.35F);
             }
             default ->
@@ -87,14 +88,47 @@ public final class BoStaffItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(1.0F, -1.0F, -1.0F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         shape2.y = Mth.lerp(extend, 0.5F, 8.0F);
         shape3.y = Mth.lerp(extend, 1.0F, 16.0F);
 
+        renderHalf(pose, consumer, light, overlay);
+        // The legacy renderer draws the same telescoping model in both directions
+        // around the hand, rather than a single one-sided rod.
+        pose.mulPose(Axis.XP.rotationDegrees(180.0F));
+        renderHalf(pose, consumer, light, overlay);
+        pose.popPose();
+    }
+
+    private void renderHalf(PoseStack pose, VertexConsumer consumer, int light, int overlay)
+    {
         renderScaledPart(pose, consumer, light, overlay, shape2, 0.85F, 1.0F, 0.85F);
         renderScaledPart(pose, consumer, light, overlay, shape3, 0.7F, 1.0F, 0.7F);
         shape1.render(pose, consumer, light, overlay);
-        pose.popPose();
+    }
+
+    private static void animateSwing(PoseStack pose, ItemDisplayContext context)
+    {
+        var wearer = SuitItemRenderContext.wearer();
+        if (wearer == null || !wearer.swinging) return;
+        boolean left = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
+        boolean swingLeft = wearer.getMainArm() == net.minecraft.world.entity.HumanoidArm.LEFT;
+        if (wearer.swingingArm == net.minecraft.world.InteractionHand.OFF_HAND) swingLeft = !swingLeft;
+        if (swingLeft != left) return;
+        float progress = wearer.getAttackAnim(Minecraft.getInstance().getFrameTime());
+        float amount = StaffSwingMath.amount(progress);
+        if (amount <= 0.0F) return;
+        float side = left ? -1.0F : 1.0F;
+        if (context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)
+            pose.mulPose(Axis.ZP.rotationDegrees(-side * 90.0F * amount));
+        else
+        {
+            pose.mulPose(Axis.XP.rotationDegrees(-20.0F * amount));
+            pose.mulPose(Axis.ZP.rotationDegrees(side * 40.0F * amount));
+        }
+        String key = wearer.getUUID() + "|" + context;
+        if (SWING_DIAGNOSTICS.add(key))
+            FiskHeroes.LOGGER.info("Bo staff swing pose: wearer={}, context={}", wearer.getName().getString(), context);
     }
 
     private static void renderScaledPart(PoseStack pose, VertexConsumer consumer, int light, int overlay,

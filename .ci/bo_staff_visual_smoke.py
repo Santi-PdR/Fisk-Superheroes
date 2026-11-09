@@ -54,11 +54,18 @@ def main():
             command('execute as Dev run suit fiskheroes:black_canary_dinah')
             command('item replace entity Dev weapon.mainhand with fiskheroes:bo_staff')
             wait_for(server_log, r'Replaced a slot on Dev with .*Bo.Staff', 30, 'staff equipped', server)
+            wait_for(client_log, r'First-person bo staff arm rendered: RIGHT', 60, 'first-person staff arm rendered', client)
             screenshot('first')
+            xdo('click', '1')
+            wait_for(client_log, r'Bo staff swing pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND',
+                     60, 'first-person staff swing animation', client)
             xdo('key', 'F5')
             screenshot('back')
             xdo('key', 'F5')
             screenshot('front')
+            xdo('click', '1')
+            wait_for(client_log, r'Bo staff swing pose: wearer=Dev, context=THIRD_PERSON_RIGHT_HAND',
+                     60, 'third-person staff swing animation', client)
             xdo('key', 'F5')
             xdo('key', 'e')
             screenshot('inventory')

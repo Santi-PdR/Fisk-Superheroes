@@ -14,20 +14,21 @@ import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
-/** Draw arms behind held tonfas; vanilla otherwise draws only the item. */
+/** Draw arms behind close-combat weapons; vanilla otherwise draws only the item. */
 @Mod.EventBusSubscriber(modid = FiskHeroes.MODID, value = Dist.CLIENT)
-public final class TonfaHandRenderer
+public final class WeaponHandRenderer
 {
-    private static final java.util.Set<HumanoidArm> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private static final java.util.Set<String> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
-    private TonfaHandRenderer() {}
+    private WeaponHandRenderer() {}
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onRenderHand(RenderHandEvent event)
     {
         var player = Minecraft.getInstance().player;
-        if (player == null || player.isInvisible() || player.isScoping()
-                || !event.getItemStack().is(ModItems.TACTICAL_TONFA.get())) return;
+        boolean tonfa = event.getItemStack().is(ModItems.TACTICAL_TONFA.get());
+        boolean staff = event.getItemStack().is(ModItems.BO_STAFF.get());
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -39,7 +40,7 @@ public final class TonfaHandRenderer
         try
         {
             // Vanilla's empty-hand pose, with the grip nudged towards the
-            // repositioned first-person tonfa and back from the camera.
+            // repositioned first-person weapon and back from the camera.
             pose.translate(side * (-0.3F * Mth.sin(root * (float) Math.PI) + 0.54F),
                     0.4F * Mth.sin(root * ((float) Math.PI * 2.0F)) - 0.47F - event.getEquipProgress() * 0.6F,
                     -0.4F * Mth.sin(swing * (float) Math.PI) - 0.92F);
@@ -53,7 +54,8 @@ public final class TonfaHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            if (DIAGNOSTICS.add(arm)) FiskHeroes.LOGGER.info("First-person tonfa arm rendered: {}", arm);
+            String weapon = tonfa ? "tonfa" : "bo staff";
+            if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally
         {
