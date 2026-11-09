@@ -28,7 +28,8 @@ public final class WeaponHandRenderer
         var player = Minecraft.getInstance().player;
         boolean tonfa = event.getItemStack().is(ModItems.TACTICAL_TONFA.get());
         boolean staff = event.getItemStack().is(ModItems.BO_STAFF.get());
-        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff)) return;
+        boolean scythe = event.getItemStack().is(ModItems.RUPTURES_SCYTHE.get());
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -54,7 +55,7 @@ public final class WeaponHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            String weapon = tonfa ? "tonfa" : "bo staff";
+            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : "scythe";
             if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally

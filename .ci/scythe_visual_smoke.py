@@ -62,9 +62,15 @@ def main():
             wait_for(server_log, r'Replaced a slot on Dev with .*Scythe', 30, 'scythe equipped', server)
             screenshot('held-front')
             xdo('key', 'F5')
+            wait_for(client_log, r'First-person scythe arm rendered: RIGHT', 60, 'first-person scythe arm rendered', client)
             screenshot('held-first')
             xdo('key', 'e')
             screenshot('inventory')
+            xdo('key', 'e')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with fiskheroes:ruptures_scythe')
+            wait_for(client_log, r'First-person scythe arm rendered: LEFT', 60, 'first-person offhand scythe arm rendered', client)
+            screenshot('offhand')
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

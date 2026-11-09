@@ -8,6 +8,8 @@ on:
       - '.github/workflows/scythe-visual-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/RuptureScytheItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/WeaponHandRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/HeroSuitLayer.java'
+      - 'src/main/resources/assets/fiskheroes/models/heroes/rupture.json'
       - 'src/main/java/com/fiskmods/heroes/client/render/SuitItemRenderContext.java'
 concurrency:
   group: scythe-visual-${{ github.ref }}

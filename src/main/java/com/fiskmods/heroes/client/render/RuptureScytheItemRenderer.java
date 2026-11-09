@@ -48,13 +48,18 @@ public final class RuptureScytheItemRenderer extends BlockEntityWithoutLevelRend
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // The suit layer applies the body anchor and pack rotation.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
-                pose.translate(0.55D, 0.85D, 0.5D);
+                pose.translate(0.55D, 0.5D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(-45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-40.0F));
                 pose.mulPose(Axis.YP.rotationDegrees(-25.0F));
-                pose.scale(0.45F, -0.45F, -0.45F);
+                pose.scale(0.31F, -0.31F, -0.31F);
             }
             case GROUND, FIXED ->
             {
@@ -65,16 +70,17 @@ public final class RuptureScytheItemRenderer extends BlockEntityWithoutLevelRend
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.85D, 0.42D);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 80.0F : -80.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-20.0F));
-                pose.scale(0.85F, -0.85F, -0.85F);
+                pose.scale(0.55F, -0.55F, -0.55F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
                 pose.translate(0.5D, 0.95D, 0.55D);
                 pose.mulPose(Axis.XP.rotationDegrees(15.0F));
-                pose.mulPose(Axis.YP.rotationDegrees(180.0F));
+                // Face the blade sideways after the modern hand layer's rotation.
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 90.0F : -90.0F));
                 pose.scale(0.95F, -0.95F, -0.95F);
             }
             default ->
@@ -83,7 +89,7 @@ public final class RuptureScytheItemRenderer extends BlockEntityWithoutLevelRend
                 pose.scale(0.6F, -0.6F, -0.6F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         handle1.render(pose, consumer, light, overlay);
         pose.popPose();
     }

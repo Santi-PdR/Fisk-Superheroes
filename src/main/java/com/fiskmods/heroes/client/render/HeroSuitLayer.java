@@ -481,7 +481,8 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.KATANA.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN.get())
-                || stack.is(com.fiskmods.heroes.common.item.ModItems.TACTICAL_TONFA.get());
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.TACTICAL_TONFA.get())
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.RUPTURES_SCYTHE.get());
     }
 
     private static final java.util.Set<String> EQUIPPED_ITEM_DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
