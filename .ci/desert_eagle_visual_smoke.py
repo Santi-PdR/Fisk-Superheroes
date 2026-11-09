@@ -98,7 +98,9 @@ def main():
                 finally:
                     xdo('mouseup', '1')
                     Path('ci-desert_eagle-sample.png').unlink(missing_ok=True)
-                print(f'Captured shot frame, warm-pixel increase: {best}', flush=True)
+                if best < 100:
+                    raise RuntimeError(f'Muzzle flash not visible in captured frames: warm-pixel increase {best}')
+                print(f'PASS: visible muzzle flash, warm-pixel increase: {best}', flush=True)
 
             command('difficulty peaceful')
             command('gamemode creative Dev')
@@ -133,6 +135,16 @@ def main():
             command('item replace entity Dev weapon.offhand with minecraft:torch')
             wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied',
                      60, 'real offhand takes precedence', client)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:15}')
+            before = len(client_log.read_text(errors='replace'))
+            xdo('click', '1')
+            command('execute if data entity Dev SelectedItem.tag{Ammo:14} run say EAGLE_OCCUPIED_SHOT_OK')
+            wait_for(server_log, r'EAGLE_OCCUPIED_SHOT_OK', 30, 'occupied-offhand gun fired', server)
+            time.sleep(1)
+            received = client_log.read_text(errors='replace')[before:]
+            if 'Gun shot effect received: wearer=Dev, hand=MAIN_HAND' not in received or 'Gun shot effect received: wearer=Dev, hand=OFF_HAND' in received:
+                raise RuntimeError('Occupied offhand did not force the shot effect to the main hand')
+            print('PASS: occupied offhand forces main-hand shot effect', flush=True)
             command('item replace entity Dev weapon.offhand with minecraft:air')
             xdo('key', 'e')
             screenshot('inventory-dual')

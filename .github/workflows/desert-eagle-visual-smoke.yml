@@ -68,9 +68,7 @@ jobs:
           { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'Gun shot effect|First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          test ! -f ci-desert_eagle-flash.png || cp ci-desert_eagle-flash.png .ci/inspection-ci-desert_eagle-flash.png
           git add -f .ci/desert_eagle-visual-log.txt
-          test ! -f .ci/inspection-ci-desert_eagle-flash.png || git add -f .ci/inspection-ci-desert_eagle-flash.png
           git diff --cached --quiet || git commit -m 'ci: desert_eagle visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
