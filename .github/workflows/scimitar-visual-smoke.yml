@@ -63,9 +63,7 @@ jobs:
           { cat ci-scimitar-test.log 2>/dev/null || true; grep -E 'First-person scimitar arm rendered|Held weapon livery: wearer=Dev.*scimitar|Equipped suit item rendered: hero=fiskheroes:dark_archer' ci-scimitar-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-scimitar-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-scimitar-server.log 2>/dev/null || true; } > .ci/scimitar-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for f in ci-scimitar-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
           git add -f .ci/scimitar-visual-log.txt
-          for f in .ci/inspection-ci-scimitar-*.png; do test ! -f "$f" || git add -f "$f"; done
           git diff --cached --quiet || git commit -m 'ci: scimitar visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
