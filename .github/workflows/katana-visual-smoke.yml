@@ -64,9 +64,7 @@ jobs:
           { cat ci-katana-test.log 2>/dev/null || true; grep -E 'First-person katana arm rendered|Held weapon livery: wearer=Dev.*katana|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-katana-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-katana-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-katana-server.log 2>/dev/null || true; } > .ci/katana-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for f in ci-katana-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
           git add -f .ci/katana-visual-log.txt
-          for f in .ci/inspection-ci-katana-*.png; do test ! -f "$f" || git add -f "$f"; done
           git diff --cached --quiet || git commit -m 'ci: katana visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
