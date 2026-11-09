@@ -69,16 +69,19 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.66D : 0.34D, 0.5D, 0.45D);
+                // Vanilla's hand origin is much closer to the camera than the legacy
+                // renderer's. Pull the grip inward and away so the full baton is visible.
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(150.0F));
                 applyHandPose(pose, context);
-                pose.scale(1.25F, -1.25F, -1.25F);
+                pose.scale(0.8F, -0.8F, -0.8F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
                 pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.52D : 0.48D, 0.48D, 0.46D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
+                // Modern ItemInHandLayer already rotates the item into the hand;
+                // the legacy 85-degree yaw made both batons stick out sideways.
                 pose.mulPose(Axis.XP.rotationDegrees(142.0F));
                 applyHandPose(pose, context);
                 pose.scale(1.2F, -1.2F, -1.2F);
