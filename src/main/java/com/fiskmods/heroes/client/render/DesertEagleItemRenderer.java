@@ -66,8 +66,7 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
                 pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
-                pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 110.0F : -110.0F));
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 150.0F : -150.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
                 pose.scale(0.65F, -0.65F, -0.65F);
             }
