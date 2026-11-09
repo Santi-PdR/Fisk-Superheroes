@@ -30,7 +30,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq xvfb xdotool scrot imagemagick libgl1-mesa-dri libflite1
-          python3 -m pip install --user pillow
+          python3 -m pip install --user 'pillow>=10,<14'
       - name: Use a high-contrast diagnostic texture on the runner only
         run: |
           chmod +x gradlew
@@ -54,17 +54,15 @@ jobs:
             ci-tonfa-*.png
             ci-tonfa-*.log
           if-no-files-found: ignore
-      - name: Temporarily publish captures for inspection
+      - name: Publish diagnostic summary
         if: always()
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/tonfa.png
           mkdir -p .ci
-          for f in ci-tonfa-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
           { cat ci-tonfa-test.log 2>/dev/null || true; grep -E 'Tonfa hand pose|First-person tonfa arm|Equipped suit item rendered|ERROR|Exception' ci-tonfa-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-tonfa-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-tonfa-server.log 2>/dev/null || true; } > .ci/tonfa-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/tonfa-visual-log.txt
-          for f in .ci/inspection-ci-tonfa-*.png; do test ! -f "$f" || git add -f "$f"; done
           git diff --cached --quiet || git commit -m 'ci: tonfa visual diagnostics [skip ci]' --no-verify
           for i in 1 2 3 4 5; do
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
