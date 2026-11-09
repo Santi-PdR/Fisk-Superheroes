@@ -9,6 +9,7 @@ import signal
 import subprocess
 import time
 from pathlib import Path
+from PIL import Image
 
 
 def wait_for(log, pattern, seconds, label, process):
@@ -25,6 +26,50 @@ def wait_for(log, pattern, seconds, label, process):
 
 def xdo(*args):
     subprocess.run(['xdotool', *args], check=True, timeout=30)
+
+
+def magenta(image, region):
+    """Diagnostic texture pixels in the fixed 1280x720 CI screenshot."""
+    return sum(1 for r, g, b in image.crop(region).convert('RGB').getdata()
+               if r > 90 and b > 90 and g < 50 and abs(r - b) < 40)
+
+
+def assert_geometry():
+    stowed = Image.open('ci-tonfa-stowed-front.png')
+    third = Image.open('ci-tonfa-held-front.png')
+    before = Image.open('ci-tonfa-held-first-before.png')
+    after = Image.open('ci-tonfa-held-first-after.png')
+    occupied = Image.open('ci-tonfa-held-occupied.png')
+    invisible = Image.open('ci-tonfa-held-invisible.png')
+    if any(image.size != (1280, 720) for image in (stowed, third, before, after, occupied, invisible)):
+        raise RuntimeError('Unexpected screenshot dimensions')
+    # Stowed batons must project outside both legs, not be embedded in them.
+    for region in ((575, 440, 640, 490), (640, 440, 705, 490)):
+        if magenta(stowed, region) < 70:
+            raise RuntimeError('Stowed tonfa is hidden inside a leg')
+    # In third person both batons should extend vertically along the forearms.
+    for region in ((575, 385, 630, 425), (650, 385, 705, 425)):
+        if magenta(third, region) < 15:
+            raise RuntimeError('Held third-person tonfa is not aligned with the forearm')
+    left, right = (300, 300, 620, 540), (660, 300, 980, 540)
+    if min(magenta(before, left), magenta(before, right)) < 1000:
+        raise RuntimeError('A first-person tonfa is missing from view')
+    # Avoid the previous regression where the camera clipped giant close-up bars.
+    if magenta(before, (213, 120, 300, 550)) or magenta(before, (980, 120, 1067, 550)):
+        raise RuntimeError('First-person tonfa is clipped at a screen edge')
+    b = before.crop(right).convert('RGB')
+    a = after.crop(right).convert('RGB')
+    changed = sum(1 for p, q in zip(b.getdata(), a.getdata()) if (p[0] > 90 and p[2] > 90 and p[1] < 50) != (q[0] > 90 and q[2] > 90 and q[1] < 50))
+    if changed < 500:
+        raise RuntimeError('Attack did not visibly flip the right-hand tonfa')
+    if magenta(occupied, left) > 100 or magenta(occupied, right) < 1000:
+        raise RuntimeError('Real offhand item failed to replace the visual tonfa')
+    def dark(image, region):
+        return sum(1 for r, g, b in image.crop(region).convert('RGB').getdata() if max(r, g, b) < 50)
+    for region in ((385, 490, 440, 540), (840, 490, 895, 540)):
+        if dark(before, region) < 500 or dark(invisible, region) > 100:
+            raise RuntimeError('First-person arm does not respect player invisibility')
+    print('PASS: screenshot geometry, flipped pose, occupied offhand and invisible arms', flush=True)
 
 
 def main():
@@ -96,6 +141,16 @@ def main():
             xdo('key', 'F5')
             xdo('key', 'F5')
             screenshot('held-front-after')
+            xdo('key', 'F5')  # back to first person
+            command('item replace entity Dev weapon.offhand with minecraft:torch')
+            wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:tactical_tonfa, mode=occupied',
+                     60, 'real offhand replaces synthetic tonfa', client)
+            screenshot('held-occupied')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('effect give Dev minecraft:invisibility 30 0 true')
+            wait_for(server_log, r'(?i)applied effect.*invisibility', 30, 'invisibility effect applied', server)
+            screenshot('held-invisible')
+            assert_geometry()
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
