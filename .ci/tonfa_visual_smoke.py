@@ -84,6 +84,10 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=false',
                      60, 'first person tonfa', client)
+            wait_for(client_log, r'First-person tonfa arm rendered: RIGHT',
+                     60, 'right first-person arm rendered', client)
+            wait_for(client_log, r'First-person tonfa arm rendered: LEFT',
+                     60, 'left first-person arm rendered', client)
             screenshot('held-first-before')
             xdo('click', '1')
             wait_for(client_log, r'Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=true',

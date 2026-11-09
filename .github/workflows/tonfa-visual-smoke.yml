@@ -7,6 +7,7 @@ on:
       - '.ci/tonfa_visual_smoke.py'
       - '.github/workflows/tonfa-visual-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/TacticalTonfaItemRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/TonfaHandRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/HeroSuitLayer.java'
       - 'src/main/resources/assets/fiskheroes/models/heroes/black_canary.json'
 concurrency:
@@ -56,7 +57,7 @@ jobs:
           git restore src/main/resources/assets/fiskheroes/textures/models/tonfa.png
           mkdir -p .ci
           for f in ci-tonfa-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
-          { cat ci-tonfa-test.log 2>/dev/null || true; grep -E 'Tonfa hand pose|Equipped suit item rendered|ERROR|Exception' ci-tonfa-client.log 2>/dev/null || true; } > .ci/tonfa-visual-log.txt
+          { cat ci-tonfa-test.log 2>/dev/null || true; grep -E 'Tonfa hand pose|First-person tonfa arm|Equipped suit item rendered|ERROR|Exception' ci-tonfa-client.log 2>/dev/null || true; } > .ci/tonfa-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/tonfa-visual-log.txt
