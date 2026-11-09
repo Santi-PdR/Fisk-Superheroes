@@ -67,8 +67,11 @@ jobs:
           git add -f .ci/scythe-visual-log.txt
           for f in .ci/inspection-ci-scythe-*.png; do test ! -f "$f" || git add -f "$f"; done
           git diff --cached --quiet || git commit -m 'ci: scythe visual diagnostics [skip ci]' --no-verify
-          for i in 1 2 3 4 5; do
-            git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1 || true
-            git push && break
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              exit 0
+            fi
             sleep 5
           done
+          echo 'Failed to publish scythe diagnostics after retries' >&2
+          exit 1
