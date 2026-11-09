@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Capture a desert_eagle with a runner-only high-contrast diagnostic texture."""
 import os
+import shutil
 import signal
 import subprocess
 import time
@@ -75,6 +76,30 @@ def main():
                 subprocess.run(['scrot', 'ci-desert_eagle-' + name + '.png'], check=True, timeout=30)
                 print('Captured:', name, flush=True)
 
+            def capture_shots():
+                reference = Image.open('ci-desert_eagle-dual-first.png').convert('RGB')
+                region = (445, 330, 835, 515)
+                def warm(image):
+                    return sum(1 for r, g, b in image.crop(region).get_flattened_data()
+                               if r > 180 and g > 80 and b < 140 and r > b * 1.5)
+                baseline = warm(reference)
+                best = -1
+                xdo('mousedown', '1')
+                try:
+                    for _ in range(28):
+                        time.sleep(0.06)
+                        Path('ci-desert_eagle-sample.png').unlink(missing_ok=True)
+                        subprocess.run(['scrot', 'ci-desert_eagle-sample.png'], check=True, timeout=30)
+                        frame = Image.open('ci-desert_eagle-sample.png').convert('RGB')
+                        score = warm(frame) - baseline
+                        if score > best:
+                            best = score
+                            shutil.copyfile('ci-desert_eagle-sample.png', 'ci-desert_eagle-flash.png')
+                finally:
+                    xdo('mouseup', '1')
+                    Path('ci-desert_eagle-sample.png').unlink(missing_ok=True)
+                print(f'Captured shot frame, warm-pixel increase: {best}', flush=True)
+
             command('difficulty peaceful')
             command('gamemode creative Dev')
             command('time set day')
@@ -98,6 +123,11 @@ def main():
             wait_for(client_log, r'First-person desert eagle arm rendered: RIGHT', 60, 'main-hand gun arm', client)
             wait_for(client_log, r'First-person desert eagle arm rendered: LEFT', 60, 'synthetic offhand gun arm', client)
             screenshot('dual-first')
+            capture_shots()
+            wait_for(client_log, r'Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND',
+                     60, 'main-hand shot effect rendered', client)
+            wait_for(client_log, r'Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND',
+                     60, 'dual offhand shot effect rendered', client)
             command('execute unless data entity Dev Inventory[{Slot:-106b}] run say EAGLE_OFFHAND_EMPTY_OK')
             wait_for(server_log, r'EAGLE_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
             command('item replace entity Dev weapon.offhand with minecraft:torch')
@@ -116,6 +146,16 @@ def main():
             time.sleep(2)
             command('execute if data entity Dev SelectedItem.tag{Ammo:8} run say EAGLE_RELOAD_OK')
             wait_for(server_log, r'EAGLE_RELOAD_OK', 30, 'gun reload restores magazine', server)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Ammo:0}')
+            before = client_log.read_text(errors='replace').count('Gun shot effect received: wearer=Dev')
+            if before < 1:
+                raise RuntimeError('No accepted gun shot effect packets received')
+            xdo('click', '1')
+            time.sleep(2)
+            after = client_log.read_text(errors='replace').count('Gun shot effect received: wearer=Dev')
+            if after != before:
+                raise RuntimeError('Empty gun incorrectly emitted a shot effect')
+            print('PASS: empty gun emits no shot effect', flush=True)
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')

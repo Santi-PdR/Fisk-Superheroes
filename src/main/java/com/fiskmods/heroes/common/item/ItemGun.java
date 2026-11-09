@@ -183,6 +183,13 @@ public class ItemGun extends Item
         if (player instanceof ServerPlayer serverPlayer)
         {
             fire(serverPlayer, stack);
+            if (stack.is(ModItems.DESERT_EAGLE.get()))
+            {
+                boolean offhand = com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(
+                        isDual(stack), player.getOffhandItem().isEmpty(), getMagazineSize(stack), ammo);
+                com.fiskmods.heroes.common.network.SHNetwork.sendToTracking(
+                        new com.fiskmods.heroes.common.network.PacketGunShotEffect(player.getId(), offhand), player);
+            }
         }
         playShotSound(player, level, stack);
         player.awardStat(Stats.ITEM_USED.get(this));

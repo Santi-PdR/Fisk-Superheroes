@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 7 adds the server-validated web swing interaction request.
-    private static final String PROTOCOL = "7";
+    // Version 8 adds accepted gun-shot visual effects broadcast by the server.
+    private static final String PROTOCOL = "8";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

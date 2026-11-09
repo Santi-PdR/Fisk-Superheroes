@@ -88,6 +88,16 @@ def main():
                      90, 'observer without a livery uses the default', observer)
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun\.png',
                      90, 'observer sees remote Deadpool pistol livery', observer)
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
+            command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:16}')
+            subprocess.run(['xdotool', 'click', '1'], check=True, timeout=30)
+            wait_for(observer_log, r'Gun shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND',
+                     60, 'observer sees remote main-hand pistol shot', observer)
+            time.sleep(1)
+            subprocess.run(['xdotool', 'click', '1'], check=True, timeout=30)
+            wait_for(observer_log, r'Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
+                     60, 'observer sees alternating remote offhand pistol shot', observer)
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)

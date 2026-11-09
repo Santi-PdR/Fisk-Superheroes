@@ -2777,4 +2777,21 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void gunVisualHandAndLifetimeAreBounded(GameTestHelper helper)
+    {
+        var main = com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(true, true, 16, 16);
+        var off = com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(true, true, 16, 15);
+        if (main || !off || com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(true, false, 16, 15)
+                || com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(false, true, 8, 7)
+                || com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(true, true, 16, 0))
+        { helper.fail("Visual shot hand alternation must respect dual mode, occupied offhand and empty magazines"); return; }
+        if (com.fiskmods.heroes.common.util.GunVisualMath.envelope(0, 5) != 1.0F
+                || com.fiskmods.heroes.common.util.GunVisualMath.envelope(5, 5) != 0.0F
+                || com.fiskmods.heroes.common.util.GunVisualMath.envelope(-1, 5) != 0.0F
+                || com.fiskmods.heroes.common.util.GunVisualMath.envelope(Float.NaN, 5) != 0.0F)
+        { helper.fail("Gun visual envelopes must expire and reject invalid ages"); return; }
+        helper.succeed();
+    }
+
 }
