@@ -75,6 +75,8 @@ def main():
                 try:
                     for _ in range(12):
                         time.sleep(0.06)
+                        # scrot chooses a suffixed filename rather than overwriting.
+                        Path('ci-staff-sample.png').unlink(missing_ok=True)
                         subprocess.run(['scrot', 'ci-staff-sample.png'], check=True, timeout=30)
                         frame = Image.open('ci-staff-sample.png').crop((600, 140, 1000, 550)).convert('RGB')
                         mask = [(r > 90 and b > 90 and g < 50) for r, g, b in frame.get_flattened_data()]
