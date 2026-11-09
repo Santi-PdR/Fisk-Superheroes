@@ -53,11 +53,11 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case GUI ->
             {
-                pose.translate(0.5D, 0.5D, 0.5D);
-                pose.mulPose(Axis.YP.rotationDegrees(90.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
-                pose.mulPose(Axis.ZP.rotationDegrees(-20.0F));
-                pose.scale(0.42F, -0.42F, -0.42F);
+                // The legacy dual icon used opposed rotations, not two coincident blades.
+                renderInventorySword(pose, buffers, light, overlay, false);
+                if (ItemDualSword.isDual(stack)) renderInventorySword(pose, buffers, light, overlay, true);
+                pose.popPose();
+                return;
             }
             case GROUND, FIXED ->
             {
@@ -75,8 +75,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
                 pose.translate(0.5D, 0.95D, 0.55D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(15.0F));
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
                 pose.scale(0.75F, -0.75F, -0.75F);
             }
             default ->
@@ -100,6 +99,25 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             sword.render(pose, consumer, light, overlay);
         }
         pose.popPose();
+    }
+
+    private void renderInventorySword(PoseStack pose, MultiBufferSource buffers,
+            int light, int overlay, boolean mirrored)
+    {
+        pose.pushPose();
+        try
+        {
+            pose.translate(0.5D, 0.5D, 0.5D);
+            pose.mulPose(Axis.YP.rotationDegrees(mirrored ? -90.0F : 90.0F));
+            pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
+            pose.mulPose(Axis.ZP.rotationDegrees(mirrored ? 20.0F : -20.0F));
+            pose.scale(0.33F, -0.33F, -0.33F);
+            sword.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+        }
+        finally
+        {
+            pose.popPose();
+        }
     }
 
     private static MeshDefinition createMesh()
