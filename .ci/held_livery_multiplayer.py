@@ -22,7 +22,8 @@ def wait_for(path, pattern, seconds, label, process):
 
 
 def main():
-    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
+    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -105,6 +106,15 @@ def main():
                      60, 'observer sees remote offhand reload', observer)
             command('execute if data entity Partner SelectedItem.tag{Ammo:16} run say REMOTE_RELOAD_AMMO_OK')
             wait_for(server_log, r'REMOTE_RELOAD_AMMO_OK', 30, 'remote reload restores dual magazine', server)
+            command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:0}')
+            subprocess.run(['xdotool', 'mousedown', '1'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Remote aiming sustained: wearer=Partner',
+                         60, 'observer preserves sustained remote aiming', observer)
+            finally:
+                subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
+            wait_for(observer_log, r'Remote aiming released: wearer=Partner',
+                     60, 'observer sees remote aiming release', observer)
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)

@@ -156,7 +156,9 @@ public class CommonEventHandler
         if (entity instanceof net.minecraft.world.entity.player.Player)
         {
             var data = SHDataCapabilities.getPlayer(entity);
-            if (data != null)
+            // Remote clients have no local key snapshot for this player. Their aim state
+            // and timers are server-synchronized and must not be overwritten each tick.
+            if (data != null && (!entity.level().isClientSide || event.player.isLocalPlayer()))
             {
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(entity, data);
             }

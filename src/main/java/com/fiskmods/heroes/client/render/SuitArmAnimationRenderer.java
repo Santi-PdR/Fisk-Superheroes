@@ -26,6 +26,8 @@ public final class SuitArmAnimationRenderer
         if (iteration == null) return;
         HeroModelData suit = HeroModelRegistry.get(iteration);
         if (suit == null) return;
+        if (Boolean.getBoolean("fiskheroes.ciAimDiagnostics") && !player.isLocalPlayer())
+            recordRemoteAim(player);
         float before = model.rightArm.xRot;
         apply(suit, model, player, limbSwingAmount);
         model.rightSleeve.copyFrom(model.rightArm);
@@ -38,6 +40,27 @@ public final class SuitArmAnimationRenderer
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shared suit arm pose applied: hero={}, sleeveAligned={}",
                     iteration.getRegistryName(), model.rightSleeve.xRot == model.rightArm.xRot
                             && model.leftSleeve.xRot == model.leftArm.xRot);
+    }
+
+    // Opt-in test instrumentation: require a sustained aim rather than one packet/render race.
+    private static final java.util.Map<Player, Integer> REMOTE_AIM_FRAMES = new java.util.WeakHashMap<>();
+    private static void recordRemoteAim(Player player)
+    {
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) return;
+        float timer = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING_TIMER);
+        int frames = REMOTE_AIM_FRAMES.getOrDefault(player, 0);
+        if (timer >= 0.95F && frames < 20)
+        {
+            REMOTE_AIM_FRAMES.put(player, ++frames);
+            if (frames == 20) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote aiming sustained: wearer={}", player.getName().getString());
+        }
+        else if (timer <= 0.05F && frames >= 20)
+        {
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote aiming released: wearer={}", player.getName().getString());
+            REMOTE_AIM_FRAMES.remove(player);
+        }
+        else if (timer < 0.95F && frames < 20) REMOTE_AIM_FRAMES.remove(player);
     }
 
     private static final java.util.Set<String> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
