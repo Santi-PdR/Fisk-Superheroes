@@ -66,6 +66,8 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND',
                      60, 'dual desert_eagle first-person offhand', client)
+            wait_for(client_log, r'First-person desert eagle arm rendered: RIGHT', 60, 'main-hand gun arm', client)
+            wait_for(client_log, r'First-person desert eagle arm rendered: LEFT', 60, 'synthetic offhand gun arm', client)
             screenshot('dual-first')
             xdo('key', 'e')
             screenshot('inventory-dual')

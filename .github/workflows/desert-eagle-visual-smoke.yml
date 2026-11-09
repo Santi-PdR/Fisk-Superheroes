@@ -1,11 +1,11 @@
-name: DesertEagle Visual Smoke Test
+name: Desert Eagle Visual Smoke Test
 on:
   workflow_dispatch:
   push:
     branches: ['arena/**']
     paths:
       - '.ci/desert_eagle_visual_smoke.py'
-      - '.github/workflows/desert_eagle-visual-smoke.yml'
+      - '.github/workflows/desert-eagle-visual-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/DesertEagleItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/WeaponHandRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/HeroSuitLayer.java'
@@ -61,7 +61,7 @@ jobs:
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/desert_eagle.png src/main/resources/assets/fiskheroes/textures/heroes/deadpool_xmen_gun.png
           mkdir -p .ci
-          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'First-person desert_eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
+          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           for f in ci-desert_eagle-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done

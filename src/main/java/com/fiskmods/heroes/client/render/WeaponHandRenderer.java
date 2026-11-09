@@ -32,7 +32,8 @@ public final class WeaponHandRenderer
         boolean katana = event.getItemStack().is(ModItems.KATANA.get());
         boolean chokuto = event.getItemStack().is(ModItems.CHOKUTO.get());
         boolean scimitar = event.getItemStack().is(ModItems.SCIMITAR.get());
-        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar)) return;
+        boolean desertEagle = event.getItemStack().is(ModItems.DESERT_EAGLE.get());
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -58,7 +59,7 @@ public final class WeaponHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : "scimitar";
+            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : "desert eagle";
             if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally

@@ -55,7 +55,7 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
                 pose.translate(0.5D, 0.52D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(2.0F, -2.0F, -2.0F);
+                pose.scale(1.2F, -1.2F, -1.2F);
             }
             case GROUND, FIXED ->
             {
@@ -65,17 +65,17 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.52D, 0.42D);
-                pose.mulPose(Axis.ZP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 180.0F : 0.0F));
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
+                pose.mulPose(Axis.ZP.rotationDegrees(180.0F));
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 110.0F : -110.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
-                pose.scale(1.3F, -1.3F, -1.3F);
+                pose.scale(0.65F, -0.65F, -0.65F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.7D : 0.3D, 0.48D, 0.55D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 90.0F : -90.0F));
-                pose.scale(1.4F, -1.4F, -1.4F);
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose.scale(0.8F, -0.8F, -0.8F);
             }
             default ->
             {
