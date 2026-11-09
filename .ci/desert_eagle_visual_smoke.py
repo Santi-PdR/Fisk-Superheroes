@@ -127,6 +127,13 @@ def main():
                 if min(maxima) < 100:
                     raise RuntimeError(f'{label} reload did not visibly move each pistol: {maxima}')
                 print(f'PASS: {label} reload moved pistol pixels: {maxima}', flush=True)
+                screenshot(label + '-restored')
+                restored = Image.open('ci-desert_eagle-' + label + '-restored.png').convert('RGB')
+                residual = [sum(a != b for a, b in zip(old, mask(restored, region)))
+                            for old, region in zip(reference, regions)]
+                if max(residual) > 200:
+                    raise RuntimeError(f'{label} reload did not return to rest: {residual}')
+                print(f'PASS: {label} reload returned to rest: {residual}', flush=True)
 
             command('difficulty peaceful')
             command('gamemode creative Dev')

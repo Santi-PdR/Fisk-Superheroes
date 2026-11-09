@@ -103,6 +103,8 @@ def main():
                      60, 'observer sees remote main-hand reload', observer)
             wait_for(observer_log, r'Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
                      60, 'observer sees remote offhand reload', observer)
+            command('execute if data entity Partner SelectedItem.tag{Ammo:16} run say REMOTE_RELOAD_AMMO_OK')
+            wait_for(server_log, r'REMOTE_RELOAD_AMMO_OK', 30, 'remote reload restores dual magazine', server)
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)
