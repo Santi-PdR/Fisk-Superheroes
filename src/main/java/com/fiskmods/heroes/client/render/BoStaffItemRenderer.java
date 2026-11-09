@@ -59,7 +59,8 @@ public final class BoStaffItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.mulPose(Axis.YP.rotationDegrees(-45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-40.0F));
                 pose.mulPose(Axis.YP.rotationDegrees(-25.0F));
-                pose.scale(1.6F, -1.6F, -1.6F);
+                // The two mirrored halves make the collapsed icon twice as long.
+                pose.scale(0.9F, -0.9F, -0.9F);
             }
             case GROUND, FIXED ->
             {

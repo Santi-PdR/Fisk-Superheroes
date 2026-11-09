@@ -5,7 +5,28 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from tonfa_visual_smoke import wait_for, xdo
+from tonfa_visual_smoke import magenta, wait_for, xdo
+from PIL import Image
+
+
+def assert_geometry():
+    first = Image.open('ci-staff-first.png')
+    third = Image.open('ci-staff-front.png')
+    inventory = Image.open('ci-staff-inventory.png')
+    offhand = Image.open('ci-staff-offhand.png')
+    if any(image.size != (1280, 720) for image in (first, third, inventory, offhand)):
+        raise RuntimeError('Unexpected screenshot dimensions')
+    if magenta(first, (600, 170, 800, 450)) < 500:
+        raise RuntimeError('The first-person staff is not visible above the hand')
+    if magenta(offhand, (480, 170, 680, 450)) < 500:
+        raise RuntimeError('The first-person offhand staff is not visible')
+    if magenta(third, (550, 300, 625, 400)) < 50 or magenta(third, (550, 440, 625, 490)) < 30:
+        raise RuntimeError('Staff must extend both above and below the hand')
+    slot = magenta(inventory, (461, 448, 496, 484))
+    around = magenta(inventory, (450, 430, 505, 495))
+    if slot < 10 or around - slot > 5:
+        raise RuntimeError(f'Collapsed inventory staff clips outside its slot: {slot=}, {around=}')
+    print('PASS: symmetric staff, first-person hand, offhand and compact inventory icon', flush=True)
 
 
 def main():
@@ -69,6 +90,12 @@ def main():
             xdo('key', 'F5')
             xdo('key', 'e')
             screenshot('inventory')
+            xdo('key', 'e')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with fiskheroes:bo_staff')
+            wait_for(client_log, r'First-person bo staff arm rendered: LEFT', 60, 'first-person offhand staff arm rendered', client)
+            screenshot('offhand')
+            assert_geometry()
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
