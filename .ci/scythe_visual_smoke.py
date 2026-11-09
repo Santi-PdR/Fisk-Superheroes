@@ -15,7 +15,9 @@ def assert_geometry():
     first = Image.open('ci-scythe-held-first.png')
     offhand = Image.open('ci-scythe-offhand.png')
     inventory = Image.open('ci-scythe-inventory.png')
-    if any(image.size != (1280, 720) for image in (stowed, third, first, offhand, inventory)):
+    charged_first = Image.open('ci-scythe-charged-first.png')
+    charged_front = Image.open('ci-scythe-charged-front.png')
+    if any(image.size != (1280, 720) for image in (stowed, third, first, offhand, inventory, charged_first, charged_front)):
         raise RuntimeError('Unexpected screenshot dimensions')
     if magenta(stowed, (540, 310, 625, 390)) < 500:
         raise RuntimeError('Stowed scythe blade is missing from the shoulder')
@@ -27,7 +29,14 @@ def assert_geometry():
     around = magenta(inventory, (450, 430, 505, 495))
     if slot < 10 or around - slot > 5:
         raise RuntimeError(f'Inventory scythe clips outside its slot: {slot=}, {around=}')
-    print('PASS: scythe silhouette, stowed anchor, both hands and inventory bounds', flush=True)
+    def arc_pixels(image, region):
+        return sum(1 for r, g, b in image.crop(region).convert('RGB').get_flattened_data()
+                   if r > 200 and g > 100 and b > 100 and r > g * 1.12)
+    for uncharged, charged, region in ((first, charged_first, (630, 120, 920, 310)),
+                                       (third, charged_front, (440, 315, 620, 400))):
+        if arc_pixels(charged, region) - arc_pixels(uncharged, region) < 100:
+            raise RuntimeError('Charged scythe arcs are not visibly rendered')
+    print('PASS: scythe silhouette, both hands, inventory bounds and visible charge arcs', flush=True)
 
 
 def main():

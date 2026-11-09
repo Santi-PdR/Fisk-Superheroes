@@ -55,7 +55,7 @@ jobs:
             ci-scythe-*.png
             ci-scythe-*.log
           if-no-files-found: ignore
-      - name: Temporarily publish captures for inspection
+      - name: Publish diagnostic summary
         if: always()
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/ruptures_scythe.png
@@ -63,9 +63,7 @@ jobs:
           { cat ci-scythe-test.log 2>/dev/null || true; grep -E 'Scythe charge arcs|Equipped suit item rendered: hero=fiskheroes:rupture' ci-scythe-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-scythe-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-scythe-server.log 2>/dev/null || true; } > .ci/scythe-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for f in ci-scythe-*.png; do test ! -f "$f" || cp "$f" ".ci/inspection-$f"; done
           git add -f .ci/scythe-visual-log.txt
-          for f in .ci/inspection-ci-scythe-*.png; do test ! -f "$f" || git add -f "$f"; done
           git diff --cached --quiet || git commit -m 'ci: scythe visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
