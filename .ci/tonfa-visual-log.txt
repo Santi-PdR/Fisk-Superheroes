@@ -1,26 +1,11 @@
 PASS: dedicated server ready
-PASS: client joined
-PASS: stowed tonfas rendered
-Captured: stowed-back
-Captured: stowed-front
-PASS: third person dual tonfas
-Captured: held-front
-PASS: first person tonfa
-PASS: right first-person arm rendered
-PASS: left first-person arm rendered
-Captured: held-first-before
-PASS: tonfa flips on attack
-Captured: held-first-after
-Captured: held-front-after
-java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
-java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
-	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[03:44:40] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:black_canary, item=fiskheroes:tactical_tonfa, poseScale=0.9374998, livery=null
-[03:44:46] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=THIRD_PERSON_RIGHT_HAND, toggled=false
-[03:44:46] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=THIRD_PERSON_LEFT_HAND, toggled=false
-[03:44:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
-[03:44:49] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=false
-[03:44:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: LEFT
-[03:44:49] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_LEFT_HAND, toggled=false
-[03:44:52] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, toggled=true
-[03:44:54] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Dev, context=THIRD_PERSON_RIGHT_HAND, toggled=true
+Traceback (most recent call last):
+  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/tonfa_visual_smoke.py", line 170, in <module>
+    main()
+  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/tonfa_visual_smoke.py", line 92, in main
+    wait_for(server_log, r'Dev\[/.*logged in with entity id', 360, 'client joined', client)
+  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/tonfa_visual_smoke.py", line 24, in wait_for
+    raise RuntimeError(f'Timed out: {label}')
+RuntimeError: Timed out: client joined
+[03:56:22] [pool-2-thread-1/ERROR] [EARLYDISPLAY/]: ERROR DISPLAY
+Exception in thread "main" java.lang.IllegalStateException: We died but didn't somehow?
