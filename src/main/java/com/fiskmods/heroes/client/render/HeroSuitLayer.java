@@ -480,6 +480,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         return stack.is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.KATANA.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.CHOKUTO.get())
+                || stack.is(com.fiskmods.heroes.common.item.ModItems.SCIMITAR.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN.get())
                 || stack.is(com.fiskmods.heroes.common.item.ModItems.TACTICAL_TONFA.get())

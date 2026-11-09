@@ -60,6 +60,8 @@ def main():
             command('item replace entity Dev weapon.mainhand with fiskheroes:scimitar{Dual:1b}')
             screenshot('dual-front')
             xdo('key', 'F5')
+            wait_for(client_log, r'First-person scimitar arm rendered: RIGHT', 60, 'main-hand scimitar arm', client)
+            wait_for(client_log, r'First-person scimitar arm rendered: LEFT', 60, 'synthetic offhand scimitar arm', client)
             screenshot('dual-first')
             xdo('key', 'e')
             screenshot('inventory-dual')

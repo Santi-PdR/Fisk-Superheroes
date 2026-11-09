@@ -48,13 +48,13 @@ public final class ScimitarItemRenderer extends BlockEntityWithoutLevelRenderer
         pose.pushPose();
         switch (context)
         {
+            case NONE -> pose.translate(0.5D, 0.5D, 0.5D);
             case GUI ->
             {
-                pose.translate(0.46D, 0.32D, 0.5D);
-                pose.mulPose(Axis.YP.rotationDegrees(90.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
-                pose.mulPose(Axis.ZP.rotationDegrees(-20.0F));
-                pose.scale(0.95F, -0.95F, -0.95F);
+                renderInventorySword(pose, buffers, light, overlay, false);
+                if (ItemDualSword.isDual(stack)) renderInventorySword(pose, buffers, light, overlay, true);
+                pose.popPose();
+                return;
             }
             case GROUND, FIXED ->
             {
@@ -64,16 +64,15 @@ public final class ScimitarItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.52D, 0.42D);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 80.0F : -80.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(150.0F));
-                pose.scale(0.7F, -0.7F, -0.7F);
+                pose.mulPose(Axis.XP.rotationDegrees(-30.0F));
+                pose.scale(0.55F, -0.55F, -0.55F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.52D, 0.48D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(150.0F));
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
                 pose.scale(0.75F, -0.75F, -0.75F);
             }
             default ->
@@ -82,7 +81,7 @@ public final class ScimitarItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(0.85F, -0.85F, -0.85F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         root.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {
@@ -90,6 +89,24 @@ public final class ScimitarItemRenderer extends BlockEntityWithoutLevelRenderer
             root.render(pose, consumer, light, overlay);
         }
         pose.popPose();
+    }
+
+    private void renderInventorySword(PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean mirrored)
+    {
+        pose.pushPose();
+        try
+        {
+            pose.translate(0.5D, 0.5D, 0.5D);
+            pose.mulPose(Axis.YP.rotationDegrees(mirrored ? -90.0F : 90.0F));
+            pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
+            pose.mulPose(Axis.ZP.rotationDegrees(mirrored ? 20.0F : -20.0F));
+            pose.scale(0.33F, -0.33F, -0.33F);
+            root.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+        }
+        finally
+        {
+            pose.popPose();
+        }
     }
 
     private static ModelPart createModel()
