@@ -9,6 +9,35 @@ from tonfa_visual_smoke import magenta, wait_for, xdo
 from PIL import Image
 
 
+def assert_geometry():
+    stowed = Image.open('ci-desert_eagle-stowed-back.png')
+    third = Image.open('ci-desert_eagle-dual-front.png')
+    first = Image.open('ci-desert_eagle-dual-first.png')
+    offhand = Image.open('ci-desert_eagle-offhand.png')
+    dual_icon = Image.open('ci-desert_eagle-inventory-dual.png')
+    single_icon = Image.open('ci-desert_eagle-inventory-single.png')
+    if any(im.size != (1280, 720) for im in (stowed, third, first, offhand, dual_icon, single_icon)):
+        raise RuntimeError('Unexpected screenshot dimensions')
+    if min(magenta(stowed, (600, 430, 626, 480)), magenta(stowed, (654, 430, 680, 480))) < 30:
+        raise RuntimeError('Both holstered pistols must be visible at the legs')
+    if min(magenta(third, (588, 400, 618, 460)), magenta(third, (663, 410, 692, 475))) < 100:
+        raise RuntimeError('Both third-person pistols should be visible by the hands')
+    if min(magenta(first, (465, 375, 540, 500)), magenta(first, (740, 375, 815, 500))) < 500:
+        raise RuntimeError('Both first-person pistols should be visible')
+    if magenta(offhand, (465, 375, 540, 500)) < 500:
+        raise RuntimeError('Real offhand pistol is not visible')
+    counts = []
+    for image in (dual_icon, single_icon):
+        slot = magenta(image, (461, 448, 496, 484))
+        around = magenta(image, (450, 430, 505, 495))
+        if slot < 40 or around - slot > 5:
+            raise RuntimeError(f'Desert Eagle inventory icon clips outside its slot: {slot=}, {around=}')
+        counts.append(slot)
+    if counts[0] < counts[1] * 1.25:
+        raise RuntimeError('Dual pistol icon does not show a second pistol')
+    print('PASS: holstered, dual held, real offhand, and compact single/dual icons', flush=True)
+
+
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
     server_log, client_log = Path('ci-desert_eagle-server.log'), Path('ci-desert_eagle-client.log')
@@ -69,17 +98,31 @@ def main():
             wait_for(client_log, r'First-person desert eagle arm rendered: RIGHT', 60, 'main-hand gun arm', client)
             wait_for(client_log, r'First-person desert eagle arm rendered: LEFT', 60, 'synthetic offhand gun arm', client)
             screenshot('dual-first')
+            command('execute unless data entity Dev Inventory[{Slot:-106b}] run say EAGLE_OFFHAND_EMPTY_OK')
+            wait_for(server_log, r'EAGLE_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
+            command('item replace entity Dev weapon.offhand with minecraft:torch')
+            wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied',
+                     60, 'real offhand takes precedence', client)
+            command('item replace entity Dev weapon.offhand with minecraft:air')
             xdo('key', 'e')
             screenshot('inventory-dual')
             xdo('key', 'e')
-            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Ammo:5}')
             screenshot('single-first')
+            xdo('click', '1')
+            command('execute if data entity Dev SelectedItem.tag{Ammo:4} run say EAGLE_SHOT_OK')
+            wait_for(server_log, r'EAGLE_SHOT_OK', 30, 'gun fires and consumes exactly one round', server)
+            xdo('key', 'c')
+            time.sleep(2)
+            command('execute if data entity Dev SelectedItem.tag{Ammo:8} run say EAGLE_RELOAD_OK')
+            wait_for(server_log, r'EAGLE_RELOAD_OK', 30, 'gun reload restores magazine', server)
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:desert_eagle')
             screenshot('offhand')
+            assert_geometry()
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
