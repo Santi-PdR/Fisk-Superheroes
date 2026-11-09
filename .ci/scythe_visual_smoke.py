@@ -5,7 +5,29 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from tonfa_visual_smoke import wait_for, xdo
+from tonfa_visual_smoke import magenta, wait_for, xdo
+from PIL import Image
+
+
+def assert_geometry():
+    stowed = Image.open('ci-scythe-stowed-back.png')
+    third = Image.open('ci-scythe-held-front.png')
+    first = Image.open('ci-scythe-held-first.png')
+    offhand = Image.open('ci-scythe-offhand.png')
+    inventory = Image.open('ci-scythe-inventory.png')
+    if any(image.size != (1280, 720) for image in (stowed, third, first, offhand, inventory)):
+        raise RuntimeError('Unexpected screenshot dimensions')
+    if magenta(stowed, (540, 310, 625, 390)) < 500:
+        raise RuntimeError('Stowed scythe blade is missing from the shoulder')
+    if magenta(third, (440, 320, 585, 390)) < 1000:
+        raise RuntimeError('Third-person blade is hidden edge-on')
+    if magenta(first, (625, 140, 920, 300)) < 2000 or magenta(offhand, (360, 140, 655, 300)) < 2000:
+        raise RuntimeError('Scythe blade missing in a first-person hand')
+    slot = magenta(inventory, (461, 448, 496, 484))
+    around = magenta(inventory, (450, 430, 505, 495))
+    if slot < 10 or around - slot > 5:
+        raise RuntimeError(f'Inventory scythe clips outside its slot: {slot=}, {around=}')
+    print('PASS: scythe silhouette, stowed anchor, both hands and inventory bounds', flush=True)
 
 
 def main():
@@ -64,6 +86,21 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'First-person scythe arm rendered: RIGHT', 60, 'first-person scythe arm rendered', client)
             screenshot('held-first')
+            if 'Scythe charge arcs:' in client_log.read_text(errors='replace'):
+                raise RuntimeError('Uncharged scythe emitted energy arcs')
+            xdo('keydown', 'c')
+            wait_for(server_log, r'Ability modifier executed: hero=.*Rupture.*, key=CHARGE_ENERGY',
+                     60, 'server activates energy charge', server)
+            wait_for(client_log, r'Scythe charge arcs: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND',
+                     60, 'charged scythe arcs render in first person', client)
+            screenshot('charged-first')
+            xdo('key', 'F5')
+            xdo('key', 'F5')
+            wait_for(client_log, r'Scythe charge arcs: wearer=Dev, context=THIRD_PERSON_RIGHT_HAND',
+                     60, 'charged scythe arcs render in third person', client)
+            screenshot('charged-front')
+            xdo('keyup', 'c')
+            xdo('key', 'F5')
             xdo('key', 'e')
             screenshot('inventory')
             xdo('key', 'e')
@@ -71,6 +108,7 @@ def main():
             command('item replace entity Dev weapon.offhand with fiskheroes:ruptures_scythe')
             wait_for(client_log, r'First-person scythe arm rendered: LEFT', 60, 'first-person offhand scythe arm rendered', client)
             screenshot('offhand')
+            assert_geometry()
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

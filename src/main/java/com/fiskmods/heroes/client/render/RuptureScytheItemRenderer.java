@@ -91,6 +91,7 @@ public final class RuptureScytheItemRenderer extends BlockEntityWithoutLevelRend
         }
         VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         handle1.render(pose, consumer, light, overlay);
+        ScytheChargeRenderer.render(pose, buffers, context);
         pose.popPose();
     }
 

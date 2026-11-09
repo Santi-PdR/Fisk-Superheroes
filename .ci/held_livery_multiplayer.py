@@ -114,6 +114,15 @@ def main():
             subprocess.run(['xdotool', 'click', '1'], check=True, timeout=30)
             wait_for(observer_log, r'Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND',
                      60, 'observer sees remote staff swing', observer)
+            command('execute as Partner run suit fiskheroes:rupture')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:ruptures_scythe')
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND',
+                         60, 'observer sees remote scythe energy charge', observer)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
             command('execute as Partner run suit fiskheroes:deathstroke_dceu')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun\.png',
