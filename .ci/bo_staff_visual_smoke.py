@@ -69,7 +69,7 @@ def main():
 
             def capture_swing():
                 reference = Image.open('ci-staff-first.png').crop((600, 140, 1000, 550)).convert('RGB')
-                reference_mask = [(r > 90 and b > 90 and g < 50) for r, g, b in reference.getdata()]
+                reference_mask = [(r > 90 and b > 90 and g < 50) for r, g, b in reference.get_flattened_data()]
                 best = 0
                 xdo('mousedown', '1')
                 try:
@@ -77,7 +77,7 @@ def main():
                         time.sleep(0.06)
                         subprocess.run(['scrot', 'ci-staff-sample.png'], check=True, timeout=30)
                         frame = Image.open('ci-staff-sample.png').crop((600, 140, 1000, 550)).convert('RGB')
-                        mask = [(r > 90 and b > 90 and g < 50) for r, g, b in frame.getdata()]
+                        mask = [(r > 90 and b > 90 and g < 50) for r, g, b in frame.get_flattened_data()]
                         changed = sum(a != b for a, b in zip(reference_mask, mask))
                         if sum(mask) > 200 and changed > best:
                             best = changed

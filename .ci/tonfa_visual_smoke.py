@@ -30,7 +30,7 @@ def xdo(*args):
 
 def magenta(image, region):
     """Diagnostic texture pixels in the fixed 1280x720 CI screenshot."""
-    return sum(1 for r, g, b in image.crop(region).convert('RGB').getdata()
+    return sum(1 for r, g, b in image.crop(region).convert('RGB').get_flattened_data()
                if r > 90 and b > 90 and g < 50 and abs(r - b) < 40)
 
 
@@ -59,13 +59,13 @@ def assert_geometry():
         raise RuntimeError('First-person tonfa is clipped at a screen edge')
     b = before.crop(right).convert('RGB')
     a = after.crop(right).convert('RGB')
-    changed = sum(1 for p, q in zip(b.getdata(), a.getdata()) if (p[0] > 90 and p[2] > 90 and p[1] < 50) != (q[0] > 90 and q[2] > 90 and q[1] < 50))
+    changed = sum(1 for p, q in zip(b.get_flattened_data(), a.get_flattened_data()) if (p[0] > 90 and p[2] > 90 and p[1] < 50) != (q[0] > 90 and q[2] > 90 and q[1] < 50))
     if changed < 500:
         raise RuntimeError('Attack did not visibly flip the right-hand tonfa')
     if magenta(occupied, left) > 100 or magenta(occupied, right) < 1000:
         raise RuntimeError('Real offhand item failed to replace the visual tonfa')
     def dark(image, region):
-        return sum(1 for r, g, b in image.crop(region).convert('RGB').getdata() if max(r, g, b) < 50)
+        return sum(1 for r, g, b in image.crop(region).convert('RGB').get_flattened_data() if max(r, g, b) < 50)
     for region in ((385, 490, 440, 540), (840, 490, 895, 540)):
         if dark(before, region) < 500 or dark(invisible, region) > 100:
             raise RuntimeError('First-person arm does not respect player invisibility')
