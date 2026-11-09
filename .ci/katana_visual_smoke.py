@@ -66,6 +66,8 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND',
                      60, 'dual katana first-person offhand', client)
+            wait_for(client_log, r'First-person katana arm rendered: RIGHT', 60, 'main-hand katana arm', client)
+            wait_for(client_log, r'First-person katana arm rendered: LEFT', 60, 'synthetic offhand katana arm', client)
             screenshot('dual-first')
             xdo('key', 'e')
             screenshot('inventory-dual')

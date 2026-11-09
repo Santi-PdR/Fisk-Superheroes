@@ -57,7 +57,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.mulPose(Axis.YP.rotationDegrees(90.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
                 pose.mulPose(Axis.ZP.rotationDegrees(-20.0F));
-                pose.scale(1.35F, -1.35F, -1.35F);
+                pose.scale(0.42F, -0.42F, -0.42F);
             }
             case GROUND, FIXED ->
             {
@@ -67,17 +67,17 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.58D, 0.42D);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 80.0F : -80.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(150.0F));
-                pose.scale(0.6F, -0.6F, -0.6F);
+                pose.mulPose(Axis.XP.rotationDegrees(-30.0F));
+                pose.scale(0.55F, -0.55F, -0.55F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.58D, 0.48D);
+                pose.translate(0.5D, 0.95D, 0.55D);
                 pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 85.0F : -85.0F));
-                pose.mulPose(Axis.XP.rotationDegrees(150.0F));
-                pose.scale(0.65F, -0.65F, -0.65F);
+                pose.mulPose(Axis.XP.rotationDegrees(15.0F));
+                pose.scale(0.75F, -0.75F, -0.75F);
             }
             default ->
             {
