@@ -89,7 +89,7 @@ def main():
             if 'Scythe charge arcs:' in client_log.read_text(errors='replace'):
                 raise RuntimeError('Uncharged scythe emitted energy arcs')
             xdo('keydown', 'c')
-            wait_for(server_log, r'Ability modifier executed: hero=.*Rupture.*, key=CHARGE_ENERGY',
+            wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:rupture, key=CHARGE_ENERGY',
                      60, 'server activates energy charge', server)
             wait_for(client_log, r'Scythe charge arcs: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND',
                      60, 'charged scythe arcs render in first person', client)
