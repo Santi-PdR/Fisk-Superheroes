@@ -62,6 +62,9 @@ def main():
             xdo('key', 'e')
             screenshot('inventory')
             xdo('key', 'e')
+            # Adventure mode prevents vanilla creative block breaking from
+            # destroying the ice immediately after the gun creates it.
+            command('gamemode adventure Dev')
             command('setblock 0 181 4 minecraft:water')
             xdo('mousedown', '1')
             try:
