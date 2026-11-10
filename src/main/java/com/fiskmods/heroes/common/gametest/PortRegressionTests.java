@@ -3090,7 +3090,7 @@ public final class PortRegressionTests
         level.setBlockAndUpdate(water, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Cold ball wall target missing"); return; }
-        target.setNoAi(true); target.setNoGravity(true); target.setPos(player.getX(), player.getY(), player.getZ() + 2.7D);
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(player.getX(), player.getY(), player.getZ() + 3.1D);
         level.addFreshEntity(target);
         var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(player);
         level.addFreshEntity(ball);

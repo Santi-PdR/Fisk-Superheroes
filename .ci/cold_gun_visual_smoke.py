@@ -90,7 +90,7 @@ def main():
             command('summon minecraft:cow 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
             xdo('click', '1')
             command('data get entity @e[type=minecraft:cow,tag=cold_ball_test,limit=1]')
-            command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2b}] run say COLD_BALL_IMPACT_OK')
+            command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
             command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] unless data entity @s {Health:10.0f} run say COLD_BALL_DAMAGE_OK')
             wait_for(server_log, r'COLD_BALL_DAMAGE_OK', 30, 'cold ball impact damages the target', server)
