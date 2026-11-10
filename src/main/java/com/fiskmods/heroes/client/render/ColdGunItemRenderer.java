@@ -51,10 +51,10 @@ public final class ColdGunItemRenderer extends BlockEntityWithoutLevelRenderer
         {
             case GUI ->
             {
-                pose.translate(0.52D, 0.45D, 0.5D);
+                pose.translate(0.5D, 0.52D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(1.1F, -1.1F, -1.1F);
+                pose.scale(0.80F, -0.80F, -0.80F);
             }
             case GROUND, FIXED ->
             {
@@ -64,15 +64,16 @@ public final class ColdGunItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.48D, 0.45D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 180.0F : 0.0F));
-                pose.scale(0.95F, -0.95F, -0.95F);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 150.0F : -150.0F));
+                pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
+                pose.scale(0.55F, -0.55F, -0.55F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(0.5D, 0.5D, 0.48D);
-                pose.mulPose(Axis.YP.rotationDegrees(180.0F));
-                pose.scale(0.9F, -0.9F, -0.9F);
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose.scale(0.60F, -0.60F, -0.60F);
             }
             default ->
             {
@@ -80,7 +81,7 @@ public final class ColdGunItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(0.85F, -0.85F, -0.85F);
             }
         }
-        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, overlay);
+        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
         shape1.render(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.45F, 0.85F, 1.0F, 1.0F);
         pose.popPose();
     }

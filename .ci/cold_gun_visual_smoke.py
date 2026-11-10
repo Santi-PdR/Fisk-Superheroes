@@ -52,6 +52,7 @@ def main():
             command('tp Dev 0 180 0 0 0')
             command('execute as Dev run suit fiskheroes:captain_cold')
             command('item replace entity Dev weapon.mainhand with fiskheroes:cold_gun')
+            wait_for(client_log, r'First-person cold gun arm rendered: RIGHT', 60, 'first-person gun arm', client)
             screenshot('first')
             xdo('key', 'F5')
             xdo('key', 'F5')
@@ -63,10 +64,14 @@ def main():
             command('setblock 0 181 4 minecraft:water')
             xdo('mousedown', '1')
             try:
+                wait_for(client_log, r'Cold gun first-person aiming: arm=RIGHT', 60, 'gun aims in first person', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
-            command('execute if block 0 181 4 minecraft:ice run say COLD_WATER_OK')
+            # Flowing water may reach the player before the shot; the first
+            # intercepted fluid, not necessarily the source, must freeze.
+            for z in range(1, 5):
+                command(f'execute if block 0 181 {z} minecraft:ice run say COLD_WATER_OK')
             wait_for(server_log, r'COLD_WATER_OK', 30, 'cold gun freezes water', server)
             xdo('keydown', 'Shift_L')
             try:

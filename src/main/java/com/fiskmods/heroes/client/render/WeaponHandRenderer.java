@@ -34,7 +34,8 @@ public final class WeaponHandRenderer
         boolean scimitar = event.getItemStack().is(ModItems.SCIMITAR.get());
         boolean desertEagle = event.getItemStack().is(ModItems.DESERT_EAGLE.get());
         boolean beretta = event.getItemStack().is(ModItems.BERETTA_93R.get());
-        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta)) return;
+        boolean coldGun = event.getItemStack().is(ModItems.COLD_GUN.get());
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta && !coldGun)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -46,6 +47,7 @@ public final class WeaponHandRenderer
         try
         {
             if (desertEagle || beretta) DesertEagleAimPose.apply(pose, player, arm, event.getPartialTick());
+            if (coldGun) ColdGunAimPose.apply(pose, player, arm, event.getPartialTick());
             // Vanilla's empty-hand pose, with the grip nudged towards the
             // repositioned first-person weapon and back from the camera.
             pose.translate(side * (-0.3F * Mth.sin(root * (float) Math.PI) + 0.54F),
@@ -61,7 +63,7 @@ public final class WeaponHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : "beretta";
+            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : beretta ? "beretta" : "cold gun";
             if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally
