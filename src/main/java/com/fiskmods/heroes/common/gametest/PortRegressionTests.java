@@ -3003,4 +3003,21 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void gunMetadataDoesNotTriggerReequip(GameTestHelper helper)
+    {
+        var gun = (com.fiskmods.heroes.common.item.ItemGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();
+        var before = new net.minecraft.world.item.ItemStack(gun);
+        var after = before.copy();
+        after.getOrCreateTag().putLong("NextShotTick", 42);
+        after.getOrCreateTag().putInt("Ammo", 3);
+        if (gun.shouldCauseReequipAnimation(before, after, false)
+                || !gun.shouldCauseReequipAnimation(before, after, true)
+                || !gun.shouldCauseReequipAnimation(before, net.minecraft.world.item.ItemStack.EMPTY, false)
+                || !gun.shouldCauseReequipAnimation(before, new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.COLD_GUN.get()), false))
+        { helper.fail("Gun NBT changes must not re-equip; slot, item and empty-hand changes still must"); return; }
+        helper.succeed();
+    }
+
 }

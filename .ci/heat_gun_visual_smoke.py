@@ -88,14 +88,19 @@ def main():
                 raise RuntimeError(f'Heat gun icon clips outside inventory slot: {slot=}, {around=}')
             if magenta(offhand, (350, 350, 580, 550)) < 500:
                 raise RuntimeError('Real offhand heat gun is missing/washed out')
-            def center_x(image):
+            def center(image):
                 pts = [(x, y) for y in range(350, 555) for x in range(600, 950)
                        if (lambda c: c[0] > 90 and c[2] > 90 and c[1] < 50 and abs(c[0] - c[2]) < 40)(image.getpixel((x, y))[:3])]
                 if len(pts) < 500: raise RuntimeError('Heat gun is missing from aim frame')
-                return sum(x for x, _ in pts) / len(pts)
-            before, after = center_x(first), center_x(aimed)
-            if before - after < 15: raise RuntimeError(f'Heat gun did not move toward center when aiming: {before}, {after}')
-            print(f'PASS: first/third/offhand poses, unwashed base, contained icon and aim: {before:.1f} -> {after:.1f}', flush=True)
+                return sum(x for x, _ in pts) / len(pts), sum(y for _, y in pts) / len(pts)
+            before, after = center(first), center(aimed)
+            if before[0] - after[0] < 15: raise RuntimeError(f'Heat gun did not move toward center when aiming: {before}, {after}')
+            if abs(before[1] - after[1]) > 60:
+                raise RuntimeError(f'Heat gun sank off-screen while firing: {before}, {after}')
+            warm = sum(1 for r, g, b in first.convert('RGB').crop((700, 375, 850, 540)).get_flattened_data()
+                       if r > 140 and 5 < g < 200 and b < 70 and r > g * 1.2)
+            if warm < 10: raise RuntimeError(f'Emissive heat-gun lights are missing: {warm} pixels')
+            print(f'PASS: poses, unwashed base, emissive lights ({warm} pixels), contained icon and stable aim: {before} -> {after}', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

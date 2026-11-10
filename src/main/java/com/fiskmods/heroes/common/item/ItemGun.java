@@ -66,6 +66,13 @@ public class ItemGun extends Item
         return true;
     }
 
+    /** Shots, cooldowns, modes and ammo update NBT without switching the held item. */
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged)
+    {
+        return slotChanged || oldStack.isEmpty() || newStack.isEmpty() || !ItemStack.isSameItem(oldStack, newStack);
+    }
+
     public int getAmmo(ItemStack stack)
     {
         if (!usesAmmo) return Integer.MAX_VALUE;
