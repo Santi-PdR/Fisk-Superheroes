@@ -293,7 +293,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         setDeltaMovement(Vec3.ZERO);
         setNoGravity(true);
         if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
-            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to entity: target={}, slows={}", target.getId(), webSlowsTarget);
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to entity: target={}, slows={}, hit={}, targetPos={}, offset={}",
+                    target.getId(), webSlowsTarget, contact, target.position(), webOffset);
     }
 
     private void tickAttachedWeb()

@@ -78,7 +78,8 @@ public final class EquipmentProjectileRenderer extends ThrownItemRenderer<Equipm
             MultiBufferSource buffers, int light)
     {
         if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics") && LOGGED.add(entity))
-            FiskHeroes.LOGGER.info("Sticky web patch rendered: anchor={}", entity.webAnchor());
+            FiskHeroes.LOGGER.info("Sticky web patch rendered: anchor={}, pos={}, target={}", entity.webAnchor(), entity.position(),
+                    entity.level().getEntity(entity.webTargetId()));
         pose.pushPose();
         if (entity.webAnchor() == 6)
         {
