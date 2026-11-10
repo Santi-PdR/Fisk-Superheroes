@@ -201,6 +201,13 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     }
 
     @Override
+    protected boolean canHitEntity(Entity target)
+    {
+        // A rebounding web must not collide with (and disappear on) its own shooter.
+        return (!isWebProjectile() || target != getOwner()) && super.canHitEntity(target);
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult hit)
     {
         if (level().isClientSide) return;
@@ -222,6 +229,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
 
         Entity target = hit.getEntity();
+        if (isWebProjectile() && Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Web entity hit: gadget={}, target={}", gadget(), target.getName().getString());
         if (isStickyWeb() && target instanceof LivingEntity living)
         {
             // EntityHitResult may report the entity origin rather than the ray contact.
