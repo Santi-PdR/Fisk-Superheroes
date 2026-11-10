@@ -109,9 +109,10 @@ def main():
             command('setblock 0 181 2 minecraft:air')
             command('setblock 0 181 3 minecraft:air')
             command('tp Dev 0.5 180 0.5 0 -10')
-            command('item replace entity Dev weapon.offhand with minecraft:snowball')
+            command('gamemode survival Dev')
+            command('item replace entity Dev weapon.offhand with minecraft:snowball 2')
             xdo('click', '3')
-            command('execute as Dev at @s if entity @e[type=minecraft:snowball,distance=..80] run say BELT_OFFHAND_OK')
+            command('execute if data entity Dev Inventory[{Slot:-106b,id:"minecraft:snowball",Count:1b}] run say BELT_OFFHAND_OK')
             wait_for(server_log, r'BELT_OFFHAND_OK', 30, 'real offhand item keeps vanilla use', server)
             if server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:batarang') != count:
                 raise RuntimeError('Offhand item use unexpectedly triggered the belt')
