@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 8 adds accepted gun-shot visual effects broadcast by the server.
-    private static final String PROTOCOL = "8";
+    // Version 9 adds server-clipped Heat Gun flame visuals.
+    private static final String PROTOCOL = "9";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

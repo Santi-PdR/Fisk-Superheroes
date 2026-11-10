@@ -43,7 +43,8 @@ public final class ItemHeatGun extends ItemGun
             return;
         }
         BlockPos adj = pos.relative(block.getDirection());
-        if (level.isEmptyBlock(adj) && BaseFireBlock.canBePlacedAt(level, adj, block.getDirection()))
+        if (state.isFlammable(level, pos, block.getDirection())
+                && level.isEmptyBlock(adj) && BaseFireBlock.canBePlacedAt(level, adj, block.getDirection()))
         {
             level.setBlockAndUpdate(adj, BaseFireBlock.getState(level, adj));
         }

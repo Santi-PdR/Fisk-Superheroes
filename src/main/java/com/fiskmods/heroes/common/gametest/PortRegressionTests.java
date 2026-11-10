@@ -2993,10 +2993,16 @@ public final class PortRegressionTests
         level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.SNOW_BLOCK.defaultBlockState());
         if (!shoot.getAsBoolean() || !level.getBlockState(pos).isAir())
         { helper.fail("Heat gun must melt snow blocks"); return; }
+        var fireSupport = pos.north().below();
+        level.setBlockAndUpdate(fireSupport, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos.north()).isAir())
+        { helper.fail("Heat gun must not ignite nonflammable stone"); return; }
         level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
         if (!shoot.getAsBoolean() || !level.getBlockState(pos.north()).is(net.minecraft.world.level.block.Blocks.FIRE))
         { helper.fail("Heat gun must ignite the exposed side of flammable blocks"); return; }
         level.removeBlock(pos.north(), false);
+        level.removeBlock(fireSupport, false);
         level.setBlockAndUpdate(pos, ice.defaultBlockState());
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Heat gun target missing"); return; }
@@ -3024,6 +3030,20 @@ public final class PortRegressionTests
                 || !gun.shouldCauseReequipAnimation(before, new net.minecraft.world.item.ItemStack(
                         com.fiskmods.heroes.common.item.ModItems.COLD_GUN.get()), false))
         { helper.fail("Gun NBT changes must not re-equip; slot, item and empty-hand changes still must"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heatFlamePacketPreservesClippedSegment(GameTestHelper helper)
+    {
+        Vec3 start = new Vec3(-12.25D, 83.125D, 5.5D);
+        Vec3 end = new Vec3(-12.0D, 82.5D, 17.25D);
+        var buffer = new FriendlyByteBuf(Unpooled.buffer());
+        new com.fiskmods.heroes.common.network.PacketHeatGunFlame(37, start, end).encode(buffer);
+        var decoded = new com.fiskmods.heroes.common.network.PacketHeatGunFlame(buffer);
+        if (decoded.shooterId() != 37 || !start.equals(decoded.start()) || !end.equals(decoded.end())
+                || buffer.readableBytes() != 0)
+        { helper.fail("Heat flame visual packet must preserve the server-clipped segment"); return; }
         helper.succeed();
     }
 

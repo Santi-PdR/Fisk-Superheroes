@@ -169,6 +169,8 @@ def main():
             try:
                 wait_for_new(observer_log, r'Remote aiming sustained: wearer=Partner', start,
                              60, 'observer sees remote Heat Gun aim', observer)
+                wait_for(observer_log, r'Heat gun flame emitted: wearer=Partner, samples=',
+                         60, 'observer receives remote Heat Gun flame stream', observer)
             finally:
                 subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
             wait_for_new(observer_log, r'Remote aiming released: wearer=Partner', start,

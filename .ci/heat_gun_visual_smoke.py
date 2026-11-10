@@ -66,6 +66,7 @@ def main():
             xdo('mousedown', '1')
             try:
                 wait_for(client_log, r'Heat gun first-person aiming: arm=RIGHT', 60, 'heat gun aims in first person', client)
+                wait_for(client_log, r'Heat gun flame emitted: wearer=Dev, samples=', 60, 'server-accepted heat gun creates local flame stream', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')

@@ -274,15 +274,25 @@ public class ItemGun extends Item
             }
         }
 
-        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        Vec3 tracerEnd = hit != null ? start.add(direction.scale(Math.sqrt(nearest))) : end;
+        if (id.equals("heat_gun"))
+        {
+            Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
+            right = right.lengthSqr() < 1.0E-6D ? new Vec3(1.0D, 0.0D, 0.0D) : right.normalize();
+            double forward = Math.min(0.55D, start.distanceTo(tracerEnd) * 0.35D);
+            double side = shooter.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1.0D : -1.0D;
+            Vec3 muzzle = start.add(right.scale(0.28D * side)).add(0.0D, -0.16D, 0.0D).add(direction.scale(forward));
+            com.fiskmods.heroes.common.network.SHNetwork.sendToNearby(
+                    new com.fiskmods.heroes.common.network.PacketHeatGunFlame(shooter.getId(), muzzle, tracerEnd),
+                    level, start.x, start.y, start.z, 64.0D);
+        }
+        else if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
             net.minecraft.core.particles.ParticleOptions tracer = switch (id)
             {
                 case "cold_gun" -> net.minecraft.core.particles.ParticleTypes.SNOWFLAKE;
-                case "heat_gun" -> net.minecraft.core.particles.ParticleTypes.FLAME;
                 default -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
             };
-            Vec3 tracerEnd = hit != null ? start.add(direction.scale(Math.sqrt(nearest))) : end;
             double distance = start.distanceTo(tracerEnd);
             int points = Math.min(18, Math.max(1, (int) Math.ceil(distance / 3.5D)));
             for (int i = 1; i <= points; ++i)
