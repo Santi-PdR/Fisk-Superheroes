@@ -118,6 +118,7 @@ def main():
             time.sleep(0.5); xdo('click', '3')
             wait_for(server_log, r'Ricochet web bounced: face=north', 30, 'ricochet web reflects from first wall', server)
             wait_for(server_log, r'Web attached to block: gadget=fiskheroes:ricochet_web, face=south', 30, 'ricochet web sticks on second impact', server)
+            command('tp Dev 0.5 180 0.5 180 0')
             wait_for(client_log, r'Web patch rendered: anchor=3', 30, 'ricochet web patch renders on real client', client)
         finally:
             for p in reversed(processes):
