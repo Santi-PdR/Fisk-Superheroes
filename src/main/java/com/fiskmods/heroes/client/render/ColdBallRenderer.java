@@ -13,12 +13,17 @@ import net.minecraft.world.phys.Vec3;
 /** Approximation of the original cold ball's bright animated blue shell. */
 public final class ColdBallRenderer extends EntityRenderer<ColdBallEntity>
 {
+    private static final java.util.Set<ColdBallEntity> LOGGED =
+            java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
+
     public ColdBallRenderer(EntityRendererProvider.Context context) { super(context); shadowRadius = 0.0F; }
 
     @Override
     public void render(ColdBallEntity entity, float yaw, float partial, PoseStack pose,
             MultiBufferSource buffers, int light)
     {
+        if (Boolean.getBoolean("fiskheroes.ciColdBallDiagnostics") && LOGGED.add(entity))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold ball rendered: entity={}", entity.getId());
         Vec3 forward = entity.getDeltaMovement().normalize();
         if (forward.lengthSqr() < 1.0E-6D) forward = new Vec3(0, 0, 1);
         Vec3 right = forward.cross(new Vec3(0, 1, 0));

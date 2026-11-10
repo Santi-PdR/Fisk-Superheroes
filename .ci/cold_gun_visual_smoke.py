@@ -63,6 +63,24 @@ def main():
             xdo('key', 'e')
             screenshot('inventory')
             xdo('key', 'e')
+            # Isolate the projectile against a dark backdrop so its blue shell is
+            # verified independently from the gun's magenta diagnostic texture.
+            command('fill -2 180 5 2 184 5 minecraft:black_concrete')
+            screenshot('ball-before')
+            command('summon fiskheroes:cold_ball 0.5 181.62 2.5 {NoGravity:1b}')
+            wait_for(client_log, r'Cold ball rendered: entity=', 60, 'cold ball rendered by real client', client)
+            screenshot('ball-visible')
+            before_ball = Image.open('ci-cold-gun-ball-before.png').convert('RGB')
+            after_ball = Image.open('ci-cold-gun-ball-visible.png').convert('RGB')
+            region = (580, 300, 700, 430)
+            def blue(image):
+                return sum(1 for r, g, b in image.crop(region).get_flattened_data()
+                           if b > 130 and g > 80 and b > r * 1.3 and g > r * 1.15)
+            gain = blue(after_ball) - blue(before_ball)
+            if gain < 20: raise RuntimeError(f'Cold ball blue shell missing from screenshot: {gain} pixels')
+            print(f'PASS: cold ball blue shell adds {gain} pixels', flush=True)
+            command('kill @e[type=fiskheroes:cold_ball]')
+            command('fill -2 180 5 2 184 5 minecraft:air')
             command('setblock 0 181 4 minecraft:water')
             xdo('mousedown', '1')
             try:
