@@ -11,18 +11,21 @@ from PIL import Image
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
-    server_log, client_log = Path('ci-heat-gun-server.log'), Path('ci-heat-gun-client.log')
+    real = os.environ.get('HEAT_GUN_REAL_TEXTURE') == '1'
+    prefix = 'ci-heat-gun-real' if real else 'ci-heat-gun'
+    run_prefix = 'run-heat-gun-real' if real else 'run-heat-gun'
+    server_log, client_log = Path(prefix + '-server.log'), Path(prefix + '-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
     processes = []
     with server_log.open('w') as sout, client_log.open('w') as cout:
         try:
-            server = subprocess.Popen(['./gradlew', 'runServer', '-PciRunDir=run-heat-gun-server', *common],
+            server = subprocess.Popen(['./gradlew', 'runServer', f'-PciRunDir={run_prefix}-server', *common],
                                       stdin=subprocess.PIPE, stdout=sout, stderr=subprocess.STDOUT,
                                       text=True, env=env, start_new_session=True)
             processes.append(server)
             wait_for(server_log, r'Done \(', 360, 'dedicated server ready', server)
-            client = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-heat-gun-client',
+            client = subprocess.Popen(['./gradlew', 'runClient', f'-PciRunDir={run_prefix}-client',
                                        '-PciUsername=Dev', '-PquickPlayServer=127.0.0.1:25565', *common],
                                       stdout=cout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
             processes.append(client)
@@ -42,7 +45,7 @@ def main():
 
             def screenshot(name):
                 time.sleep(2)
-                subprocess.run(['scrot', 'ci-heat-gun-' + name + '.png'], check=True, timeout=30)
+                subprocess.run(['scrot', prefix + '-' + name + '.png'], check=True, timeout=30)
                 print('Captured:', name, flush=True)
 
             command('difficulty peaceful')
@@ -55,6 +58,9 @@ def main():
             command('item replace entity Dev weapon.mainhand with fiskheroes:heat_gun')
             wait_for(client_log, r'First-person heat gun arm rendered: RIGHT', 60, 'first-person heat gun arm', client)
             screenshot('first')
+            command('time set midnight')
+            screenshot('night')
+            command('time set day')
             xdo('key', 'F5')
             xdo('key', 'F5')
             screenshot('third-front')
@@ -62,6 +68,17 @@ def main():
             xdo('key', 'e')
             screenshot('inventory')
             xdo('key', 'e')
+            # Capture a clear beam before melting ice and flowing water hide it.
+            xdo('mousedown', '1')
+            try:
+                wait_for(client_log, r'Heat gun first-person aiming: arm=RIGHT', 60, 'heat gun aims in first person', client)
+                wait_for(client_log, r'Heat gun flame emitted: wearer=Dev, samples=', 60, 'server-accepted heat gun creates local flame stream', client)
+                screenshot('open-flame')
+            finally:
+                xdo('mouseup', '1')
+            if real:
+                print('PASS: captured original Heat Gun texture in daylight, at night and firing', flush=True)
+                return
             command('setblock 0 181 4 minecraft:ice')
             xdo('mousedown', '1')
             try:
@@ -108,7 +125,8 @@ def main():
             if flame_gain < 15:
                 raise RuntimeError(f'Heat gun flame stream is not visible while firing: {flame_gain} pixels')
             print(f'PASS: visible flame stream adds {flame_gain} orange pixels', flush=True)
-            warm = sum(1 for r, g, b in first.convert('RGB').crop((700, 375, 850, 540)).get_flattened_data()
+            night = Image.open('ci-heat-gun-night.png')
+            warm = sum(1 for r, g, b in night.convert('RGB').crop((700, 375, 850, 540)).get_flattened_data()
                        if r > 140 and 5 < g < 200 and b < 70 and r > g * 1.2)
             if warm < 10: raise RuntimeError(f'Emissive heat-gun lights are missing: {warm} pixels')
             print(f'PASS: poses, unwashed base, emissive lights ({warm} pixels), contained icon and stable aim/release: {before} -> {after} -> {released}', flush=True)

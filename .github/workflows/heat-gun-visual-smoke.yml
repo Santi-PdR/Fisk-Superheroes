@@ -27,7 +27,7 @@ concurrency:
 jobs:
   heatgun:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     permissions:
       contents: write
     steps:
@@ -55,6 +55,16 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/heat_gun_visual_smoke.py 2>&1 | tee ci-heat-gun-test.log
+      - name: Capture original texture and nighttime lighting
+        run: |
+          set -o pipefail
+          git restore src/main/resources/assets/fiskheroes/textures/models/heat_gun.png
+          mkdir -p run-heat-gun-real-server run-heat-gun-real-client/config
+          printf 'earlyWindowControl = false\n' > run-heat-gun-real-client/config/fml.toml
+          echo 'eula=true' > run-heat-gun-real-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-heat-gun-real-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+          HEAT_GUN_REAL_TEXTURE=1 xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/heat_gun_visual_smoke.py 2>&1 | tee ci-heat-gun-real-test.log
       - name: Upload captures and logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -72,11 +82,11 @@ jobs:
           { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for file in ci-heat-gun-{first,third-front,inventory,aimed,offhand}.png; do
+          for file in ci-heat-gun-{first,third-front,inventory,aimed,offhand,open-flame,real-first,real-night,real-open-flame}.png; do
             test ! -f "$file" || cp "$file" ".ci/inspection-$file"
           done
           git add -f .ci/heat-gun-visual-log.txt .ci/inspection-ci-heat-gun-*.png
-          git diff --cached --quiet || git commit -m 'ci: cold gun visual diagnostics [skip ci]' --no-verify
+          git diff --cached --quiet || git commit -m 'ci: heat gun visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
               exit 0
