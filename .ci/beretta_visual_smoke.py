@@ -5,7 +5,35 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from tonfa_visual_smoke import wait_for, xdo
+from tonfa_visual_smoke import magenta, wait_for, xdo
+from PIL import Image
+
+
+def assert_geometry():
+    stowed, third, first, occupied, offhand, dual_icon, single_icon = (
+        Image.open('ci-beretta-' + name + '.png') for name in
+        ('stowed-back', 'dual-front', 'dual-first', 'occupied', 'offhand', 'inventory-dual', 'inventory-single'))
+    if any(im.size != (1280, 720) for im in (stowed, third, first, occupied, offhand, dual_icon, single_icon)):
+        raise RuntimeError('Unexpected screenshot dimensions')
+    if min(magenta(stowed, (590, 430, 614, 480)), magenta(stowed, (666, 430, 690, 480))) < 50:
+        raise RuntimeError('Both stowed pistols must project outside the legs')
+    if min(magenta(third, (588, 400, 618, 480)), magenta(third, (663, 400, 692, 480))) < 100:
+        raise RuntimeError('Both third-person pistols must be visible by the hands')
+    left, right = (465, 375, 540, 505), (740, 375, 815, 505)
+    if min(magenta(first, left), magenta(first, right), magenta(offhand, left)) < 500:
+        raise RuntimeError('A first-person pistol is missing')
+    if magenta(occupied, left) > 50 or magenta(occupied, right) < 500:
+        raise RuntimeError('Real offhand did not replace the visual Beretta')
+    counts = []
+    for image in (dual_icon, single_icon):
+        slot = magenta(image, (461, 448, 496, 484))
+        around = magenta(image, (450, 430, 505, 495))
+        if slot < 40 or around - slot > 5:
+            raise RuntimeError(f'Beretta inventory icon clips outside its slot: {slot=}, {around=}')
+        counts.append(slot)
+    if counts[0] < counts[1] * 1.25:
+        raise RuntimeError('Dual icon does not show a second pistol')
+    print('PASS: stowed, dual held, real offhand, and compact single/dual Beretta icons', flush=True)
 
 
 def main():
@@ -94,7 +122,9 @@ def main():
             wait_for(server_log, r'BERETTA_SINGLE_OK', 30, 'single mode consumes one round', server)
             xdo('keydown', 'Shift_L')
             try:
+                time.sleep(0.6)  # Allow the client and server to observe crouching before use.
                 xdo('click', '3')
+                time.sleep(0.3)
             finally:
                 xdo('keyup', 'Shift_L')
             time.sleep(1)
@@ -106,6 +136,7 @@ def main():
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:beretta_93r')
             screenshot('offhand')
+            assert_geometry()
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
