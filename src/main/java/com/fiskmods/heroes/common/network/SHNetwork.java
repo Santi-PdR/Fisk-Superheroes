@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 11 adds the server-authoritative utility-belt use request.
-    private static final String PROTOCOL = "11";
+    // Version 12 synchronizes sticky-web attachment metadata.
+    private static final String PROTOCOL = "12";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

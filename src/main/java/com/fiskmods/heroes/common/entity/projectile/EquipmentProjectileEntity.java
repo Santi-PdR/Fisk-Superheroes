@@ -34,11 +34,21 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
             EquipmentProjectileEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Byte> RICOCHET_BOUNCES = SynchedEntityData.defineId(
             EquipmentProjectileEntity.class, EntityDataSerializers.BYTE);
+    // -1 = flying, 0..5 = block face, 6 = living target.
+    private static final EntityDataAccessor<Byte> WEB_ANCHOR = SynchedEntityData.defineId(
+            EquipmentProjectileEntity.class, EntityDataSerializers.BYTE);
+    private static final EntityDataAccessor<Integer> WEB_TARGET = SynchedEntityData.defineId(
+            EquipmentProjectileEntity.class, EntityDataSerializers.INT);
 
     private int fuseTicks;
     private int smokeTicks;
     private float grenadeSpin;
     private float previousGrenadeSpin;
+    private java.util.UUID webTargetUuid;
+    private Vec3 webOffset = Vec3.ZERO;
+    private int webAge;
+    private int missingTargetTicks;
+    private boolean webSlowsTarget;
 
     public EquipmentProjectileEntity(EntityType<? extends EquipmentProjectileEntity> type, Level level)
     {
@@ -68,6 +78,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         entityData.define(CONFIG, "{}");
         entityData.define(SMOKING, false);
         entityData.define(RICOCHET_BOUNCES, (byte) 0);
+        entityData.define(WEB_ANCHOR, (byte) -1);
+        entityData.define(WEB_TARGET, -1);
     }
 
     @Override
@@ -75,6 +87,11 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         return Items.SNOWBALL;
     }
+
+    public boolean isStickyWeb() { return gadget().endsWith(":sticky_web"); }
+    public boolean isAttachedWeb() { return isStickyWeb() && entityData.get(WEB_ANCHOR) >= 0; }
+    public int webAnchor() { return entityData.get(WEB_ANCHOR); }
+    public int webTargetId() { return entityData.get(WEB_TARGET); }
 
     public boolean isFreezeGrenade()
     {
@@ -136,6 +153,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (isFreezeGrenade(gadget())) return 0.05F;
         if (isTimedGrenade(gadget())) return 0.075F;
+        if (gadget().endsWith("_web") || gadget().endsWith(":rapid_webs")) return 0.02F;
         if (gadget().endsWith(":smoke_pellet")) return 0.025F;
         return 0.03F;
     }
@@ -143,6 +161,12 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     @Override
     public void tick()
     {
+        if (isAttachedWeb())
+        {
+            baseTick();
+            if (!level().isClientSide) tickAttachedWeb();
+            return;
+        }
         if (level().isClientSide)
         {
             previousGrenadeSpin = grenadeSpin;
@@ -191,6 +215,11 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
 
         Entity target = hit.getEntity();
+        if (isStickyWeb() && target instanceof LivingEntity living)
+        {
+            attachWebToEntity(living, hit.getLocation());
+            return;
+        }
         if (target instanceof LivingEntity living)
         {
             JsonObject properties = config();
@@ -202,13 +231,6 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
                         attacker instanceof Player player ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker), damage));
             }
 
-            if (id.endsWith(":sticky_web") || id.endsWith(":impact_web") || id.endsWith(":rapid_webs")
-                    || id.endsWith(":ricochet_web"))
-            {
-                int duration = Math.max(20, number(properties, "dissolveTime", 100));
-                living.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, duration, 4));
-            }
         }
         discard();
     }
@@ -217,7 +239,19 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     protected void onHitBlock(BlockHitResult hit)
     {
         if (level().isClientSide) return;
-        if (gadget().endsWith(":ricochet_web"))
+        if (isStickyWeb())
+        {
+            Vec3 contact = hit.getLocation();
+            var face = hit.getDirection();
+            setPos(contact.x + face.getStepX() * 0.03D, contact.y + face.getStepY() * 0.03D,
+                    contact.z + face.getStepZ() * 0.03D);
+            entityData.set(WEB_ANCHOR, (byte) face.get3DDataValue());
+            setDeltaMovement(Vec3.ZERO);
+            setNoGravity(true);
+            if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to block: face={}", face);
+        }
+        else if (gadget().endsWith(":ricochet_web"))
         {
             if (!ricochet(hit)) discard();
         }
@@ -239,6 +273,48 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         {
             discard();
         }
+    }
+
+    private void attachWebToEntity(LivingEntity target, Vec3 contact)
+    {
+        Vec3 offset = contact.subtract(target.position());
+        webSlowsTarget = offset.y < 0.5D; // The original only restrains hits on the legs.
+        Vec3 outward = new Vec3(offset.x, 0.0D, offset.z);
+        if (outward.lengthSqr() > 1.0E-8D) contact = contact.add(outward.normalize().scale(0.03D));
+        webOffset = contact.subtract(target.position());
+        webTargetUuid = target.getUUID();
+        entityData.set(WEB_TARGET, target.getId());
+        entityData.set(WEB_ANCHOR, (byte) 6);
+        setPos(contact.x, contact.y, contact.z);
+        setDeltaMovement(Vec3.ZERO);
+        setNoGravity(true);
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to entity: target={}, slows={}", target.getId(), webSlowsTarget);
+    }
+
+    private void tickAttachedWeb()
+    {
+        if (++webAge > Math.max(1, Math.min(1200, number(config(), "dissolveTime", 120))))
+        {
+            discard();
+            return;
+        }
+        if (webAnchor() != 6) return;
+        Entity target = webTargetUuid != null && level() instanceof ServerLevel server
+                ? server.getEntity(webTargetUuid) : level().getEntity(webTargetId());
+        if (!(target instanceof LivingEntity living))
+        {
+            if (++missingTargetTicks > 40) discard();
+            return;
+        }
+        if (!living.isAlive()) { discard(); return; }
+        missingTargetTicks = 0;
+        if (webTargetId() != target.getId()) entityData.set(WEB_TARGET, target.getId());
+        Vec3 pos = target.position().add(webOffset);
+        setPos(pos.x, pos.y, pos.z);
+        if (webSlowsTarget && webAge % 5 == 1)
+            living.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                    net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 8, 4, false, false));
     }
 
     /** The original Ricochet Web reflects once from a face with air immediately behind it. */
@@ -417,6 +493,14 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         tag.putInt("FuseTicks", fuseTicks);
         tag.putInt("SmokeTicks", smokeTicks);
         tag.putByte("RicochetBounces", entityData.get(RICOCHET_BOUNCES));
+        if (isAttachedWeb())
+        {
+            tag.putByte("WebAnchor", (byte) webAnchor());
+            tag.putInt("WebAge", webAge);
+            tag.putBoolean("WebSlows", webSlowsTarget);
+            tag.putDouble("WebOffsetX", webOffset.x); tag.putDouble("WebOffsetY", webOffset.y); tag.putDouble("WebOffsetZ", webOffset.z);
+            if (webTargetUuid != null) tag.putUUID("WebTarget", webTargetUuid);
+        }
     }
 
     @Override
@@ -429,5 +513,14 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         smokeTicks = tag.getInt("SmokeTicks");
         entityData.set(RICOCHET_BOUNCES, tag.getByte("RicochetBounces"));
         entityData.set(SMOKING, smokeTicks > 0);
+        if (tag.contains("WebAnchor"))
+        {
+            entityData.set(WEB_ANCHOR, tag.getByte("WebAnchor"));
+            webAge = tag.getInt("WebAge");
+            webSlowsTarget = tag.getBoolean("WebSlows");
+            webOffset = new Vec3(tag.getDouble("WebOffsetX"), tag.getDouble("WebOffsetY"), tag.getDouble("WebOffsetZ"));
+            webTargetUuid = tag.hasUUID("WebTarget") ? tag.getUUID("WebTarget") : null;
+            setNoGravity(true);
+        }
     }
 }

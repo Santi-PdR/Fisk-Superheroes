@@ -3,6 +3,7 @@ package com.fiskmods.heroes.client.render;
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -23,6 +24,7 @@ import net.minecraft.util.Mth;
 /** Original grenade meshes; other equipment retains its item renderer. */
 public final class EquipmentProjectileRenderer extends ThrownItemRenderer<EquipmentProjectileEntity>
 {
+    private static final ResourceLocation WEB = FiskHeroes.id("textures/models/web_24.png");
     private static final ResourceLocation TIMED_GRENADE = FiskHeroes.id("textures/models/grenade.png");
     private static final ResourceLocation BODY = FiskHeroes.id("textures/models/freeze_grenade.png");
     private static final ResourceLocation LIGHTS = FiskHeroes.id("textures/models/freeze_grenade_lights.png");
@@ -42,6 +44,11 @@ public final class EquipmentProjectileRenderer extends ThrownItemRenderer<Equipm
     public void render(EquipmentProjectileEntity entity, float yaw, float partial, PoseStack pose,
             MultiBufferSource buffers, int light)
     {
+        if (entity.isAttachedWeb())
+        {
+            renderAttachedWeb(entity, pose, buffers, light);
+            return;
+        }
         if (entity.isTimedGrenade())
         {
             renderTimedGrenade(entity, partial, pose, buffers, light);
@@ -64,6 +71,40 @@ public final class EquipmentProjectileRenderer extends ThrownItemRenderer<Equipm
         grenade.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(BODY)), light, OverlayTexture.NO_OVERLAY);
         grenade.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(LIGHTS)), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         pose.popPose();
+    }
+
+    /** A textured patch is kept on the impacted face or follows the attached target. */
+    private void renderAttachedWeb(EquipmentProjectileEntity entity, PoseStack pose,
+            MultiBufferSource buffers, int light)
+    {
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics") && LOGGED.add(entity))
+            FiskHeroes.LOGGER.info("Sticky web patch rendered: anchor={}", entity.webAnchor());
+        pose.pushPose();
+        if (entity.webAnchor() == 6)
+        {
+            // Billboard approximation; the original wraps the individual target model.
+            pose.mulPose(entityRenderDispatcher.cameraOrientation());
+        }
+        else
+        {
+            net.minecraft.core.Direction face = net.minecraft.core.Direction.from3DDataValue(entity.webAnchor());
+            if (face.getAxis() == net.minecraft.core.Direction.Axis.X) pose.mulPose(Axis.YP.rotationDegrees(90));
+            if (face.getAxis() == net.minecraft.core.Direction.Axis.Y) pose.mulPose(Axis.XP.rotationDegrees(90));
+        }
+        float w = 0.375F;
+        VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(WEB));
+        PoseStack.Pose p = pose.last();
+        webVertex(out, p, -w, -w, 0, 1, light);
+        webVertex(out, p, w, -w, 1, 1, light);
+        webVertex(out, p, w, w, 1, 0, light);
+        webVertex(out, p, -w, w, 0, 0, light);
+        pose.popPose();
+    }
+
+    private static void webVertex(VertexConsumer out, PoseStack.Pose p, float x, float y, float u, float v, int light)
+    {
+        out.vertex(p.pose(), x, y, 0).color(255, 255, 255, 255).uv(u, v)
+                .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light).normal(p.normal(), 0, 0, 1).endVertex();
     }
 
     private void renderTimedGrenade(EquipmentProjectileEntity entity, float partial, PoseStack pose,

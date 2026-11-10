@@ -3316,4 +3316,98 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void stickyWebFollowsLegTargetAndExpiresAfterReload(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "sticky-web-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Sticky web target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0); level.addFreshEntity(target);
+        var config = new com.google.gson.JsonObject(); config.addProperty("dissolveTime", 16);
+        var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:sticky_web", config, new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.STICKY_WEB.get()), 0);
+        web.setPos(player.getX(), player.getY() + 0.2, player.getZ());
+        web.setDeltaMovement(0, 0, 3); level.addFreshEntity(web);
+        helper.runAfterDelay(3, () -> {
+            if (!web.isAttachedWeb() || web.webTargetId() != target.getId() || web.isRemoved())
+            { helper.fail("Sticky web must attach to the living target"); return; }
+            if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    || target.getHealth() != target.getMaxHealth())
+            { helper.fail("A sticky web to the legs must slow, not damage"); return; }
+            var tag = new net.minecraft.nbt.CompoundTag(); web.addAdditionalSaveData(tag); web.discard();
+            var reloaded = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.EQUIPMENT_PROJECTILE.get(), level);
+            reloaded.readAdditionalSaveData(tag); reloaded.setPos(web.getX(), web.getY(), web.getZ());
+            level.addFreshEntity(reloaded);
+            target.setPos(target.getX() + 2.0, target.getY(), target.getZ());
+            helper.runAfterDelay(3, () -> {
+                if (!reloaded.isAttachedWeb() || reloaded.webTargetId() != target.getId()
+                        || Math.abs(reloaded.getX() - target.getX()) > 1.0)
+                { helper.fail("Reloaded web must resolve and follow its moving target"); return; }
+                helper.runAfterDelay(18, () -> {
+                    if (!reloaded.isRemoved()) { helper.fail("Sticky web did not dissolve"); return; }
+                    target.discard(); helper.succeed();
+                });
+            });
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void stickyWebAttachesToBlockAndDissolves(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "sticky-wall-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        var wall = base.offset(0, 1, 3);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var config = new com.google.gson.JsonObject(); config.addProperty("dissolveTime", 12);
+        var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:sticky_web", config, new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.STICKY_WEB.get()), 0);
+        web.setDeltaMovement(0, 0, 3); level.addFreshEntity(web);
+        helper.runAfterDelay(3, () -> {
+            if (!web.isAttachedWeb() || web.webAnchor() != net.minecraft.core.Direction.NORTH.get3DDataValue())
+            { helper.fail("Sticky web must attach to the struck block face"); return; }
+            helper.runAfterDelay(15, () -> {
+                if (!web.isRemoved()) { helper.fail("Block web failed to dissolve"); return; }
+                level.removeBlock(wall, false); helper.succeed();
+            });
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void impactWebDamagesWithoutStickySlowdown(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "impact-web-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Impact web target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0); level.addFreshEntity(target);
+        var profile = new com.google.gson.JsonObject(); profile.addProperty("damage", 5.0F);
+        var config = new com.google.gson.JsonObject(); config.add("damageProfile", profile);
+        var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:impact_web", config, new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.IMPACT_WEB.get()), 0);
+        web.setPos(player.getX(), player.getY() + 0.5, player.getZ());
+        web.setDeltaMovement(0, 0, 3); level.addFreshEntity(web);
+        helper.runAfterDelay(3, () -> {
+            if (!web.isRemoved() || target.getHealth() >= target.getMaxHealth()
+                    || target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
+            { helper.fail("Impact web must damage without applying the sticky web slowdown"); return; }
+            target.discard(); helper.succeed();
+        });
+    }
+
 }
