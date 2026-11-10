@@ -37,6 +37,11 @@ public final class ModEntities
             () -> EntityType.Builder.<EquipmentProjectileEntity>of(EquipmentProjectileEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1)
                     .build("fiskheroes:equipment_projectile"));
+    public static final RegistryObject<EntityType<com.fiskmods.heroes.common.entity.projectile.ColdBallEntity>> COLD_BALL = REGISTRY.register("cold_ball",
+            () -> EntityType.Builder.<com.fiskmods.heroes.common.entity.projectile.ColdBallEntity>of(
+                    com.fiskmods.heroes.common.entity.projectile.ColdBallEntity::new, MobCategory.MISC)
+                    .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1)
+                    .build("fiskheroes:cold_ball"));
     public static final RegistryObject<EntityType<EnergyBoltEntity>> ENERGY_BOLT = REGISTRY.register("energy_bolt",
             () -> EntityType.Builder.<EnergyBoltEntity>of(EnergyBoltEntity::new, MobCategory.MISC)
                     .sized(0.25F, 0.25F).clientTrackingRange(64).updateInterval(1).fireImmune()

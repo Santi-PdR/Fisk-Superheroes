@@ -3,9 +3,8 @@ package com.fiskmods.heroes.common.item;
 import java.util.List;
 
 import com.fiskmods.heroes.FiskHeroes;
-import com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity;
+import com.fiskmods.heroes.common.entity.projectile.ColdBallEntity;
 import com.fiskmods.heroes.common.sound.SHSounds;
-import com.google.gson.JsonObject;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -88,10 +87,7 @@ public final class ItemColdGun extends ItemGun
     {
         if (isGrenadeMode(stack))
         {
-            EquipmentProjectileEntity grenade = new EquipmentProjectileEntity(
-                    shooter, "fiskheroes:freeze_grenade", new JsonObject(),
-                    new ItemStack(ModItems.FREEZE_GRENADE.get()), 0.0F);
-            shooter.level().addFreshEntity(grenade);
+            shooter.level().addFreshEntity(new ColdBallEntity(shooter));
             return;
         }
         super.fire(shooter, stack);

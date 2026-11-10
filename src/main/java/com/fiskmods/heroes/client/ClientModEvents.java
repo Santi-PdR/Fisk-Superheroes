@@ -53,6 +53,7 @@ public final class ClientModEvents
         event.registerEntityRenderer(ModEntities.TRICK_ARROW.get(), TrickArrowRenderer::new);
         event.registerEntityRenderer(ModEntities.THROWN_SHIELD.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
         event.registerEntityRenderer(ModEntities.EQUIPMENT_PROJECTILE.get(), net.minecraft.client.renderer.entity.ThrownItemRenderer::new);
+        event.registerEntityRenderer(ModEntities.COLD_BALL.get(), com.fiskmods.heroes.client.render.ColdBallRenderer::new);
         event.registerEntityRenderer(ModEntities.ENERGY_BOLT.get(), EnergyBoltRenderer::new);
         event.registerEntityRenderer(ModEntities.ICICLE.get(), IcicleRenderer::new);
         event.registerEntityRenderer(ModEntities.FIRE_BLAST.get(), FireBlastRenderer::new);

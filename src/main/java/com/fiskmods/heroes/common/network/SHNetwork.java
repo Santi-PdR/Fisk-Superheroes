@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 9 adds server-clipped Heat Gun flame visuals.
-    private static final String PROTOCOL = "9";
+    // Version 10 adds the cold ball entity used by Captain Cold.
+    private static final String PROTOCOL = "10";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

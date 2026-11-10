@@ -3047,4 +3047,63 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void coldBallImpactsTargetImmediately(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "cold-ball-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F); player.setXRot(10.0F);
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Cold ball target missing"); return; }
+        target.setNoAi(true); target.setPos(player.getX(), player.getY(), player.getZ() + 3.0D);
+        level.addFreshEntity(target);
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(player);
+        level.addFreshEntity(ball);
+        helper.runAfterDelay(8, () -> {
+            if (!ball.isRemoved()) { helper.fail("Cold ball must detonate on impact, without a grenade fuse"); return; }
+            if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    || target.getTicksFrozen() <= 0 || target.getHealth() >= target.getMaxHealth())
+            { helper.fail("Cold ball impact must damage and freeze the nearby target"); return; }
+            if (player.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
+            { helper.fail("Cold ball must not freeze its owner"); return; }
+            target.discard();
+            helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void coldBallFreezesWaterWithoutPassingThroughWall(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "cold-ball-wall-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F); player.setXRot(0.0F);
+        var wall = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(wall.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var water = base.offset(0, 1, 1);
+        level.setBlockAndUpdate(water, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Cold ball wall target missing"); return; }
+        target.setNoAi(true); target.setPos(player.getX(), player.getY(), player.getZ() + 2.7D);
+        level.addFreshEntity(target);
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(player);
+        level.addFreshEntity(ball);
+        helper.runAfterDelay(8, () -> {
+            if (!ball.isRemoved() || !level.getBlockState(water).is(net.minecraft.world.level.block.Blocks.ICE))
+            { helper.fail("Cold ball must freeze nearby water when it hits a wall"); return; }
+            if (target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    || target.getHealth() < target.getMaxHealth())
+            { helper.fail("A solid wall must shield targets from the cold ball"); return; }
+            target.discard();
+            level.removeBlock(wall, false); level.removeBlock(wall.below(), false); level.removeBlock(water, false);
+            helper.succeed();
+        });
+    }
+
 }
