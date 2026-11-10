@@ -49,8 +49,8 @@ def main():
             command('execute as Dev run suit fiskheroes:batman_dceu')
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:air')
-            command('summon minecraft:iron_golem 0.5 180 5.5 {NoAI:1b,Silent:1b,Tags:["freeze_test"]}')
-            command('setblock 1 180 5 minecraft:water')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["freeze_test"]}')
+            command('setblock 1 180 7 minecraft:water')
             xdo('keydown', 'c')
             try:
                 time.sleep(1.0)
@@ -71,7 +71,7 @@ def main():
             wait_for(server_log, r'FREEZE_TARGET_OK', 30, 'blast slows the target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] unless data entity @s {Health:100.0f} run say FREEZE_DAMAGE_OK')
             wait_for(server_log, r'FREEZE_DAMAGE_OK', 30, 'blast damages the target', server)
-            command('execute if block 1 180 5 minecraft:ice run say FREEZE_WATER_OK')
+            command('execute if block 1 180 7 minecraft:ice run say FREEZE_WATER_OK')
             wait_for(server_log, r'FREEZE_WATER_OK', 30, 'blast freezes nearby water', server)
             # Batman has one charge: another click during cooldown must not spawn a second grenade.
             before = server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:freeze_grenade')

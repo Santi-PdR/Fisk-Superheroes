@@ -449,6 +449,11 @@ public class ClientEventHandler
                 || abilityClickMode || mc.screen != null || mc.player == null
                 || !mc.player.getMainHandItem().isEmpty() || !mc.player.getOffhandItem().isEmpty()) return;
         SHPlayerData data = SHDataCapabilities.getPlayer(mc.player);
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Utility belt input: hero={}, selected={}, hit={}",
+                    data != null ? data.getHeroType() : null,
+                    data != null ? data.getData().get(Vars.UTILITY_BELT_TYPE) : -1,
+                    mc.hitResult != null ? mc.hitResult.getType() : "null");
         var hero = data != null ? data.getHeroType() : null;
         if (hero == null || data.getData().get(Vars.UTILITY_BELT_TYPE) < 0
                 || data.getData().get(Vars.WEB_SWINGING)
