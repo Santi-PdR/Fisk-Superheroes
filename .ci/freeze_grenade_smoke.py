@@ -140,6 +140,7 @@ def main():
             wait_for(server_log, r'Utility belt used: player=Dev, gadget=fiskheroes:grenade',
                      30, 'Deathstroke throws ordinary grenade', server)
             wait_for(server_log, r'Grenade explosion:', 30, 'timed grenade explodes', server)
+            wait_for(client_log, r'Timed grenade model rendered:', 30, '3D timed grenade renders on the real client', client)
             command('execute as @e[type=minecraft:iron_golem,tag=grenade_exposed,limit=1] unless data entity @s {Health:100.0f} run say GRENADE_EXPOSED_OK')
             wait_for(server_log, r'GRENADE_EXPOSED_OK', 30, 'ordinary grenade damages exposed target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=grenade_shielded,limit=1] if data entity @s {Health:100.0f} run say GRENADE_COVER_OK')

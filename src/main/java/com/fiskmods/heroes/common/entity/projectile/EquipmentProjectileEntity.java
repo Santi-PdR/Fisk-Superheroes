@@ -37,6 +37,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
 
     private int fuseTicks;
     private int smokeTicks;
+    private float grenadeSpin;
+    private float previousGrenadeSpin;
 
     public EquipmentProjectileEntity(EntityType<? extends EquipmentProjectileEntity> type, Level level)
     {
@@ -77,6 +79,16 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     public boolean isFreezeGrenade()
     {
         return isFreezeGrenade(gadget());
+    }
+
+    public boolean isTimedGrenade()
+    {
+        return isTimedGrenade(gadget());
+    }
+
+    public float grenadeSpin(float partialTick)
+    {
+        return net.minecraft.util.Mth.lerp(partialTick, previousGrenadeSpin, grenadeSpin);
     }
 
     private String gadget()
@@ -130,6 +142,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (level().isClientSide)
         {
+            previousGrenadeSpin = grenadeSpin;
+            if (isTimedGrenade()) grenadeSpin -= (float) getDeltaMovement().length() * 20.0F;
             super.tick();
             return;
         }
