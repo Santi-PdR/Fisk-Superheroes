@@ -440,6 +440,31 @@ public class ClientEventHandler
         event.setSwingHand(false);
     }
 
+    /** Empty-hand use in air does not send a vanilla item packet; explicitly request the belt gadget. */
+    @SubscribeEvent
+    public static void onUseUtilityBelt(InputEvent.InteractionKeyMappingTriggered event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (!event.isUseItem() || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || abilityClickMode || mc.screen != null || mc.player == null
+                || !mc.player.getMainHandItem().isEmpty() || !mc.player.getOffhandItem().isEmpty()) return;
+        SHPlayerData data = SHDataCapabilities.getPlayer(mc.player);
+        var hero = data != null ? data.getHeroType() : null;
+        if (hero == null || data.getData().get(Vars.UTILITY_BELT_TYPE) < 0
+                || data.getData().get(Vars.WEB_SWINGING)
+                || com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.getUtilityBelt(hero, mc.player, data) == null) return;
+        boolean pointingAtWorld = mc.hitResult != null && mc.hitResult.getType() != net.minecraft.world.phys.HitResult.Type.MISS;
+        // Normal empty-hand block/entity interactions remain available. Holding
+        // the belt key deliberately overrides them for a close-range throw.
+        if (pointingAtWorld && !hero.isKeyPressed(mc.player, "UTILITY_BELT")) return;
+        if (data.getData().get(Vars.AIMING) && hero.getPowerContainer().getEntries().stream().anyMatch(entry ->
+                entry.isEnabled() && (entry.getModifier().getId().getPath().equals("repulsor_blast")
+                        || entry.getModifier().getId().getPath().equals("energy_bolt")))) return;
+        SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketUseUtilityBelt());
+        event.setCanceled(true);
+        event.setSwingHand(false);
+    }
+
     /** Web use has its own long-range server raycast, not vanilla's short interaction reach. */
     @SubscribeEvent
     public static void onUseWeb(InputEvent.InteractionKeyMappingTriggered event)

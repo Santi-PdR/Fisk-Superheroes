@@ -22,8 +22,8 @@ import net.minecraftforge.network.simple.SimpleChannel;
  */
 public class SHNetwork
 {
-    // Version 10 adds the cold ball entity used by Captain Cold.
-    private static final String PROTOCOL = "10";
+    // Version 11 adds the server-authoritative utility-belt use request.
+    private static final String PROTOCOL = "11";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

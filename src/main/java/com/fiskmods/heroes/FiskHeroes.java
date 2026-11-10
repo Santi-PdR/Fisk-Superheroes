@@ -139,6 +139,8 @@ public class FiskHeroes
                     com.fiskmods.heroes.common.network.PacketGunShotEffect::new, NetworkDirection.PLAY_TO_CLIENT);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketHeatGunFlame.class,
                     com.fiskmods.heroes.common.network.PacketHeatGunFlame::new, NetworkDirection.PLAY_TO_CLIENT);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketUseUtilityBelt.class,
+                    com.fiskmods.heroes.common.network.PacketUseUtilityBelt::new, NetworkDirection.PLAY_TO_SERVER);
 
             HeroPackEngine.INSTANCE.setup();
             com.fiskmods.heroes.common.block.FabricatorRecipes.ensureLoaded();
