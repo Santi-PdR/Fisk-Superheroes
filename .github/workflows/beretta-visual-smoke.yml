@@ -60,18 +60,12 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/models/beretta_93r.png 
+          git restore src/main/resources/assets/fiskheroes/textures/models/beretta_93r.png
           mkdir -p .ci
           { cat ci-beretta-test.log 2>/dev/null || true; grep -E 'First-person beretta arm rendered|Held weapon livery: wearer=Dev.*beretta|Equipped suit item rendered: hero=fiskheroes:wild_dog' ci-beretta-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-beretta-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-beretta-server.log 2>/dev/null || true; } > .ci/beretta-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for file in ci-beretta-{stowed-back,stowed-front,dual-front,dual-first,single-first,offhand,inventory-dual,inventory-single}.png; do
-            test ! -f "$file" || cp "$file" ".ci/inspection-$file"
-          done
           git add -f .ci/beretta-visual-log.txt
-          for file in .ci/inspection-ci-beretta-*.png; do
-            test ! -f "$file" || git add -f "$file"
-          done
           git diff --cached --quiet || git commit -m 'ci: beretta visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
