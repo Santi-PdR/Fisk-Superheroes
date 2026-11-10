@@ -50,11 +50,13 @@ public final class ColdBallEntity extends ThrowableProjectile
         super.tick();
         if (level().isClientSide && !isRemoved())
         {
-            for (int i = 0; i < 3; i++)
+            // Vanilla snowflakes are much larger and longer lived than the original
+            // short cryo smoke; avoid obscuring the orb or accumulating while stationary.
+            if (tickCount % 3 == 0 && getDeltaMovement().lengthSqr() > 1.0E-4D)
                 level().addParticle(ParticleTypes.SNOWFLAKE, getX(), getY(), getZ(),
-                        (random.nextDouble() - 0.5D) * 0.06D,
-                        (random.nextDouble() - 0.5D) * 0.06D,
-                        (random.nextDouble() - 0.5D) * 0.06D);
+                        (random.nextDouble() - 0.5D) * 0.02D,
+                        (random.nextDouble() - 0.5D) * 0.02D,
+                        (random.nextDouble() - 0.5D) * 0.02D);
         }
         else if (!level().isClientSide && tickCount > 1200) discard();
     }
