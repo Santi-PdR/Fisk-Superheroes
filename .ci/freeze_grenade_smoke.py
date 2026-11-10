@@ -146,18 +146,6 @@ def main():
             wait_for(server_log, r'GRENADE_EXPOSED_OK', 30, 'ordinary grenade damages exposed target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=grenade_shielded,limit=1] if data entity @s {Health:100.0f} run say GRENADE_COVER_OK')
             wait_for(server_log, r'GRENADE_COVER_OK', 30, 'solid wall shields target from grenade', server)
-            # Temporary visual inspection: stationary, close-up projectiles under identical lighting.
-            command('kill @e[type=fiskheroes:equipment_projectile]')
-            command('tp Dev 0.5 180 0.5 0 0')
-            command('summon fiskheroes:equipment_projectile 0.5 181.5 2.0 {Gadget:"fiskheroes:grenade",Config:"{}",FuseTicks:1200,NoGravity:1b}')
-            xdo('key', 'F1')
-            time.sleep(2)
-            subprocess.run(['scrot', '-o', '.ci/timed-grenade-preview.png'], check=True)
-            command('kill @e[type=fiskheroes:equipment_projectile]')
-            command('summon fiskheroes:equipment_projectile 0.5 181.5 2.0 {Gadget:"fiskheroes:freeze_grenade",Config:"{}",NoGravity:1b}')
-            time.sleep(2)
-            subprocess.run(['scrot', '-o', '.ci/freeze-grenade-preview.png'], check=True)
-            xdo('key', 'F1')
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

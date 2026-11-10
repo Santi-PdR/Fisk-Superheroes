@@ -36,7 +36,7 @@ jobs:
       - name: Install headless dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1 scrot
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
           python3 -m pip install --user 'pillow>=13,<14'
       - name: Prepare dedicated server and client
         run: |
@@ -64,7 +64,7 @@ jobs:
           { cat ci-freeze-grenade-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -80 ci-freeze-grenade-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -80 ci-freeze-grenade-server.log 2>/dev/null || true; } > .ci/freeze-grenade-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -f .ci/freeze-grenade-log.txt .ci/*-grenade-preview.png
+          git add -f .ci/freeze-grenade-log.txt
           git diff --cached --quiet || git commit -m 'ci: freeze grenade diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
