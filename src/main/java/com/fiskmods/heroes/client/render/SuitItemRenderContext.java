@@ -49,7 +49,8 @@ public final class SuitItemRenderContext
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         ResourceLocation livery = resolveLivery(HeroModelRegistry.get(hero), wearer, itemId);
         if (itemId.getNamespace().equals(FiskHeroes.MODID)
-                && (itemId.getPath().equals("katana") || itemId.getPath().equals("desert_eagle")))
+                && (itemId.getPath().equals("katana") || itemId.getPath().equals("desert_eagle")
+                        || itemId.getPath().equals("beretta_93r")))
         {
             String heroName = hero != null ? hero.getRegistryName().toString() : "none";
             String key = wearer.getUUID() + "|" + heroName + "|" + itemId + "|" + context + "|" + livery;
