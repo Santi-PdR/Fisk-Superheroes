@@ -52,7 +52,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         setPos(owner.getX(), owner.getEyeY() - 0.1D, owner.getZ());
         shootFromRotation(owner, owner.getXRot(), owner.getYRot() + yawOffset, 0.0F,
                 velocityFor(gadget), 1.0F);
-        if (isExplosive(gadget))
+        if (isTimedGrenade(gadget))
         {
             fuseTicks = number(config, "fuseTime", 40);
         }
@@ -91,9 +91,14 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
     }
 
-    private static boolean isExplosive(String gadget)
+    private static boolean isTimedGrenade(String gadget)
     {
-        return gadget.endsWith(":grenade") || gadget.endsWith(":freeze_grenade");
+        return gadget.endsWith(":grenade");
+    }
+
+    private static boolean isFreezeGrenade(String gadget)
+    {
+        return gadget.endsWith(":freeze_grenade");
     }
 
     /** Launch speeds match the original projectile classes (EntityBatarang, EntityThrowingStar,
@@ -102,7 +107,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (gadget.endsWith(":batarang")) return 3.5F;
         if (gadget.endsWith(":throwing_star")) return 2.5F;
-        if (gadget.endsWith(":grenade") || gadget.endsWith(":freeze_grenade")) return 1.75F;
+        if (isFreezeGrenade(gadget)) return 1.25F;
+        if (isTimedGrenade(gadget)) return 1.75F;
         if (gadget.endsWith(":sticky_web") || gadget.endsWith(":impact_web")
                 || gadget.endsWith(":rapid_webs") || gadget.endsWith(":ricochet_web")) return 7.5F;
         return 1.75F;
@@ -111,7 +117,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     @Override
     protected float getGravity()
     {
-        return 0.03F;
+        return isFreezeGrenade(gadget()) ? 0.05F : 0.03F;
     }
 
     @Override
@@ -132,7 +138,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
 
         if (fuseTicks > 0 && --fuseTicks == 0)
         {
-            detonate();
+            if (isFreezeGrenade(gadget())) detonateFreeze(position()); // Legacy saved armed grenade.
+            else detonate();
             return;
         }
 
@@ -145,7 +152,12 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (level().isClientSide) return;
         String id = gadget();
-        if (isExplosive(id))
+        if (isFreezeGrenade(id))
+        {
+            detonateFreeze(hit.getLocation());
+            return;
+        }
+        if (isTimedGrenade(id))
         {
             armOnImpact();
             return;
@@ -187,7 +199,13 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         {
             if (!ricochet(hit)) discard();
         }
-        else if (isExplosive(gadget()))
+        else if (isFreezeGrenade(gadget()))
+        {
+            var face = hit.getDirection();
+            detonateFreeze(hit.getLocation().add(face.getStepX() * 0.02D,
+                    face.getStepY() * 0.02D, face.getStepZ() * 0.02D));
+        }
+        else if (isTimedGrenade(gadget()))
         {
             armOnImpact();
         }
@@ -241,6 +259,21 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         if (fuseTicks <= 0) fuseTicks = number(config(), "fuseTime", 40);
     }
 
+    private void detonateFreeze(Vec3 center)
+    {
+        if (level() instanceof ServerLevel serverLevel)
+        {
+            JsonObject properties = config();
+            JsonObject profile = child(properties, "damageProfile");
+            float damage = Math.max(0.0F, DamageGroups.profileDamage(profile, 16.0F));
+            boolean affectsOwner = properties.has("affectsUser") && properties.get("affectsUser").getAsBoolean();
+            if (Boolean.getBoolean("fiskheroes.ciFreezeGrenadeDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Freeze grenade impact: center={}, owner={}", center, getOwner());
+            FreezeBurst.detonate(serverLevel, this, getOwner(), center, 3.0D, damage, profile, affectsOwner, false);
+        }
+        discard();
+    }
+
     private void detonate()
     {
         if (!(level() instanceof ServerLevel serverLevel))
@@ -250,9 +283,9 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
 
         JsonObject properties = config();
-        float radius = Math.max(1.0F, number(properties, "radius", gadget().endsWith(":freeze_grenade") ? 4 : 8));
+        float radius = Math.max(1.0F, number(properties, "radius", 8));
         JsonObject profile = child(properties, "damageProfile");
-        float maxDamage = DamageGroups.profileDamage(profile, gadget().endsWith(":freeze_grenade") ? 16.0F : 30.0F);
+        float maxDamage = DamageGroups.profileDamage(profile, 30.0F);
         boolean affectsOwner = properties.has("affectsUser") && properties.get("affectsUser").getAsBoolean();
         var bounds = getBoundingBox().inflate(radius);
 
@@ -270,11 +303,6 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
                         attacker instanceof Player player ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker), damage));
             }
 
-            if (gadget().endsWith(":freeze_grenade"))
-            {
-                target.addEffect(new net.minecraft.world.effect.MobEffectInstance(
-                        net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
-            }
         }
 
         discard();

@@ -3109,4 +3109,119 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void batmanFreezeGrenadeUsesBeltAndDetonatesOnImpact(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "batman-freeze-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        if (hero == null) { helper.fail("Batman is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null || data.getHero() == null) { helper.fail("Batman suit did not activate"); return; }
+        var belt = com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.getUtilityBelt(hero, player, data);
+        if (belt == null) { helper.fail("Batman utility belt missing"); return; }
+        var names = new java.util.ArrayList<>(com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.equipmentOptions(belt).keySet());
+        int selected = names.indexOf("fiskheroes:freeze_grenade");
+        if (selected < 0) { helper.fail("Batman freeze grenade missing from belt"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) selected);
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 140, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F); player.setXRot(0.0F);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Freeze grenade target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0D);
+        level.addFreshEntity(target);
+        if (!com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.useUtilityBelt(player))
+        { helper.fail("Utility belt failed to launch freeze grenade"); return; }
+        if (com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.useUtilityBelt(player))
+        { helper.fail("Freeze grenade must consume its one charge until cooldown"); return; }
+        var projectiles = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity.class,
+                player.getBoundingBox().inflate(5), projectile -> projectile.getOwner() == player);
+        if (projectiles.size() != 1) { helper.fail("Expected exactly one belt projectile"); return; }
+        var grenade = projectiles.get(0);
+        var tag = new net.minecraft.nbt.CompoundTag(); grenade.addAdditionalSaveData(tag);
+        if (tag.getInt("FuseTicks") != 0) { helper.fail("Freeze grenade must not have a timed fuse"); return; }
+        helper.runAfterDelay(8, () -> {
+            if (!grenade.isRemoved()) { helper.fail("Freeze grenade must detonate immediately on impact"); return; }
+            if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    || target.getTicksFrozen() <= 0 || target.getHealth() >= target.getMaxHealth())
+            { helper.fail("Freeze grenade must damage and freeze a nearby target"); return; }
+            if (player.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
+            { helper.fail("Freeze grenade must not freeze its thrower by default"); return; }
+            target.discard(); helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void freezeGrenadeFreezesWaterAndWallShieldsTarget(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "freeze-wall-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 140, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F); player.setXRot(0.0F);
+        var wall = base.offset(0, 1, 3);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(wall.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var water = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(water, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Freeze grenade wall target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 4.1D);
+        level.addFreshEntity(target);
+        var grenade = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:freeze_grenade", new com.google.gson.JsonObject(),
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.FREEZE_GRENADE.get()), 0.0F);
+        grenade.setDeltaMovement(0.0D, 0.0D, 1.25D);
+        level.addFreshEntity(grenade);
+        helper.runAfterDelay(8, () -> {
+            if (!grenade.isRemoved() || !level.getBlockState(water).is(net.minecraft.world.level.block.Blocks.ICE))
+            { helper.fail("Freeze grenade must freeze nearby water immediately on impact"); return; }
+            if (target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    || target.getHealth() < target.getMaxHealth())
+            { helper.fail("Solid wall must shield targets from freeze grenade"); return; }
+            target.discard(); level.removeBlock(wall, false); level.removeBlock(wall.below(), false);
+            level.removeBlock(water, false); helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void normalGrenadeKeepsItsTimedFuse(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "timed-grenade-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 140, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        player.setYRot(0.0F); player.setXRot(0.0F);
+        var wall = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var config = new com.google.gson.JsonObject(); config.addProperty("fuseTime", 20); config.addProperty("radius", 1);
+        var grenade = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:grenade", config,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.GRENADE.get()), 0.0F);
+        grenade.setDeltaMovement(0.0D, 0.0D, 1.75D);
+        level.addFreshEntity(grenade);
+        helper.runAfterDelay(8, () -> {
+            if (grenade.isRemoved() || !grenade.isNoGravity())
+            { helper.fail("Normal grenade must remain armed on impact until its fuse expires"); return; }
+            helper.runAfterDelay(18, () -> {
+                if (!grenade.isRemoved()) { helper.fail("Normal grenade fuse did not expire"); return; }
+                level.removeBlock(wall, false); helper.succeed();
+            });
+        });
+    }
+
 }
