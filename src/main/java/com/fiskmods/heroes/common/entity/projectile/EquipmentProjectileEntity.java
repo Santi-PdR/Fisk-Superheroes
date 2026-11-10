@@ -74,6 +74,11 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         return Items.SNOWBALL;
     }
 
+    public boolean isFreezeGrenade()
+    {
+        return isFreezeGrenade(gadget());
+    }
+
     private String gadget()
     {
         return entityData.get(GADGET);
