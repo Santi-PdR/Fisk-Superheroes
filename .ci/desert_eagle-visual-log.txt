@@ -16,24 +16,29 @@ PASS: dual-aim LEFT aims and returns: 501.1 -> 556.0 -> 501.1
 PASS: dual-aim RIGHT aims and returns: 777.9 -> 724.0 -> 777.9
 PASS: main arm aims
 PASS: offhand arm aims
-PASS: visible muzzle flash, warm-pixel increase: 123
+PASS: visible muzzle flash, warm-pixel increase: 731
 PASS: main-hand shot effect rendered
 PASS: dual offhand shot effect rendered
 Captured: dual-reload-before
-PASS: dual-reload reload moved pistol pixels: [2333, 3255]
+PASS: dual-reload reload moved pistol pixels: [2360, 3614]
 Captured: dual-reload-restored
 PASS: dual-reload reload returned to rest: [0, 0]
 PASS: main-hand reload pose rendered
 PASS: dual offhand reload pose rendered
 PASS: dual offhand is visual only
 PASS: real offhand takes precedence
+Captured: occupied-aim-before
+Captured: occupied-aim-aimed
+Captured: occupied-aim-restored
+PASS: occupied-aim RIGHT aims and returns: 779.4 -> 676.3 -> 779.4
+PASS: occupied-aim real offhand remains stationary: 0 pixels changed
 PASS: occupied-offhand gun fired
 PASS: occupied offhand forces main-hand shot effect
 Captured: inventory-dual
 Captured: single-first
 PASS: gun fires and consumes exactly one round
 Captured: single-reload-before
-PASS: single-reload reload moved pistol pixels: [3255]
+PASS: single-reload reload moved pistol pixels: [3938]
 Captured: single-reload-restored
 PASS: single-reload reload returned to rest: [0]
 PASS: gun reload restores magazine
@@ -45,182 +50,182 @@ PASS: single-aim RIGHT aims and returns: 777.9 -> 675.1 -> 777.9
 Captured: inventory-single
 Captured: offhand
 PASS: holstered, dual held, real offhand, and compact single/dual icons
-[00:13:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[00:13:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:53] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:53] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: LEFT
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=RIGHT
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=LEFT
-[00:14:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:08] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[00:14:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:09] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:16] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[00:14:16] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[00:14:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:20:40] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[00:20:40] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:46] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:46] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: LEFT
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=RIGHT
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=LEFT
+[00:21:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:02] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[00:21:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:03] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:10] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[00:21:10] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[00:21:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
 ==== client tail ====
-[00:13:30] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[00:13:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[00:13:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:13:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:13:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:13:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[00:13:46] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deadpool_xmen, texture=fiskheroes:textures/heroes/deadpool_xmen_layer1.png, poseAligned=true
-[00:13:46] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deadpool_xmen, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[00:13:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:helmet from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[00:13:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[00:13:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[00:13:47] [Render thread/INFO] [Fisk's Superheroes/]: Stowed dual katana meshes per anchor: 1
-[00:13:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
-[00:13:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[00:13:53] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=synthetic
-[00:13:53] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:53] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: LEFT
-[00:13:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[00:14:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:deadpool_xmen, sleeveAligned=true
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=RIGHT
-[00:14:02] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=LEFT
-[00:14:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:14:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:08] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:08] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[00:14:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:09] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[00:14:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:14:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[00:14:16] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[00:14:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[00:14:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[00:14:16] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[00:14:16] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[00:14:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_OFFHAND_EMPTY_OK
-[00:14:23] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied
-[00:14:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:14:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:26] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_OCCUPIED_SHOT_OK
-[00:14:29] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=synthetic
-[00:14:30] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
-[00:14:30] [Render thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x666eb48101fd4c89
-[00:14:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:14:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[00:14:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[00:14:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_SHOT_OK
-[00:14:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[00:14:39] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[00:14:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload as fiskheroes:item.gun.reload
-[00:14:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[00:14:45] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_RELOAD_OK
-[00:14:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:47] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[00:14:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[00:14:51] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[00:14:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[00:14:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:20:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[00:20:40] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[00:20:40] [Render thread/INFO] [Fisk's Superheroes/]: Stowed dual katana meshes per anchor: 1
+[00:20:40] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
+[00:20:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[00:20:46] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=synthetic
+[00:20:46] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:46] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: LEFT
+[00:20:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[00:20:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:20:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:deadpool_xmen, sleeveAligned=true
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=RIGHT
+[00:20:56] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle first-person aiming: arm=LEFT
+[00:20:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:20:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:20:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:20:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:20:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:02] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:02] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[00:21:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:03] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[00:21:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[00:21:10] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[00:21:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[00:21:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[00:21:10] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[00:21:10] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[00:21:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_OFFHAND_EMPTY_OK
+[00:21:17] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied
+[00:21:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:21] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:27] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_OCCUPIED_SHOT_OK
+[00:21:31] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=synthetic
+[00:21:31] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
+[00:21:32] [Render thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x62bd191b4efd8911
+[00:21:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:37] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[00:21:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[00:21:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_SHOT_OK
+[00:21:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[00:21:41] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[00:21:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[00:21:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload as fiskheroes:item.gun.reload
+[00:21:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] EAGLE_RELOAD_OK
+[00:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[00:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[00:21:53] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[00:21:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[00:21:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
 ==== server tail ====
-[00:13:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[00:13:25] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[00:13:25] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:35410] logged in with entity id 12 at (2.5, -60.0, 1.5)
-[00:13:25] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@29226a31 into net.minecraft.network.Connection@76a74356
-[00:13:25] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[00:13:26] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[00:13:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:13:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
-[00:13:37] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
-[00:13:38] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
-[00:13:40] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
-[00:13:41] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
-[00:13:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,245.0,-1.0
-[00:13:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,245.0,-1.0
-[00:13:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,245.0,-1.0
-[00:13:43] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
-[00:13:44] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[00:13:44] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[00:13:44] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[00:13:46] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[00:13:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
-[00:13:59] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
-[00:14:02] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:02] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:08] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
-[00:14:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[00:14:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
-[00:14:22] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_OFFHAND_EMPTY_OK
-[00:14:23] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Torch]
-[00:14:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
-[00:14:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:26] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_OCCUPIED_SHOT_OK
-[00:14:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
-[00:14:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[00:14:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_SHOT_OK
-[00:14:39] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[00:14:39] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
-[00:14:45] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_RELOAD_OK
-[00:14:46] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[00:14:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[00:14:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[00:14:59] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
-[00:15:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[00:20:19] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@14d425fc into net.minecraft.network.Connection@25e06bd5
+[00:20:19] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[00:20:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[00:20:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:20:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
+[00:20:31] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
+[00:20:32] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
+[00:20:34] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
+[00:20:35] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
+[00:20:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 5.0,245.0,-2.0
+[00:20:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 5.0,245.0,-2.0
+[00:20:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 5.0,245.0,-2.0
+[00:20:37] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
+[00:20:38] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[00:20:38] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[00:20:38] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[00:20:40] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[00:20:46] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
+[00:20:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
+[00:20:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:20:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
+[00:21:02] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:02] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[00:21:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
+[00:21:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_OFFHAND_EMPTY_OK
+[00:21:17] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Torch]
+[00:21:19] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
+[00:21:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:27] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Desert Eagles]
+[00:21:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:28] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_OCCUPIED_SHOT_OK
+[00:21:31] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[00:21:34] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[00:21:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_SHOT_OK
+[00:21:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[00:21:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
+[00:21:46] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] EAGLE_RELOAD_OK
+[00:21:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[00:21:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:21:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[00:21:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[00:22:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[00:22:02] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
