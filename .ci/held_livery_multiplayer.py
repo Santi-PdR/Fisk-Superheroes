@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -175,6 +175,19 @@ def main():
                 subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
             wait_for_new(observer_log, r'Remote aiming released: wearer=Partner', start,
                          60, 'observer sees remote Heat Gun aim release', observer)
+            command('tp Partner 0 180 4 0 0')
+            command('execute as Partner run suit fiskheroes:captain_cold')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:cold_gun{GrenadeMode:1b}')
+            wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default',
+                     90, 'observer sees remote Cold Gun', observer)
+            start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'mousedown', '1'], check=True, timeout=30)
+            try:
+                wait_for_new(observer_log, r'Cold ball rendered: entity=', start,
+                             60, 'observer renders cold ball fired by the remote player', observer)
+            finally:
+                subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
+            command('tp Partner 0 180 4 180 0')
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
