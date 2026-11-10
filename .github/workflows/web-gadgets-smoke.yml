@@ -38,7 +38,7 @@ jobs:
       - name: Install headless dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1 scrot
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
           python3 -m pip install --user 'pillow>=13,<14'
       - name: Prepare dedicated server and client
         run: |
@@ -48,7 +48,7 @@ jobs:
           echo 'eula=true' > run-web-gadgets-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-web-gadgets-server/server.properties
           ./gradlew classes --no-daemon --console=plain
-      - name: Exercise utility-belt selection and blast
+      - name: Exercise web gadget selection and attachment
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/web_gadgets_smoke.py 2>&1 | tee ci-web-gadgets-test.log
@@ -66,7 +66,7 @@ jobs:
           { cat ci-web-gadgets-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -80 ci-web-gadgets-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -80 ci-web-gadgets-server.log 2>/dev/null || true; } > .ci/web-gadgets-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -f .ci/web-gadgets-log.txt .ci/web-*-preview.png
+          git add -f .ci/web-gadgets-log.txt
           git diff --cached --quiet || git commit -m 'ci: web gadget diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
