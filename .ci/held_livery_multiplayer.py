@@ -131,6 +131,16 @@ def main():
             command('item replace entity Partner weapon.mainhand with fiskheroes:beretta_93r{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default',
                      90, 'observer sees remote dual Beretta offhand', observer)
+            subprocess.run(['xdotool', 'click', '1'], check=True, timeout=30)
+            wait_for(observer_log, r'Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND',
+                     60, 'observer sees remote Beretta main-hand shot', observer)
+            wait_for(observer_log, r'Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
+                     60, 'observer sees remote Beretta offhand burst shot', observer)
+            subprocess.run(['xdotool', 'key', 'c'], check=True, timeout=30)
+            wait_for(observer_log, r'Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND',
+                     60, 'observer sees remote Beretta reload', observer)
+            wait_for(observer_log, r'Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
+                     60, 'observer sees remote Beretta offhand reload', observer)
             command('execute unless data entity Partner Inventory[{Slot:-106b}] run say REMOTE_BERETTA_EMPTY_OK')
             wait_for(server_log, r'REMOTE_BERETTA_EMPTY_OK', 30, 'remote Beretta dual is visual only', server)
             command('item replace entity Partner weapon.offhand with minecraft:torch')

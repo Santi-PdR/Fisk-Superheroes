@@ -87,6 +87,7 @@ public final class Beretta93RItemRenderer extends BlockEntityWithoutLevelRendere
             }
         }
 
+        GunVisualEffects.renderBeretta(pose, buffers, context);
         VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         root.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))

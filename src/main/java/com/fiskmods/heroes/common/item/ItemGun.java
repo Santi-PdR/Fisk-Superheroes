@@ -183,7 +183,7 @@ public class ItemGun extends Item
         if (player instanceof ServerPlayer serverPlayer)
         {
             fire(serverPlayer, stack);
-            if (stack.is(ModItems.DESERT_EAGLE.get()))
+            if (stack.is(ModItems.DESERT_EAGLE.get()) || stack.is(ModItems.BERETTA_93R.get()))
             {
                 boolean offhand = com.fiskmods.heroes.common.util.GunVisualMath.useOffhand(
                         isDual(stack), player.getOffhandItem().isEmpty(), getMagazineSize(stack), ammo);

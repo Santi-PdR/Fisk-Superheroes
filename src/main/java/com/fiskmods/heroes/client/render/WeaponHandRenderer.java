@@ -45,7 +45,7 @@ public final class WeaponHandRenderer
         pose.pushPose();
         try
         {
-            if (desertEagle) DesertEagleAimPose.apply(pose, player, arm, event.getPartialTick());
+            if (desertEagle || beretta) DesertEagleAimPose.apply(pose, player, arm, event.getPartialTick());
             // Vanilla's empty-hand pose, with the grip nudged towards the
             // repositioned first-person weapon and back from the camera.
             pose.translate(side * (-0.3F * Mth.sin(root * (float) Math.PI) + 0.54F),

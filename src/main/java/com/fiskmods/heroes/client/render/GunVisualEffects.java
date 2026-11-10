@@ -49,7 +49,18 @@ public final class GunVisualEffects
     /** Called in model space, after the item pose and before drawing the pistol. */
     static void renderDesertEagle(PoseStack pose, MultiBufferSource buffers, ItemDisplayContext context)
     {
-        if (!(SuitItemRenderContext.wearer() instanceof Player player) || !player.getMainHandItem().is(ModItems.DESERT_EAGLE.get())) return;
+        renderPistol(pose, buffers, context, false);
+    }
+
+    static void renderBeretta(PoseStack pose, MultiBufferSource buffers, ItemDisplayContext context)
+    {
+        renderPistol(pose, buffers, context, true);
+    }
+
+    private static void renderPistol(PoseStack pose, MultiBufferSource buffers, ItemDisplayContext context, boolean beretta)
+    {
+        if (!(SuitItemRenderContext.wearer() instanceof Player player)
+                || !player.getMainHandItem().is(beretta ? ModItems.BERETTA_93R.get() : ModItems.DESERT_EAGLE.get())) return;
         boolean right = context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND || context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND;
         boolean left = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND || context == ItemDisplayContext.THIRD_PERSON_LEFT_HAND;
         if (!right && !left) return;
@@ -66,10 +77,10 @@ public final class GunVisualEffects
                 // Rotate about the grip, rather than translating the pistol out of the hand.
                 pose.mulPose(Axis.ZP.rotationDegrees((right ? -1.0F : 1.0F) * 35.0F * reload));
                 pose.mulPose(Axis.XP.rotationDegrees(20.0F * reload));
-                String key = player.getUUID() + "|" + context;
+                String key = beretta + "|" + player.getUUID() + "|" + context;
                 if (RELOAD_DIAGNOSTICS.add(key))
-                    FiskHeroes.LOGGER.info("Desert eagle reload pose: wearer={}, hand={}, context={}",
-                            player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
+                    FiskHeroes.LOGGER.info("{} reload pose: wearer={}, hand={}, context={}",
+                            beretta ? "Beretta" : "Desert eagle", player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
             }
         }
         Shots shots = SHOTS.get(player);
@@ -82,10 +93,16 @@ public final class GunVisualEffects
         pose.mulPose(Axis.XP.rotationDegrees(-14.0F * recoil));
         float flash = GunVisualMath.envelope(age, 2.5F);
         if (flash > 0.0F) drawFlash(pose, buffers, flash);
-        String key = player.getUUID() + "|" + offhand + "|" + context;
+        String key = beretta + "|" + player.getUUID() + "|" + offhand + "|" + context;
         if (DIAGNOSTICS.add(key))
-            FiskHeroes.LOGGER.info("Gun shot effect rendered: wearer={}, hand={}, context={}",
-                    player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
+        {
+            if (beretta)
+                FiskHeroes.LOGGER.info("Beretta shot effect rendered: wearer={}, hand={}, context={}",
+                        player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
+            else
+                FiskHeroes.LOGGER.info("Gun shot effect rendered: wearer={}, hand={}, context={}",
+                        player.getName().getString(), offhand ? "OFF_HAND" : "MAIN_HAND", context);
+        }
     }
 
     private static void drawFlash(PoseStack pose, MultiBufferSource buffers, float strength)
