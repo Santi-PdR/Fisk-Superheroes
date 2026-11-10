@@ -48,8 +48,12 @@ public final class EquipmentHelper
         JsonElement configuration = entry.get(PowerProperty.EQUIPMENT);
         if (configuration == null || !configuration.isJsonObject()) return new JsonObject();
 
-        JsonElement options = configuration.getAsJsonObject().get("equipment");
-        return options != null && options.isJsonObject() ? options.getAsJsonObject() : new JsonObject();
+        // The loader assigns the value of the power's "equipment" property,
+        // which is already the ordered gadget map. Accept the older wrapped
+        // form as well for third-party packs.
+        JsonObject object = configuration.getAsJsonObject();
+        JsonElement wrapped = object.get("equipment");
+        return wrapped != null && wrapped.isJsonObject() ? wrapped.getAsJsonObject() : object;
     }
 
     /** Advances the active pack-defined gadget, after validating the selection server-side. */
