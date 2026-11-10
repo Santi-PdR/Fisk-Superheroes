@@ -117,6 +117,33 @@ def main():
             wait_for(server_log, r'BELT_OFFHAND_OK', 30, 'real offhand item keeps vanilla use', server)
             if server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:batarang') != count:
                 raise RuntimeError('Offhand item use unexpectedly triggered the belt')
+
+            # Deathstroke uses the ordinary timed grenade, not Batman's impact freezer.
+            command('gamemode creative Dev')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('kill @e[type=minecraft:iron_golem,tag=freeze_test]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('execute as Dev run suit fiskheroes:deathstroke_dceu')
+            command('fill -2 180 5 2 184 5 minecraft:stone')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["grenade_shielded"]}')
+            command('summon minecraft:iron_golem 3.5 180 2.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["grenade_exposed"]}')
+            xdo('keydown', 'v')
+            try:
+                time.sleep(1)
+                xdo('click', '4')
+                wait_for(server_log, r'Utility belt selection: player=Dev, gadget=fiskheroes:grenade',
+                         30, 'Deathstroke selects ordinary grenade', server)
+            finally:
+                xdo('keyup', 'v')
+            time.sleep(0.5)
+            xdo('click', '3')
+            wait_for(server_log, r'Utility belt used: player=Dev, gadget=fiskheroes:grenade',
+                     30, 'Deathstroke throws ordinary grenade', server)
+            wait_for(server_log, r'Grenade explosion:', 30, 'timed grenade explodes', server)
+            command('execute as @e[type=minecraft:iron_golem,tag=grenade_exposed,limit=1] unless data entity @s {Health:100.0f} run say GRENADE_EXPOSED_OK')
+            wait_for(server_log, r'GRENADE_EXPOSED_OK', 30, 'ordinary grenade damages exposed target', server)
+            command('execute as @e[type=minecraft:iron_golem,tag=grenade_shielded,limit=1] if data entity @s {Health:100.0f} run say GRENADE_COVER_OK')
+            wait_for(server_log, r'GRENADE_COVER_OK', 30, 'solid wall shields target from grenade', server)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

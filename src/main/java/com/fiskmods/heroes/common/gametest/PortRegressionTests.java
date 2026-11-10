@@ -3224,4 +3224,47 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void timedGrenadeBlastRespectsCoverAndFractionalRadius(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 220, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "grenade-cover-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() - 20.0);
+        var config = new com.google.gson.JsonObject();
+        config.addProperty("fuseTime", 5); config.addProperty("radius", 4.5F);
+        var grenade = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:grenade", config,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.GRENADE.get()), 0.0F);
+        grenade.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() + 0.5);
+        grenade.setDeltaMovement(0, 0, 0); grenade.setNoGravity(true);
+        for (int x = -2; x <= 2; ++x)
+            for (int y = -1; y <= 3; ++y)
+                level.setBlockAndUpdate(base.offset(x, y, 2), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var exposed = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var shielded = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var edge = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (exposed == null || shielded == null || edge == null) { helper.fail("Grenade targets missing"); return; }
+        for (var target : java.util.List.of(exposed, shielded, edge)) { target.setNoAi(true); target.setNoGravity(true); }
+        exposed.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() - 2.5);
+        shielded.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() + 3.5);
+        edge.setPos(base.getX() + 4.8, base.getY() + 1.0, base.getZ() + 0.5);
+        level.addFreshEntity(exposed); level.addFreshEntity(shielded); level.addFreshEntity(edge);
+        level.addFreshEntity(grenade);
+        helper.runAfterDelay(6, () -> {
+            if (!grenade.isRemoved()) { helper.fail("Timed grenade did not detonate"); return; }
+            if (exposed.getHealth() >= exposed.getMaxHealth() || exposed.getDeltaMovement().lengthSqr() < 0.001D)
+            { helper.fail("Exposed target must take damage and blast knockback"); return; }
+            if (shielded.getHealth() < shielded.getMaxHealth() || shielded.getDeltaMovement().lengthSqr() > 0.001D)
+            { helper.fail("Solid cover must block grenade damage and knockback"); return; }
+            if (edge.getHealth() >= edge.getMaxHealth())
+            { helper.fail("Fractional blast radius must reach the target at 4.3 blocks"); return; }
+            for (var target : java.util.List.of(exposed, shielded, edge)) target.discard();
+            for (int x = -2; x <= 2; ++x)
+                for (int y = -1; y <= 3; ++y) level.removeBlock(base.offset(x, y, 2), false);
+            helper.succeed();
+        });
+    }
+
 }

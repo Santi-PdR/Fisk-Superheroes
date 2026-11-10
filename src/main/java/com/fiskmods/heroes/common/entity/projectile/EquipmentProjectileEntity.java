@@ -288,24 +288,40 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
 
         JsonObject properties = config();
-        float radius = Math.max(1.0F, number(properties, "radius", 8));
+        float radius = Math.max(0.1F, Math.min(64.0F, decimal(properties, "radius", 3.0F)));
         JsonObject profile = child(properties, "damageProfile");
         float maxDamage = DamageGroups.profileDamage(profile, 30.0F);
         boolean affectsOwner = properties.has("affectsUser") && properties.get("affectsUser").getAsBoolean();
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Grenade explosion: center={}, radius={}", position(), radius);
         var bounds = getBoundingBox().inflate(radius);
 
         serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.EXPLOSION, getX(), getY(), getZ(), 1, 0, 0, 0, 0);
+        serverLevel.playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
+                net.minecraft.sounds.SoundSource.PLAYERS, 4.0F, 0.7F * (1.0F + (random.nextFloat() - random.nextFloat()) * 0.2F));
         for (LivingEntity target : serverLevel.getEntitiesOfClass(LivingEntity.class, bounds))
         {
             if (target == getOwner() && !affectsOwner) continue;
             double distance = target.distanceTo(this);
             if (distance > radius) continue;
 
-            float damage = maxDamage * (float) (1.0D - distance / radius);
+            // Vanilla's block-density sampling gives partial exposure at edges and zero
+            // behind a solid wall, as in the original GrenadeExplosion.
+            double exposure = net.minecraft.world.level.Explosion.getSeenPercent(position(), target);
+            double strength = (1.0D - distance / radius) * exposure;
+            if (strength <= 0.0D) continue;
+            float damage = maxDamage * (float) strength;
             if (damage > 0.0F && getOwner() instanceof LivingEntity attacker)
             {
                 DamageGroups.withDamageProfile(profile, () -> target.hurt(
                         attacker instanceof Player player ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker), damage));
+            }
+            Vec3 direction = target.getEyePosition().subtract(position());
+            if (direction.lengthSqr() > 1.0E-8D)
+            {
+                Vec3 impulse = direction.normalize().scale(strength);
+                target.push(impulse.x, impulse.y, impulse.z);
+                target.hurtMarked = true; // synchronize the velocity to multiplayer clients
             }
 
         }
@@ -334,6 +350,19 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     private static JsonObject child(JsonObject object, String key)
     {
         return object.has(key) && object.get(key).isJsonObject() ? object.getAsJsonObject(key) : new JsonObject();
+    }
+
+    private static float decimal(JsonObject object, String key, float fallback)
+    {
+        try
+        {
+            float value = object.has(key) ? object.get(key).getAsFloat() : fallback;
+            return Float.isFinite(value) ? value : fallback;
+        }
+        catch (RuntimeException ignored)
+        {
+            return fallback;
+        }
     }
 
     private static int number(JsonObject object, String key, int fallback)
