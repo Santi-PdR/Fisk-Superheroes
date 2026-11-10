@@ -137,7 +137,7 @@ def main():
                     raise RuntimeError(f'{label} reload did not return to rest: {residual}')
                 print(f'PASS: {label} reload returned to rest: {residual}', flush=True)
 
-            def capture_aim(label, sides):
+            def capture_aim(label, sides, fixed_region=None):
                 screenshot(label + '-before')
                 xdo('mousedown', '1')
                 try:
@@ -163,6 +163,13 @@ def main():
                     if abs(restored - before) > 4:
                         raise RuntimeError(f'{label} {side} pistol did not return to rest: {before}, {restored}')
                     print(f'PASS: {label} {side} aims and returns: {before:.1f} -> {aimed:.1f} -> {restored:.1f}', flush=True)
+                if fixed_region is not None:
+                    before = images[0].crop(fixed_region)
+                    aimed = images[1].crop(fixed_region)
+                    changed = sum(a != b for a, b in zip(before.get_flattened_data(), aimed.get_flattened_data()))
+                    if changed > 200:
+                        raise RuntimeError(f'{label} real offhand moved during aim: {changed} pixels')
+                    print(f'PASS: {label} real offhand remains stationary: {changed} pixels changed', flush=True)
 
             command('difficulty peaceful')
             command('gamemode creative Dev')
@@ -207,6 +214,8 @@ def main():
             command('item replace entity Dev weapon.offhand with minecraft:torch')
             wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied',
                      60, 'real offhand takes precedence', client)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:0}')
+            capture_aim('occupied-aim', [('RIGHT', (600, 340, 900, 450))], (300, 340, 600, 450))
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:15}')
             before = len(client_log.read_text(errors='replace'))
             xdo('click', '1')
