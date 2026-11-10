@@ -67,6 +67,7 @@ def main():
                      30, 'use selected gadget with empty hand', server)
             wait_for(server_log, r'Freeze grenade impact: .*owner=ServerPlayer',
                      30, 'freeze grenade detonates on impact', server)
+            wait_for(client_log, r'Freeze grenade model rendered:', 30, '3D grenade renders on the real client', client)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say FREEZE_TARGET_OK')
             wait_for(server_log, r'FREEZE_TARGET_OK', 30, 'blast slows the target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] unless data entity @s {Health:100.0f} run say FREEZE_DAMAGE_OK')
