@@ -38,420 +38,419 @@ PASS: observer sees remote scythe energy charge
 PASS: observer sees remote suit change update the pistol livery
 PASS: remote wearer without a livery restores the default
 ==== server launch ====
-[06:27:21] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:52600] logged in with entity id 1 at (0.5, -60.0, -0.5)
-[06:28:20] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:56344] logged in with entity id 16 at (-5.5, -60.0, -7.5)
+[10:15:20] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:50344] logged in with entity id 1 at (7.5, -60.0, -2.5)
+[10:16:26] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:39810] logged in with entity id 15 at (1.5, -60.0, 10.5)
 ==== server tail ====
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[06:28:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[06:28:18] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[06:28:19] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
-[06:28:19] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[06:28:19] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[06:28:19] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[06:28:19] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
-[06:28:19] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[06:28:20] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[06:28:20] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[06:28:20] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:56344] logged in with entity id 16 at (-5.5, -60.0, -7.5)
-[06:28:20] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@48170afb into net.minecraft.network.Connection@30b75ec6
-[06:28:20] [Server thread/INFO] [minecraft/MinecraftServer]: Partner joined the game
-[06:28:20] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=server scale=1.0 width=0.6 eye=1.62
-[06:28:29] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_COMMAND_CHANNEL_OK
-[06:28:30] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
-[06:28:31] [Server thread/INFO] [minecraft/MinecraftServer]: Set Partner's game mode to Creative Mode
-[06:28:32] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
-[06:28:32] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,245.0,1.0
-[06:28:33] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 185.000000, 4.500000
-[06:28:33] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 6.0,245.0,12.0
-[06:28:33] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 6.0,245.0,12.0
-[06:28:37] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 176 block(s)
-[06:28:38] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[06:28:39] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
-[06:28:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,240.0,0.0
-[06:28:40] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
-[06:28:41] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[06:28:42] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[06:28:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[06:28:44] [Server thread/INFO] [minecraft/MinecraftServer]: Expected whitespace to end one argument, but found trailing data
-[06:28:44] [Server thread/INFO] [minecraft/MinecraftServer]: ...ty Partner[distance=..8] run say LIVERY_PLAYERS_NEARBY<--[HERE]
-[06:28:44] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:28:44] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:28:45] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
-[06:28:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:28:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:28:48] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:28:48] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:28:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[06:28:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
-[06:28:50] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_RELOAD_AMMO_OK
-[06:28:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
-[06:28:52] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:28:52] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:28:55] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[06:28:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:28:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:28:58] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
-[06:28:59] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Beretta 93Rs]
-[06:29:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
-[06:29:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[06:29:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
-[06:29:03] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_BERETTA_EMPTY_OK
-[06:29:05] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
-[06:29:07] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[06:29:08] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Heatwave.
-[06:29:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Heat Gun]
-[06:29:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
-[06:29:14] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
-[06:29:15] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
-[06:29:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
-[06:29:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[06:29:19] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
-[06:29:20] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[06:29:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Katanas]
-[06:29:23] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_DUAL_EMPTY_OK
-[06:29:24] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
-[06:29:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[06:29:25] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, -59.98, 124.63842588913556), owner=ServerPlayer['Partner'/16, l='ServerLevel[world]', x=0.50, y=180.00, z=4.50]
-[06:29:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[06:29:27] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [item.fiskheroes.tactical_tonfa.dual]
-[06:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:29:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:29:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Bo-Staff]
-[06:29:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[06:29:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[06:29:33] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Rupture.
-[06:29:34] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Rupture's Scythe]
-[06:29:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[06:29:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rupture, index=1, matching=[CHARGE_ENERGY]
-[06:29:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:rupture, key=CHARGE_ENERGY, modifier=fiskheroes:energy_manipulation
-[06:29:36] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[06:29:37] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deathstroke.
-[06:29:38] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[10:16:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:menu' to 'fml:handshake' sequence 17
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[10:16:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[10:16:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[10:16:24] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[10:16:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
+[10:16:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[10:16:26] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[10:16:26] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
+[10:16:26] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:39810] logged in with entity id 15 at (1.5, -60.0, 10.5)
+[10:16:26] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@60ed6a94 into net.minecraft.network.Connection@19d00501
+[10:16:26] [Server thread/INFO] [minecraft/MinecraftServer]: Partner joined the game
+[10:16:26] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=server scale=1.0 width=0.6 eye=1.62
+[10:16:35] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_COMMAND_CHANNEL_OK
+[10:16:36] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
+[10:16:37] [Server thread/INFO] [minecraft/MinecraftServer]: Set Partner's game mode to Creative Mode
+[10:16:38] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
+[10:16:38] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -7.0,245.0,3.0
+[10:16:39] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 185.000000, 4.500000
+[10:16:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! -1.0,245.0,-6.0
+[10:16:43] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 176 block(s)
+[10:16:44] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[10:16:45] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
+[10:16:45] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,240.0,0.0
+[10:16:46] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[10:16:47] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[10:16:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[10:16:49] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[10:16:50] [Server thread/INFO] [minecraft/MinecraftServer]: Expected whitespace to end one argument, but found trailing data
+[10:16:50] [Server thread/INFO] [minecraft/MinecraftServer]: ...ty Partner[distance=..8] run say LIVERY_PLAYERS_NEARBY<--[HERE]
+[10:16:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:16:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:16:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
+[10:16:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:16:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:16:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:16:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:16:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[10:16:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
+[10:16:55] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_RELOAD_AMMO_OK
+[10:16:57] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
+[10:16:57] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:16:57] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:17:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[10:17:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:17:04] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
+[10:17:05] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Beretta 93Rs]
+[10:17:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[10:17:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[10:17:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
+[10:17:08] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_BERETTA_EMPTY_OK
+[10:17:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
+[10:17:10] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[10:17:11] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Heatwave.
+[10:17:12] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Heat Gun]
+[10:17:12] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:12] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
+[10:17:15] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
+[10:17:16] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
+[10:17:17] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
+[10:17:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[10:17:19] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
+[10:17:20] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[10:17:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Katanas]
+[10:17:22] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_DUAL_EMPTY_OK
+[10:17:23] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
+[10:17:24] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[10:17:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[10:17:25] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, -59.98, 124.63842588913556), owner=ServerPlayer['Partner'/15, l='ServerLevel[world]', x=0.50, y=180.00, z=4.50]
+[10:17:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [item.fiskheroes.tactical_tonfa.dual]
+[10:17:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:17:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:17:28] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Bo-Staff]
+[10:17:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[10:17:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[10:17:32] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Rupture.
+[10:17:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Rupture's Scythe]
+[10:17:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[10:17:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rupture, index=1, matching=[CHARGE_ENERGY]
+[10:17:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:rupture, key=CHARGE_ENERGY, modifier=fiskheroes:energy_manipulation
+[10:17:35] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[10:17:36] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deathstroke.
+[10:17:38] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
 ==== observer launch ====
 CI launch identity Dev: [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, {asset_index}, --assetsDir, {assets_root}, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --quickPlayMultiplayer, 127.0.0.1:25565, --username, Dev]
-[06:27:06] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
-[06:28:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:helmet from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[06:28:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[06:28:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
-[06:28:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
-[06:28:42] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:28:43] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[06:28:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:28:45] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[06:28:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:28:46] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:28:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:28:48] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:28:53] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:28:54] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:28:56] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
-[06:28:57] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:28:57] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
-[06:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
-[06:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
-[06:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
-[06:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:15:00] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Dev
+[10:16:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:helmet from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[10:16:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[10:16:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
+[10:16:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[10:16:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:16:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[10:16:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:16:50] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[10:16:51] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[10:16:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:16:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:16:58] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:16:59] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:01] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
+[10:17:02] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:02] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
+[10:17:03] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:13] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:13] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
+[10:17:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
 ==== observer tail ====
-[06:28:46] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:28:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:28:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
-[06:28:48] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:28:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:28:50] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_RELOAD_AMMO_OK
-[06:28:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:52] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:deadpool_xmen, sleeveAligned=true
-[06:28:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:53] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:28:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:54] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:28:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:56] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
-[06:28:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:57] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:28:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:57] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:wild_dog, sleeveAligned=true
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562498, livery=null
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[06:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[06:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[06:29:03] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
-[06:29:05] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
-[06:29:07] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
-[06:29:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
-[06:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=10
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
-[06:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
-[06:29:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
-[06:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=17
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[06:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[06:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[06:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:23] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
-[06:29:24] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
-[06:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
-[06:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
-[06:29:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
-[06:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
-[06:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
-[06:29:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
-[06:29:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:16:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:16:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.deagle.shoot as fiskheroes:item.gun.deagle.shoot
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:16:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:16:55] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_RELOAD_AMMO_OK
+[10:16:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:16:57] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:deadpool_xmen, sleeveAligned=true
+[10:16:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:16:58] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:16:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:16:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:16:59] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:01] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
+[10:17:02] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:02] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
+[10:17:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:03] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562499, livery=null
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
+[10:17:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[10:17:06] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[10:17:06] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[10:17:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
+[10:17:09] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
+[10:17:10] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
+[10:17:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=10
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
+[10:17:13] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:13] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
+[10:17:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=16
+[10:17:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[10:17:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[10:17:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
+[10:17:23] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
+[10:17:24] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:32] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
+[10:17:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
+[10:17:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
+[10:17:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[10:17:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
 ==== wearer launch ====
 CI launch identity Partner: [--launchTarget, forgeclientuserdev, --version, MOD_DEV, --assetIndex, {asset_index}, --assetsDir, {assets_root}, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412, --quickPlayMultiplayer, 127.0.0.1:25565, --username, Partner]
-[06:28:01] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Partner
-[06:28:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:28:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:28:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
-[06:28:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
-[06:28:42] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[06:28:43] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[06:28:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:28:45] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[06:28:45] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[06:28:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:28:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:28:48] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[06:28:49] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[06:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
-[06:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
-[06:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
-[06:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:16:03] [Render thread/INFO] [minecraft/Minecraft]: Setting user: Partner
+[10:16:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:16:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:16:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[10:16:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[10:16:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[10:16:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[10:16:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:16:51] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[10:16:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:16:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Gun shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[10:16:53] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
+[10:17:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
 ==== wearer tail ====
-[06:28:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:56] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle scope zoom active
-[06:28:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:57] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle scope zoom released
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[06:28:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:wild_dog, sleeveAligned=true
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:wild_dog, texture=fiskheroes:textures/heroes/wild_dog_layer1.png, poseAligned=true
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:28:58] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:wild_dog, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
-[06:28:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[06:29:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[06:29:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[06:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[06:29:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[06:29:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[06:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[06:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[06:29:03] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
-[06:29:05] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
-[06:29:07] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:heatwave, texture=fiskheroes:textures/heroes/heatwave_jacket.png, poseAligned=true
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[06:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:heatwave, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[06:29:09] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
-[06:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=10
-[06:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun first-person aiming: arm=RIGHT
-[06:29:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[06:29:16] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
-[06:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=17
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[06:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
-[06:29:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
-[06:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[06:29:23] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
-[06:29:24] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
-[06:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: LEFT
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
-[06:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
-[06:29:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:29] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
-[06:29:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[06:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[06:29:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[06:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
-[06:29:33] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:rupture, texture=fiskheroes:textures/heroes/rupture_layer1.png, poseAligned=true
-[06:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:rupture, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=92, height=10]]
-[06:29:34] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
-[06:29:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[06:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[06:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
-[06:29:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[06:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deathstroke_dceu, texture=fiskheroes:textures/heroes/deathstroke_dceu_layer1.png, poseAligned=true
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[06:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deathstroke_dceu, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=101, height=10], Rect[x=4, y=157, width=101, height=10], Rect[x=4, y=168, width=101, height=10]]
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[06:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[10:17:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:01] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle scope zoom active
+[10:17:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:02] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle scope zoom released
+[10:17:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[10:17:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:wild_dog, texture=fiskheroes:textures/heroes/wild_dog_layer1.png, poseAligned=true
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:04] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:wild_dog, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:05] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[10:17:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[10:17:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[10:17:06] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[10:17:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[10:17:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[10:17:06] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[10:17:06] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[10:17:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
+[10:17:09] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
+[10:17:10] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:heatwave, texture=fiskheroes:textures/heroes/heatwave_jacket.png, poseAligned=true
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[10:17:11] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:heatwave, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:12] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=10
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
+[10:17:12] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun first-person aiming: arm=RIGHT
+[10:17:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:16] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=16
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[10:17:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
+[10:17:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
+[10:17:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[10:17:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
+[10:17:23] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
+[10:17:24] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: LEFT
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
+[10:17:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:26] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
+[10:17:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
+[10:17:28] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
+[10:17:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[10:17:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[10:17:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[10:17:32] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:rupture, texture=fiskheroes:textures/heroes/rupture_layer1.png, poseAligned=true
+[10:17:32] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:rupture, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=92, height=10]]
+[10:17:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
+[10:17:33] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
+[10:17:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[10:17:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deathstroke_dceu, texture=fiskheroes:textures/heroes/deathstroke_dceu_layer1.png, poseAligned=true
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[10:17:36] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deathstroke_dceu, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=101, height=10], Rect[x=4, y=157, width=101, height=10], Rect[x=4, y=168, width=101, height=10]]
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[10:17:38] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
