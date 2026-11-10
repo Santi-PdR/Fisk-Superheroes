@@ -78,6 +78,8 @@ public final class EquipmentHelper
         data.getData().set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) selected);
         com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "SWITCH");
         String id = new java.util.ArrayList<>(equipmentOptions(entry).keySet()).get(selected);
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Utility belt selection: player={}, gadget={}", player.getName().getString(), id);
         player.displayClientMessage(net.minecraft.network.chat.Component.translatable(
                 "equipment." + id.replace(':', '.') + ".name"), true);
         return true;
@@ -127,6 +129,8 @@ public final class EquipmentHelper
         }
 
         if (spawned == 0) return false;
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Utility belt used: player={}, gadget={}, count={}", player.getName().getString(), id, spawned);
         if (cooldown == 0)
         {
             state.putInt("uses", maxUses);

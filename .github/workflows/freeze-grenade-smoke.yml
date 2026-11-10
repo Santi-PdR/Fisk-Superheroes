@@ -1,0 +1,73 @@
+name: Freeze Grenade Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/freeze_grenade_smoke.py'
+      - '.github/workflows/freeze-grenade-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/EquipmentProjectileEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/FreezeBurst.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/equipment/EquipmentHelper.java'
+      - 'src/main/java/com/fiskmods/heroes/common/event/CommonEventHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/common/network/PacketCycleUtilityBelt.java'
+      - 'src/main/resources/assets/fiskheroes/data/powers/batsuit.json'
+      - 'src/main/resources/assets/fiskheroes/data/heroes/batman_dceu.js'
+concurrency:
+  group: freeze-grenade-smoke-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  freeze-grenade:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
+          python3 -m pip install --user 'pillow>=13,<14'
+      - name: Prepare dedicated server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-freeze-grenade-server run-freeze-grenade-client/config
+          printf 'earlyWindowControl = false\n' > run-freeze-grenade-client/config/fml.toml
+          echo 'eula=true' > run-freeze-grenade-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-freeze-grenade-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Exercise utility-belt selection and blast
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/freeze_grenade_smoke.py 2>&1 | tee ci-freeze-grenade-test.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: freeze-grenade-diagnostics
+          path: ci-freeze-grenade-*.log
+          if-no-files-found: ignore
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          mkdir -p .ci
+          { cat ci-freeze-grenade-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -80 ci-freeze-grenade-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -80 ci-freeze-grenade-server.log 2>/dev/null || true; } > .ci/freeze-grenade-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/freeze-grenade-log.txt
+          git diff --cached --quiet || git commit -m 'ci: freeze grenade diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Failed to publish freeze grenade diagnostics after retries' >&2
+          exit 1
