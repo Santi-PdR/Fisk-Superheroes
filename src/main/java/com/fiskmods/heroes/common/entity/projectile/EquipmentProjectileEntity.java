@@ -217,7 +217,13 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         Entity target = hit.getEntity();
         if (isStickyWeb() && target instanceof LivingEntity living)
         {
-            attachWebToEntity(living, hit.getLocation());
+            // EntityHitResult may report the entity origin rather than the ray contact.
+            // Intersect the current flight segment with the target's box so patches are
+            // visible on its surface and leg hits are distinguished from torso hits.
+            Vec3 start = position();
+            Vec3 contact = target.getBoundingBox().inflate(0.1D)
+                    .clip(start, start.add(getDeltaMovement())).orElse(hit.getLocation());
+            attachWebToEntity(living, contact);
             return;
         }
         if (target instanceof LivingEntity living)

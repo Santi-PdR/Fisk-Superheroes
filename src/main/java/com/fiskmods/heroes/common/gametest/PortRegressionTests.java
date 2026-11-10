@@ -3410,4 +3410,30 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void stickyWebOnTorsoDoesNotSlow(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "sticky-torso-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Sticky web target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0); level.addFreshEntity(target);
+        var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:sticky_web", new com.google.gson.JsonObject(), new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.STICKY_WEB.get()), 0);
+        web.setPos(player.getX(), player.getY() + 1.5, player.getZ());
+        web.setDeltaMovement(0, 0, 3); level.addFreshEntity(web);
+        helper.runAfterDelay(3, () -> {
+            if (!web.isAttachedWeb() || target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
+            { helper.fail("A torso web must stick without the leg slowdown"); return; }
+            if (web.getZ() >= target.getZ() - target.getBbWidth() * 0.5)
+            { helper.fail("The web patch must be in front of the hit surface, not inside the target"); return; }
+            web.discard(); target.discard(); helper.succeed();
+        });
+    }
+
 }
