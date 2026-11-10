@@ -3248,7 +3248,7 @@ public final class PortRegressionTests
         if (exposed == null || shielded == null || edge == null) { helper.fail("Grenade targets missing"); return; }
         for (var target : java.util.List.of(exposed, shielded, edge)) { target.setNoAi(true); target.setNoGravity(true); }
         exposed.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() - 2.5);
-        shielded.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() + 3.5);
+        shielded.setPos(base.getX() + 0.5, base.getY() + 1.0, base.getZ() + 4.5);
         edge.setPos(base.getX() + 4.8, base.getY() + 1.0, base.getZ() + 0.5);
         level.addFreshEntity(exposed); level.addFreshEntity(shielded); level.addFreshEntity(edge);
         level.addFreshEntity(grenade);
@@ -3257,7 +3257,7 @@ public final class PortRegressionTests
             if (exposed.getHealth() >= exposed.getMaxHealth() || exposed.getDeltaMovement().lengthSqr() < 0.001D)
             { helper.fail("Exposed target must take damage and blast knockback"); return; }
             if (shielded.getHealth() < shielded.getMaxHealth() || shielded.getDeltaMovement().lengthSqr() > 0.001D)
-            { helper.fail("Solid cover must block grenade damage and knockback"); return; }
+            { helper.fail("Solid cover must block grenade damage and knockback: health=" + shielded.getHealth() + ", motion=" + shielded.getDeltaMovement()); return; }
             if (edge.getHealth() >= edge.getMaxHealth())
             { helper.fail("Fractional blast radius must reach the target at 4.3 blocks"); return; }
             for (var target : java.util.List.of(exposed, shielded, edge)) target.discard();

@@ -124,8 +124,8 @@ def main():
             command('kill @e[type=minecraft:iron_golem,tag=freeze_test]')
             command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:deathstroke_dceu')
-            command('fill -2 180 5 2 184 5 minecraft:stone')
-            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["grenade_shielded"]}')
+            command('fill -2 180 6 2 184 6 minecraft:stone')
+            command('summon minecraft:iron_golem 0.5 180 8.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["grenade_shielded"]}')
             command('summon minecraft:iron_golem 3.5 180 2.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["grenade_exposed"]}')
             xdo('keydown', 'v')
             try:
