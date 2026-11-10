@@ -101,6 +101,13 @@ def main():
             if before[0] - after[0] < 15: raise RuntimeError(f'Heat gun did not move toward center when aiming: {before}, {after}')
             if abs(before[1] - after[1]) > 60:
                 raise RuntimeError(f'Heat gun sank off-screen while firing: {before}, {after}')
+            def flame_pixels(image):
+                return sum(1 for r, g, b in image.convert('RGB').crop((580, 300, 740, 430)).get_flattened_data()
+                           if r > 200 and 30 < g < 200 and b < 30 and r > g * 1.4)
+            flame_gain = flame_pixels(aimed) - flame_pixels(first)
+            if flame_gain < 15:
+                raise RuntimeError(f'Heat gun flame stream is not visible while firing: {flame_gain} pixels')
+            print(f'PASS: visible flame stream adds {flame_gain} orange pixels', flush=True)
             warm = sum(1 for r, g, b in first.convert('RGB').crop((700, 375, 850, 540)).get_flattened_data()
                        if r > 140 and 5 < g < 200 and b < 70 and r > g * 1.2)
             if warm < 10: raise RuntimeError(f'Emissive heat-gun lights are missing: {warm} pixels')

@@ -279,7 +279,8 @@ public class ItemGun extends Item
         {
             Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
             right = right.lengthSqr() < 1.0E-6D ? new Vec3(1.0D, 0.0D, 0.0D) : right.normalize();
-            double forward = Math.min(0.55D, start.distanceTo(tracerEnd) * 0.35D);
+            // Keep nearby particles in front of the camera without placing the muzzle beyond the impact.
+            double forward = Math.min(0.9D, start.distanceTo(tracerEnd) * 0.7D);
             double side = shooter.getMainArm() == net.minecraft.world.entity.HumanoidArm.RIGHT ? 1.0D : -1.0D;
             Vec3 muzzle = start.add(right.scale(0.28D * side)).add(0.0D, -0.16D, 0.0D).add(direction.scale(forward));
             com.fiskmods.heroes.common.network.SHNetwork.sendToNearby(

@@ -31,7 +31,7 @@ public final class HeatGunFlameEffects
             double dx = (level.random.nextDouble() - 0.5D) * jitter;
             double dy = (level.random.nextDouble() - 0.5D) * jitter;
             double dz = (level.random.nextDouble() - 0.5D) * jitter;
-            level.addParticle(ParticleTypes.FLAME, point.x + dx, point.y + dy, point.z + dz, 0.0D, 0.005D, 0.0D);
+            level.addParticle(ParticleTypes.SMALL_FLAME, point.x + dx, point.y + dy, point.z + dz, 0.0D, 0.005D, 0.0D);
         }
         if (level.getEntity(entityId) instanceof Player player && LOGGED.add(player))
             FiskHeroes.LOGGER.info("Heat gun flame emitted: wearer={}, samples={}", player.getName().getString(), samples);
