@@ -51,10 +51,10 @@ public final class ColdGunItemRenderer extends BlockEntityWithoutLevelRenderer
         {
             case GUI ->
             {
-                pose.translate(0.5D, 0.52D, 0.5D);
+                pose.translate(0.5D, 0.45D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(0.80F, -0.80F, -0.80F);
+                pose.scale(0.72F, -0.72F, -0.72F);
             }
             case GROUND, FIXED ->
             {
