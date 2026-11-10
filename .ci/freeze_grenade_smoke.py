@@ -118,6 +118,28 @@ def main():
             if server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:batarang') != count:
                 raise RuntimeError('Offhand item use unexpectedly triggered the belt')
 
+            # Batman's smoke pellet should give nearby suited heroes temporary stealth.
+            command('gamemode creative Dev')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('setblock 0 181 2 minecraft:stone')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1)
+                xdo('click', '5')
+                wait_for(server_log, r'Utility belt selection: player=Dev, gadget=fiskheroes:smoke_pellet',
+                         30, 'Batman selects smoke pellet', server)
+                xdo('click', '3')
+                wait_for(server_log, r'Utility belt used: player=Dev, gadget=fiskheroes:smoke_pellet',
+                         30, 'Batman throws smoke pellet at close range', server)
+            finally:
+                xdo('keyup', 'c')
+            wait_for(server_log, r'Smoke burst:', 30, 'smoke pellet bursts on impact', server)
+            command('execute as Dev if data entity @s ActiveEffects[{Id:14}] run say SMOKE_STEALTH_OK')
+            wait_for(server_log, r'SMOKE_STEALTH_OK', 30, 'smoke grants the suited player temporary stealth', server)
+            command('effect clear Dev minecraft:invisibility')
+            command('setblock 0 181 2 minecraft:air')
+
             # Deathstroke uses the ordinary timed grenade, not Batman's impact freezer.
             command('gamemode creative Dev')
             command('item replace entity Dev weapon.offhand with minecraft:air')

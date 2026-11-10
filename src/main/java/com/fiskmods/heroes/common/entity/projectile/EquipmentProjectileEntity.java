@@ -186,7 +186,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
         if (id.endsWith(":smoke_pellet"))
         {
-            startSmoke();
+            detonateSmoke(hit.getLocation());
             return;
         }
 
@@ -233,7 +233,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
         else if (gadget().endsWith(":smoke_pellet"))
         {
-            startSmoke();
+            detonateSmoke(hit.getLocation());
         }
         else
         {
@@ -372,12 +372,10 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
     }
 
-    private void startSmoke()
+    private void detonateSmoke(Vec3 center)
     {
-        entityData.set(SMOKING, true);
-        smokeTicks = 80;
-        setNoGravity(true);
-        setDeltaMovement(Vec3.ZERO);
+        if (level() instanceof ServerLevel serverLevel) SmokeBurst.detonate(serverLevel, center);
+        discard();
     }
 
     private static JsonObject child(JsonObject object, String key)

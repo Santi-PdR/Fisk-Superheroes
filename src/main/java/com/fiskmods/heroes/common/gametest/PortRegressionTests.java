@@ -3289,4 +3289,31 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void smokePelletBurstsOnImpactWithoutHidingUnsuitedMobs(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "smoke-pellet-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        var wall = base.offset(0, 1, 3);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Smoke test target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(base.getX() + 1.8D, base.getY() + 1.0D, base.getZ() + 2.5D);
+        level.addFreshEntity(target);
+        var pellet = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:smoke_pellet", new com.google.gson.JsonObject(),
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.SMOKE_PELLET.get()), 0.0F);
+        pellet.setDeltaMovement(0, 0, 1.25D); level.addFreshEntity(pellet);
+        helper.runAfterDelay(6, () -> {
+            if (!pellet.isRemoved()) { helper.fail("Smoke pellet must burst and disappear on impact"); return; }
+            if (target.hasEffect(net.minecraft.world.effect.MobEffects.INVISIBILITY))
+            { helper.fail("Smoke stealth must not apply to unsuited mobs"); return; }
+            target.discard(); level.removeBlock(wall, false); helper.succeed();
+        });
+    }
+
 }

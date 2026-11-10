@@ -915,36 +915,11 @@ public class TrickArrowEntity extends Arrow
         spawnSmokeCloud(position());
     }
 
-    /** Applies the original smoke bomb's temporary stealth to nearby suited heroes. */
+    /** Applies the shared smoke burst on the server. */
     private void spawnSmokeCloud(Vec3 center)
     {
-        if (level().isClientSide) return;
-
-        final double radius = 2.5D;
-        var bounds = new net.minecraft.world.phys.AABB(center.x - radius, center.y - radius / 2.0D,
-                center.z - radius, center.x + radius, center.y + radius / 2.0D, center.z + radius);
-        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, bounds))
-        {
-            if (!com.fiskmods.heroes.common.hero.HeroTracker.hasHero(target)) continue;
-            double dx = target.getX() - center.x;
-            double dy = (target.getY() + target.getBbHeight() / 2.0D - center.y) * 2.0D;
-            double dz = target.getZ() - center.z;
-            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz) / radius;
-            if (distance <= 1.0D)
-            {
-                int duration = (int) Math.ceil(100.0D + distance * 60.0D);
-                target.addEffect(new MobEffectInstance(MobEffects.INVISIBILITY, duration));
-            }
-        }
-
         if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
-        {
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.CAMPFIRE_COSY_SMOKE,
-                    center.x, center.y, center.z, 300, 0.3D, 0.15D, 0.3D, 0.0D);
-        }
-        level().playSound(null, center.x, center.y, center.z,
-                net.minecraft.sounds.SoundEvents.GENERIC_EXTINGUISH_FIRE,
-                net.minecraft.sounds.SoundSource.PLAYERS, 2.0F, 0.9F + random.nextFloat() * 0.2F);
+            com.fiskmods.heroes.common.entity.projectile.SmokeBurst.detonate(serverLevel, center);
     }
 
     /** Firework arrows flash nearby targets instead of behaving like explosive arrows. */
