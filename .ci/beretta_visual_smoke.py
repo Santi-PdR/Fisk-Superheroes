@@ -64,6 +64,8 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND',
                      60, 'dual Berettas first-person offhand', client)
+            wait_for(client_log, r'First-person beretta arm rendered: RIGHT', 60, 'main-hand pistol arm', client)
+            wait_for(client_log, r'First-person beretta arm rendered: LEFT', 60, 'offhand pistol arm', client)
             screenshot('dual-first')
             command('execute unless data entity Dev Inventory[{Slot:-106b}] run say BERETTA_OFFHAND_EMPTY_OK')
             wait_for(server_log, r'BERETTA_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
@@ -78,6 +80,8 @@ def main():
             command('item replace entity Dev weapon.mainhand with fiskheroes:beretta_93r{Ammo:12}')
             screenshot('single-first')
             xdo('click', '1')
+            time.sleep(1)
+            command('data get entity Dev SelectedItem.tag')
             command('execute if data entity Dev SelectedItem.tag{Ammo:9} run say BERETTA_BURST_OK')
             wait_for(server_log, r'BERETTA_BURST_OK', 30, 'burst consumes three rounds', server)
             xdo('key', 'c')

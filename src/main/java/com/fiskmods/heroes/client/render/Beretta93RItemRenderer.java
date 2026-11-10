@@ -48,40 +48,46 @@ public final class Beretta93RItemRenderer extends BlockEntityWithoutLevelRendere
         pose.pushPose();
         switch (context)
         {
+            case NONE ->
+            {
+                // The suit layer already applies the pack's anchor and rotation.
+                // Cancel ItemRenderer's half-block origin shift without adding a GUI pose.
+                pose.translate(0.5D, 0.5D, 0.5D);
+            }
             case GUI ->
             {
-                pose.translate(0.52D, 0.52D, 0.5D);
+                pose.translate(0.5D, 0.52D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(1.85F, -1.85F, -1.85F);
+                pose.scale(1.2F, -1.2F, -1.2F);
             }
             case GROUND, FIXED ->
             {
                 pose.translate(0.5D, 0.5D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(90.0F));
-                pose.scale(1.35F, -1.35F, -1.35F);
+                pose.scale(1.5F, -1.5F, -1.5F);
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.52D, 0.42D);
-                pose.mulPose(Axis.ZP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 180.0F : 0.0F));
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 110.0F : -110.0F));
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 150.0F : -150.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
-                pose.scale(1.2F, -1.2F, -1.2F);
+                pose.scale(0.65F, -0.65F, -0.65F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 0.7D : 0.3D, 0.48D, 0.55D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.THIRD_PERSON_RIGHT_HAND ? 90.0F : -90.0F));
-                pose.scale(1.3F, -1.3F, -1.3F);
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose.scale(0.8F, -0.8F, -0.8F);
             }
             default ->
             {
                 pose.translate(0.5D, 0.5D, 0.5D);
-                pose.scale(1.1F, -1.1F, -1.1F);
+                pose.scale(1.0F, -1.0F, -1.0F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+
+        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
         root.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {
