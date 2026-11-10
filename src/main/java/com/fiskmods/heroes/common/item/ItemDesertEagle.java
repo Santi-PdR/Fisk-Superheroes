@@ -15,6 +15,15 @@ public final class ItemDesertEagle extends ItemGun
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions()
         {
             @Override
+            public boolean applyForgeHandTransform(com.mojang.blaze3d.vertex.PoseStack pose,
+                    net.minecraft.client.player.LocalPlayer player, net.minecraft.world.entity.HumanoidArm arm,
+                    net.minecraft.world.item.ItemStack stack, float partialTick, float equip, float swing)
+            {
+                com.fiskmods.heroes.client.render.DesertEagleAimPose.apply(pose, player, arm, partialTick);
+                return false; // Preserve vanilla equip and swing transforms after our shared translation.
+            }
+
+            @Override
             public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer()
             {
                 return com.fiskmods.heroes.client.render.DesertEagleItemRenderer.getInstance();

@@ -137,6 +137,33 @@ def main():
                     raise RuntimeError(f'{label} reload did not return to rest: {residual}')
                 print(f'PASS: {label} reload returned to rest: {residual}', flush=True)
 
+            def capture_aim(label, sides):
+                screenshot(label + '-before')
+                xdo('mousedown', '1')
+                try:
+                    screenshot(label + '-aimed')
+                finally:
+                    xdo('mouseup', '1')
+                screenshot(label + '-restored')
+                images = [Image.open('ci-desert_eagle-' + label + '-' + suffix + '.png').convert('RGB')
+                          for suffix in ('before', 'aimed', 'restored')]
+                def center(image, region):
+                    x1, y1, x2, y2 = region
+                    points = [(x + x1, y + y1) for y in range(y2 - y1) for x in range(x2 - x1)
+                              if (lambda c: c[0] > 90 and c[2] > 90 and c[1] < 50 and abs(c[0] - c[2]) < 40)
+                              (image.getpixel((x + x1, y + y1)))]
+                    if len(points) < 100:
+                        raise RuntimeError(f'{label} pistol not visible in {region}: {len(points)} pixels')
+                    return sum(p[0] for p in points) / len(points)
+                for side, region in sides:
+                    before, aimed, restored = (center(image, region) for image in images)
+                    direction = 1 if side == 'LEFT' else -1
+                    if (aimed - before) * direction < 8:
+                        raise RuntimeError(f'{label} {side} pistol did not move toward center: {before}, {aimed}')
+                    if abs(restored - before) > 4:
+                        raise RuntimeError(f'{label} {side} pistol did not return to rest: {before}, {restored}')
+                    print(f'PASS: {label} {side} aims and returns: {before:.1f} -> {aimed:.1f} -> {restored:.1f}', flush=True)
+
             command('difficulty peaceful')
             command('gamemode creative Dev')
             command('time set day')
@@ -160,6 +187,11 @@ def main():
             wait_for(client_log, r'First-person desert eagle arm rendered: RIGHT', 60, 'main-hand gun arm', client)
             wait_for(client_log, r'First-person desert eagle arm rendered: LEFT', 60, 'synthetic offhand gun arm', client)
             screenshot('dual-first')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:0}')
+            capture_aim('dual-aim', [('LEFT', (380, 340, 640, 545)), ('RIGHT', (640, 340, 900, 545))])
+            wait_for(client_log, r'Desert eagle first-person aiming: arm=RIGHT', 60, 'main arm aims', client)
+            wait_for(client_log, r'Desert eagle first-person aiming: arm=LEFT', 60, 'offhand arm aims', client)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b}')
             capture_shots()
             wait_for(client_log, r'Gun shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND',
                      60, 'main-hand shot effect rendered', client)
@@ -207,6 +239,7 @@ def main():
             if after != before:
                 raise RuntimeError('Empty gun incorrectly emitted a shot effect')
             print('PASS: empty gun emits no shot effect', flush=True)
+            capture_aim('single-aim', [('RIGHT', (600, 340, 900, 545))])
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')
