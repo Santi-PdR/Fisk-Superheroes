@@ -214,6 +214,22 @@ def main():
             wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:beretta_93r, mode=occupied',
                      60, 'real offhand takes precedence', client)
             screenshot('occupied')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:beretta_93r{Dual:1b,Ammo:0}')
+            before = client_log.read_text(errors='replace').count('Gun shot effect received: wearer=Dev')
+            capture_aim('occupied-aim', [('RIGHT', (600, 340, 900, 450))], (300, 340, 600, 450))
+            after = client_log.read_text(errors='replace').count('Gun shot effect received: wearer=Dev')
+            if after != before:
+                raise RuntimeError('Empty Beretta emitted a shot effect')
+            print('PASS: empty Beretta emits no shot effect', flush=True)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:beretta_93r{Dual:1b,Ammo:29,BurstMode:0b}')
+            before = len(client_log.read_text(errors='replace'))
+            xdo('click', '1')
+            command('execute if data entity Dev SelectedItem.tag{Ammo:28} run say BERETTA_OCCUPIED_SHOT_OK')
+            wait_for(server_log, r'BERETTA_OCCUPIED_SHOT_OK', 30, 'occupied-offhand Beretta fired', server)
+            received = client_log.read_text(errors='replace')[before:]
+            if 'Gun shot effect received: wearer=Dev, hand=MAIN_HAND' not in received or 'Gun shot effect received: wearer=Dev, hand=OFF_HAND' in received:
+                raise RuntimeError('Occupied offhand did not force the Beretta shot effect to the main hand')
+            print('PASS: occupied offhand forces main-hand Beretta shot effect', flush=True)
             command('item replace entity Dev weapon.offhand with minecraft:air')
             command('item replace entity Dev weapon.mainhand with fiskheroes:beretta_93r{Ammo:12}')
             screenshot('single-first')

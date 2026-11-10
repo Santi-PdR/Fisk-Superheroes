@@ -259,6 +259,11 @@ def main():
                 raise RuntimeError('Empty gun incorrectly emitted a shot effect')
             print('PASS: empty gun emits no shot effect', flush=True)
             capture_aim('single-aim', [('RIGHT', (600, 340, 900, 545))])
+            # A deterministic high-contrast target gives the FOV comparison a
+            # stable landmark instead of depending on random terrain at spawn.
+            command('fill -4 180 5 4 185 5 minecraft:black_concrete')
+            command('fill -3 180 5 -3 185 5 minecraft:white_concrete')
+            command('fill 1 180 5 1 185 5 minecraft:white_concrete')
             xdo('mousedown', '1')
             xdo('keydown', 'Shift_L')
             try:
