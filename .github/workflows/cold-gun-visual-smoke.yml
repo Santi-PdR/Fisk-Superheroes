@@ -66,12 +66,9 @@ jobs:
           git restore src/main/resources/assets/fiskheroes/textures/models/cold_gun.png
           mkdir -p .ci
           { cat ci-cold-gun-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-cold-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-cold-gun-server.log 2>/dev/null || true; } > .ci/cold-gun-visual-log.txt
-          for file in ci-cold-gun-{first,third-front,inventory,aimed,grenade,offhand}.png; do
-            test ! -f "$file" || cp "$file" ".ci/inspection-$file"
-          done
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -f .ci/cold-gun-visual-log.txt .ci/inspection-ci-cold-gun-*.png
+          git add -f .ci/cold-gun-visual-log.txt
           git diff --cached --quiet || git commit -m 'ci: cold gun visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
