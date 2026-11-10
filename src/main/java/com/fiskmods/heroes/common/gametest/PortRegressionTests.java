@@ -3267,4 +3267,28 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void instantGrenadeDetonatesAtBlockImpact(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "instant-grenade-test"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 200, 1));
+        player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
+        var wall = base.offset(0, 1, 3);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var config = new com.google.gson.JsonObject();
+        config.addProperty("isInstant", true); config.addProperty("fuseTime", 40); config.addProperty("radius", 4.0F);
+        var grenade = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:grenade", config,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.GRENADE.get()), 0.0F);
+        grenade.setDeltaMovement(0, 0, 1.75D); level.addFreshEntity(grenade);
+        helper.runAfterDelay(5, () -> {
+            if (!grenade.isRemoved()) { helper.fail("Instant grenade must detonate on impact, not bounce or wait for its fuse"); return; }
+            if (Math.abs(grenade.getZ() - wall.getZ()) > 0.1D)
+            { helper.fail("Instant grenade must detonate at the impact point: " + grenade.position()); return; }
+            level.removeBlock(wall, false); helper.succeed();
+        });
+    }
+
 }
