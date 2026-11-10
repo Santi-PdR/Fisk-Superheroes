@@ -127,6 +127,17 @@ def main():
             finally:
                 subprocess.run(['xdotool', 'keyup', 'Shift_L'], check=True, timeout=30)
                 subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
+            command('execute as Partner run suit fiskheroes:wild_dog')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:beretta_93r{Dual:1b}')
+            wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default',
+                     90, 'observer sees remote dual Beretta offhand', observer)
+            command('execute unless data entity Partner Inventory[{Slot:-106b}] run say REMOTE_BERETTA_EMPTY_OK')
+            wait_for(server_log, r'REMOTE_BERETTA_EMPTY_OK', 30, 'remote Beretta dual is visual only', server)
+            command('item replace entity Partner weapon.offhand with minecraft:torch')
+            wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied',
+                     60, 'observer respects real offhand with Beretta', observer)
+            command('item replace entity Partner weapon.offhand with minecraft:air')
+            command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)
