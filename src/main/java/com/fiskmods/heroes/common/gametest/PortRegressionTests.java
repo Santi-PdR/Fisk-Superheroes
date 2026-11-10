@@ -2961,4 +2961,46 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void heatGunMeltsIceAndStopsAtEntity(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-ray-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:heatwave");
+        if (hero == null) { helper.fail("Heatwave is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setYRot(0); player.setXRot(0);
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();
+        var pos = base.offset(0, 1, 4);
+        var ice = net.minecraft.world.level.block.Blocks.ICE;
+        java.util.function.BooleanSupplier shoot = () -> {
+            var stack = new net.minecraft.world.item.ItemStack(gun);
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+            return gun.fireFromAttack(player, stack);
+        };
+        level.setBlockAndUpdate(pos, ice.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
+        { helper.fail("Heat gun must melt ice into water in the overworld"); return; }
+        level.setBlockAndUpdate(pos, ice.defaultBlockState());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Heat gun target missing"); return; }
+        target.setNoAi(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 2);
+        level.addFreshEntity(target);
+        if (!shoot.getAsBoolean() || !target.isOnFire() || !level.getBlockState(pos).is(ice))
+        { helper.fail("A target before ice must catch fire without melting the ice behind it"); return; }
+        target.discard();
+        level.removeBlock(pos, false);
+        helper.succeed();
+    }
+
 }

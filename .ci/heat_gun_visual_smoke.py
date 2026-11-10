@@ -53,6 +53,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:heatwave')
             command('item replace entity Dev weapon.mainhand with fiskheroes:heat_gun')
+            wait_for(client_log, r'First-person heat gun arm rendered: RIGHT', 60, 'first-person heat gun arm', client)
             screenshot('first')
             xdo('key', 'F5')
             xdo('key', 'F5')
@@ -64,6 +65,7 @@ def main():
             command('setblock 0 181 4 minecraft:ice')
             xdo('mousedown', '1')
             try:
+                wait_for(client_log, r'Heat gun first-person aiming: arm=RIGHT', 60, 'heat gun aims in first person', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
@@ -72,6 +74,28 @@ def main():
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:heat_gun')
             screenshot('offhand')
+            first, third, icon, aimed, offhand = (Image.open(f'ci-heat-gun-{name}.png') for name in
+                                                   ('first', 'third-front', 'inventory', 'aimed', 'offhand'))
+            if any(im.size != (1280, 720) for im in (first, third, icon, aimed, offhand)):
+                raise RuntimeError('Unexpected screenshot dimensions')
+            # The diagnostic base texture is magenta. An opaque/incorrectly
+            # blended white emissive pass would hide it and fail these checks.
+            if magenta(first, (700, 350, 900, 550)) < 500 or magenta(third, (580, 380, 620, 450)) < 100:
+                raise RuntimeError('Heat gun base is missing/washed out in first or third person')
+            slot = magenta(icon, (461, 448, 496, 484))
+            around = magenta(icon, (450, 430, 505, 495))
+            if slot < 50 or around - slot > 5:
+                raise RuntimeError(f'Heat gun icon clips outside inventory slot: {slot=}, {around=}')
+            if magenta(offhand, (350, 350, 580, 550)) < 500:
+                raise RuntimeError('Real offhand heat gun is missing/washed out')
+            def center_x(image):
+                pts = [(x, y) for y in range(350, 555) for x in range(600, 950)
+                       if (lambda c: c[0] > 90 and c[2] > 90 and c[1] < 50 and abs(c[0] - c[2]) < 40)(image.getpixel((x, y))[:3])]
+                if len(pts) < 500: raise RuntimeError('Heat gun is missing from aim frame')
+                return sum(x for x, _ in pts) / len(pts)
+            before, after = center_x(first), center_x(aimed)
+            if before - after < 15: raise RuntimeError(f'Heat gun did not move toward center when aiming: {before}, {after}')
+            print(f'PASS: first/third/offhand poses, unwashed base, contained icon and aim: {before:.1f} -> {after:.1f}', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

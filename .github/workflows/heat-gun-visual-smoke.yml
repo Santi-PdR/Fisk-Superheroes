@@ -49,7 +49,7 @@ jobs:
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-heat-gun-server/server.properties
           convert src/main/resources/assets/fiskheroes/textures/models/heat_gun.png -channel RGB -fill '#ff00ff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/models/heat_gun.png
           ./gradlew classes --no-daemon --console=plain
-      - name: Capture cold gun poses
+      - name: Capture heat gun poses
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/heat_gun_visual_smoke.py 2>&1 | tee ci-heat-gun-test.log
@@ -81,5 +81,5 @@ jobs:
             fi
             sleep 5
           done
-          echo 'Failed to publish cold gun diagnostics after retries' >&2
+          echo 'Failed to publish heat gun diagnostics after retries' >&2
           exit 1

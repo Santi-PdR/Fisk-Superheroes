@@ -60,10 +60,10 @@ public final class HeatGunItemRenderer extends BlockEntityWithoutLevelRenderer
         {
             case GUI ->
             {
-                pose.translate(0.52D, 0.45D, 0.5D);
+                pose.translate(0.5D, 0.45D, 0.5D);
                 pose.mulPose(Axis.YP.rotationDegrees(45.0F));
                 pose.mulPose(Axis.XP.rotationDegrees(-25.0F));
-                pose.scale(1.15F, -1.15F, -1.15F);
+                pose.scale(0.72F, -0.72F, -0.72F);
             }
             case GROUND, FIXED ->
             {
@@ -73,15 +73,16 @@ public final class HeatGunItemRenderer extends BlockEntityWithoutLevelRenderer
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.48D, 0.45D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 180.0F : 0.0F));
-                pose.scale(0.95F, -0.95F, -0.95F);
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 150.0F : -150.0F));
+                pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
+                pose.scale(0.55F, -0.55F, -0.55F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(0.5D, 0.5D, 0.48D);
-                pose.mulPose(Axis.YP.rotationDegrees(180.0F));
-                pose.scale(0.9F, -0.9F, -0.9F);
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose.scale(0.60F, -0.60F, -0.60F);
             }
             default ->
             {
@@ -89,8 +90,11 @@ public final class HeatGunItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(0.85F, -0.85F, -0.85F);
             }
         }
-        renderPass(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, overlay);
-        renderPass(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay);
+        renderPass(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+        // Transparent pixels in the lights atlas have white RGB. The additive eyes
+        // pass ignores that transparent RGB and washes the whole model white.
+        // A cutout emissive pass keeps the small colored lights at full brightness.
+        renderPass(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay);
         pose.popPose();
     }
 

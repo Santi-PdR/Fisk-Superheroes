@@ -67,6 +67,15 @@ public final class ItemHeatGun extends ItemGun
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions()
         {
             @Override
+            public boolean applyForgeHandTransform(com.mojang.blaze3d.vertex.PoseStack pose,
+                    net.minecraft.client.player.LocalPlayer player, net.minecraft.world.entity.HumanoidArm arm,
+                    net.minecraft.world.item.ItemStack stack, float partialTick, float equip, float swing)
+            {
+                com.fiskmods.heroes.client.render.HeatGunAimPose.apply(pose, player, arm, partialTick);
+                return false;
+            }
+
+            @Override
             public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer()
             {
                 return com.fiskmods.heroes.client.render.HeatGunItemRenderer.getInstance();
