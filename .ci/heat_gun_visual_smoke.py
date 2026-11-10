@@ -69,14 +69,15 @@ def main():
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
+            screenshot('restored')
             command('execute if block 0 181 4 minecraft:water run say HEAT_ICE_OK')
             wait_for(server_log, r'HEAT_ICE_OK', 30, 'heat gun melts ice', server)
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:heat_gun')
             screenshot('offhand')
-            first, third, icon, aimed, offhand = (Image.open(f'ci-heat-gun-{name}.png') for name in
-                                                   ('first', 'third-front', 'inventory', 'aimed', 'offhand'))
-            if any(im.size != (1280, 720) for im in (first, third, icon, aimed, offhand)):
+            first, third, icon, aimed, restored, offhand = (Image.open(f'ci-heat-gun-{name}.png') for name in
+                                                   ('first', 'third-front', 'inventory', 'aimed', 'restored', 'offhand'))
+            if any(im.size != (1280, 720) for im in (first, third, icon, aimed, restored, offhand)):
                 raise RuntimeError('Unexpected screenshot dimensions')
             # The diagnostic base texture is magenta. An opaque/incorrectly
             # blended white emissive pass would hide it and fail these checks.
@@ -93,14 +94,16 @@ def main():
                        if (lambda c: c[0] > 90 and c[2] > 90 and c[1] < 50 and abs(c[0] - c[2]) < 40)(image.getpixel((x, y))[:3])]
                 if len(pts) < 500: raise RuntimeError('Heat gun is missing from aim frame')
                 return sum(x for x, _ in pts) / len(pts), sum(y for _, y in pts) / len(pts)
-            before, after = center(first), center(aimed)
+            before, after, released = center(first), center(aimed), center(restored)
+            if abs(before[0] - released[0]) > 5 or abs(before[1] - released[1]) > 5:
+                raise RuntimeError(f'Heat gun did not return to rest on release: {before}, {released}')
             if before[0] - after[0] < 15: raise RuntimeError(f'Heat gun did not move toward center when aiming: {before}, {after}')
             if abs(before[1] - after[1]) > 60:
                 raise RuntimeError(f'Heat gun sank off-screen while firing: {before}, {after}')
             warm = sum(1 for r, g, b in first.convert('RGB').crop((700, 375, 850, 540)).get_flattened_data()
                        if r > 140 and 5 < g < 200 and b < 70 and r > g * 1.2)
             if warm < 10: raise RuntimeError(f'Emissive heat-gun lights are missing: {warm} pixels')
-            print(f'PASS: poses, unwashed base, emissive lights ({warm} pixels), contained icon and stable aim: {before} -> {after}', flush=True)
+            print(f'PASS: poses, unwashed base, emissive lights ({warm} pixels), contained icon and stable aim/release: {before} -> {after} -> {released}', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

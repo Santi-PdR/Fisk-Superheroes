@@ -2990,6 +2990,13 @@ public final class PortRegressionTests
         level.setBlockAndUpdate(pos, ice.defaultBlockState());
         if (!shoot.getAsBoolean() || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
         { helper.fail("Heat gun must melt ice into water in the overworld"); return; }
+        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.SNOW_BLOCK.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos).isAir())
+        { helper.fail("Heat gun must melt snow blocks"); return; }
+        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos.north()).is(net.minecraft.world.level.block.Blocks.FIRE))
+        { helper.fail("Heat gun must ignite the exposed side of flammable blocks"); return; }
+        level.removeBlock(pos.north(), false);
         level.setBlockAndUpdate(pos, ice.defaultBlockState());
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Heat gun target missing"); return; }

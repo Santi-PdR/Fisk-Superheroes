@@ -21,6 +21,19 @@ def wait_for(path, pattern, seconds, label, process):
     raise RuntimeError(f'Timed out: {label}')
 
 
+def wait_for_new(path, pattern, start, seconds, label, process):
+    regex = re.compile(pattern)
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if path.exists() and regex.search(path.read_text(errors='replace')[start:]):
+            print('PASS:', label, flush=True)
+            return
+        if process.poll() is not None:
+            raise RuntimeError(f'{label}: process exited with {process.returncode}')
+        time.sleep(1)
+    raise RuntimeError(f'Timed out: {label}')
+
+
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
                JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true')
@@ -147,6 +160,19 @@ def main():
             wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied',
                      60, 'observer respects real offhand with Beretta', observer)
             command('item replace entity Partner weapon.offhand with minecraft:air')
+            command('execute as Partner run suit fiskheroes:heatwave')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:heat_gun')
+            wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default',
+                     90, 'observer sees remote Heat Gun', observer)
+            start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'mousedown', '1'], check=True, timeout=30)
+            try:
+                wait_for_new(observer_log, r'Remote aiming sustained: wearer=Partner', start,
+                             60, 'observer sees remote Heat Gun aim', observer)
+            finally:
+                subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
+            wait_for_new(observer_log, r'Remote aiming released: wearer=Partner', start,
+                         60, 'observer sees remote Heat Gun aim release', observer)
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
