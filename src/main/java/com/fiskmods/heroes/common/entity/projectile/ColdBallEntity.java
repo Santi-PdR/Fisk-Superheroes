@@ -78,6 +78,8 @@ public final class ColdBallEntity extends ThrowableProjectile
 
     private void explode(ServerLevel level, Vec3 center)
     {
+        boolean diagnostics = Boolean.getBoolean("fiskheroes.ciColdBallDiagnostics");
+        if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold ball impact: center={}, owner={}", center, getOwner());
         level.sendParticles(ParticleTypes.SNOWFLAKE, center.x, center.y, center.z, 35, 0.35D, 0.35D, 0.35D, 0.05D);
         level.sendParticles(ParticleTypes.CLOUD, center.x, center.y, center.z, 12, 0.2D, 0.2D, 0.2D, 0.05D);
         level.playSound(null, center.x, center.y, center.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0F, 0.8F);
@@ -85,7 +87,10 @@ public final class ColdBallEntity extends ThrowableProjectile
                 new AABB(center, center).inflate(ENTITY_RADIUS), e -> e != getOwner() && e.isAlive()))
         {
             double distance = target.getBoundingBox().getCenter().distanceTo(center);
-            if (distance > ENTITY_RADIUS || !visible(level, center, target.getBoundingBox().getCenter())) continue;
+            boolean exposed = visible(level, center, target.getBoundingBox().getCenter());
+            if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold ball target: name={}, position={}, distance={}, exposed={}",
+                    target.getName().getString(), target.position(), distance, exposed);
+            if (distance > ENTITY_RADIUS || !exposed) continue;
             float strength = (float) (1.0D - distance / ENTITY_RADIUS);
             if (getOwner() instanceof LivingEntity shooter)
                 DamageGroups.withDamageProfile(java.util.Map.of("COLD", 0.5D, "EXPLOSION", 0.6D),

@@ -10,7 +10,8 @@ from PIL import Image
 
 
 def main():
-    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
+    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true')
     server_log, client_log = Path('ci-cold-gun-server.log'), Path('ci-cold-gun-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
@@ -88,6 +89,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 10')
             command('summon minecraft:cow 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
             xdo('click', '1')
+            command('data get entity @e[type=minecraft:cow,tag=cold_ball_test,limit=1]')
             command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2b}] run say COLD_BALL_IMPACT_OK')
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
             command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] unless data entity @s {Health:10.0f} run say COLD_BALL_DAMAGE_OK')

@@ -3090,7 +3090,7 @@ public final class PortRegressionTests
         level.setBlockAndUpdate(water, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Cold ball wall target missing"); return; }
-        target.setNoAi(true); target.setPos(player.getX(), player.getY(), player.getZ() + 2.7D);
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(player.getX(), player.getY(), player.getZ() + 2.7D);
         level.addFreshEntity(target);
         var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(player);
         level.addFreshEntity(ball);
@@ -3099,7 +3099,10 @@ public final class PortRegressionTests
             { helper.fail("Cold ball must freeze nearby water when it hits a wall"); return; }
             if (target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
                     || target.getHealth() < target.getMaxHealth())
-            { helper.fail("A solid wall must shield targets from the cold ball"); return; }
+            { helper.fail("A solid wall must shield target: health=" + target.getHealth()
+                    + ", frozen=" + target.getTicksFrozen() + ", slow="
+                    + target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+                    + ", pos=" + target.position() + ", wall=" + wall); return; }
             target.discard();
             level.removeBlock(wall, false); level.removeBlock(wall.below(), false); level.removeBlock(water, false);
             helper.succeed();
