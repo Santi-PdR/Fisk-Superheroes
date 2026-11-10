@@ -280,7 +280,11 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         Vec3 offset = contact.subtract(target.position());
         webSlowsTarget = offset.y < 0.5D; // The original only restrains hits on the legs.
         Vec3 outward = new Vec3(offset.x, 0.0D, offset.z);
-        if (outward.lengthSqr() > 1.0E-8D) contact = contact.add(outward.normalize().scale(0.03D));
+        // Keep the visual patch outside the model and above the ground when the
+        // projectile hit the very bottom of a bounding box.
+        if (outward.lengthSqr() > 1.0E-8D) contact = contact.add(outward.normalize().scale(0.12D));
+        double minimumHeight = Math.min(0.375D, target.getBbHeight() * 0.5D);
+        contact = new Vec3(contact.x, Math.max(contact.y, target.getY() + minimumHeight), contact.z);
         webOffset = contact.subtract(target.position());
         webTargetUuid = target.getUUID();
         entityData.set(WEB_TARGET, target.getId());
