@@ -19,6 +19,24 @@ import net.minecraft.nbt.CompoundTag;
 /** Helpers for the pack-defined utility belt. */
 public final class EquipmentHelper
 {
+    private static final Map<net.minecraft.server.level.ServerPlayer, RapidBurst> RAPID_BURSTS = new java.util.WeakHashMap<>();
+
+    private static final class RapidBurst
+    {
+        final String id;
+        final Hero hero;
+        final JsonObject config;
+        final ItemStack display;
+        final int total;
+        int fired;
+        long nextTick;
+        RapidBurst(String id, Hero hero, JsonObject config, ItemStack display, int total, long now)
+        {
+            this.id = id; this.hero = hero; this.config = config.deepCopy(); this.display = display.copy();
+            this.total = total; fired = 1; nextTick = now + 2;
+        }
+    }
+
     private EquipmentHelper()
     {
     }
@@ -119,16 +137,21 @@ public final class EquipmentHelper
         if (uses <= 0) return false;
 
         int quantity = Math.max(1, Math.min(16, number(configuration, "quantity", 1)));
+        boolean rapid = path.equals("rapid_webs");
         int spawned = 0;
-        for (int i = 0; i < quantity; ++i)
+        for (int i = 0; i < (rapid ? 1 : quantity); ++i)
         {
-            float yawOffset = quantity == 1 ? 0.0F : (i - (quantity - 1) / 2.0F) * 5.0F;
-            var projectile = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(
-                    player, id, configuration, display, yawOffset);
-            if (player.level().addFreshEntity(projectile)) spawned++;
+            float yawOffset = quantity == 1 || rapid ? 0.0F : (i - (quantity - 1) / 2.0F) * 5.0F;
+            if (spawnEquipment(player, id, configuration, display, yawOffset)) spawned++;
         }
 
         if (spawned == 0) return false;
+        if (rapid)
+        {
+            if (quantity > 1) RAPID_BURSTS.put(player, new RapidBurst(id, hero, configuration, display, quantity, now));
+            logRapidShot(player, 1);
+            playEquipmentSound(player, configuration, "SHOOT");
+        }
         if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Utility belt used: player={}, gadget={}, count={}", player.getName().getString(), id, spawned);
         if (cooldown == 0)
@@ -155,6 +178,59 @@ public final class EquipmentHelper
         com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "USE");
         playEquipmentSound(player, configuration, "USE");
         return true;
+    }
+
+    private static boolean spawnEquipment(net.minecraft.server.level.ServerPlayer player, String id,
+            JsonObject config, ItemStack display, float yawOffset)
+    {
+        var projectile = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(
+                player, id, config, display, yawOffset);
+        return player.level().addFreshEntity(projectile);
+    }
+
+    /** Continue rapid webs at two-tick intervals while the same gadget remains selected. */
+    public static void tickRapidWebs(net.minecraft.server.level.ServerPlayer player)
+    {
+        RapidBurst burst = RAPID_BURSTS.get(player);
+        if (burst == null) return;
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        HeroIteration iteration = data != null ? data.getHero() : null;
+        ModifierEntry entry = iteration != null && iteration.getHero() == burst.hero
+                ? getUtilityBelt(burst.hero, player, data) : null;
+        JsonObject options = entry != null ? equipmentOptions(entry) : new JsonObject();
+        int selected = data != null ? data.getData().get(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE) : -1;
+        if (!player.isAlive() || !player.getMainHandItem().isEmpty() || !player.getOffhandItem().isEmpty()
+                || selected < 0 || selected >= options.size()
+                || !new java.util.ArrayList<>(options.keySet()).get(selected).equals(burst.id))
+        {
+            RAPID_BURSTS.remove(player);
+            return;
+        }
+        long now = player.level().getGameTime();
+        if (now < burst.nextTick) return;
+        if (!spawnEquipment(player, burst.id, burst.config, burst.display, 0.0F))
+        {
+            RAPID_BURSTS.remove(player);
+            return;
+        }
+        ++burst.fired;
+        logRapidShot(player, burst.fired);
+        playEquipmentSound(player, burst.config, "SHOOT");
+        player.swing(net.minecraft.world.InteractionHand.MAIN_HAND, true);
+        if (burst.fired >= burst.total) RAPID_BURSTS.remove(player);
+        else burst.nextTick = now + 2;
+    }
+
+    public static void clearRapidWebs(net.minecraft.server.level.ServerPlayer player)
+    {
+        RAPID_BURSTS.remove(player);
+    }
+
+    private static void logRapidShot(net.minecraft.server.level.ServerPlayer player, int shot)
+    {
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Rapid web shot: player={}, shot={}, tick={}",
+                    player.getName().getString(), shot, player.level().getGameTime());
     }
 
     private static CompoundTag equipmentState(net.minecraft.server.level.ServerPlayer player, String id, int maxUses, int cooldown)

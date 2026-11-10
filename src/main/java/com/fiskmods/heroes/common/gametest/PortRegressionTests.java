@@ -3436,4 +3436,53 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void rapidWebsFireOverTimeAndCancelWhenSelectionChanges(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "rapid-web-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (hero == null) { helper.fail("Spider-Man missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var belt = com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.getUtilityBelt(hero, player, data);
+        if (belt == null) { helper.fail("Spider-Man web equipment missing"); return; }
+        var names = new java.util.ArrayList<>(com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.equipmentOptions(belt).keySet());
+        int selected = names.indexOf("fiskheroes:rapid_webs");
+        if (selected < 0) { helper.fail("Rapid webs missing"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) selected);
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 200, 1));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setYRot(0); player.setXRot(-25);
+        if (!com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.useUtilityBelt(player))
+        { helper.fail("Failed to start rapid web burst"); return; }
+        var bounds = player.getBoundingBox().inflate(120);
+        java.util.function.IntSupplier count = () -> level.getEntitiesOfClass(
+                com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity.class, bounds,
+                e -> e.getOwner() == player).size();
+        if (count.getAsInt() != 1 || com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.useUtilityBelt(player))
+        { helper.fail("Rapid webs must fire one shot initially and consume their single charge"); return; }
+        helper.runAfterDelay(2, () -> {
+            com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.tickRapidWebs(player);
+            if (count.getAsInt() != 2) { helper.fail("Second rapid web must fire after two ticks"); return; }
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.UTILITY_BELT_TYPE, (byte) 0);
+            helper.runAfterDelay(2, () -> {
+                com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.tickRapidWebs(player);
+                if (count.getAsInt() != 2) { helper.fail("Switching gadgets must cancel the rapid burst"); return; }
+                for (var shot : level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity.class,
+                        bounds, e -> e.getOwner() == player)) shot.discard();
+                com.fiskmods.heroes.common.hero.equipment.EquipmentHelper.clearRapidWebs(player);
+                helper.succeed();
+            });
+        });
+    }
+
 }

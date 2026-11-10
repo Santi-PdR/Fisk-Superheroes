@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise Spider-Man's gadget webs with a real Forge client and dedicated server."""
 import os
+import re
 import signal
 import subprocess
 import time
@@ -89,6 +90,21 @@ def main():
             wait_for(server_log, r'Utility belt used: player=Dev, gadget=fiskheroes:impact_web', 30, 'shoot impact web', server)
             command('execute as @e[type=minecraft:iron_golem,tag=impact_target,limit=1] unless data entity @s {Health:100.0f} unless data entity @s ActiveEffects[{Id:2}] run say IMPACT_WEB_OK')
             wait_for(server_log, r'IMPACT_WEB_OK', 20, 'impact web damages without sticky slowdown', server)
+            command('kill @e[type=minecraft:iron_golem,tag=impact_target]')
+            command('tp Dev 0.5 180 0.5 0 -25')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1); xdo('click', '4')
+                wait_for(server_log, r'Utility belt selection: player=Dev, gadget=fiskheroes:rapid_webs', 30, 'select rapid webs', server)
+            finally:
+                xdo('keyup', 'c')
+            time.sleep(0.5); xdo('click', '3')
+            wait_for(server_log, r'Rapid web shot: player=Dev, shot=5, tick=\d+', 30, 'rapid webs finish a five-shot burst', server)
+            shots = re.findall(r'Rapid web shot: player=Dev, shot=(\d+), tick=(\d+)', server_log.read_text(errors='replace'))
+            if [int(n) for n, _ in shots] != [1, 2, 3, 4, 5] or any(
+                    int(shots[i + 1][1]) - int(shots[i][1]) != 2 for i in range(4)):
+                raise RuntimeError(f'Rapid web cadence is not two ticks: {shots}')
+            print('PASS: rapid web burst fires one projectile every two server ticks', flush=True)
         finally:
             for p in reversed(processes):
                 if p.poll() is None:

@@ -184,6 +184,7 @@ public class CommonEventHandler
         {
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(serverPlayer);
             com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(serverPlayer);
+            EquipmentHelper.tickRapidWebs(serverPlayer);
         }
 
         if (!entity.level().isClientSide)
@@ -348,6 +349,7 @@ public class CommonEventHandler
         if (event.getEntity() instanceof ServerPlayer player)
         {
             DataSyncer.onPlayerLogout(player);
+            EquipmentHelper.clearRapidWebs(player);
             com.fiskmods.heroes.common.hero.ability.FlightKickGuard.clear(player);
             com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
             com.fiskmods.heroes.common.network.PacketInput.clearServerState(player);
