@@ -2875,4 +2875,50 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void coldGunHitsFluidsAndStopsAtEntity(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "cold-gun-ray-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_cold");
+        if (hero == null) { helper.fail("Captain Cold is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setYRot(0); player.setXRot(0);
+        var gun = (com.fiskmods.heroes.common.item.ItemColdGun) com.fiskmods.heroes.common.item.ModItems.COLD_GUN.get();
+        var pos = base.offset(0, 1, 4);
+        var water = net.minecraft.world.level.block.Blocks.WATER;
+        var lava = net.minecraft.world.level.block.Blocks.LAVA;
+        java.util.function.BooleanSupplier shoot = () -> {
+            var stack = new net.minecraft.world.item.ItemStack(gun);
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+            return gun.fireFromAttack(player, stack);
+        };
+        level.setBlockAndUpdate(pos, water.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
+        { helper.fail("Cold gun must hit and freeze water"); return; }
+        level.setBlockAndUpdate(pos, lava.defaultBlockState());
+        if (!shoot.getAsBoolean() || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.OBSIDIAN))
+        { helper.fail("Cold gun must hit lava and create obsidian"); return; }
+        level.setBlockAndUpdate(pos, water.defaultBlockState());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Cold gun target missing"); return; }
+        target.setNoAi(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 2);
+        level.addFreshEntity(target);
+        if (!shoot.getAsBoolean() || target.getTicksFrozen() <= 0 || !level.getBlockState(pos).is(water))
+        { helper.fail("A target before water must be frozen without affecting the block behind it"); return; }
+        target.discard();
+        level.removeBlock(pos, false);
+        helper.succeed();
+    }
+
 }

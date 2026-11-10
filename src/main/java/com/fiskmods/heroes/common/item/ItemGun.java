@@ -246,25 +246,8 @@ public class ItemGun extends Item
         Vec3 direction = shooter.getViewVector(1.0F);
         Vec3 end = start.add(direction.scale(range));
         BlockHitResult block = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE, shooter));
+                id.equals("cold_gun") ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, shooter));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
-
-        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
-        {
-            net.minecraft.core.particles.ParticleOptions tracer = switch (id)
-            {
-                case "cold_gun" -> net.minecraft.core.particles.ParticleTypes.SNOWFLAKE;
-                case "heat_gun" -> net.minecraft.core.particles.ParticleTypes.FLAME;
-                default -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
-            };
-            double distance = start.distanceTo(end);
-            int points = Math.min(18, Math.max(1, (int) Math.ceil(distance / 3.5D)));
-            for (int i = 1; i <= points; ++i)
-            {
-                Vec3 point = start.lerp(end, i / (double) (points + 1));
-                serverLevel.sendParticles(tracer, point.x, point.y, point.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
-            }
-        }
 
         AABB search = shooter.getBoundingBox().expandTowards(direction.scale(range)).inflate(1.0D);
         LivingEntity hit = null;
@@ -284,6 +267,24 @@ public class ItemGun extends Item
             }
         }
 
+        if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        {
+            net.minecraft.core.particles.ParticleOptions tracer = switch (id)
+            {
+                case "cold_gun" -> net.minecraft.core.particles.ParticleTypes.SNOWFLAKE;
+                case "heat_gun" -> net.minecraft.core.particles.ParticleTypes.FLAME;
+                default -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f(1.0F, 0.72F, 0.2F), 0.7F);
+            };
+            Vec3 tracerEnd = hit != null ? start.add(direction.scale(Math.sqrt(nearest))) : end;
+            double distance = start.distanceTo(tracerEnd);
+            int points = Math.min(18, Math.max(1, (int) Math.ceil(distance / 3.5D)));
+            for (int i = 1; i <= points; ++i)
+            {
+                Vec3 point = start.lerp(tracerEnd, i / (double) (points + 1));
+                serverLevel.sendParticles(tracer, point.x, point.y, point.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
+            }
+        }
+
         if (id.equals("cold_gun"))
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
@@ -295,7 +296,8 @@ public class ItemGun extends Item
             }
         }
 
-        onRayBlockHit(shooter, block);
+        // A target in front absorbs the shot; do not modify the block behind it.
+        if (hit == null) onRayBlockHit(shooter, block);
 
         boolean acceptedHit = false;
         if (hit != null)
