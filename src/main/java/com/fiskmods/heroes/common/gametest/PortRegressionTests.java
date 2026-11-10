@@ -2846,4 +2846,33 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void berettaPendingBurstStopsDuringReload(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "beretta-reload-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:wild_dog");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Wild Dog or player data missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var gun = (com.fiskmods.heroes.common.item.ItemBeretta93R) com.fiskmods.heroes.common.item.ModItems.BERETTA_93R.get();
+        var stack = new net.minecraft.world.item.ItemStack(gun);
+        stack.getOrCreateTag().putInt("Ammo", 10);
+        stack.getOrCreateTag().putInt("BurstRemaining", 1);
+        stack.getOrCreateTag().putLong("BurstNextTick", 0);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.RELOAD_TIMER, 1.0F);
+        gun.inventoryTick(stack, helper.getLevel(), player, 0, true);
+        if (gun.getAmmo(stack) != 10 || stack.getTag().getInt("BurstRemaining") != 0)
+        { helper.fail("A queued burst must be canceled without firing while reloading"); return; }
+        helper.succeed();
+    }
+
 }

@@ -92,6 +92,14 @@ def main():
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:11} run say BERETTA_SINGLE_OK')
             wait_for(server_log, r'BERETTA_SINGLE_OK', 30, 'single mode consumes one round', server)
+            xdo('keydown', 'Shift_L')
+            try:
+                xdo('click', '3')
+            finally:
+                xdo('keyup', 'Shift_L')
+            time.sleep(1)
+            command('execute if data entity Dev SelectedItem.tag{BurstMode:1b} run say BERETTA_MODE_OK')
+            wait_for(server_log, r'BERETTA_MODE_OK', 30, 'sneak-use switches firing mode', server)
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')

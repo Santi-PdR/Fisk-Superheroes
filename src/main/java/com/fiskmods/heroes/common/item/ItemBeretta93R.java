@@ -99,7 +99,9 @@ public final class ItemBeretta93R extends ItemGun
 
         HeroIteration iter = HeroTracker.getHero(player);
         Hero hero = iter != null ? iter.getHero() : null;
-        if (hero == null || !hasPermission(player, hero) || getAmmo(stack) <= 0)
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.RELOAD_TIMER) > 0.0F
+                || !hasPermission(player, hero) || getAmmo(stack) <= 0)
         {
             stack.getTag().putInt(TAG_BURST_REMAINING, 0);
             return;
