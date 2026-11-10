@@ -1,158 +1,197 @@
 PASS: integrated player login
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main:fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main from env
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{fiskheroes=[/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main]}]
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from main, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from , it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from mclanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from javafmllanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from fmlcore-1.20.1-47.4.10.jar, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from lowcodelanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
-[00:52:52] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_food_regeneration with Javascript path coremods/food_regeneration.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_suit_pose with Javascript path coremods/player_suit_pose.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_first_person_suit with Javascript path coremods/first_person_suit.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_gliding_travel with Javascript path coremods/gliding_travel.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_glide_rotation with Javascript path coremods/player_glide_rotation.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_held_item_livery with Javascript path coremods/held_item_livery.js
-[00:52:53] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_dual_wield_visuals with Javascript path coremods/dual_wield_visuals.js
-[00:52:54] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
-[00:52:54] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
-[00:52:54] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
-[00:52:54] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
-[00:52:54] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
-[00:52:54] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[00:52:54] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[00:52:54] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+PASS: suit command
+PASS: third-person suit render path
+PASS: server received the speedster ability key
+PASS: Captain America stowed shield render
+PASS: Deadpool stowed katanas render
+PASS: one katana mesh per stowed anchor
+PASS: Deadpool katana uses the suit livery
+PASS: Deadpool stowed pistols use the suit livery
+PASS: Deadpool held katana uses livery in third person
+PASS: Deadpool held katana uses livery in first person
+PASS: dual katana renders in the first-person offhand
+PASS: dual offhand is visual only on the server
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Got mod coordinates fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main:fiskheroes%%/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main from env
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.ta.CommonLaunchHandler/CORE]: Found supplied mod coordinates [{fiskheroes=[/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/classes/java/main]}]
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from main, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from , it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from mclanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from javafmllanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from fmlcore-1.20.1-47.4.10.jar, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from lowcodelanguage-1.20.1-47.4.10.jar, it does not contain dependency information.
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file main with {fiskheroes} mods - versions {2.4.0}
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_food_regeneration with Javascript path coremods/food_regeneration.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_suit_pose with Javascript path coremods/player_suit_pose.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_first_person_suit with Javascript path coremods/first_person_suit.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_gliding_travel with Javascript path coremods/gliding_travel.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_player_glide_rotation with Javascript path coremods/player_glide_rotation.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_held_item_livery with Javascript path coremods/held_item_livery.js
+[01:06:01] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_dual_wield_visuals with Javascript path coremods/dual_wield_visuals.js
+[01:06:02] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
+[01:06:02] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
+[01:06:02] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
+[01:06:02] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
+[01:06:02] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
+[01:06:02] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[01:06:02] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[01:06:02] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[00:52:58] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.fiskmods.heroes.FiskHeroes
-[00:52:59] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Config file fiskheroes-common.toml for fiskheroes tracking
-[00:52:59] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for fiskheroes
-[00:52:59] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[00:52:59] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[00:53:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
-[00:53:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
-[00:53:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml for changes
-[00:53:00] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
-[00:53:00] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
-[00:53:00] [Worker-Main-3/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
-[00:53:03] [Render thread/WARN] [ne.mi.fm.DeferredWorkQueue/LOADING]: Mod 'fiskheroes' took 2.225 s to run a deferred task.
-[00:53:03] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: Downloading the FiskHeroes sound repository (https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip)
+[01:06:07] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for com.fiskmods.heroes.FiskHeroes
+[01:06:07] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Config file fiskheroes-common.toml for fiskheroes tracking
+[01:06:07] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for fiskheroes
+[01:06:07] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[01:06:07] [Render thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
+[01:06:08] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
+[01:06:08] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml
+[01:06:08] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run/config/fiskheroes-common.toml for changes
+[01:06:08] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
+[01:06:08] [Thread-3/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file fiskheroes-common.toml changed, sending notifies
+[01:06:08] [Worker-Main-3/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[01:06:11] [Render thread/WARN] [ne.mi.fm.DeferredWorkQueue/LOADING]: Mod 'fiskheroes' took 2.097 s to run a deferred task.
+[01:06:11] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: Downloading the FiskHeroes sound repository (https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip)
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[00:53:05] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[00:53:05] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository ready: 424 sounds
-[00:53:06] [Render thread/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[00:53:07] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[00:53:07] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[00:53:07] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
-[00:53:07] [Worker-Main-3/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[01:06:13] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
+[01:06:13] [FiskHeroes sound downloader/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository ready: 424 sounds
+[01:06:13] [Render thread/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[01:06:15] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[01:06:15] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
+[01:06:15] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
+[01:06:16] [Worker-Main-3/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[01:06:27] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge]
+[01:06:27] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from server : ACCEPTED
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge]
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from client : ACCEPTED
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge]
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from server : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge]
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from client : ACCEPTED
-[00:53:18] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:de761853] logged in with entity id 4 at (103.5, 67.0, 171.5)
-[00:53:18] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[00:53:18] [Render thread/DEBUG] [io.ne.ch.ni.NioEventLoop/]: -Dio.netty.selectorAutoRebuildThreshold: 512
-[00:53:18] [Render thread/DEBUG] [io.ne.ut.in.PlatformDependent/]: org.jctools-core.MpscChunkedArrayQueue: available
-[00:53:18] [Render thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.processId: 3904 (auto-detected)
-[00:53:18] [Render thread/WARN] [io.ne.ut.in.SystemPropertyUtil/]: Unable to parse the boolean system property 'java.net.preferIPv6Addresses':system - using the default value: false
-[00:53:18] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv4Stack: false
-[00:53:18] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv6Addresses: false
-[00:53:18] [Render thread/DEBUG] [io.ne.ut.NetUtilInitializations/]: Loopback interface: lo (lo, 0:0:0:0:0:0:0:1%lo)
-[00:53:18] [Render thread/DEBUG] [io.ne.ut.NetUtil/]: /proc/sys/net/core/somaxconn: 4096
-[00:53:18] [Render thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.machineId: 70:a8:a5:ff:fe:6c:f3:33 (auto-detected)
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numHeapArenas: 8
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numDirectArenas: 8
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.pageSize: 8192
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxOrder: 9
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.chunkSize: 4194304
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.smallCacheSize: 256
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.normalCacheSize: 64
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimInterval: 8192
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.useCacheForAllThreads: false
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.allocator.type: pooled
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.threadLocalDirectBufferSize: 0
-[00:53:18] [Render thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.maxThreadLocalCharBufferSize: 16384
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Starting local connection.
-[00:53:18] [Netty Local Client IO #0/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.maxCapacityPerThread: 4096
-[00:53:18] [Netty Local Client IO #0/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.ratio: 8
-[00:53:18] [Netty Local Client IO #0/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.chunkSize: 32
-[00:53:18] [Netty Local Client IO #0/DEBUG] [io.ne.ut.Recycler/]: -Dio.netty.recycler.blocking: false
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Starting local connection.
-[00:53:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'net.minecraftforge.network.HandshakeMessages$S2CModData' to 'fml:handshake' sequence 0
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 0
-[00:53:18] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7873
-[00:53:18] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[00:53:18] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
-[00:53:18] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
-[00:53:18] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[01:06:27] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:4c1c8b39] logged in with entity id 1 at (-8.5, 66.0, 22.5)
+[01:06:27] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[01:06:44] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
+[01:06:44] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[01:06:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:captain_america, item=fiskheroes:captain_americas_shield, poseScale=0.93749994, livery=null
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_america_layer2.png
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:boots from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:helmet from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deadpool_xmen, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:katana, mode=synthetic
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deadpool_xmen, texture=fiskheroes:textures/heroes/deadpool_xmen_layer1.png, poseAligned=true
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'minecraft:register' : Version test of 'FML3' from client : ACCEPTED
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'forge:split' : Version test of '1.1' from client : ACCEPTED
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from client : ACCEPTED
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Accepting channel list from client
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Accepted client connection mod list
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[00:53:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'net.minecraftforge.network.HandshakeMessages$S2CModList' to 'fml:handshake' sequence 1
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 1
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge]
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:loginwrapper' : Version test of 'FML3' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'forge:tier_sorting' : Version test of '1.0' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:handshake' : Version test of 'FML3' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'minecraft:unregister' : Version test of 'FML3' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:play' : Version test of 'FML3' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'minecraft:register' : Version test of 'FML3' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'forge:split' : Version test of '1.1' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from server : ACCEPTED
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Accepting channel list from server
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 1
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Accepted server connection
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/REGISTRIES]: Expecting 19 registries: [minecraft:command_argument_type, minecraft:recipe_serializer, minecraft:sound_event, minecraft:particle_type, minecraft:villager_profession, minecraft:item, minecraft:potion, minecraft:painting_variant, forge:fluid_type, minecraft:block_entity_type, forge:display_contexts, minecraft:block, forge:entity_data_serializers, minecraft:mob_effect, minecraft:stat_type, minecraft:menu, minecraft:enchantment, minecraft:fluid, minecraft:entity_type]
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 1
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 1 of type net.minecraftforge.network.HandshakeMessages$C2SModListReply
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge]
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:loginwrapper' : Version test of 'FML3' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'forge:tier_sorting' : Version test of '1.0' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:handshake' : Version test of 'FML3' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'minecraft:unregister' : Version test of 'FML3' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fml:play' : Version test of 'FML3' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'minecraft:register' : Version test of 'FML3' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'forge:split' : Version test of '1.1' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Channel 'fiskheroes:main' : Version test of '8' from client : ACCEPTED
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.NetworkRegistry/NETREGISTRY]: Accepting channel list from client
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Accepted client connection mod list
-[00:53:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 2
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 2
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[00:53:18] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 2
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 2
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 2 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[00:53:18] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[00:53:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[00:53:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
-[00:53:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
-[00:53:18] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[00:53:18] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[00:53:18] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[00:53:18] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:de761853] logged in with entity id 4 at (103.5, 67.0, 171.5)
-[00:53:18] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[00:53:18] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[00:53:19] [Server thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x4d19a769cd76aa5d
-[00:53:19] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[00:53:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[00:53:19] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[00:53:19] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[00:53:19] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
-[00:53:19] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
-[00:53:19] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[00:53:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[01:06:27] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
+[01:06:27] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[01:06:27] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 2
+[01:06:27] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 2
+[01:06:27] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
+[01:06:27] [Netty Local Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 2
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 2
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 2 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:06:27] [Netty Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[01:06:27] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[01:06:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
+[01:06:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
+[01:06:27] [Netty Local Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[01:06:27] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[01:06:27] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[01:06:27] [Server thread/INFO] [minecraft/PlayerList]: Dev[local:E:4c1c8b39] logged in with entity id 1 at (-8.5, 66.0, 22.5)
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[01:06:27] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[01:06:27] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
+[01:06:27] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
+[01:06:27] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
+[01:06:27] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[01:06:27] [Server thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xa816a4334b255f4b
+[01:06:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[01:06:28] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[01:06:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[01:06:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[01:06:36] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[01:06:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[01:06:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[01:06:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
+[01:06:43] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped The Flash/Barry Allen.]
+[01:06:43] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped The Flash/Barry Allen.
+[01:06:44] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
+[01:06:44] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[01:06:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[01:06:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[01:06:51] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[01:06:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[01:06:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_flash, index=1, matching=[SUPER_SPEED]
+[01:06:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[01:06:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_flash, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[01:06:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Captain America/Steve Rogers.]
+[01:06:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Captain America/Steve Rogers.
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:captain_america, item=fiskheroes:captain_americas_shield, poseScale=0.93749994, livery=null
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_america_layer2.png
+[01:06:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_america slot fiskheroes:boots from fiskheroes:textures/heroes/captain_america_layer1.png
+[01:06:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[01:06:58] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set the time to 1000]
+[01:06:58] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set the time to 1000
+[01:07:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 185.000000, 0.500000]
+[01:07:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 185.000000, 0.500000
+[01:07:04] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 11 advancements
+[01:07:06] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 121 block(s)]
+[01:07:06] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 121 block(s)
+[01:07:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:07:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[01:07:11] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Deadpool.]
+[01:07:11] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Deadpool.
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:helmet from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:chestplate from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Stowed dual katana meshes per anchor: 1
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:leggings from fiskheroes:textures/heroes/deadpool_xmen_layer2.png
+[01:07:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deadpool_xmen slot fiskheroes:boots from fiskheroes:textures/heroes/deadpool_xmen_layer1.png
+[01:07:11] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deadpool_xmen, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[01:07:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Replaced a slot on Dev with [Dual Katanas]]
+[01:07:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Replaced a slot on Dev with [Dual Katanas]
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:katana, mode=synthetic
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deadpool_xmen, texture=fiskheroes:textures/heroes/deadpool_xmen_layer1.png, poseAligned=true
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
+[01:07:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[01:07:21] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] DUAL_OFFHAND_EMPTY_OK
+[01:07:21] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] DUAL_OFFHAND_EMPTY_OK
