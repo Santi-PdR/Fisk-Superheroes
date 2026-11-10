@@ -80,6 +80,41 @@ def main():
             after = server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:freeze_grenade')
             if after != before: raise RuntimeError('Freeze grenade ignored its single-use cooldown')
             print('PASS: freeze grenade charge is consumed and cannot be reused during cooldown', flush=True)
+
+            # Select a fresh batarang, then ensure ordinary block use is not stolen.
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1.0)
+                xdo('click', '5')
+                time.sleep(0.5)
+            finally:
+                xdo('keyup', 'c')
+            command('setblock 0 181 3 minecraft:stone')
+            command('setblock 0 181 2 minecraft:lever[face=wall,facing=north,powered=false]')
+            xdo('click', '3')
+            command('execute if block 0 181 2 minecraft:lever[powered=true] run say BELT_BLOCK_USE_OK')
+            wait_for(server_log, r'BELT_BLOCK_USE_OK', 30, 'normal empty-hand lever interaction still works', server)
+            if 'Utility belt used: player=Dev, gadget=fiskheroes:batarang' in server_log.read_text(errors='replace'):
+                raise RuntimeError('Ordinary block interaction unexpectedly threw a batarang')
+            # Holding the belt key deliberately overrides block interaction for a close throw.
+            xdo('keydown', 'c')
+            try:
+                time.sleep(0.8)
+                xdo('click', '3')
+                wait_for(server_log, r'Utility belt used: player=Dev, gadget=fiskheroes:batarang',
+                         30, 'held belt key allows a close-range throw', server)
+            finally:
+                xdo('keyup', 'c')
+            count = server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:batarang')
+            command('setblock 0 181 2 minecraft:air')
+            command('setblock 0 181 3 minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 -10')
+            command('item replace entity Dev weapon.offhand with minecraft:snowball')
+            xdo('click', '3')
+            command('execute as Dev at @s if entity @e[type=minecraft:snowball,distance=..80] run say BELT_OFFHAND_OK')
+            wait_for(server_log, r'BELT_OFFHAND_OK', 30, 'real offhand item keeps vanilla use', server)
+            if server_log.read_text(errors='replace').count('Utility belt used: player=Dev, gadget=fiskheroes:batarang') != count:
+                raise RuntimeError('Offhand item use unexpectedly triggered the belt')
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
