@@ -3485,4 +3485,38 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void ricochetWebBouncesOnceThenSticks(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 200, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "ricochet-web-test"));
+        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setYRot(0); player.setXRot(0);
+        var first = base.offset(0, 1, 5);
+        var second = base.offset(0, 1, -5);
+        level.setBlockAndUpdate(first, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(second, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                "fiskheroes:ricochet_web", new com.google.gson.JsonObject(), new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.RICOCHET_WEB.get()), 0);
+        double launchSpeed = web.getDeltaMovement().length();
+        if (launchSpeed < 5.8 || launchSpeed > 6.2)
+        { helper.fail("Ricochet web must launch at approximately six blocks per tick: " + launchSpeed); return; }
+        web.setDeltaMovement(0, 0, 6); level.addFreshEntity(web);
+        helper.runAfterDelay(2, () -> {
+            var tag = new net.minecraft.nbt.CompoundTag(); web.addAdditionalSaveData(tag);
+            if (web.isRemoved() || web.isAttachedWeb() || tag.getByte("RicochetBounces") != 1
+                    || web.getDeltaMovement().z >= 0)
+            { helper.fail("Ricochet web must bounce off its first wall: pos=" + web.position() + " vel=" + web.getDeltaMovement()); return; }
+            helper.runAfterDelay(4, () -> {
+                if (web.isRemoved() || !web.isAttachedWeb()
+                        || web.webAnchor() != net.minecraft.core.Direction.SOUTH.get3DDataValue())
+                { helper.fail("Ricochet web must stick to its second wall: pos=" + web.position()); return; }
+                web.discard(); level.removeBlock(first, false); level.removeBlock(second, false); helper.succeed();
+            });
+        });
+    }
+
 }

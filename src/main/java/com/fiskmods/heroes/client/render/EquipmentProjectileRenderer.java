@@ -25,6 +25,7 @@ import net.minecraft.util.Mth;
 public final class EquipmentProjectileRenderer extends ThrownItemRenderer<EquipmentProjectileEntity>
 {
     private static final ResourceLocation WEB = FiskHeroes.id("textures/models/web_24.png");
+    private static final ResourceLocation SMALL_WEB = FiskHeroes.id("textures/models/web.png");
     private static final ResourceLocation TIMED_GRENADE = FiskHeroes.id("textures/models/grenade.png");
     private static final ResourceLocation BODY = FiskHeroes.id("textures/models/freeze_grenade.png");
     private static final ResourceLocation LIGHTS = FiskHeroes.id("textures/models/freeze_grenade_lights.png");
@@ -78,8 +79,11 @@ public final class EquipmentProjectileRenderer extends ThrownItemRenderer<Equipm
             MultiBufferSource buffers, int light)
     {
         if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics") && LOGGED.add(entity))
-            FiskHeroes.LOGGER.info("Sticky web patch rendered: anchor={}, pos={}, target={}", entity.webAnchor(), entity.position(),
+        {
+            if (entity.isStickyWeb()) FiskHeroes.LOGGER.info("Sticky web patch rendered: anchor={}, pos={}, target={}", entity.webAnchor(), entity.position(),
                     entity.level().getEntity(entity.webTargetId()));
+            else FiskHeroes.LOGGER.info("Web patch rendered: anchor={}", entity.webAnchor());
+        }
         pose.pushPose();
         if (entity.webAnchor() == 6)
         {
@@ -92,8 +96,8 @@ public final class EquipmentProjectileRenderer extends ThrownItemRenderer<Equipm
             if (face.getAxis() == net.minecraft.core.Direction.Axis.X) pose.mulPose(Axis.YP.rotationDegrees(90));
             if (face.getAxis() == net.minecraft.core.Direction.Axis.Y) pose.mulPose(Axis.XP.rotationDegrees(90));
         }
-        float w = 0.375F;
-        VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(WEB));
+        float w = entity.isStickyWeb() ? 0.375F : 0.25F;
+        VertexConsumer out = buffers.getBuffer(RenderType.entityCutoutNoCull(entity.isStickyWeb() ? WEB : SMALL_WEB));
         PoseStack.Pose p = pose.last();
         webVertex(out, p, -w, -w, 0, 1, light);
         webVertex(out, p, w, -w, 1, 1, light);

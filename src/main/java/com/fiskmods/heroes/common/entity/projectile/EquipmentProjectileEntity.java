@@ -89,7 +89,13 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     }
 
     public boolean isStickyWeb() { return gadget().endsWith(":sticky_web"); }
-    public boolean isAttachedWeb() { return isStickyWeb() && entityData.get(WEB_ANCHOR) >= 0; }
+    public boolean isWebProjectile()
+    {
+        String id = gadget();
+        return id.endsWith(":sticky_web") || id.endsWith(":impact_web")
+                || id.endsWith(":rapid_webs") || id.endsWith(":ricochet_web");
+    }
+    public boolean isAttachedWeb() { return isWebProjectile() && entityData.get(WEB_ANCHOR) >= 0; }
     public int webAnchor() { return entityData.get(WEB_ANCHOR); }
     public int webTargetId() { return entityData.get(WEB_TARGET); }
 
@@ -143,8 +149,9 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         if (gadget.endsWith(":throwing_star")) return 2.5F;
         if (isFreezeGrenade(gadget) || gadget.endsWith(":smoke_pellet")) return 1.25F;
         if (isTimedGrenade(gadget)) return 1.75F;
+        if (gadget.endsWith(":ricochet_web")) return 6.0F;
         if (gadget.endsWith(":sticky_web") || gadget.endsWith(":impact_web")
-                || gadget.endsWith(":rapid_webs") || gadget.endsWith(":ricochet_web")) return 7.5F;
+                || gadget.endsWith(":rapid_webs")) return 7.5F;
         return 1.75F;
     }
 
@@ -153,7 +160,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (isFreezeGrenade(gadget())) return 0.05F;
         if (isTimedGrenade(gadget())) return 0.075F;
-        if (gadget().endsWith("_web") || gadget().endsWith(":rapid_webs")) return 0.02F;
+        if (isWebProjectile()) return 0.02F;
         if (gadget().endsWith(":smoke_pellet")) return 0.025F;
         return 0.03F;
     }
@@ -245,7 +252,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     protected void onHitBlock(BlockHitResult hit)
     {
         if (level().isClientSide) return;
-        if (isStickyWeb())
+        if (gadget().endsWith(":ricochet_web") && ricochet(hit)) return;
+        if (isWebProjectile())
         {
             Vec3 contact = hit.getLocation();
             var face = hit.getDirection();
@@ -255,11 +263,10 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
             setDeltaMovement(Vec3.ZERO);
             setNoGravity(true);
             if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
-                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to block: face={}", face);
-        }
-        else if (gadget().endsWith(":ricochet_web"))
-        {
-            if (!ricochet(hit)) discard();
+            {
+                if (isStickyWeb()) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sticky web attached to block: face={}", face);
+                else com.fiskmods.heroes.FiskHeroes.LOGGER.info("Web attached to block: gadget={}, face={}", gadget(), face);
+            }
         }
         else if (isFreezeGrenade(gadget()))
         {
@@ -344,6 +351,8 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         Vec3 point = hit.getLocation().add(face.getStepX() * 0.02D, face.getStepY() * 0.02D, face.getStepZ() * 0.02D);
         setPos(point.x, point.y, point.z);
         entityData.set(RICOCHET_BOUNCES, (byte) 1);
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Ricochet web bounced: face={}, velocity={}", face, getDeltaMovement());
 
         if (level() instanceof ServerLevel serverLevel)
         {

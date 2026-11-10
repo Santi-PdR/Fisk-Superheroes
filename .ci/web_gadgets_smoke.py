@@ -105,6 +105,20 @@ def main():
                     int(shots[i + 1][1]) - int(shots[i][1]) != 2 for i in range(4)):
                 raise RuntimeError(f'Rapid web cadence is not two ticks: {shots}')
             print('PASS: rapid web burst fires one projectile every two server ticks', flush=True)
+            command('kill @e[type=fiskheroes:equipment_projectile]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('fill -2 180 7 2 183 7 minecraft:stone')
+            command('fill -2 180 -5 2 183 -5 minecraft:stone')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1); xdo('click', '4')
+                wait_for(server_log, r'Utility belt selection: player=Dev, gadget=fiskheroes:ricochet_web', 30, 'select ricochet web', server)
+            finally:
+                xdo('keyup', 'c')
+            time.sleep(0.5); xdo('click', '3')
+            wait_for(server_log, r'Ricochet web bounced: face=north', 30, 'ricochet web reflects from first wall', server)
+            wait_for(server_log, r'Web attached to block: gadget=fiskheroes:ricochet_web, face=south', 30, 'ricochet web sticks on second impact', server)
+            wait_for(client_log, r'Web patch rendered: anchor=3', 30, 'ricochet web patch renders on real client', client)
         finally:
             for p in reversed(processes):
                 if p.poll() is None:
