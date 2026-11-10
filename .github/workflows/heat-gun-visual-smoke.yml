@@ -79,13 +79,10 @@ jobs:
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/heat_gun.png
           mkdir -p .ci
-          { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
+          { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== original texture ===='; cat ci-heat-gun-real-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
-          for file in ci-heat-gun-{first,third-front,inventory,aimed,offhand,open-flame,real-first,real-night,real-open-flame}.png; do
-            test ! -f "$file" || cp "$file" ".ci/inspection-$file"
-          done
-          git add -f .ci/heat-gun-visual-log.txt .ci/inspection-ci-heat-gun-*.png
+          git add -f .ci/heat-gun-visual-log.txt
           git diff --cached --quiet || git commit -m 'ci: heat gun visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
