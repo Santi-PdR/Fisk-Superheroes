@@ -29,7 +29,10 @@ public final class DesertEagleAimPose
         amount = amount * amount * (3.0F - 2.0F * amount);
         if (amount <= 0.0F) return;
         float side = arm == HumanoidArm.RIGHT ? 1.0F : -1.0F;
-        pose.translate(-side * (dual ? 0.16F : 0.32F) * amount, 0.06F * amount, -0.04F * amount);
+        float scope = dual ? 0.0F : Mth.clamp(data.getData().getInterpolated(Vars.SCOPE_TIMER, partialTick), 0.0F, 1.0F);
+        scope = scope * scope * (3.0F - 2.0F * scope);
+        pose.translate(-side * ((dual ? 0.16F : 0.32F) * amount + 0.10F * scope),
+                0.06F * amount + 0.04F * scope, -0.04F * amount - 0.05F * scope);
         if (amount >= 0.95F && DIAGNOSTICS.add(arm))
             FiskHeroes.LOGGER.info("Desert eagle first-person aiming: arm={}", arm);
     }

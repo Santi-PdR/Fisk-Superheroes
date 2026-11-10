@@ -584,6 +584,17 @@ public final class AbilityHandler
         {
             data.getData().set(Vars.AIMING_TIMER, next);
         }
+
+        // The original Desert Eagle scope is available only while crouching and
+        // fully aiming a single pistol, not the dual variant.
+        boolean scoped = entity instanceof net.minecraft.world.entity.player.Player player
+                && player.isShiftKeyDown() && aiming && next >= 1.0F
+                && player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get())
+                && !com.fiskmods.heroes.common.item.ItemDualSword.isDual(player.getMainHandItem());
+        if (data.getData().get(Vars.SCOPING) != scoped) data.getData().set(Vars.SCOPING, scoped);
+        float scope = data.getData().get(Vars.SCOPE_TIMER);
+        float nextScope = net.minecraft.util.Mth.approach(scope, scoped ? 1.0F : 0.0F, 1.0F / 6.0F);
+        if (scope != nextScope) data.getData().set(Vars.SCOPE_TIMER, nextScope);
     }
 
     /** Resolves whether the named ability key is currently held on this logical side. */

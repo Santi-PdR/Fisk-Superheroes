@@ -2801,4 +2801,49 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void desertEagleScopeRequiresSinglePistolAimAndCrouch(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-scope-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:deadpool_xmen");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Deadpool or player data missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var gun = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, gun);
+        player.setShiftKeyDown(true);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var vars = data.getData();
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING))
+        { helper.fail("Crouching without aim must not scope"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+        for (int i = 0; i < 12; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER) < 0.99F)
+        { helper.fail("Single pistol should reach scoped state while crouched and aiming"); return; }
+        gun.getOrCreateTag().putBoolean("Dual", true);
+        for (int i = 0; i < 8; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER) > 0.01F)
+        { helper.fail("Dual pistols cannot scope and must leave the scope pose"); return; }
+        gun.getOrCreateTag().putBoolean("Dual", false);
+        for (int i = 0; i < 8; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        player.setShiftKeyDown(false);
+        for (int i = 0; i < 8; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER) > 0.01F)
+        { helper.fail("Standing must release the scoped state"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        helper.succeed();
+    }
+
 }

@@ -115,6 +115,18 @@ def main():
                 subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
             wait_for(observer_log, r'Remote aiming released: wearer=Partner',
                      60, 'observer sees remote aiming release', observer)
+            command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle{Ammo:0}')
+            subprocess.run(['xdotool', 'mousedown', '1'], check=True, timeout=30)
+            subprocess.run(['xdotool', 'keydown', 'Shift_L'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Remote scope active: wearer=Partner',
+                         60, 'observer sees remote scoped state', observer)
+                subprocess.run(['xdotool', 'keyup', 'Shift_L'], check=True, timeout=30)
+                wait_for(observer_log, r'Remote scope released: wearer=Partner',
+                         60, 'observer sees remote scope release', observer)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'Shift_L'], check=True, timeout=30)
+                subprocess.run(['xdotool', 'mouseup', '1'], check=True, timeout=30)
             command('item replace entity Partner weapon.mainhand with fiskheroes:katana{Dual:1b}')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)

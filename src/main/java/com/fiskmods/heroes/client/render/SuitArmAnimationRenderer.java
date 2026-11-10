@@ -44,10 +44,16 @@ public final class SuitArmAnimationRenderer
 
     // Opt-in test instrumentation: require a sustained aim rather than one packet/render race.
     private static final java.util.Map<Player, Integer> REMOTE_AIM_FRAMES = new java.util.WeakHashMap<>();
+    private static final java.util.Set<Player> REMOTE_SCOPED = java.util.Collections.newSetFromMap(new java.util.WeakHashMap<>());
     private static void recordRemoteAim(Player player)
     {
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
         if (data == null) return;
+        float scope = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER);
+        if (scope >= 0.95F && REMOTE_SCOPED.add(player))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote scope active: wearer={}", player.getName().getString());
+        else if (scope <= 0.01F && REMOTE_SCOPED.remove(player))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote scope released: wearer={}", player.getName().getString());
         float timer = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING_TIMER);
         int frames = REMOTE_AIM_FRAMES.getOrDefault(player, 0);
         if (timer >= 0.95F && frames < 20)

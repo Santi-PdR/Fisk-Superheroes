@@ -8,6 +8,8 @@ on:
       - '.github/workflows/desert-eagle-visual-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/DesertEagleItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/DesertEagleAimPose.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
       - 'src/main/java/com/fiskmods/heroes/common/item/ItemDesertEagle.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/GunVisualEffects.java'
       - 'src/main/java/com/fiskmods/heroes/common/network/PacketGunShotEffect.java'
@@ -67,10 +69,16 @@ jobs:
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/desert_eagle.png src/main/resources/assets/fiskheroes/textures/heroes/deadpool_xmen_gun.png
           mkdir -p .ci
-          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'Desert eagle reload pose|Gun shot effect|Desert eagle first-person aiming|First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
+          { cat ci-desert_eagle-test.log 2>/dev/null || true; grep -E 'Desert eagle reload pose|Gun shot effect|Desert eagle scope|Desert eagle first-person aiming|First-person desert eagle arm rendered|Held weapon livery: wearer=Dev.*desert_eagle|Equipped suit item rendered: hero=fiskheroes:deadpool_xmen' ci-desert_eagle-client.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-desert_eagle-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-desert_eagle-server.log 2>/dev/null || true; } > .ci/desert_eagle-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for file in ci-desert_eagle-single-{scoped,unscoped}.png; do
+            test ! -f "$file" || cp "$file" ".ci/inspection-$file"
+          done
           git add -f .ci/desert_eagle-visual-log.txt
+          for file in .ci/inspection-ci-desert_eagle-single-*scoped.png; do
+            test ! -f "$file" || git add -f "$file"
+          done
           git diff --cached --quiet || git commit -m 'ci: desert_eagle visual diagnostics [skip ci]' --no-verify
           for i in $(seq 1 20); do
             if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then

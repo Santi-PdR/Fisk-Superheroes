@@ -196,6 +196,16 @@ def main():
             screenshot('dual-first')
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:0}')
             capture_aim('dual-aim', [('LEFT', (380, 340, 640, 545)), ('RIGHT', (640, 340, 900, 545))])
+            xdo('keydown', 'Shift_L')
+            xdo('mousedown', '1')
+            try:
+                time.sleep(3)
+                if 'Desert eagle scope zoom active' in client_log.read_text(errors='replace'):
+                    raise RuntimeError('Dual pistols incorrectly activated scope zoom')
+            finally:
+                xdo('mouseup', '1')
+                xdo('keyup', 'Shift_L')
+            print('PASS: dual pistols do not scope while crouched and aiming', flush=True)
             wait_for(client_log, r'Desert eagle first-person aiming: arm=RIGHT', 60, 'main arm aims', client)
             wait_for(client_log, r'Desert eagle first-person aiming: arm=LEFT', 60, 'offhand arm aims', client)
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Dual:1b}')
@@ -249,6 +259,23 @@ def main():
                 raise RuntimeError('Empty gun incorrectly emitted a shot effect')
             print('PASS: empty gun emits no shot effect', flush=True)
             capture_aim('single-aim', [('RIGHT', (600, 340, 900, 545))])
+            xdo('mousedown', '1')
+            xdo('keydown', 'Shift_L')
+            try:
+                wait_for(client_log, r'Desert eagle scope zoom active', 60, 'single pistol scope zoom activates', client)
+                screenshot('single-scoped')
+                xdo('keyup', 'Shift_L')
+                wait_for(client_log, r'Desert eagle scope zoom released', 60, 'scope zoom releases when standing', client)
+                screenshot('single-unscoped')
+            finally:
+                xdo('keyup', 'Shift_L')
+                xdo('mouseup', '1')
+            scoped = Image.open('ci-desert_eagle-single-scoped.png').convert('RGB').crop((250, 190, 1000, 440))
+            unscoped = Image.open('ci-desert_eagle-single-unscoped.png').convert('RGB').crop((250, 190, 1000, 440))
+            changed = sum(a != b for a, b in zip(scoped.get_flattened_data(), unscoped.get_flattened_data()))
+            if changed < 1000:
+                raise RuntimeError(f'Scope zoom did not visibly change the view: {changed} pixels')
+            print(f'PASS: scope zoom visibly changes the view: {changed} pixels', flush=True)
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')

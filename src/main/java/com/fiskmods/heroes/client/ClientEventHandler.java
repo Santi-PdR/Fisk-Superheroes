@@ -546,11 +546,35 @@ public class ClientEventHandler
         return net.minecraft.client.Minecraft.getInstance().getFrameTime();
     }
 
+    private static boolean loggedEagleScope;
+    private static boolean loggedEagleScopeRelease;
+
     @SubscribeEvent
     public static void onComputeFov(net.minecraftforge.client.event.ComputeFovModifierEvent event)
     {
         var player = event.getPlayer();
-        if (player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get()))
+        if (Minecraft.getInstance().options.getCameraType().isFirstPerson()
+                && player.getMainHandItem().is(ModItems.DESERT_EAGLE.get())
+                && !com.fiskmods.heroes.common.item.ItemDualSword.isDual(player.getMainHandItem()))
+        {
+            SHPlayerData data = SHDataCapabilities.getPlayer(player);
+            if (data != null)
+            {
+                float scope = net.minecraft.util.Mth.clamp(data.getData().getInterpolated(Vars.SCOPE_TIMER, partialTicks()), 0.0F, 1.0F);
+                event.setNewFovModifier(event.getFovModifier() * (1.0F - 0.324F * scope));
+                if (scope >= 0.95F && !loggedEagleScope)
+                {
+                    loggedEagleScope = true;
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Desert eagle scope zoom active");
+                }
+                else if (scope <= 0.01F && loggedEagleScope && !loggedEagleScopeRelease)
+                {
+                    loggedEagleScopeRelease = true;
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Desert eagle scope zoom released");
+                }
+            }
+        }
+        else if (player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get()))
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(player);
             if (data != null && data.getData().get(Vars.AIMING))
