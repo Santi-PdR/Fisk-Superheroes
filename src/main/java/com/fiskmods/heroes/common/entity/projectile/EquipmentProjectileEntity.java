@@ -56,7 +56,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
                 velocityFor(gadget), 1.0F);
         if (isTimedGrenade(gadget))
         {
-            fuseTicks = number(config, "fuseTime", 40);
+            fuseTicks = Math.max(1, number(config, "fuseTime", 40));
         }
     }
 
@@ -124,7 +124,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     {
         if (gadget.endsWith(":batarang")) return 3.5F;
         if (gadget.endsWith(":throwing_star")) return 2.5F;
-        if (isFreezeGrenade(gadget)) return 1.25F;
+        if (isFreezeGrenade(gadget) || gadget.endsWith(":smoke_pellet")) return 1.25F;
         if (isTimedGrenade(gadget)) return 1.75F;
         if (gadget.endsWith(":sticky_web") || gadget.endsWith(":impact_web")
                 || gadget.endsWith(":rapid_webs") || gadget.endsWith(":ricochet_web")) return 7.5F;
@@ -134,7 +134,10 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
     @Override
     protected float getGravity()
     {
-        return isFreezeGrenade(gadget()) ? 0.05F : 0.03F;
+        if (isFreezeGrenade(gadget())) return 0.05F;
+        if (isTimedGrenade(gadget())) return 0.075F;
+        if (gadget().endsWith(":smoke_pellet")) return 0.025F;
+        return 0.03F;
     }
 
     @Override
@@ -178,7 +181,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
         if (isTimedGrenade(id))
         {
-            armOnImpact();
+            bounceOrDetonate(hit.getLocation(), null);
             return;
         }
         if (id.endsWith(":smoke_pellet"))
@@ -226,7 +229,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         }
         else if (isTimedGrenade(gadget()))
         {
-            armOnImpact();
+            bounceOrDetonate(hit.getLocation(), hit.getDirection());
         }
         else if (gadget().endsWith(":smoke_pellet"))
         {
@@ -266,16 +269,32 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         return true;
     }
 
-    private void armOnImpact()
+    /** Timed grenades bounce with damped velocity, while instant variants explode on contact. */
+    private void bounceOrDetonate(Vec3 contact, @javax.annotation.Nullable net.minecraft.core.Direction face)
     {
         if (config().has("isInstant") && config().get("isInstant").getAsBoolean())
         {
+            setPos(contact.x, contact.y, contact.z);
             detonate();
             return;
         }
-        setNoGravity(true);
-        setDeltaMovement(Vec3.ZERO);
-        if (fuseTicks <= 0) fuseTicks = number(config(), "fuseTime", 40);
+        Vec3 velocity = getDeltaMovement();
+        if (face == null)
+        {
+            velocity = velocity.scale(-0.3D);
+        }
+        else
+        {
+            velocity = new Vec3(face.getStepX() != 0 ? -velocity.x : velocity.x,
+                    face.getStepY() != 0 ? -velocity.y : velocity.y,
+                    face.getStepZ() != 0 ? -velocity.z : velocity.z).scale(0.3D);
+            contact = contact.add(face.getStepX() * 0.02D, face.getStepY() * 0.02D, face.getStepZ() * 0.02D);
+        }
+        if (velocity.lengthSqr() < 0.001D) velocity = Vec3.ZERO;
+        setPos(contact.x, contact.y, contact.z);
+        setDeltaMovement(velocity);
+        if (Boolean.getBoolean("fiskheroes.ciEquipmentDiagnostics") && tickCount < 8)
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Timed grenade bounced: velocity={}", velocity);
     }
 
     private void detonateFreeze(Vec3 center)

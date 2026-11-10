@@ -3214,10 +3214,10 @@ public final class PortRegressionTests
                 new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.GRENADE.get()), 0.0F);
         grenade.setDeltaMovement(0.0D, 0.0D, 1.75D);
         level.addFreshEntity(grenade);
-        helper.runAfterDelay(8, () -> {
-            if (grenade.isRemoved() || !grenade.isNoGravity())
-            { helper.fail("Normal grenade must remain armed on impact until its fuse expires"); return; }
-            helper.runAfterDelay(18, () -> {
+        helper.runAfterDelay(2, () -> {
+            if (grenade.isRemoved() || grenade.isNoGravity() || grenade.getDeltaMovement().z >= 0)
+            { helper.fail("Normal grenade must bounce on impact without detonating: velocity=" + grenade.getDeltaMovement()); return; }
+            helper.runAfterDelay(24, () -> {
                 if (!grenade.isRemoved()) { helper.fail("Normal grenade fuse did not expire"); return; }
                 level.removeBlock(wall, false); helper.succeed();
             });
