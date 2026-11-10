@@ -2921,4 +2921,44 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void gunInputDoesNotAlsoMineOrMelee(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "gun-input-test"));
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Gun input target missing"); return; }
+        var position = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(position.getX() + 0.5, position.getY(), position.getZ() + 0.5);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 2);
+        level.addFreshEntity(target);
+        for (var item : new net.minecraft.world.item.Item[] {com.fiskmods.heroes.common.item.ModItems.COLD_GUN.get(),
+                com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE.get(), com.fiskmods.heroes.common.item.ModItems.BERETTA_93R.get()})
+        {
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(item));
+            var attack = new net.minecraftforge.event.entity.player.AttackEntityEvent(player, target);
+            com.fiskmods.heroes.common.event.CommonEventHandler.onAttackEntity(attack);
+            if (!attack.isCanceled()) { helper.fail("Gun melee must be canceled"); return; }
+            var mine = new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(player, position,
+                    net.minecraft.core.Direction.UP, net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START);
+            com.fiskmods.heroes.common.event.CommonEventHandler.onGunMine(mine);
+            if (!mine.isCanceled()) { helper.fail("Gun mining must be canceled"); return; }
+            var abort = new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(player, position,
+                    net.minecraft.core.Direction.UP, net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.ABORT);
+            com.fiskmods.heroes.common.event.CommonEventHandler.onGunMine(abort);
+            if (abort.isCanceled()) { helper.fail("Mining abort must remain available after switching items"); return; }
+        }
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        var normalAttack = new net.minecraftforge.event.entity.player.AttackEntityEvent(player, target);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onAttackEntity(normalAttack);
+        var normalMine = new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(player, position,
+                net.minecraft.core.Direction.UP, net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onGunMine(normalMine);
+        if (normalAttack.isCanceled() || normalMine.isCanceled())
+        { helper.fail("Empty hands must retain vanilla attacks and mining"); return; }
+        target.discard();
+        helper.succeed();
+    }
+
 }

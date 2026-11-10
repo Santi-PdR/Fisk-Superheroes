@@ -35,7 +35,21 @@ public class CommonEventHandler
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
     public static void onAttackEntity(net.minecraftforge.event.entity.player.AttackEntityEvent event)
     {
+        if (com.fiskmods.heroes.common.item.ItemGun.isGun(event.getEntity().getMainHandItem()))
+        {
+            event.setCanceled(true);
+            return;
+        }
         com.fiskmods.heroes.common.hero.ability.MeleeCombat.prepareAttack(event.getEntity());
+    }
+
+    /** The server also rejects vanilla mining while a firearm occupies the main hand. */
+    @SubscribeEvent
+    public static void onGunMine(PlayerInteractEvent.LeftClickBlock event)
+    {
+        if (event.getAction() != PlayerInteractEvent.LeftClickBlock.Action.ABORT
+                && com.fiskmods.heroes.common.item.ItemGun.isGun(event.getEntity().getMainHandItem()))
+            event.setCanceled(true);
     }
 
     /** Uses the selected belt gadget when the player's hand is empty. */

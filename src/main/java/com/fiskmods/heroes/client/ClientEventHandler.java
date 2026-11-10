@@ -427,6 +427,19 @@ public class ClientEventHandler
         }
     }
 
+    /** Primary attack requests a server-authoritative gun shot, not a vanilla punch or mining action. */
+    @SubscribeEvent
+    public static void onGunAttack(InputEvent.InteractionKeyMappingTriggered event)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (!event.isAttack() || mc.player == null || mc.screen != null
+                || !com.fiskmods.heroes.common.item.ItemGun.isGun(mc.player.getMainHandItem())) return;
+        // Mouse/key input and the held-key tick already send the shot and AIM input.
+        // Canceling here preserves that input while stopping both startAttack and continueAttack.
+        event.setCanceled(true);
+        event.setSwingHand(false);
+    }
+
     /** Web use has its own long-range server raycast, not vanilla's short interaction reach. */
     @SubscribeEvent
     public static void onUseWeb(InputEvent.InteractionKeyMappingTriggered event)

@@ -62,9 +62,6 @@ def main():
             xdo('key', 'e')
             screenshot('inventory')
             xdo('key', 'e')
-            # Adventure mode prevents vanilla creative block breaking from
-            # destroying the ice immediately after the gun creates it.
-            command('gamemode adventure Dev')
             command('setblock 0 181 4 minecraft:water')
             xdo('mousedown', '1')
             try:
@@ -91,6 +88,15 @@ def main():
             xdo('click', '1')
             command('execute as Dev at @s if entity @e[type=fiskheroes:equipment_projectile,distance=..80] run say COLD_GRENADE_SHOT_OK')
             wait_for(server_log, r'COLD_GRENADE_SHOT_OK', 30, 'grenade mode launches a projectile', server)
+            # Point-blank creative mining must be suppressed even when holding attack.
+            command('setblock 0 181 2 minecraft:stone')
+            xdo('mousedown', '1')
+            try:
+                time.sleep(1.5)
+            finally:
+                xdo('mouseup', '1')
+            command('execute if block 0 181 2 minecraft:stone run say GUN_NO_MINING_OK')
+            wait_for(server_log, r'GUN_NO_MINING_OK', 30, 'gun attack does not mine blocks in creative', server)
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:cold_gun')
             screenshot('offhand')
