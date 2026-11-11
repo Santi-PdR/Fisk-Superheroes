@@ -133,19 +133,6 @@ public class TrickArrowEntity extends Arrow
         return getPhysics().damage();
     }
 
-    /** Keep type damage modifiers active regardless of which bow launched the arrow. */
-    @Override
-    public double getBaseDamage()
-    {
-        return super.getBaseDamage() * getDamageMultiplier();
-    }
-
-    @Override
-    public void setBaseDamage(double damage)
-    {
-        super.setBaseDamage(damage / getDamageMultiplier());
-    }
-
     private record ArrowPhysics(float velocity, float gravity, float damage)
     {
         private static final ArrowPhysics DEFAULT = new ArrowPhysics(1.5F, 0.05F, 1.0F);
@@ -407,21 +394,30 @@ public class TrickArrowEntity extends Arrow
             absorbWater(result.getEntity().blockPosition());
         }
 
-        if ("fireball".equals(getArrowType()))
+        // AbstractArrow uses its private baseDamage field directly, not getBaseDamage().
+        // Scale that field around the actual hit so all arrow types (and enchantments) apply.
+        double baseDamage = super.getBaseDamage();
+        super.setBaseDamage(baseDamage * getDamageMultiplier());
+        try
         {
-            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                    fireballDamageProfile(), () -> super.onHitEntity(result));
+            if ("fireball".equals(getArrowType()))
+            {
+                com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                        fireballDamageProfile(), () -> super.onHitEntity(result));
+            }
+            else if ("blaze".equals(getArrowType()))
+            {
+                com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                        blazeDamageProfile(), () -> super.onHitEntity(result));
+            }
+            else
+            {
+                super.onHitEntity(result);
+            }
         }
-        else if ("blaze".equals(getArrowType()))
+        finally
         {
-            // The original Blaze Arrow's DamageSource is explicitly fire damage. Keep that
-            // classification through suit resistances instead of treating it as a plain arrow.
-            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                    blazeDamageProfile(), () -> super.onHitEntity(result));
-        }
-        else
-        {
-            super.onHitEntity(result);
+            super.setBaseDamage(baseDamage);
         }
         if ("explosive_pufferfish".equals(getArrowType()))
         {

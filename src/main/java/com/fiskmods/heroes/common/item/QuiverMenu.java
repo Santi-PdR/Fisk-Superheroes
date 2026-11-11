@@ -19,6 +19,8 @@ public class QuiverMenu extends AbstractContainerMenu
     private final Inventory playerInventory;
     private final InteractionHand hand;
     private final ItemStackHandler arrows;
+    private final ItemStack openedQuiver;
+    private final int lockedHotbarSlot;
 
     public QuiverMenu(int id, Inventory inventory, net.minecraft.network.FriendlyByteBuf buffer)
     {
@@ -30,8 +32,9 @@ public class QuiverMenu extends AbstractContainerMenu
         super(ModMenus.QUIVER.get(), id);
         this.playerInventory = inventory;
         this.hand = hand;
-        ItemStack quiver = inventory.player.getItemInHand(hand);
-        this.arrows = ItemQuiver.createInventory(quiver);
+        this.openedQuiver = inventory.player.getItemInHand(hand);
+        this.lockedHotbarSlot = hand == InteractionHand.MAIN_HAND ? inventory.selected : -1;
+        this.arrows = ItemQuiver.createInventory(openedQuiver);
 
         for (int slot = 0; slot < 5; slot++)
         {
@@ -47,7 +50,12 @@ public class QuiverMenu extends AbstractContainerMenu
         }
         for (int column = 0; column < 9; column++)
         {
-            addSlot(new Slot(inventory, column, 8 + column * 18, 142));
+            final int inventorySlot = column;
+            addSlot(new Slot(inventory, column, 8 + column * 18, 142)
+            {
+                @Override public boolean mayPickup(Player player) { return inventorySlot != lockedHotbarSlot; }
+                @Override public boolean mayPlace(ItemStack stack) { return inventorySlot != lockedHotbarSlot; }
+            });
         }
     }
 
@@ -55,12 +63,16 @@ public class QuiverMenu extends AbstractContainerMenu
     public boolean stillValid(Player player)
     {
         ItemStack stack = player.getItemInHand(hand);
-        return !stack.isEmpty() && stack.getItem() instanceof ItemQuiver;
+        return !stack.isEmpty() && stack == openedQuiver && stack.getItem() instanceof ItemQuiver;
     }
 
     @Override
     public void clicked(int slotId, int button, ClickType clickType, Player player)
     {
+        if (!stillValid(player)) return;
+        // Number-key and offhand swaps bypass the destination slot's mayPickup check.
+        if (clickType == ClickType.SWAP && (button == lockedHotbarSlot
+                || (hand == InteractionHand.OFF_HAND && button == 40))) return;
         if (slotId >= 0 && slotId < 5)
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(player);
@@ -72,9 +84,9 @@ public class QuiverMenu extends AbstractContainerMenu
     @Override
     public ItemStack quickMoveStack(Player player, int index)
     {
-        if (index < 0 || index >= slots.size()) return ItemStack.EMPTY;
+        if (!stillValid(player) || index < 0 || index >= slots.size()) return ItemStack.EMPTY;
         Slot slot = slots.get(index);
-        if (!slot.hasItem()) return ItemStack.EMPTY;
+        if (!slot.hasItem() || !slot.mayPickup(player)) return ItemStack.EMPTY;
 
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();

@@ -1293,6 +1293,88 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void trickArrowTypeDamageIsAppliedToActualImpacts(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer();
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Arrow target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 2); level.addFreshEntity(target);
+        var normal = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "normal");
+        normal.setPos(player.getX(), player.getY() + 1, player.getZ()); normal.setDeltaMovement(0, 0, 2);
+        level.addFreshEntity(normal); normal.tick();
+        float ordinaryDamage = target.getMaxHealth() - target.getHealth();
+        target.setHealth(target.getMaxHealth()); target.invulnerableTime = 0;
+        var carrot = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "carrot");
+        carrot.setPos(player.getX(), player.getY() + 1, player.getZ()); carrot.setDeltaMovement(0, 0, 2);
+        level.addFreshEntity(carrot); carrot.tick();
+        float carrotDamage = target.getMaxHealth() - target.getHealth();
+        if (Math.abs(ordinaryDamage - 4) > .01 || Math.abs(carrotDamage - 1) > .01)
+        { helper.fail("Arrow type multipliers must affect actual damage: normal=" + ordinaryDamage + ", carrot=" + carrotDamage); return; }
+        target.discard(); normal.discard(); carrot.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void quiverBowCreativeAndTripleAmmoDoNotDuplicate(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-ammo-test"));
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var ammo = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("triple"); ammo.setCount(3);
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0, ammo);
+        player.getInventory().setItem(1, quiver);
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        player.getAbilities().instabuild = true;
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        var bounds = player.getBoundingBox().inflate(4);
+        var arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class,
+                bounds, arrow -> arrow.getOwner() == player);
+        if (arrows.size() != 3 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 3
+                || arrows.stream().anyMatch(a -> a.pickup == net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED))
+        { helper.fail("Creative triple shot must preserve quiver ammo and forbid survival pickup"); return; }
+        arrows.forEach(net.minecraft.world.entity.Entity::discard);
+        player.getAbilities().instabuild = false;
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class,
+                bounds, arrow -> arrow.getOwner() == player && arrow.isAlive());
+        if (arrows.size() != 3 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 2
+                || arrows.stream().filter(a -> a.pickup == net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED).count() != 1)
+        { helper.fail("Survival triple shot must consume one arrow and have only one recoverable projectile"); return; }
+        arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void openQuiverCannotBeMovedOrReplaced(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW, 4));
+        player.getInventory().selected = 0;
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, quiver);
+        var menu = new com.fiskmods.heroes.common.item.QuiverMenu(1, player.getInventory(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        if (!menu.stillValid(player) || !menu.quickMoveStack(player, 32).isEmpty())
+        { helper.fail("Open quiver must not be shift-moved"); return; }
+        menu.clicked(0, 0, net.minecraft.world.inventory.ClickType.SWAP, player);
+        if (player.getMainHandItem() != quiver || menu.getSlot(0).getItem().getCount() != 4)
+        { helper.fail("Number key must not swap open quiver out of its hand"); return; }
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get()));
+        if (menu.stillValid(player)) { helper.fail("Replacing the quiver must invalidate its old inventory"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureMasksAndHue(GameTestHelper helper)
     {
         int red = 0xFF0000FF; // NativeImage stores ABGR, not ARGB.

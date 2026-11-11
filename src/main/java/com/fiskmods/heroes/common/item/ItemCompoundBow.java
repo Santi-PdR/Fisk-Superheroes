@@ -72,6 +72,9 @@ public class ItemCompoundBow extends BowItem
         float inaccuracy = horizontal ? 0.5F : 1.0F;
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity * power, inaccuracy);
         prepareArrow(arrow, bow, power);
+        boolean infinite = player.getAbilities().instabuild || (!quiverAmmo && arrowStack.is(Items.ARROW)
+                && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0);
+        if (infinite) arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
 
         if (level.addFreshEntity(arrow))
         {
@@ -87,18 +90,16 @@ public class ItemCompoundBow extends BowItem
                     extra.shootFromRotation(player, player.getXRot(), player.getYRot() + offset, 0.0F,
                             velocity * power, inaccuracy * 1.5F);
                     prepareArrow(extra, bow, power);
+                    // One consumed arrow creates three projectiles, but only the central
+                    // projectile can be recovered; otherwise ammunition multiplies.
+                    extra.pickup = AbstractArrow.Pickup.DISALLOWED;
                     level.addFreshEntity(extra);
                 }
             }
-            if (quiverAmmo)
+            if (!infinite)
             {
-                ItemQuiver.consumeArrow(player, quiverArrowSlot);
-            }
-            else if (!player.getAbilities().instabuild
-                    && !(arrowStack.is(net.minecraft.world.item.Items.ARROW)
-                            && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0))
-            {
-                arrowStack.shrink(1);
+                if (quiverAmmo) ItemQuiver.consumeArrow(player, quiverArrowSlot);
+                else arrowStack.shrink(1);
             }
             bow.hurtAndBreak(1, player, user -> user.broadcastBreakEvent(player.getUsedItemHand()));
             float pitch = 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F;

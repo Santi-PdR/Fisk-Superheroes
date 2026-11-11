@@ -230,6 +230,7 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     {
         setTarget(entity);
         entityData.set(ATTACHED, true);
+        setPos(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5D, entity.getZ());
         setDeltaMovement(Vec3.ZERO);
         setNoGravity(true);
     }
