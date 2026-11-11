@@ -158,6 +158,10 @@ public class ItemGun extends Item
             showUseNotice(player, "message.fiskheroes.gun.not_permitted");
             return false;
         }
+        // Energy firearms originally fire only while their AIM binding is active. Validate
+        // this on the server, including direct item-use and forged fire packets.
+        if ((this instanceof ItemChronosRifle || this instanceof ItemRipHuntersGun)
+                && !data.getData().get(Vars.AIMING)) return false;
         if (data.getData().get(Vars.RELOAD_TIMER) > 0.0F)
         {
             return false;
@@ -237,15 +241,17 @@ public class ItemGun extends Item
             com.google.gson.JsonObject profile = new com.google.gson.JsonObject();
             profile.addProperty("damage", damage);
             com.google.gson.JsonObject types = new com.google.gson.JsonObject();
-            types.addProperty(id.equals("chronos_rifle") ? "ENERGY" : "BULLET", 1.0D);
+            types.addProperty("ENERGY", 1.0D);
             profile.add("types", types);
 
             SHPlayerData data = SHDataCapabilities.getPlayer(shooter);
-            boolean scoped = id.equals("chronos_rifle") && data != null
-                    && data.getData().get(Vars.AIMING);
+            boolean scoped = data != null && data.getData().get(Vars.SCOPE_TIMER) > 0.0F;
             var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
                     shooter, profile, damage * (scoped ? 1.6F : 1.0F), id.equals("chronos_rifle"), 4.0F, 0.0F);
             level.addFreshEntity(bolt);
+            if (Boolean.getBoolean("fiskheroes.ciEnergyGunDiagnostics"))
+                FiskHeroes.LOGGER.info("Energy gun shot: item={}, shooter={}, scoped={}, damage={}, explosive={}",
+                        id, shooter.getName().getString(), scoped, damage * (scoped ? 1.6F : 1.0F), id.equals("chronos_rifle"));
             return;
         }
 

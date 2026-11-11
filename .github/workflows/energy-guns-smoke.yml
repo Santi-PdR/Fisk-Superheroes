@@ -1,0 +1,77 @@
+name: Energy Guns Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/energy_guns_smoke.py'
+      - '.ci/tonfa_visual_smoke.py'
+      - '.github/workflows/energy-guns-smoke.yml'
+      - '.ci/client_identity.gradle'
+      - 'build.gradle'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemGun.java'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemChronosRifle.java'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemRipHuntersGun.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/EnergyBoltEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/EnergyBoltRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/hud/ChronosScope.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+concurrency:
+  group: energy-guns-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
+          python3 -m pip install --user 'pillow>=13,<14'
+      - name: Prepare server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-energy-server run-energy-client/config
+          printf 'earlyWindowControl = false\n' > run-energy-client/config/fml.toml
+          echo 'eula=true' > run-energy-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-energy-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Exercise energy guns
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/energy_guns_smoke.py 2>&1 | tee ci-energy-guns-test.log
+      - name: Upload captures and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: energy-guns-diagnostics
+          path: |
+            ci-energy-guns-*.png
+            ci-energy-guns-*.log
+          if-no-files-found: ignore
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          { cat ci-energy-guns-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'Energy gun shot|Energy bolt rendered|Chronos scope overlay|Exception|Error|FATAL' "ci-energy-guns-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-energy-guns-$f.log" 2>/dev/null || true; done; } > /tmp/energy-guns-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard FETCH_HEAD
+            cp /tmp/energy-guns-log.txt .ci/energy-guns-log.txt
+            git add -f .ci/energy-guns-log.txt
+            git diff --cached --quiet && break
+            git commit -m 'ci: energy guns diagnostics [skip ci]' --no-verify
+            git push origin "HEAD:$GITHUB_REF_NAME" && break
+            sleep 5
+          done

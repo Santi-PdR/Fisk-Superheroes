@@ -18,6 +18,8 @@ import net.minecraft.world.phys.Vec3;
 /** Glowing bolt mesh tinted by the shooter's original energy_bolt color property. */
 public final class EnergyBoltRenderer extends EntityRenderer<EnergyBoltEntity>
 {
+    private static final java.util.Set<String> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
     public EnergyBoltRenderer(EntityRendererProvider.Context context)
     {
         super(context);
@@ -37,6 +39,12 @@ public final class EnergyBoltRenderer extends EntityRenderer<EnergyBoltEntity>
         Vec3 tail = forward.scale(-0.22D);
         Vec3 tip = forward.scale(0.22D);
         int color = color(entity);
+        if (Boolean.getBoolean("fiskheroes.ciEnergyGunDiagnostics"))
+        {
+            String owner = entity.getOwner() != null ? entity.getOwner().getName().getString() : "none";
+            if (DIAGNOSTICS.add(owner + "|" + color))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Energy bolt rendered: owner={}, color={}", owner, String.format("%06X", color));
+        }
         VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
         PoseStack.Pose pose = poseStack.last();
         drawRibbon(consumer, pose, tail, tip, right.scale(0.055D), color, 245);

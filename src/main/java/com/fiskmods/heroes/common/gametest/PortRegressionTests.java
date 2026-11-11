@@ -2847,6 +2847,80 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void energyWeaponsRequireAimAndScopeCorrectly(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-energy-gun-test"));
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        var guns = new com.fiskmods.heroes.common.item.ItemGun[] {
+                (com.fiskmods.heroes.common.item.ItemGun) com.fiskmods.heroes.common.item.ModItems.CHRONOS_RIFLE.get(),
+                (com.fiskmods.heroes.common.item.ItemGun) com.fiskmods.heroes.common.item.ModItems.RIP_HUNTERS_GUN.get()};
+        String[] heroes = {"fiskheroes:chronos", "fiskheroes:rip_hunter"};
+        for (int n = 0; n < guns.length; ++n)
+        {
+            var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase(heroes[n]);
+            if (hero == null) { helper.fail("Energy gun hero missing"); return; }
+            for (int i = 0; i < 4; ++i)
+                player.setItemSlot(slots[i], hero.getDefaultIteration().hasPieceOfSet(i)
+                        ? com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]) : net.minecraft.world.item.ItemStack.EMPTY);
+            var stack = new net.minecraft.world.item.ItemStack(guns[n]);
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+            com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+            var vars = data.getData();
+            player.setShiftKeyDown(false);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
+            for (int i = 0; i < 12; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+            if (guns[n].fireFromAttack(player, stack) || stack.getOrCreateTag().contains("NextShotTick"))
+            { helper.fail("Energy gun must not fire or consume cooldown without aim"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+            if (!guns[n].fireFromAttack(player, stack))
+            { helper.fail("Aiming must allow the energy gun to fire"); return; }
+            var bolts = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity.class,
+                    player.getBoundingBox().inflate(2), bolt -> bolt.getOwner() == player);
+            if (bolts.size() != 1) { helper.fail("Expected one unscoped energy bolt"); return; }
+            var unscoped = new net.minecraft.nbt.CompoundTag();
+            bolts.get(0).saveWithoutId(unscoped);
+            bolts.get(0).discard();
+            float baseDamage = n == 0 ? 6.0F : 5.0F;
+            if (Math.abs(unscoped.getFloat("Damage") - baseDamage) > 0.001F
+                    || unscoped.getBoolean("Explosive") != (n == 0)
+                    || !unscoped.getString("DamageProfile").contains("ENERGY"))
+            { helper.fail("Unscoped energy projectile damage, type or explosion is incorrect"); return; }
+            player.setShiftKeyDown(true);
+            for (int i = 0; i < 12; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+            if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING)
+                    || vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER) < 0.99F)
+            { helper.fail("Crouch and fully raised aim must scope the energy gun"); return; }
+            stack.getOrCreateTag().remove("NextShotTick");
+            if (!guns[n].fireFromAttack(player, stack)) { helper.fail("Scoped shot failed"); return; }
+            bolts = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity.class,
+                    player.getBoundingBox().inflate(2), bolt -> bolt.getOwner() == player && bolt.isAlive());
+            if (bolts.size() != 1) { helper.fail("Expected one scoped energy bolt"); return; }
+            var scoped = new net.minecraft.nbt.CompoundTag();
+            bolts.get(0).saveWithoutId(scoped);
+            bolts.get(0).discard();
+            if (Math.abs(scoped.getFloat("Damage") - baseDamage * 1.6F) > 0.001F)
+            { helper.fail("Only scoped energy bolts should receive the 1.6x damage bonus"); return; }
+            player.setShiftKeyDown(false);
+            for (int i = 0; i < 8; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+            if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPING)
+                    || vars.get(com.fiskmods.heroes.common.data.var.Vars.SCOPE_TIMER) > 0.01F)
+            { helper.fail("Standing must release the scope"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void berettaPendingBurstStopsDuringReload(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

@@ -617,13 +617,16 @@ public class ClientEventHandler
                 }
             }
         }
-        else if (player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get()))
+        else if (Minecraft.getInstance().options.getCameraType().isFirstPerson()
+                && (player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get())
+                    || player.getMainHandItem().is(ModItems.RIP_HUNTERS_GUN.get())))
         {
             SHPlayerData data = SHDataCapabilities.getPlayer(player);
-            if (data != null && data.getData().get(Vars.AIMING))
+            if (data != null)
             {
-                float timer = net.minecraft.util.Mth.clamp(data.getData().get(Vars.AIMING_TIMER), 0.0F, 1.0F);
-                event.setNewFovModifier(event.getFovModifier() * (1.0F - 0.45F * timer));
+                float scope = net.minecraft.util.Mth.clamp(data.getData().getInterpolated(Vars.SCOPE_TIMER, partialTicks()), 0.0F, 1.0F);
+                float zoom = player.getMainHandItem().is(ModItems.CHRONOS_RIFLE.get()) ? 0.72F : 0.324F;
+                event.setNewFovModifier(event.getFovModifier() * (1.0F - zoom * scope));
             }
         }
     }
@@ -634,5 +637,6 @@ public class ClientEventHandler
         com.fiskmods.heroes.common.data.RenderTickInfo.set(com.fiskmods.heroes.client.ClientEventHandler.partialTicks());
 
         SuitHud.render(event.getGuiGraphics(), event.getPartialTick());
+        com.fiskmods.heroes.client.hud.ChronosScope.render(event.getGuiGraphics(), event.getPartialTick());
     }
 }
