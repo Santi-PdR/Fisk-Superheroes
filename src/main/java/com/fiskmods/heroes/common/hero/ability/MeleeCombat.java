@@ -67,7 +67,7 @@ public final class MeleeCombat
     }
 
     /** Snapshot before outgoing modifiers consume a charged punch. */
-    public static double extraKnockback(LivingEntity attacker, DamageSource source)
+    public static double extraKnockback(LivingEntity attacker, DamageSource source, boolean hooked)
     {
         if (!(attacker instanceof Player player) || player.level().isClientSide || !isDirectMelee(attacker, source)) return 0.0D;
         var data = SHDataCapabilities.getPlayer(player);
@@ -77,7 +77,7 @@ public final class MeleeCombat
         if (knockback == null) return 0.0D;
         double vanilla = net.minecraft.world.item.enchantment.EnchantmentHelper.getKnockbackBonus(player);
         if (player.isSprinting() && player.getAttackStrengthScale(0.5F) > 0.9F) vanilla++;
-        return Math.max(0.0D, apply(knockback, vanilla) - vanilla);
+        return Math.max(0.0D, apply(knockback, vanilla + (hooked ? 4.0D : 0.0D)) - vanilla);
     }
 
     public static boolean isDirectMelee(LivingEntity attacker, DamageSource source)

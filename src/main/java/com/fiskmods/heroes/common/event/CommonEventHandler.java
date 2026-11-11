@@ -245,7 +245,10 @@ public class CommonEventHandler
 
         net.minecraft.world.entity.Entity attackerEntity = event.getSource().getEntity();
         LivingEntity attacker = attackerEntity instanceof LivingEntity living ? living : null;
-        double knockback = com.fiskmods.heroes.common.hero.ability.MeleeCombat.extraKnockback(attacker, event.getSource());
+        boolean hooked = com.fiskmods.heroes.common.hero.ability.MeleeCombat.isDirectMelee(attacker, event.getSource())
+                && com.fiskmods.heroes.common.hero.HeroTracker.getHeroType(attacker) != null
+                && com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity.isHooked(attacker, entity);
+        double knockback = com.fiskmods.heroes.common.hero.ability.MeleeCombat.extraKnockback(attacker, event.getSource(), hooked);
         float outgoing;
         try
         {
@@ -256,6 +259,7 @@ public class CommonEventHandler
             if (attacker != null && com.fiskmods.heroes.common.hero.ability.MeleeCombat.isDirectMelee(attacker, event.getSource()))
                 com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(attacker);
         }
+        if (hooked) outgoing *= 1.25F;
         float result = ModifierHandler.modifyDamage(entity, event.getSource(), outgoing);
 
         if (result <= 0)

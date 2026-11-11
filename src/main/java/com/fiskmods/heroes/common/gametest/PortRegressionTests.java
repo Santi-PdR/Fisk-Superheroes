@@ -1249,6 +1249,12 @@ public final class PortRegressionTests
         { helper.fail("First hook must attach to the hit entity"); return; }
         if (target.getDeltaMovement().z >= 0 || player.getDeltaMovement().lengthSqr() > 0.0001)
         { helper.fail("Hooking an entity must reel the target in without pulling the shooter"); return; }
+        target.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        var melee = new net.minecraftforge.event.entity.living.LivingHurtEvent(target,
+                player.damageSources().playerAttack(player), 4.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingHurt(melee);
+        if (Math.abs(melee.getAmount() - 5.0F) > .001F || target.getDeltaMovement().horizontalDistanceSqr() < 1.0)
+        { helper.fail("Melee against hooked targets must gain 25% damage and four knockback levels"); return; }
         var result = player.getMainHandItem().use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
         var pairs = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity.class,
                 player.getBoundingBox().inflate(16), candidate -> candidate.isPair() && candidate.getOwner() == player);
@@ -1357,6 +1363,9 @@ public final class PortRegressionTests
     public static void openQuiverCannotBeMovedOrReplaced(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
+        var customArrow = new net.minecraft.world.item.ArrowItem(new net.minecraft.world.item.Item.Properties());
+        if (!com.fiskmods.heroes.common.item.ItemQuiver.isArrow(new net.minecraft.world.item.ItemStack(customArrow)))
+        { helper.fail("Quiver must accept other mods' ArrowItem subclasses"); return; }
         var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
         com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0,
                 new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW, 4));

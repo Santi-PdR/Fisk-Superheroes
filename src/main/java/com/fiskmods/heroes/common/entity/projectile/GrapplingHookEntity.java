@@ -35,6 +35,8 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     // Network entity ids are transient. Persist the UUID and re-resolve it after reload.
     private java.util.UUID targetUuid;
     private int missingTargetTicks;
+    private float grappleTimer;
+    private float previousGrappleTimer;
 
     public GrapplingHookEntity(EntityType<? extends GrapplingHookEntity> type, Level level)
     {
@@ -84,6 +86,20 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         return entityData.get(ATTACHED);
     }
 
+    public float grappleProgress(float partialTick)
+    {
+        return net.minecraft.util.Mth.lerp(partialTick, previousGrappleTimer, grappleTimer);
+    }
+
+    /** True only for the shooter's live, first hook attached to this victim. */
+    public static boolean isHooked(Entity shooter, Entity target)
+    {
+        if (shooter == null || target == null || shooter.level() != target.level()) return false;
+        return !target.level().getEntitiesOfClass(GrapplingHookEntity.class, target.getBoundingBox().inflate(16),
+                hook -> hook.isAlive() && !hook.isPair() && hook.isAttached()
+                        && hook.getOwner() == shooter && hook.getAttachedEntity() == target).isEmpty();
+    }
+
     public boolean isPair()
     {
         return entityData.get(PAIR);
@@ -105,6 +121,8 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     public void tick()
     {
         lifeTicks++;
+        previousGrappleTimer = grappleTimer;
+        if (isAttached()) grappleTimer = Math.min(1.0F, grappleTimer + 0.2F);
         if (!level().isClientSide && targetUuid != null && level() instanceof net.minecraft.server.level.ServerLevel server)
         {
             Entity target = server.getEntity(targetUuid);

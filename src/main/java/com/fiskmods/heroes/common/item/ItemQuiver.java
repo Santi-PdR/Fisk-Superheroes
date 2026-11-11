@@ -52,8 +52,7 @@ public class ItemQuiver extends Item
 
     public static boolean isArrow(ItemStack stack)
     {
-        return !stack.isEmpty() && (stack.is(Items.ARROW) || stack.is(Items.TIPPED_ARROW) || stack.is(Items.SPECTRAL_ARROW)
-                || stack.getItem() instanceof ItemTrickArrow);
+        return !stack.isEmpty() && stack.getItem() instanceof net.minecraft.world.item.ArrowItem;
     }
 
     public static ItemStack findQuiver(Player player)
