@@ -124,6 +124,42 @@ public class ItemTrickArrow extends ArrowItem
     }
 
     @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(Level level, net.minecraft.world.entity.player.Player player,
+            net.minecraft.world.InteractionHand hand)
+    {
+        ItemStack stack = player.getItemInHand(hand);
+        if ("carrot".equals(getType(stack)) && player.canEat(false))
+        {
+            player.startUsingItem(hand);
+            return net.minecraft.world.InteractionResultHolder.consume(stack);
+        }
+        return net.minecraft.world.InteractionResultHolder.pass(stack);
+    }
+
+    @Override public net.minecraft.world.item.UseAnim getUseAnimation(ItemStack stack)
+    { return "carrot".equals(getType(stack)) ? net.minecraft.world.item.UseAnim.EAT : net.minecraft.world.item.UseAnim.NONE; }
+    @Override public int getUseDuration(ItemStack stack) { return "carrot".equals(getType(stack)) ? 32 : 0; }
+
+    @Override
+    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity living)
+    {
+        if (!(living instanceof net.minecraft.world.entity.player.Player player) || !"carrot".equals(getType(stack))) return stack;
+        if (!level.isClientSide)
+        {
+            player.getFoodData().eat(4, 0.6F);
+            player.playSound(net.minecraft.sounds.SoundEvents.PLAYER_BURP, 0.5F, 1.0F);
+            if (!player.getAbilities().instabuild)
+            {
+                stack.shrink(1);
+                ItemStack recovered = createStack(NORMAL);
+                if (stack.isEmpty()) return recovered;
+                if (!player.getInventory().add(recovered)) player.drop(recovered, false);
+            }
+        }
+        return stack;
+    }
+
+    @Override
     public AbstractArrow createArrow(Level level, ItemStack stack, LivingEntity shooter)
     {
         String type = getType(stack);

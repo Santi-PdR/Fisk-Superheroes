@@ -115,6 +115,8 @@ public class SHClientSetup
                 return Math.nextUp(0.01F + Math.floorMod(id.getPath().hashCode(), 9999) / 10000.0F);
             };
 
+            ItemProperties.register(com.fiskmods.heroes.common.item.ModItems.QUIVER.get(), FiskHeroes.id("automatic"),
+                    (stack, level, entity, seed) -> com.fiskmods.heroes.common.item.ItemQuiver.isAutomatic(stack) ? 1.0F : 0.0F);
             ItemProperties.register(com.fiskmods.heroes.common.item.ModItems.HELMET.get(), HERO_INDEX, function);
             ItemProperties.register(com.fiskmods.heroes.common.item.ModItems.CHESTPLATE.get(), HERO_INDEX, function);
             ItemProperties.register(com.fiskmods.heroes.common.item.ModItems.LEGGINGS.get(), HERO_INDEX, function);

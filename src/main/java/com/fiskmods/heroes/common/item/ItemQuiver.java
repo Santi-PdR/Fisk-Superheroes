@@ -20,6 +20,51 @@ import net.minecraftforge.network.NetworkHooks;
 public class ItemQuiver extends Item
 {
     private static final String INVENTORY_TAG = "QuiverInventory";
+    private static final String AUTO_TAG = "Automatic";
+
+    public static boolean isAutomatic(ItemStack stack)
+    {
+        return stack.is(ModItems.QUIVER.get()) && stack.hasTag() && stack.getTag().getBoolean(AUTO_TAG);
+    }
+
+    public static ItemStack makeAutomatic(ItemStack stack)
+    {
+        ItemStack result = stack.copy();
+        result.setCount(1);
+        result.getOrCreateTag().putBoolean(AUTO_TAG, true);
+        return result;
+    }
+
+    @Override
+    public Component getName(ItemStack stack)
+    {
+        return isAutomatic(stack) ? Component.translatable("item.quiver.auto.name") : super.getName(stack);
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, net.minecraft.world.entity.Entity entity, int slot, boolean selected)
+    {
+        if (level.isClientSide || !(entity instanceof Player player) || !isAutomatic(stack) || selected
+                || player.tickCount % 8 != 0
+                || (player.containerMenu instanceof QuiverMenu menu && menu.isOpenedQuiver(stack))) return;
+        ItemStackHandler arrows = createInventory(stack);
+        for (ItemStack candidate : player.getInventory().items)
+        {
+            // Original auto-quiver transfers one trick arrow every eight ticks.
+            if (candidate.isEmpty() || !(candidate.getItem() instanceof ItemTrickArrow)) continue;
+            ItemStack one = candidate.copy();
+            one.setCount(1);
+            for (int i = 0; i < arrows.getSlots(); ++i)
+            {
+                if (arrows.insertItem(i, one, false).isEmpty())
+                {
+                    candidate.shrink(1);
+                    player.getInventory().setChanged();
+                    return;
+                }
+            }
+        }
+    }
 
     public ItemQuiver(Properties properties)
     {

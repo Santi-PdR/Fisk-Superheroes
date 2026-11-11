@@ -69,6 +69,7 @@ public class FiskHeroes
         IEventBus modBus = context.getModEventBus();
 
         ModItems.REGISTRY.register(modBus);
+        com.fiskmods.heroes.common.recipe.ModRecipes.REGISTRY.register(modBus);
         ModBlocks.REGISTRY.register(modBus);
         ModBlocks.ITEMS.register(modBus);
         com.fiskmods.heroes.common.block.ModBlockEntities.REGISTRY.register(modBus);

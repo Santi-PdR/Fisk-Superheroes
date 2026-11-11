@@ -64,7 +64,10 @@ public class ItemCompoundBow extends BowItem
         float power = getPowerForTime(chargeTicks, player);
         if (power < 0.1F) return;
 
-        AbstractArrow arrow = arrowItem.createArrow(level, arrowStack.copy(), player);
+        String type = arrowStack.getItem() instanceof ItemTrickArrow ? ItemTrickArrow.getType(arrowStack) : "";
+        boolean triple = "triple".equals(type) || "triple_explosive".equals(type);
+        ItemStack projectileStack = triple ? ItemTrickArrow.createStack("triple".equals(type) ? "normal" : "explosive") : arrowStack.copy();
+        AbstractArrow arrow = arrowItem.createArrow(level, projectileStack, player);
         boolean horizontal = false;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data != null) horizontal = data.getData().get(Vars.HORIZONTAL_BOW);
@@ -78,21 +81,17 @@ public class ItemCompoundBow extends BowItem
 
         if (level.addFreshEntity(arrow))
         {
-            if (arrowStack.getItem() instanceof ItemTrickArrow trickArrow
-                    && ("triple".equals(ItemTrickArrow.getType(arrowStack))
-                            || "triple_explosive".equals(ItemTrickArrow.getType(arrowStack))))
+            if (triple && arrowStack.getItem() instanceof ItemTrickArrow trickArrow)
             {
                 // The original triple arrows consume one item and emit three projectiles: the
                 // center arrow follows the aim and two arrows fan out on either side.
                 for (float offset : new float[] { -8.0F, 8.0F })
                 {
-                    AbstractArrow extra = trickArrow.createArrow(level, arrowStack.copy(), player);
+                    AbstractArrow extra = trickArrow.createArrow(level, projectileStack.copy(), player);
                     extra.shootFromRotation(player, player.getXRot(), player.getYRot() + offset, 0.0F,
                             velocity * power, inaccuracy * 1.5F);
                     prepareArrow(extra, bow, power);
-                    // One consumed arrow creates three projectiles, but only the central
-                    // projectile can be recovered; otherwise ammunition multiplies.
-                    extra.pickup = AbstractArrow.Pickup.DISALLOWED;
+                    if (infinite) extra.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
                     level.addFreshEntity(extra);
                 }
             }

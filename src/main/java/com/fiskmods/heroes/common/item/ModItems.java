@@ -252,6 +252,7 @@ public class ModItems
                     output.accept(RUPTURES_SCYTHE.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
                     output.accept(QUIVER.get());
+                    output.accept(ItemQuiver.makeAutomatic(new ItemStack(QUIVER.get())));
                     output.accept(COMPOUND_BOW.get());
                     for (String type : ItemTrickArrow.TYPES)
                     {

@@ -1354,8 +1354,9 @@ public final class PortRegressionTests
         arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class,
                 bounds, arrow -> arrow.getOwner() == player && arrow.isAlive());
         if (arrows.size() != 3 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 2
-                || arrows.stream().filter(a -> a.pickup == net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED).count() != 1)
-        { helper.fail("Survival triple shot must consume one arrow and have only one recoverable projectile"); return; }
+                || arrows.stream().anyMatch(a -> a.pickup != net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED
+                        || !"normal".equals(a.getArrowType())))
+        { helper.fail("Survival triple shot must consume one bundle and fire three recoverable normal arrows"); return; }
         arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
     }
 
@@ -1363,9 +1364,9 @@ public final class PortRegressionTests
     public static void openQuiverCannotBeMovedOrReplaced(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
-        var customArrow = new net.minecraft.world.item.ArrowItem(new net.minecraft.world.item.Item.Properties());
-        if (!com.fiskmods.heroes.common.item.ItemQuiver.isArrow(new net.minecraft.world.item.ItemStack(customArrow)))
-        { helper.fail("Quiver must accept other mods' ArrowItem subclasses"); return; }
+        if (!com.fiskmods.heroes.common.item.ItemQuiver.isArrow(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPECTRAL_ARROW))
+                || com.fiskmods.heroes.common.item.ItemQuiver.isArrow(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STONE)))
+        { helper.fail("Quiver must accept arrow items but reject ordinary items"); return; }
         var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
         com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0,
                 new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW, 4));
@@ -1380,6 +1381,64 @@ public final class PortRegressionTests
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get()));
         if (menu.stillValid(player)) { helper.fail("Replacing the quiver must invalidate its old inventory"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void automaticQuiverCraftingAndRestock(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = helper.makeMockPlayer();
+        var normal = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var stored = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("explosive"); stored.setCount(2);
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(normal).setStackInSlot(0, stored);
+        normal.getOrCreateTag().putString("CustomTest", "preserved");
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 2, 2);
+        grid.setItem(0, normal); grid.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.HOPPER));
+        var recipe = new com.fiskmods.heroes.common.recipe.AutomaticQuiverRecipe(
+                new net.minecraft.resources.ResourceLocation("fiskheroes", "automatic_quiver"),
+                net.minecraft.world.item.crafting.CraftingBookCategory.EQUIPMENT);
+        if (!recipe.matches(grid, level)) { helper.fail("Quiver and hopper must make the automatic quiver"); return; }
+        var auto = recipe.assemble(grid, level.registryAccess());
+        if (!com.fiskmods.heroes.common.item.ItemQuiver.isAutomatic(auto)
+                || !"preserved".equals(auto.getTag().getString("CustomTest"))
+                || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(auto).getStackInSlot(0).getCount() != 2)
+        { helper.fail("Quiver conversion must preserve stored arrows and item data"); return; }
+        grid.setItem(0, auto);
+        if (recipe.matches(grid, level)) { helper.fail("Automatic quiver must not be converted a second time"); return; }
+        player.getInventory().setItem(1, auto);
+        var refill = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal"); refill.setCount(3);
+        player.getInventory().setItem(2, refill);
+        player.tickCount = 8;
+        auto.getItem().inventoryTick(auto, level, player, 1, false);
+        var loaded = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(auto);
+        if (refill.getCount() != 2 || loaded.getStackInSlot(1).getCount() != 1
+                || !"normal".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(loaded.getStackInSlot(1))))
+        { helper.fail("Automatic quiver must restock one trick arrow every eight ticks"); return; }
+        player.getInventory().selected = 1;
+        player.containerMenu = new com.fiskmods.heroes.common.item.QuiverMenu(1, player.getInventory(), net.minecraft.world.InteractionHand.MAIN_HAND);
+        auto.getItem().inventoryTick(auto, level, player, 1, false);
+        if (refill.getCount() != 2) { helper.fail("Auto-restock must pause while its inventory is open"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void carrotArrowCanBeEatenAndReturnsNormalArrow(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        player.getAbilities().instabuild = false;
+        player.getFoodData().setFoodLevel(10);
+        var carrot = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("carrot"); carrot.setCount(2);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, carrot);
+        var item = carrot.getItem();
+        if (!item.use(helper.getLevel(), player, net.minecraft.world.InteractionHand.MAIN_HAND).getResult().consumesAction()
+                || item.getUseAnimation(carrot) != net.minecraft.world.item.UseAnim.EAT)
+        { helper.fail("Carrot arrow must start eating when hungry"); return; }
+        var result = item.finishUsingItem(carrot, helper.getLevel(), player);
+        boolean returned = player.getInventory().items.stream().anyMatch(stack -> stack.getItem() instanceof com.fiskmods.heroes.common.item.ItemTrickArrow
+                && "normal".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(stack)));
+        if (player.getFoodData().getFoodLevel() != 14 || result.getCount() != 1 || !returned)
+        { helper.fail("Eating carrot arrow must restore hunger and return one normal trick arrow"); return; }
         helper.succeed();
     }
 

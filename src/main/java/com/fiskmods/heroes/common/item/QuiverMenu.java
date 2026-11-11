@@ -59,6 +59,8 @@ public class QuiverMenu extends AbstractContainerMenu
         }
     }
 
+    public boolean isOpenedQuiver(ItemStack stack) { return openedQuiver == stack; }
+
     @Override
     public boolean stillValid(Player player)
     {
