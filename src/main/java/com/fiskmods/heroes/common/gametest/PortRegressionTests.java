@@ -1424,6 +1424,104 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void payloadArrowRecipesPreserveIngredients(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "payload-recipe-test"));
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 2, 2);
+        var normal = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal");
+        grid.setItem(0, normal);
+        var potion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.POTION),
+                net.minecraft.world.item.alchemy.Potions.STRONG_HEALING);
+        potion.getOrCreateTag().putInt("CustomPotionColor", 123456);
+        grid.setItem(1, potion);
+        var vial = level.getRecipeManager().byKey(new net.minecraft.resources.ResourceLocation("fiskheroes", "arrow_vial")).orElse(null);
+        if (!(vial instanceof com.fiskmods.heroes.common.recipe.PayloadArrowRecipe vialRecipe) || !vialRecipe.matches(grid, level))
+        { helper.fail("Loaded vial recipe must accept a normal arrow and drinkable potion"); return; }
+        var vialArrow = vialRecipe.assemble(grid, level.registryAccess());
+        var attached = com.fiskmods.heroes.common.item.ItemTrickArrow.getAttachedPotion(vialArrow);
+        if (!attached.is(net.minecraft.world.item.Items.SPLASH_POTION)
+                || net.minecraft.world.item.alchemy.PotionUtils.getPotion(attached) != net.minecraft.world.item.alchemy.Potions.STRONG_HEALING
+                || attached.getTag().getInt("CustomPotionColor") != 123456)
+        { helper.fail("Vial recipe must copy potion type and custom data into a splash payload"); return; }
+        var projectile = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity)
+                ((com.fiskmods.heroes.common.item.ItemTrickArrow)vialArrow.getItem()).createArrow(level, vialArrow, player);
+        if (net.minecraft.world.item.alchemy.PotionUtils.getPotion(projectile.getVialPotion()) != net.minecraft.world.item.alchemy.Potions.STRONG_HEALING)
+        { helper.fail("Fired vial must use the crafted potion, not default poison"); return; }
+        grid.setItem(1, net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPLASH_POTION),
+                net.minecraft.world.item.alchemy.Potions.SWIFTNESS));
+        if (!vialRecipe.matches(grid, level) || net.minecraft.world.item.alchemy.PotionUtils.getPotion(
+                com.fiskmods.heroes.common.item.ItemTrickArrow.getAttachedPotion(vialRecipe.assemble(grid, level.registryAccess())))
+                != net.minecraft.world.item.alchemy.Potions.SWIFTNESS)
+        { helper.fail("Splash-potion recipes must also retain their effect"); return; }
+        var rocket = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.FIREWORK_ROCKET, 3);
+        var fireworks = new net.minecraft.nbt.CompoundTag(); fireworks.putByte("Flight", (byte) 2);
+        var explosions = new net.minecraft.nbt.ListTag(); var explosion = new net.minecraft.nbt.CompoundTag();
+        explosion.putByte("Type", (byte) 1); explosion.putIntArray("Colors", new int[] { 0x123456 });
+        explosions.add(explosion); fireworks.put("Explosions", explosions); rocket.getOrCreateTag().put("Fireworks", fireworks);
+        grid.setItem(1, rocket);
+        var firework = level.getRecipeManager().byKey(new net.minecraft.resources.ResourceLocation("fiskheroes", "arrow_firework")).orElse(null);
+        if (!(firework instanceof com.fiskmods.heroes.common.recipe.PayloadArrowRecipe fireworkRecipe) || !fireworkRecipe.matches(grid, level))
+        { helper.fail("Loaded firework recipe must accept a normal arrow and rocket"); return; }
+        var fireworkArrow = fireworkRecipe.assemble(grid, level.registryAccess());
+        var attachedRocket = com.fiskmods.heroes.common.item.ItemTrickArrow.getAttachedItem(fireworkArrow);
+        var fired = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity)
+                ((com.fiskmods.heroes.common.item.ItemTrickArrow)fireworkArrow.getItem()).createArrow(level, fireworkArrow, player);
+        if (attachedRocket.getCount() != 1 || !net.minecraft.world.item.ItemStack.isSameItemSameTags(rocket, attachedRocket)
+                || !net.minecraft.world.item.ItemStack.isSameItemSameTags(attachedRocket, fired.getFireworkStack()))
+        { helper.fail("Crafted and fired firework arrow must preserve the rocket's explosion and flight data"); return; }
+        grid.setItem(2, normal.copy());
+        if (fireworkRecipe.matches(grid, level)) { helper.fail("Recipe must reject extra ingredients"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void vialArrowBurstsAndBecomesNormalOnImpact(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create potion target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(wall.getX() + 1.5, wall.getY(), wall.getZ() + .5); level.addFreshEntity(target);
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "vial");
+        arrow.setVialPotion(net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPLASH_POTION),
+                net.minecraft.world.item.alchemy.Potions.SWIFTNESS));
+        arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5); arrow.setDeltaMovement(2, 0, 0);
+        level.addFreshEntity(arrow); arrow.tick();
+        if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SPEED)
+                || !arrow.isAnchored() || !"normal".equals(arrow.getArrowType()) || !arrow.getVialPotion().isEmpty())
+        { helper.fail("Vial must splash its potion on impact and leave an ordinary arrow"); return; }
+        arrow.discard(); target.discard(); level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void fireworkArrowFlashesWithoutArrowDamage(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var creeper = net.minecraft.world.entity.EntityType.CREEPER.create(level);
+        if (target == null || creeper == null) { helper.fail("Could not create firework targets"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(target);
+        creeper.setNoAi(true); creeper.setNoGravity(true); creeper.setPos(base.getX() + 3, base.getY(), base.getZ() + 2.5); level.addFreshEntity(creeper);
+        float health = target.getHealth();
+        var item = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("firework");
+        var arrow = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity)
+                ((com.fiskmods.heroes.common.item.ItemTrickArrow)item.getItem()).createArrow(level, item, player);
+        arrow.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); arrow.setDeltaMovement(4, 0, 0); level.addFreshEntity(arrow); arrow.tick();
+        var blind = target.getEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
+        if (!arrow.isRemoved() || target.getHealth() != health || blind == null || blind.getDuration() != 120 || !creeper.isIgnited())
+        { helper.fail("Firework impact must flash the direct target without arrow damage and ignite nearby creepers"); return; }
+        target.discard(); creeper.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void carrotArrowCanBeEatenAndReturnsNormalArrow(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

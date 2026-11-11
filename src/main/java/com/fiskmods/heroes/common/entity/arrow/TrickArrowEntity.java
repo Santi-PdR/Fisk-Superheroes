@@ -240,7 +240,7 @@ public class TrickArrowEntity extends Arrow
         {
             detonate(4.0F, true, Level.ExplosionInteraction.BLOCK);
         }
-        else if ("firework".equals(getArrowType()) && !level().isClientSide
+        else if ("firework".equals(getArrowType()) && !isRemoved() && !level().isClientSide
                 && ++fireworkAge > fireworkLifetime)
         {
             // Firework arrows are flashbangs in the original mod; they must never fall back
@@ -362,6 +362,19 @@ public class TrickArrowEntity extends Arrow
         // pass through entities without dealing damage in the reference mod.
         if ("detonator".equals(getArrowType()) || "torch".equals(getArrowType())) return;
 
+        // Firework arrows flash on impact; they do not inflict vanilla arrow damage.
+        if ("firework".equals(getArrowType()))
+        {
+            if (!level().isClientSide)
+            {
+                Vec3 impact = result.getLocation();
+                setPos(impact.x, impact.y, impact.z);
+                spawnFlashbang(result.getEntity());
+                discard();
+            }
+            return;
+        }
+
         // Smoke bombs detonate at the actual impact point and never deal the vanilla arrow hit.
         if ("smoke_bomb".equals(getArrowType()))
         {
@@ -428,6 +441,10 @@ public class TrickArrowEntity extends Arrow
             setDeltaMovement(Vec3.ZERO);
             setNoGravity(true);
         }
+        if ("vial".equals(getArrowType()) && !level().isClientSide)
+        {
+            burstVial(result.getLocation(), result.getEntity() instanceof LivingEntity living ? living : null);
+        }
         if (!(result.getEntity() instanceof LivingEntity target))
         {
             if (boxingGlove) finishBoxingGloveHit(incomingMotion);
@@ -469,7 +486,6 @@ public class TrickArrowEntity extends Arrow
             case "tutridium" -> target.addEffect(new MobEffectInstance(
                     com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get(), 200, 0, false, false, true));
             case "gross" -> target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 180));
-            case "vial" -> applyVial(target);
             default -> { }
         }
         if ("blaze".equals(getArrowType()))
@@ -484,12 +500,7 @@ public class TrickArrowEntity extends Arrow
             return;
         }
         detonateIfExplosive();
-        if ("firework".equals(getArrowType()))
-        {
-            spawnFlashbang();
-            discard();
-        }
-        else if ("fireball".equals(getArrowType()))
+        if ("fireball".equals(getArrowType()))
         {
             spawnFireballBurst(result.getLocation(), target);
         }
@@ -519,6 +530,17 @@ public class TrickArrowEntity extends Arrow
             return;
         }
 
+        if ("firework".equals(getArrowType()))
+        {
+            if (!level().isClientSide)
+            {
+                Vec3 impact = result.getLocation();
+                setPos(impact.x, impact.y, impact.z);
+                spawnFlashbang(null);
+                discard();
+            }
+            return;
+        }
         if ("explosive_pufferfish".equals(getArrowType()))
         {
             startPufferfishFuse();
@@ -531,7 +553,7 @@ public class TrickArrowEntity extends Arrow
 
         if ("vial".equals(type))
         {
-            applyVial(null);
+            burstVial(result.getLocation(), null);
         }
 
         if ("sponge".equals(type))
@@ -564,11 +586,6 @@ public class TrickArrowEntity extends Arrow
         else if ("smoke_bomb".equals(type))
         {
             spawnSmokeCloud(result.getLocation());
-            discard();
-        }
-        else if ("firework".equals(type))
-        {
-            spawnFlashbang();
             discard();
         }
         else if ("fireball".equals(type))
@@ -632,7 +649,7 @@ public class TrickArrowEntity extends Arrow
         }
         if ("firework".equals(type))
         {
-            spawnFlashbang();
+            spawnFlashbang(catcher);
             discard();
             return true;
         }
@@ -884,15 +901,16 @@ public class TrickArrowEntity extends Arrow
         }
     }
 
-    private void applyVial(LivingEntity directHit)
+    /** The original consumes the vial on any impact, leaving a normal retrievable arrow. */
+    private void burstVial(Vec3 impact, LivingEntity directHit)
     {
         java.util.List<MobEffectInstance> effects = net.minecraft.world.item.alchemy.PotionUtils.getMobEffects(vialPotion);
-        if (effects.isEmpty()) return;
-
-        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(4.0D, 2.0D, 4.0D)))
+        var area = new net.minecraft.world.phys.AABB(impact, impact).inflate(4.0D, 2.0D, 4.0D);
+        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, area))
         {
-            if (target == getOwner() || target.distanceToSqr(this) > 16.0D) continue;
-            double intensity = target == directHit ? 1.0D : 1.0D - Math.sqrt(target.distanceToSqr(this)) / 4.0D;
+            double distance = target.distanceToSqr(impact);
+            if (distance >= 16.0D) continue;
+            double intensity = target == directHit ? 1.0D : 1.0D - Math.sqrt(distance) / 4.0D;
             for (MobEffectInstance effect : effects)
             {
                 var mobEffect = effect.getEffect();
@@ -907,6 +925,11 @@ public class TrickArrowEntity extends Arrow
                 }
             }
         }
+        if (!vialPotion.isEmpty())
+            level().levelEvent(2002, net.minecraft.core.BlockPos.containing(impact),
+                    net.minecraft.world.item.alchemy.PotionUtils.getColor(vialPotion));
+        setVialPotion(ItemStack.EMPTY);
+        setArrowType(ItemTrickArrow.NORMAL);
     }
 
     private void spawnSmokeCloud()
@@ -922,18 +945,26 @@ public class TrickArrowEntity extends Arrow
     }
 
     /** Firework arrows flash nearby targets instead of behaving like explosive arrows. */
-    private void spawnFlashbang()
+    private void spawnFlashbang() { spawnFlashbang(null); }
+
+    private void spawnFlashbang(net.minecraft.world.entity.Entity directHit)
     {
         if (level().isClientSide) return;
         if (fireworkRadius > 0.0F)
         {
             var area = getBoundingBox().inflate(fireworkRadius);
             for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class, area,
-                    candidate -> candidate != getOwner() && candidate.isAlive()
+                    candidate -> candidate.isAlive()
                             && candidate.distanceToSqr(this) <= fireworkRadius * fireworkRadius))
             {
+                if (target instanceof net.minecraft.world.entity.monster.Creeper creeper)
+                {
+                    creeper.ignite();
+                    continue;
+                }
                 double distance = Math.sqrt(target.distanceToSqr(this));
-                int duration = (int) Math.ceil(fireworkStrength * Math.max(0.0D, 1.0D - distance / fireworkRadius));
+                int duration = target == directHit ? fireworkStrength
+                        : (int) Math.ceil(fireworkStrength * Math.max(0.0D, 1.0D - distance / fireworkRadius));
                 if (duration > 0) target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 0, false, true));
             }
         }
