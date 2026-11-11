@@ -1160,6 +1160,54 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void scaledPlayersUseScaledPoseCollisionBoxes(GameTestHelper helper)
+    {
+        class PosePlayer extends net.minecraftforge.common.util.FakePlayer
+        {
+            PosePlayer(net.minecraft.server.level.ServerLevel level)
+            { super(level, new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "scaled-pose-test")); }
+            void updatePose() { updatePlayerPose(); }
+        }
+        var level = helper.getLevel();
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        level.setBlockAndUpdate(pos.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(pos.above(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = new PosePlayer(level);
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player size capability missing"); return; }
+        var scale = com.fiskmods.heroes.common.data.var.Vars.SCALE;
+        for (float factor : new float[] {0.0625F, 0.5F})
+        {
+            data.getData().set(scale, factor);
+            com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+            player.updatePose();
+            if (player.getPose() != net.minecraft.world.entity.Pose.STANDING
+                    || Math.abs(player.getBbHeight() - 1.8F * factor) > 0.001F
+                    || Math.abs(player.getEyeHeight() - 1.62F * factor) > 0.001F)
+            { helper.fail("Shrunken player should stand at scaled eye height under a one-block ceiling"); return; }
+        }
+        player.setShiftKeyDown(true);
+        player.updatePose();
+        if (player.getPose() != net.minecraft.world.entity.Pose.CROUCHING)
+        { helper.fail("Shrunken crouch must remain available"); return; }
+        player.setShiftKeyDown(false);
+        player.setSwimming(true);
+        player.updatePose();
+        if (player.getPose() != net.minecraft.world.entity.Pose.SWIMMING)
+        { helper.fail("Actual swimming must still use the swimming pose"); return; }
+        player.setSwimming(false);
+        data.getData().set(scale, 1.0F);
+        com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        player.updatePose();
+        if (player.getPose() != net.minecraft.world.entity.Pose.SWIMMING)
+        { helper.fail("Normal-sized player must still crawl under a one-block ceiling"); return; }
+        level.removeBlock(pos.below(), false);
+        level.removeBlock(pos.above(), false);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureMasksAndHue(GameTestHelper helper)
     {
         int red = 0xFF0000FF; // NativeImage stores ABGR, not ARGB.

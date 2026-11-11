@@ -27,6 +27,15 @@ public final class PlayerSizeHandler
         return Float.isFinite(scale) && scale > 0.0F ? scale : 1.0F;
     }
 
+    /** Used only for vanilla's prospective pose collision box, not the actual Size event. */
+    public static net.minecraft.world.entity.EntityDimensions poseDimensions(net.minecraft.world.entity.Entity entity,
+            net.minecraft.world.entity.EntityDimensions dimensions)
+    {
+        if (!(entity instanceof Player player)) return dimensions;
+        float factor = scale(player);
+        return factor == 1.0F ? dimensions : dimensions.scale(factor);
+    }
+
     @SubscribeEvent
     public static void size(EntityEvent.Size event)
     {
@@ -42,6 +51,14 @@ public final class PlayerSizeHandler
         float scale = scale(player);
         Map<Player, Float> previousScales = player.level().isClientSide ? LAST_CLIENT_SCALE : LAST_SERVER_SCALE;
         Float previous = previousScales.put(player, scale);
+        if (Boolean.getBoolean("fiskheroes.ciSizeDiagnostics") && player.tickCount % 20 == 0)
+        {
+            var data = SHDataCapabilities.getPlayer(player);
+            var hero = data != null ? data.getHero() : null;
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Size pose: side={}, hero={}, scale={}, pose={}, x={}, y={}, z={}, height={}, eye={}",
+                    player.level().isClientSide ? "client" : "server", hero != null ? hero.getRegistryName() : "none",
+                    scale, player.getPose(), player.getX(), player.getY(), player.getZ(), player.getBbHeight(), player.getEyeHeight());
+        }
         if (previous == null || Float.compare(previous, scale) != 0)
         {
             player.refreshDimensions();
