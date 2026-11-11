@@ -52,7 +52,8 @@ jobs:
           cp .ci/playeranim.gradle "$HOME/.gradle/init.d/playeranim.gradle"
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/held_livery_multiplayer.py 2>&1 | tee ci-playeranim-test.log
           grep -qi 'playeranimator' ci-held-multiplayer-observer.log
-          ! grep -qE 'Critical injection failure|InjectionError|Mixin apply failed' ci-held-multiplayer-observer.log
+          ! grep -qE 'Critical injection failure|InjectionError|Mixin apply failed|Error occurred applying transform of coremod' ci-held-multiplayer-observer.log
+          grep -q 'playerAnimator.*ItemInHandRendererMixin' ci-held-multiplayer-observer.log
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4

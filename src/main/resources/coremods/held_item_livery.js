@@ -6,6 +6,13 @@ var LabelNode = Java.type('org.objectweb.asm.tree.LabelNode');
 var FrameNode = Java.type('org.objectweb.asm.tree.FrameNode');
 var InsnNode = Java.type('org.objectweb.asm.tree.InsnNode');
 var TryCatchBlockNode = Java.type('org.objectweb.asm.tree.TryCatchBlockNode');
+var ArrayList = Java.type('java.util.ArrayList');
+
+function objectArray(values) {
+    var list = new ArrayList();
+    for (var i = 0; i < values.length; ++i) list.add(values[i]);
+    return list.toArray();
+}
 
 // Keep the original ItemInHandRenderer -> ItemRenderer.renderStatic call intact:
 // Player Animator injects immediately before that exact invocation. Scope the
@@ -47,7 +54,7 @@ function initializeCoreMod() {
                 if (returns === 0) throw new Error('Scoped item render has no return');
                 target.instructions.add(end);
                 target.instructions.add(handler);
-                target.instructions.add(new FrameNode(Opcodes.F_FULL, 11, Java.to([
+                target.instructions.add(new FrameNode(Opcodes.F_FULL, 11, objectArray([
                     'net/minecraft/client/renderer/entity/ItemRenderer',
                     'net/minecraft/world/entity/LivingEntity',
                     'net/minecraft/world/item/ItemStack',
@@ -55,7 +62,7 @@ function initializeCoreMod() {
                     'com/mojang/blaze3d/vertex/PoseStack',
                     'net/minecraft/client/renderer/MultiBufferSource',
                     'net/minecraft/world/level/Level', Opcodes.INTEGER, Opcodes.INTEGER, Opcodes.INTEGER
-                ], 'java.lang.Object[]'), 1, Java.to(['java/lang/Throwable'], 'java.lang.Object[]')));
+                ], 'java.lang.Object[]'), 1, objectArray(['java/lang/Throwable'], 'java.lang.Object[]')));
                 target.instructions.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                     'com/fiskmods/heroes/client/render/SuitItemRenderContext', 'pop', '()V', false));
                 target.instructions.add(new InsnNode(Opcodes.ATHROW));
