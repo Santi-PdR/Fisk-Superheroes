@@ -74,7 +74,7 @@ def main():
             command('difficulty peaceful')
             command('gamemode creative Dev')
             command('tp Dev 0 185 0 0 0')
-            command('fill -4 179 -4 4 179 15 minecraft:stone')
+            command('fill -4 179 -4 4 179 35 minecraft:stone')
             command('fill -1 180 2 -1 182 12 minecraft:stone')
             command('fill 1 180 2 1 182 12 minecraft:stone')
             command('fill 0 181 2 0 181 12 minecraft:stone')
@@ -135,7 +135,8 @@ def main():
                 camera_normal = (r'Size camera: hero=fiskheroes:' + hero + r', scale=1\.0, pose=STANDING, x='
                                  + NUMBER + r', y=' + NUMBER + r', z=' + NUMBER + r', cameraY=' + NUMBER + r', eye=' + NUMBER)
                 wait_sample(CLIENT, start_client, camera_normal,
-                            lambda m: float(m.group(3)) > 13 and abs((float(m.group(4)) - float(m.group(2))) - 1.62) < .03,
+                            lambda m: float(m.group(3)) > 13 and abs(float(m.group(2)) - 180) < .1
+                            and abs((float(m.group(4)) - float(m.group(2))) - 1.62) < .03,
                             30, hero + ' restores normal first-person camera outside', client)
             # Ordinary players must retain vanilla crawling in the very same tunnel.
             command('execute as Dev run suit fiskheroes:the_flash')
