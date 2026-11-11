@@ -3,12 +3,12 @@ Daemon will be stopped at the end of the build
 > Task :prepareRunGameTestServer
 > Task :prepareRunGameTestServerCompile UP-TO-DATE
 > Task :runGameTestServer
-[13:02:23] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
-[13:02:23] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
-[13:02:23] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
-[13:02:23] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
-[13:02:25] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
-[13:02:25] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[13:08:42] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
+[13:08:42] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[13:08:42] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
+[13:08:42] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
+[13:08:45] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
+[13:08:45] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
@@ -16,116 +16,116 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-[13:02:32] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[13:02:33] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[13:02:33] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[13:02:33] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[13:02:33] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[13:02:33] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[13:02:35] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
-[13:02:36] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (100 tests)...
-[13:02:36] [Server thread/INFO] [minecraft/GameTestServer]: 137 tests are now running!
-[13:02:36] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++_+++                                     ]
-[13:02:37] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (37 tests)...
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++_++++++++]
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: ========= 137 GAME TESTS COMPLETE ======================
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: All 137 required tests passed :)
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[13:02:38] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794402136011.json
-BUILD SUCCESSFUL in 25s
-[13:02:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.86607146 width=0.5196429 eye=1.4030358
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.7321429 width=0.43928578 eye=1.1860715
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.5982144 width=0.35892865 eye=0.96910733
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.46428582 width=0.27857152 eye=0.752143
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.33035725 width=0.19821437 eye=0.5351788
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.19642869 width=0.11785722 eye=0.31821448
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.06250012 width=0.037500072 eye=0.101250194
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.0625 width=0.0375 eye=0.10125
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit shield blocking changed: entity=test-mock-player, blocking=true
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit shield blocking changed: entity=test-mock-player, blocking=false
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit shield blocking changed: entity=test-mock-player, blocking=true
-[13:02:36] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit shield blocking changed: entity=test-mock-player, blocking=false
-[13:02:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=3, matching=[TENTACLE_STRIKE]
-[13:02:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_STRIKE, modifier=fiskheroes:tentacles
-[13:02:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
-[13:02:36] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=fisk-repulsor-test, modifier=fiskheroes:repulsor_blast
-[13:02:36] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++_+++                                     ]
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=fisk-repulsor-test, modifier=fiskheroes:repulsor_blast
-[13:02:37] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (37 tests)...
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=1, matching=[CHARGED_BEAM]
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=CHARGED_BEAM, modifier=fiskheroes:charged_beam
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Charged beam firing: entity=fisk-beam-test, charge=1.0
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Gliding input: player=fisk-glide-test, active=true
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:chronos, index=-1, matching=[AIM]
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rip_hunter, index=-1, matching=[AIM]
-[13:02:37] [Server thread/INFO] [Fisk's Superheroes/]: Charged beam firing: entity=fisk-beam-target-test, charge=1.0
-[13:02:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++_++++++++]
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: ========= 137 GAME TESTS COMPLETE ======================
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: All 137 required tests passed :)
-[13:02:37] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[13:02:37] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
-[13:02:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
-[13:02:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
-[13:02:37] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
-[13:02:38] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
-[13:02:38] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[13:02:38] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[13:02:38] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
-[13:02:38] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
-[13:02:38] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794402136011.json
+[13:08:56] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[13:08:58] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
+[13:08:58] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[13:08:58] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
+[13:08:58] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[13:08:58] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
+[13:09:03] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[13:09:04] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (100 tests)...
+[13:09:04] [Server thread/INFO] [minecraft/GameTestServer]: 139 tests are now running!
+[13:09:05] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++_++++++++++++_+++++++++++++++++++++++++++++++++_+++++++++++++++++++++                                       ]
+[13:09:05] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (39 tests)...
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++__+++++++++++++++++++++++_++++]
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: ========= 139 GAME TESTS COMPLETE ======================
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: All 139 required tests passed :)
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[13:09:08] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794402510924.json
+BUILD SUCCESSFUL in 42s
+[13:09:04] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=fisk-cannon-test, modifier=fiskheroes:energy_bolt
+[13:09:04] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=0.7949999999999999
+[13:09:04] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.045
+[13:09:04] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.545
+[13:09:04] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.045
+[13:09:05] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=scaled-pose-test side=server scale=0.0625 width=0.0375 eye=0.10125
+[13:09:05] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=scaled-pose-test side=server scale=0.5 width=0.3 eye=0.81
+[13:09:05] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=scaled-pose-test side=server scale=1.0 width=0.6 eye=0.4
+[13:09:05] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=scaled-pose-test side=server scale=5.0 width=3.0 eye=8.1
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
+[13:09:05] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++_++++++++++++_+++++++++++++++++++++++++++++++++_+++++++++++++++++++++                                       ]
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:iron_man, index=1, matching=[AIM]
+[13:09:05] [Server thread/INFO] [Fisk's Superheroes/]: Aimed suit shot: player=fisk-repulsor-test, modifier=fiskheroes:repulsor_blast
+[13:09:05] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (39 tests)...
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.86607146 width=0.5196429 eye=1.4030358
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.7321429 width=0.43928578 eye=1.1860715
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.5982144 width=0.35892865 eye=0.96910733
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.46428582 width=0.27857152 eye=0.752143
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.33035725 width=0.19821437 eye=0.5351788
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.19642869 width=0.11785722 eye=0.31821448
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.06250012 width=0.037500072 eye=0.101250194
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.0625 width=0.0375 eye=0.10125
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
+[13:09:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:chronos, index=-1, matching=[AIM]
+[13:09:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rip_hunter, index=-1, matching=[AIM]
+[13:09:06] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++__+++++++++++++++++++++++_++++]
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: ========= 139 GAME TESTS COMPLETE ======================
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: All 139 required tests passed :)
+[13:09:06] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[13:09:06] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[13:09:06] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[13:09:06] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[13:09:08] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
+[13:09:08] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[13:09:08] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[13:09:08] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
+[13:09:08] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
+[13:09:08] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1794402510924.json
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -133,5 +133,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 25s
+BUILD SUCCESSFUL in 42s
 11 actionable tasks: 7 executed, 4 up-to-date
