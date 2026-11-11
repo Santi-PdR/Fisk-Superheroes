@@ -100,6 +100,9 @@ public final class EnergyBoltEntity extends ThrowableProjectile
             if (hit.getEntity() instanceof LivingEntity target && getOwner() instanceof LivingEntity shooter)
             {
                 JsonElement profile = profile();
+                // Legacy energy bolts clear the target's hurt cooldown before applying
+                // their profile, allowing consecutive bolts to deal their full damage.
+                target.invulnerableTime = 0;
                 DamageGroups.applyProfileDamage(target, shooter,
                         shooter.damageSources().indirectMagic(this, shooter), damage, profile);
                 if (knockback > 0.0F)

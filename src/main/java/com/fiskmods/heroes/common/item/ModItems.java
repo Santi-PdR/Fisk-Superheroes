@@ -67,13 +67,13 @@ public class ModItems
     public static final RegistryObject<Item> BERETTA_93R = REGISTRY.register("beretta_93r",
             () -> new ItemBeretta93R(15, 20, 16, 75.0D, 3.5F, new Item.Properties()));
     public static final RegistryObject<Item> CHRONOS_RIFLE = REGISTRY.register("chronos_rifle",
-            () -> new ItemChronosRifle(12, 12, 50, 40.0D, 6.0F, new Item.Properties()));
+            () -> new ItemChronosRifle(12, 20, 50, 40.0D, 9.0F, new Item.Properties()));
     public static final RegistryObject<Item> COLD_GUN = REGISTRY.register("cold_gun",
             () -> new ItemColdGun(1, 8, 0, 24.0D, 1.0F, new Item.Properties()));
     public static final RegistryObject<Item> HEAT_GUN = REGISTRY.register("heat_gun",
             () -> new ItemHeatGun(1, 8, 0, 24.0D, 2.0F, new Item.Properties()));
     public static final RegistryObject<Item> RIP_HUNTERS_GUN = REGISTRY.register("rip_hunters_gun",
-            () -> new ItemRipHuntersGun(1, 10, 0, 32.0D, 5.0F, new Item.Properties()));
+            () -> new ItemRipHuntersGun(1, 5, 0, 32.0D, 6.0F, new Item.Properties()));
     public static final RegistryObject<Item> BO_STAFF = REGISTRY.register("bo_staff",
             () -> new ItemBoStaff(new Item.Properties()));
     public static final RegistryObject<Item> RUPTURES_SCYTHE = REGISTRY.register("ruptures_scythe",

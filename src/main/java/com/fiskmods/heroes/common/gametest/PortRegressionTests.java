@@ -2889,7 +2889,7 @@ public final class PortRegressionTests
             var unscoped = new net.minecraft.nbt.CompoundTag();
             bolts.get(0).saveWithoutId(unscoped);
             bolts.get(0).discard();
-            float baseDamage = n == 0 ? 6.0F : 5.0F;
+            float baseDamage = n == 0 ? 9.0F : 6.0F;
             if (Math.abs(unscoped.getFloat("Damage") - baseDamage) > 0.001F
                     || unscoped.getBoolean("Explosive") != (n == 0)
                     || !unscoped.getString("DamageProfile").contains("ENERGY"))
@@ -2917,6 +2917,36 @@ public final class PortRegressionTests
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void energyBoltsResetTargetHitImmunity(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (shooter == null || target == null) { helper.fail("Could not create energy bolt actors"); return; }
+        shooter.setNoAi(true);
+        target.setNoAi(true);
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        shooter.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        target.setPos(shooter.getX(), shooter.getY(), shooter.getZ() + 2.0D);
+        shooter.setYRot(0.0F);
+        shooter.setXRot(0.0F);
+        level.addFreshEntity(shooter);
+        level.addFreshEntity(target);
+        for (int i = 0; i < 2; ++i)
+        {
+            var bolt = new com.fiskmods.heroes.common.entity.projectile.EnergyBoltEntity(
+                    shooter, null, 6.0F, false, 4.0F, 0.0F);
+            level.addFreshEntity(bolt);
+            bolt.tick();
+        }
+        if (target.getHealth() > 88.01F)
+        { helper.fail("Consecutive energy bolts must each damage the target despite vanilla hurt cooldown"); return; }
+        target.discard();
+        shooter.discard();
         helper.succeed();
     }
 

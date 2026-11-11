@@ -57,13 +57,13 @@ def main():
             print('PASS: rifle does not fire from use without aim', flush=True)
             xdo('mousedown', '1')
             try:
-                wait_for(server_log, r'Energy gun shot: item=chronos_rifle, shooter=Dev, scoped=false, damage=6\.0, explosive=true',
+                wait_for(server_log, r'Energy gun shot: item=chronos_rifle, shooter=Dev, scoped=false, damage=9\.0, explosive=true',
                          60, 'unscoped Chronos shot has base energy damage', server)
                 time.sleep(1.5)
                 subprocess.run(['scrot', 'ci-energy-guns-unscoped.png'], check=True, timeout=30)
                 xdo('keydown', 'Shift_L')
                 try:
-                    wait_for(server_log, r'Energy gun shot: item=chronos_rifle, shooter=Dev, scoped=true, damage=9\.6, explosive=true',
+                    wait_for(server_log, r'Energy gun shot: item=chronos_rifle, shooter=Dev, scoped=true, damage=14\.4[0-9]*, explosive=true',
                              60, 'scoped Chronos shot has bonus and explosion', server)
                     wait_for(client_log, r'Chronos scope overlay rendered', 60, 'Chronos scope overlay rendered', client)
                     time.sleep(1)
@@ -87,11 +87,11 @@ def main():
             print('PASS: revolver does not fire from use without aim', flush=True)
             xdo('mousedown', '1')
             try:
-                wait_for(server_log, r'Energy gun shot: item=rip_hunters_gun, shooter=Dev, scoped=false, damage=5\.0, explosive=false',
+                wait_for(server_log, r'Energy gun shot: item=rip_hunters_gun, shooter=Dev, scoped=false, damage=6\.0, explosive=false',
                          60, 'unscoped Rip shot has base energy damage', server)
                 xdo('keydown', 'Shift_L')
                 try:
-                    wait_for(server_log, r'Energy gun shot: item=rip_hunters_gun, shooter=Dev, scoped=true, damage=8\.0, explosive=false',
+                    wait_for(server_log, r'Energy gun shot: item=rip_hunters_gun, shooter=Dev, scoped=true, damage=9\.6, explosive=false',
                              60, 'scoped Rip shot has bonus without explosion', server)
                 finally:
                     xdo('keyup', 'Shift_L')
