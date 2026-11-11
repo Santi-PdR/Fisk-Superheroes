@@ -63,7 +63,15 @@ def main():
             command('execute if entity @e[tag=firework_target,nbt={Health:100.0f,ActiveEffects:[{Id:15}]}] run say ARROW_FIREWORK_BLIND_PASS')
             wait_for(server_log, r'ARROW_FIREWORK_BLIND_PASS', 15, 'firework flashes target without arrow damage', server)
             wait_for(client_log, r'Firework arrow rendered payload explosions: 1', 15, 'colored rocket effect rendered by real client', client)
-            print('PASS: real client fired both payloads against dedicated-server targets', flush=True)
+            command('kill @e[tag=firework_target]')
+            command('fill -2 180 8 2 184 8 minecraft:stone')
+            command('tp Dev 0.5 180 0.5 0 -8')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"ender_pearl"}')
+            shoot('ci-arrow-ender.png')
+            command('data get entity Dev Pos')
+            command('execute positioned 0.5 180 7.5 if entity @a[name=Dev,distance=..2] run say ARROW_ENDER_WALL_PASS')
+            wait_for(server_log, r'ARROW_ENDER_WALL_PASS', 15, 'ender arrow teleports near actual wall impact', server)
+            print('PASS: real client fired three trick arrows against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
