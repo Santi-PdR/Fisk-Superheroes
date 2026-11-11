@@ -196,11 +196,12 @@ public class TrickArrowEntity extends Arrow
         int flight = 1 + Byte.toUnsignedInt(fireworks.getByte("Flight"));
         fireworkLifetime = (10 * flight + random.nextInt(6) + random.nextInt(7)) / 2;
         net.minecraft.nbt.ListTag explosions = fireworks.getList("Explosions", CompoundTag.TAG_COMPOUND);
+        boolean flicker = false, trail = false;
         for (int i = 0; i < explosions.size(); ++i)
         {
             CompoundTag explosion = explosions.getCompound(i);
-            if (explosion.getBoolean("Flicker")) fireworkStrength += 20;
-            if (explosion.getBoolean("Trail")) fireworkStrength += 30;
+            flicker |= explosion.getBoolean("Flicker");
+            trail |= explosion.getBoolean("Trail");
             switch (Byte.toUnsignedInt(explosion.getByte("Type")))
             {
                 case 1 -> fireworkRadius = Math.max(fireworkRadius, 8.0F);
@@ -213,6 +214,8 @@ public class TrickArrowEntity extends Arrow
                 default -> fireworkRadius = Math.max(fireworkRadius, 4.0F);
             }
         }
+        if (flicker) fireworkStrength += 20;
+        if (trail) fireworkStrength += 30;
     }
 
     private void setExplosionRadius(float radius)

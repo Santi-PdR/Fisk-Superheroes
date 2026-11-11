@@ -1522,6 +1522,34 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void fireworkArrowDoesNotStackRepeatedFlickerAndTrail(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create firework target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(target);
+        var item = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("firework");
+        var rocket = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.FIREWORK_ROCKET);
+        var explosions = new net.minecraft.nbt.ListTag();
+        for (int i = 0; i < 2; ++i)
+        {
+            var burst = new net.minecraft.nbt.CompoundTag(); burst.putByte("Type", (byte) 0);
+            burst.putBoolean("Flicker", true); burst.putBoolean("Trail", true); explosions.add(burst);
+        }
+        var fireworks = new net.minecraft.nbt.CompoundTag(); fireworks.put("Explosions", explosions);
+        rocket.getOrCreateTag().put("Fireworks", fireworks);
+        com.fiskmods.heroes.common.item.ItemTrickArrow.setAttachedItem(item, rocket);
+        var arrow = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity)
+                ((com.fiskmods.heroes.common.item.ItemTrickArrow)item.getItem()).createArrow(level, item, player);
+        arrow.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); arrow.setDeltaMovement(4, 0, 0); level.addFreshEntity(arrow); arrow.tick();
+        var effect = target.getEffect(net.minecraft.world.effect.MobEffects.BLINDNESS);
+        if (effect == null || effect.getDuration() != 170)
+        { helper.fail("Repeated flicker and trail must each increase flash duration only once"); return; }
+        target.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void fireballArrowIgnitesSplashTargetsAndLeavesArrow(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
