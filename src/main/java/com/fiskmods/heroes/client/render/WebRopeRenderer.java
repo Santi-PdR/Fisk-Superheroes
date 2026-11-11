@@ -61,14 +61,16 @@ public final class WebRopeRenderer
 
         for (net.minecraft.world.entity.Entity entity : level.entitiesForRendering())
         {
-            if (entity instanceof GrapplingHookEntity hook && hook.isAttached()
-                    && hook.getOwner() instanceof Player owner)
+            if (entity instanceof GrapplingHookEntity hook && hook.getOwner() instanceof Player owner)
             {
-                Vec3 start = owner.getPosition(event.getPartialTick()).add(0.0D, owner.getBbHeight() * 0.78D, 0.0D);
+                net.minecraft.world.entity.Entity attachment = hook.isPair() ? hook.getAttachedEntity() : owner;
+                if (attachment == null) continue;
+                double height = attachment == owner ? owner.getBbHeight() * 0.78D : attachment.getBbHeight() * 0.5D;
+                Vec3 start = attachment.getPosition(event.getPartialTick()).add(0.0D, height, 0.0D);
                 Vec3 end = hook.getPosition(event.getPartialTick());
                 if (start.distanceToSqr(end) >= 0.04D)
                 {
-                    drawRope(consumer, pose, start, end);
+                    drawRope(consumer, pose, start, end, 0x383838);
                     rendered = true;
                 }
             }

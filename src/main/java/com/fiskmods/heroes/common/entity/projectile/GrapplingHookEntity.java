@@ -32,6 +32,9 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     private static final EntityDataAccessor<Boolean> PAIR = SynchedEntityData.defineId(
             GrapplingHookEntity.class, EntityDataSerializers.BOOLEAN);
     private int lifeTicks;
+    // Network entity ids are transient. Persist the UUID and re-resolve it after reload.
+    private java.util.UUID targetUuid;
+    private int missingTargetTicks;
 
     public GrapplingHookEntity(EntityType<? extends GrapplingHookEntity> type, Level level)
     {
@@ -44,19 +47,21 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         setItem(Items.TRIPWIRE_HOOK.getDefaultInstance());
         setPos(owner.getX(), owner.getEyeY() - 0.1D, owner.getZ());
         shootFromRotation(owner, owner.getXRot(), owner.getYRot(), 0.0F, 4.0F, 0.0F);
-        setNoGravity(true);
     }
 
-    /** The original second shot turns an entity hit into a short-lived tether pulling that target. */
+    /** The second shot flies to a block, with a cable anchored to the previously hooked entity. */
     public GrapplingHookEntity(Player owner, Entity target)
     {
-        super(ModEntities.GRAPPLING_HOOK.get(), owner, owner.level());
-        setItem(Items.TRIPWIRE_HOOK.getDefaultInstance());
+        this(owner);
         entityData.set(PAIR, true);
-        entityData.set(ATTACHED, true);
+        setTarget(target);
+    }
+
+    private void setTarget(Entity target)
+    {
+        targetUuid = target.getUUID();
         entityData.set(ATTACHED_ENTITY, target.getId());
-        setPos(target.getX(), target.getY() + target.getBbHeight() * 0.5D, target.getZ());
-        setNoGravity(true);
+        missingTargetTicks = 0;
     }
 
     @Override
@@ -100,31 +105,36 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     public void tick()
     {
         lifeTicks++;
+        if (!level().isClientSide && targetUuid != null && level() instanceof net.minecraft.server.level.ServerLevel server)
+        {
+            Entity target = server.getEntity(targetUuid);
+            if (target == null)
+            {
+                entityData.set(ATTACHED_ENTITY, -1);
+                if (++missingTargetTicks > 40) discard();
+                // Do not accidentally treat an unresolved target as a block attachment.
+                return;
+            }
+            if (!target.isAlive()) { discard(); return; }
+            if (entityData.get(ATTACHED_ENTITY) != target.getId()) entityData.set(ATTACHED_ENTITY, target.getId());
+            missingTargetTicks = 0;
+        }
         if (isAttached())
         {
+            // Keep the entity tick and interpolation history advancing without projectile physics.
+            baseTick();
             setNoGravity(true);
             setDeltaMovement(Vec3.ZERO);
             Entity target = getAttachedEntity();
-            if (entityData.get(ATTACHED_ENTITY) >= 0)
-            {
-                if (target == null || !target.isAlive())
-                {
-                    if (!level().isClientSide) discard();
-                    return;
-                }
+            if (!isPair() && target != null)
                 setPos(target.getX(), target.getY() + target.getBbHeight() * 0.5D, target.getZ());
-            }
-            else
-            {
-                setDeltaMovement(Vec3.ZERO);
-            }
         }
         else
         {
             super.tick();
         }
 
-        if (level().isClientSide) return;
+        if (level().isClientSide || isRemoved()) return;
         if (!isPair() && getOwner() instanceof Player owner)
         {
             for (GrapplingHookEntity other : level().getEntitiesOfClass(GrapplingHookEntity.class,
@@ -139,15 +149,15 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
                 }
             }
         }
-        if (lifeTicks > (isPair() ? 100 : 6000) || !(getOwner() instanceof Player player) || !player.isAlive()
-                || !holdsGrapplingGun(player) || Vars.getBoolean(player, Vars.GLIDING))
+        if (lifeTicks > (isPair() ? 100 : 6000) || !(getOwner() instanceof Player player) || !player.isAlive())
         {
             discard();
             return;
         }
 
         HeroIteration iteration = HeroTracker.getHero(player);
-        if (iteration == null || !iteration.getHero().hasPermission(player, "USE_GRAPPLING_GUN"))
+        if (!isPair() && (!holdsGrapplingGun(player) || Vars.getBoolean(player, Vars.GLIDING)
+                || (iteration != null && !iteration.getHero().hasPermission(player, "USE_GRAPPLING_GUN"))))
         {
             discard();
             return;
@@ -165,25 +175,20 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     private void pullTowardAnchor(Player player)
     {
         Entity target = getAttachedEntity();
-        if (isPair() && target != null && target != player)
+        if (isPair())
         {
-            pull(target, player.position().subtract(target.position()), 0.35D, distanceTo(player));
-            return;
+            // A pair joins the victim to the second impact point, not to the shooter.
+            if (target != null && target != player)
+                pull(target, position().subtract(target.position()), 0.35D, target.distanceTo(this));
         }
-
-        Vec3 towardHook = position().subtract(player.position());
-        double strength = Math.min(towardHook.length() / 4.0D, 1.0D) * 0.35D;
-        towardHook = towardHook.normalize().scale(strength);
-        player.setDeltaMovement(player.getDeltaMovement().scale(0.9D).add(towardHook));
-        player.hasImpulse = true;
-        if (player.getDeltaMovement().y >= 0.0D || towardHook.y >= 0.0D) player.fallDistance = 0.0F;
-
-        if (target != null && target != player)
+        else if (target != null && target != player)
         {
-            Vec3 towardPlayer = towardHook.scale(-0.7D);
-            target.setDeltaMovement(target.getDeltaMovement().scale(0.9D).add(towardPlayer));
-            target.hasImpulse = true;
-            if (target.getDeltaMovement().y >= 0.0D || towardPlayer.y >= 0.0D) target.fallDistance = 0.0F;
+            // An entity hit reels only the target in; the shooter is not dragged with it.
+            pull(target, player.position().subtract(position()), 0.245D, distanceTo(player));
+        }
+        else
+        {
+            pull(player, position().subtract(player.position()), 0.35D, distanceTo(player));
         }
     }
 
@@ -192,7 +197,14 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         Vec3 impulse = toward.normalize().scale(Math.min(distance / 4.0D, 1.0D) * pullFactor);
         target.setDeltaMovement(target.getDeltaMovement().scale(0.9D).add(impulse));
         target.hasImpulse = true;
+        target.hurtMarked = true; // Send server-authoritative impulse to remote players too.
         if (target.getDeltaMovement().y >= 0.0D || impulse.y >= 0.0D) target.fallDistance = 0.0F;
+    }
+
+    @Override
+    protected boolean canHitEntity(Entity target)
+    {
+        return !isPair() && target != getOwner() && super.canHitEntity(target);
     }
 
     @Override
@@ -207,7 +219,7 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
     {
         if (level().isClientSide) return;
         Vec3 point = hit.getLocation();
-        entityData.set(ATTACHED_ENTITY, -1);
+        if (!isPair()) entityData.set(ATTACHED_ENTITY, -1);
         entityData.set(ATTACHED, true);
         setPos(point);
         setDeltaMovement(Vec3.ZERO);
@@ -216,7 +228,7 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
 
     private void attachToEntity(Entity entity)
     {
-        entityData.set(ATTACHED_ENTITY, entity.getId());
+        setTarget(entity);
         entityData.set(ATTACHED, true);
         setDeltaMovement(Vec3.ZERO);
         setNoGravity(true);
@@ -228,7 +240,7 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         super.addAdditionalSaveData(tag);
         tag.putBoolean("GrappleAttached", isAttached());
         tag.putBoolean("GrapplePair", isPair());
-        tag.putInt("GrappleEntity", entityData.get(ATTACHED_ENTITY));
+        if (targetUuid != null) tag.putUUID("GrappleTarget", targetUuid);
         tag.putDouble("GrappleX", getX());
         tag.putDouble("GrappleY", getY());
         tag.putDouble("GrappleZ", getZ());
@@ -241,7 +253,10 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         super.readAdditionalSaveData(tag);
         entityData.set(ATTACHED, tag.getBoolean("GrappleAttached"));
         entityData.set(PAIR, tag.getBoolean("GrapplePair"));
-        entityData.set(ATTACHED_ENTITY, tag.getInt("GrappleEntity"));
+        entityData.set(ATTACHED_ENTITY, -1);
+        targetUuid = tag.hasUUID("GrappleTarget") ? tag.getUUID("GrappleTarget") : null;
+        // Legacy entity IDs cannot safely identify a target in a new session.
+        if (targetUuid == null && tag.contains("GrappleEntity") && tag.getInt("GrappleEntity") >= 0) discard();
         setPos(tag.getDouble("GrappleX"), tag.getDouble("GrappleY"), tag.getDouble("GrappleZ"));
         lifeTicks = tag.getInt("GrappleLife");
     }

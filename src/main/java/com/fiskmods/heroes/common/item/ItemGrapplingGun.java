@@ -14,7 +14,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
-/** Batman's grappling gun: fire one tether and recall it with another use. */
+/** Batman's grappling gun: fire a hook or tether an attached target to a second impact. */
 public final class ItemGrapplingGun extends Item
 {
     public ItemGrapplingGun(Properties properties)

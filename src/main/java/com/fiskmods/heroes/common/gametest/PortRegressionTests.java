@@ -1217,6 +1217,82 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void grapplingGunReelsTargetsAndFiresSecondAnchor(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "grapple-test"));
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
+        if (hero == null) { helper.fail("Batman missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN.get()));
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Grappling target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0); level.addFreshEntity(target);
+        var hook = new com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity(player);
+        hook.setPos(player.getX(), player.getY() + 1.0, player.getZ());
+        hook.setDeltaMovement(0, 0, 4); level.addFreshEntity(hook);
+        player.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        hook.tick();
+        if (!hook.isAttached() || hook.getAttachedEntity() != target)
+        { helper.fail("First hook must attach to the hit entity"); return; }
+        if (target.getDeltaMovement().z >= 0 || player.getDeltaMovement().lengthSqr() > 0.0001)
+        { helper.fail("Hooking an entity must reel the target in without pulling the shooter"); return; }
+        var result = player.getMainHandItem().use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        var pairs = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity.class,
+                player.getBoundingBox().inflate(16), candidate -> candidate.isPair() && candidate.getOwner() == player);
+        if (!result.getResult().consumesAction() || !hook.isRemoved() || pairs.size() != 1)
+        { helper.fail("Second shot must replace the first hook with one paired projectile"); return; }
+        var pair = pairs.get(0);
+        if (pair.isAttached() || pair.getAttachedEntity() != target || pair.getDeltaMovement().lengthSqr() < 1)
+        { helper.fail("Second hook must fly from the shooter with the target attached to its cable"); return; }
+        var wall = base.offset(4, 0, 0);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        target.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        pair.setPos(player.getX(), player.getY() + .5, player.getZ());
+        pair.setDeltaMovement(5, 0, 0);
+        pair.tick();
+        if (!pair.isAttached() || pair.getAttachedEntity() != target || target.getDeltaMovement().x <= 0)
+        { helper.fail("Second hook must stick to the wall and pull the target toward it"); return; }
+        var saved = new net.minecraft.nbt.CompoundTag(); pair.addAdditionalSaveData(saved);
+        if (!saved.hasUUID("GrappleTarget") || !saved.getUUID("GrappleTarget").equals(target.getUUID()))
+        { helper.fail("Grapple target must persist by UUID, not transient entity id"); return; }
+        pair.discard();
+        var restored = new com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.GRAPPLING_HOOK.get(), level);
+        restored.readAdditionalSaveData(saved); restored.setOwner(player); level.addFreshEntity(restored);
+        target.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        restored.tick();
+        if (restored.getAttachedEntity() != target || target.getDeltaMovement().x <= 0)
+        { helper.fail("Reloaded tether must resolve and pull the original target"); return; }
+        restored.discard(); target.discard(); level.removeBlock(wall, false);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void grapplingHookUsesGravityAndNormalCollision(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var hook = new com.fiskmods.heroes.common.entity.projectile.GrapplingHookEntity(player);
+        if (hook.isNoGravity()) { helper.fail("Flying grapple must be affected by gravity"); return; }
+        var tag = new net.minecraft.nbt.CompoundTag();
+        hook.addAdditionalSaveData(tag);
+        if (tag.hasUUID("GrappleTarget")) { helper.fail("Unattached hook must not have a target"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureMasksAndHue(GameTestHelper helper)
     {
         int red = 0xFF0000FF; // NativeImage stores ABGR, not ARGB.
