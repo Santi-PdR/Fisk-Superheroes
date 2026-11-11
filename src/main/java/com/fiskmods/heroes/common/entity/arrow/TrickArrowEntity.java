@@ -570,13 +570,11 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("fire_charge".equals(type))
         {
-            placeBlock(result, Blocks.FIRE.defaultBlockState());
-            setArrowType(ItemTrickArrow.NORMAL);
+            if (placeImpactBlock(result, false)) setArrowType(ItemTrickArrow.NORMAL);
         }
         else if ("torch".equals(type))
         {
-            placeBlock(result, Blocks.TORCH.defaultBlockState());
-            setArrowType(ItemTrickArrow.NORMAL);
+            if (placeImpactBlock(result, true)) setArrowType(ItemTrickArrow.NORMAL);
         }
         else if ("grappling_hook".equals(type) || "vine".equals(type))
         {
@@ -656,6 +654,7 @@ public class TrickArrowEntity extends Arrow
         if ("fireball".equals(type))
         {
             spawnFireballBurst(position(), null);
+            discard();
             return true;
         }
         if ("smoke_bomb".equals(type))
@@ -788,9 +787,10 @@ public class TrickArrowEntity extends Arrow
 
             float damage = Math.max(1.0F,
                     FIREBALL_ARROW_DAMAGE * (1.0F - (float) distance / FIREBALL_ARROW_RADIUS));
-            com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target,
+            if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target,
                     getOwner() instanceof LivingEntity owner ? owner : null,
-                    level().damageSources().magic(), damage, profile);
+                    level().damageSources().magic(), damage, profile))
+                target.setSecondsOnFire(3);
         }
 
         if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
@@ -803,7 +803,8 @@ public class TrickArrowEntity extends Arrow
         level().playSound(null, center.x, center.y, center.z,
                 net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_BLAST,
                 net.minecraft.sounds.SoundSource.PLAYERS, 1.5F, 0.9F);
-        discard();
+        // Like the original, a spent fireball arrow becomes an ordinary arrow on impact.
+        setArrowType(ItemTrickArrow.NORMAL);
     }
 
     private static JsonObject fireballDamageProfile()
@@ -848,11 +849,25 @@ public class TrickArrowEntity extends Arrow
         player.hurt(level().damageSources().fall(), 5.0F);
     }
 
-    private void placeBlock(BlockHitResult hit, net.minecraft.world.level.block.state.BlockState state)
+    /** Only consume a placeable payload when it was actually placed, and orient wall torches. */
+    private boolean placeImpactBlock(BlockHitResult hit, boolean torch)
     {
-        if (!level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return;
-        var pos = hit.getBlockPos().relative(hit.getDirection());
-        if (level().isEmptyBlock(pos)) level().setBlockAndUpdate(pos, state);
+        if (!level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return false;
+        var direction = hit.getDirection();
+        var pos = hit.getBlockPos().relative(direction);
+        if (!level().isEmptyBlock(pos)) return false;
+        if (getOwner() instanceof Player player && (!level().mayInteract(player, pos)
+                || !player.mayUseItemAt(pos, direction, getPickupItem()))) return false;
+        net.minecraft.world.level.block.state.BlockState state;
+        if (torch)
+        {
+            if (direction == net.minecraft.core.Direction.DOWN) return false;
+            state = direction == net.minecraft.core.Direction.UP ? Blocks.TORCH.defaultBlockState()
+                    : Blocks.WALL_TORCH.defaultBlockState().setValue(net.minecraft.world.level.block.WallTorchBlock.FACING, direction);
+        }
+        else state = net.minecraft.world.level.block.BaseFireBlock.getState(level(), pos);
+        if (!state.canSurvive(level(), pos)) return false;
+        return level().setBlockAndUpdate(pos, state);
     }
 
     private void bounceAtBlock(BlockHitResult hit, Vec3 incomingMotion, double factor)
@@ -1026,11 +1041,10 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected ItemStack getPickupItem()
     {
-        return switch (getArrowType())
-        {
-            case "boxing_glove", "carrot", "fire_charge", "torch", "ender_pearl", "vial" -> net.minecraft.world.item.Items.ARROW.getDefaultInstance();
-            default -> ItemTrickArrow.createStack(getArrowType());
-        };
+        ItemStack stack = ItemTrickArrow.createStack(getArrowType());
+        if ("vial".equals(getArrowType()) && !vialPotion.isEmpty()) ItemTrickArrow.setAttachedPotion(stack, vialPotion);
+        if ("firework".equals(getArrowType()) && !fireworkStack.isEmpty()) ItemTrickArrow.setAttachedItem(stack, fireworkStack);
+        return stack;
     }
 
     @Override

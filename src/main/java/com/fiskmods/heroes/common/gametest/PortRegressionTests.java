@@ -1522,6 +1522,57 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void fireballArrowIgnitesSplashTargetsAndLeavesArrow(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create fireball target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(wall.getX() + 1.5, wall.getY(), wall.getZ() + .5); level.addFreshEntity(target);
+        float health = target.getHealth();
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "fireball");
+        arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5); arrow.setDeltaMovement(2, 0, 0);
+        level.addFreshEntity(arrow); arrow.tick();
+        if (target.getHealth() >= health || !target.isOnFire() || arrow.isRemoved()
+                || !arrow.isAnchored() || !"normal".equals(arrow.getArrowType()))
+        { helper.fail("Fireball burst must damage and ignite nearby targets and leave a normal arrow"); return; }
+        arrow.discard(); target.discard(); level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void torchArrowPlacesWallTorchAndRetainsUnplaceablePayload(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ());
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "torch");
+        arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5); arrow.setDeltaMovement(2, 0, 0);
+        level.addFreshEntity(arrow); arrow.tick();
+        var torch = level.getBlockState(wall.west());
+        if (!torch.is(net.minecraft.world.level.block.Blocks.WALL_TORCH)
+                || torch.getValue(net.minecraft.world.level.block.WallTorchBlock.FACING) != net.minecraft.core.Direction.WEST
+                || !"normal".equals(arrow.getArrowType()))
+        { helper.fail("Torch arrow must place a correctly oriented wall torch and consume its tip"); return; }
+        arrow.discard(); level.removeBlock(wall.west(), false);
+        var underside = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "torch");
+        underside.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED;
+        underside.setPos(wall.getX() + .5, wall.getY() - .1, wall.getZ() + .5); underside.setDeltaMovement(0, 2, 0);
+        level.addFreshEntity(underside); underside.tick();
+        if (!"torch".equals(underside.getArrowType()) || !level.isEmptyBlock(wall.below()))
+        { helper.fail("A torch that cannot be placed on a ceiling must retain its payload"); return; }
+        for (int i = 0; i < 8; ++i) underside.tick();
+        underside.playerTouch(player);
+        boolean returned = player.getInventory().items.stream().anyMatch(stack -> stack.is(com.fiskmods.heroes.common.item.ModItems.TRICK_ARROW.get())
+                && "torch".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(stack)));
+        if (!returned) { helper.fail("An unspent torch arrow must be retrievable with its tip"); return; }
+        underside.discard(); level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void carrotArrowCanBeEatenAndReturnsNormalArrow(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
