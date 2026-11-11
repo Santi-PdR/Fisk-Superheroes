@@ -6,7 +6,22 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from tonfa_visual_smoke import wait_for, xdo
+
+
+def wait_for(log, pattern, seconds, label, process):
+    deadline = time.monotonic() + seconds
+    while time.monotonic() < deadline:
+        if log.exists() and re.search(pattern, log.read_text(errors='replace'), re.I):
+            print('PASS:', label, flush=True)
+            return
+        if process.poll() is not None:
+            raise RuntimeError(f'{label}: process exited with {process.returncode}')
+        time.sleep(1)
+    raise RuntimeError(f'Timed out: {label}')
+
+
+def xdo(*args):
+    subprocess.run(['xdotool', *args], check=True, timeout=30)
 
 SERVER = Path('ci-small-server.log')
 CLIENT = Path('ci-small-client.log')
