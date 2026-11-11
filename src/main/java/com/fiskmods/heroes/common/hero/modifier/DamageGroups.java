@@ -107,6 +107,7 @@ public final class DamageGroups
         boolean wasBurning = target.isOnFire();
         if (cookEntity) target.setSecondsOnFire(1);
 
+        net.minecraft.world.phys.Vec3 motionBefore = target.getDeltaMovement();
         boolean[] accepted = { false };
         withDamageProfile(definition, () -> accepted[0] = target.hurt(source, adjustedDamage));
         if (!accepted[0])
@@ -117,6 +118,17 @@ public final class DamageGroups
 
         if (properties != null)
         {
+            JsonElement reduceKnockback = properties.get("REDUCE_KNOCKBACK");
+            if (reduceKnockback != null && reduceKnockback.isJsonPrimitive()
+                    && reduceKnockback.getAsJsonPrimitive().isNumber())
+            {
+                double reduction = reduceKnockback.getAsDouble();
+                if (Double.isFinite(reduction))
+                {
+                    net.minecraft.world.phys.Vec3 after = target.getDeltaMovement();
+                    target.setDeltaMovement(after.subtract(after.subtract(motionBefore).scale(reduction)));
+                }
+            }
             JsonElement ignite = properties.get("IGNITE");
             if (ignite != null && ignite.isJsonPrimitive() && ignite.getAsJsonPrimitive().isNumber())
             {

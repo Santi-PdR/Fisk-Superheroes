@@ -35,6 +35,7 @@ public class CactusMinionEntity extends AbstractGolem
     private static final EntityDataAccessor<Integer> SIZE = SynchedEntityData.defineId(CactusMinionEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> DONATOR_SUMMONED = SynchedEntityData.defineId(CactusMinionEntity.class, EntityDataSerializers.BOOLEAN);
     private int idleTicks;
+    private boolean splitOnDeath;
 
     public CactusMinionEntity(EntityType<? extends CactusMinionEntity> type, Level level)
     {
@@ -171,8 +172,9 @@ public class CactusMinionEntity extends AbstractGolem
     @Override
     public void die(DamageSource source)
     {
-        if (!level().isClientSide && getCactusSize() > 1)
+        if (!level().isClientSide && !splitOnDeath && getCactusSize() > 1)
         {
+            splitOnDeath = true;
             int count = Math.min(getCactusSize(), 3);
             for (int i = 0; i < count; i++)
             {
@@ -239,7 +241,9 @@ public class CactusMinionEntity extends AbstractGolem
     public void readAdditionalSaveData(CompoundTag tag)
     {
         super.readAdditionalSaveData(tag);
+        float savedHealth = getHealth();
         setCactusSize(tag.getInt("CactusSize"));
+        setHealth(savedHealth);
         setDonatorSummoned(tag.getBoolean("DonatorSummoned"));
         idleTicks = tag.getInt("IdleTicks");
     }

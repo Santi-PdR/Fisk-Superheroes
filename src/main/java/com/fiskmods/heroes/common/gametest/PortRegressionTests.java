@@ -1385,6 +1385,59 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void damageProfileReducesOnlyNewKnockback(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var attacker = helper.makeMockPlayer(); attacker.setPos(base.getX(), base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (target == null) { helper.fail("Could not create knockback target"); return; }
+        target.setNoAi(true); target.setPos(base.getX() + 2, base.getY(), base.getZ()); level.addFreshEntity(target);
+        var initial = new net.minecraft.world.phys.Vec3(.1, .2, .3); target.setDeltaMovement(initial);
+        var source = level.damageSources().playerAttack(attacker);
+        if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 1, null))
+        { helper.fail("Baseline damage was rejected"); return; }
+        var baseline = target.getDeltaMovement(); target.invulnerableTime = 0; target.setHealth(target.getMaxHealth()); target.setDeltaMovement(initial);
+        var profile = com.google.gson.JsonParser.parseString("{\"properties\":{\"REDUCE_KNOCKBACK\":0.75}}");
+        if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 1, profile))
+        { helper.fail("Reduced knockback damage was rejected"); return; }
+        var expected = initial.add(baseline.subtract(initial).scale(.25));
+        if (baseline.distanceTo(initial) < .01 || target.getDeltaMovement().distanceTo(expected) > .0001)
+        { helper.fail("Profile must reduce the new knockback by 75 percent without reducing prior velocity"); return; }
+        target.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusMinionRetainsHealthSizeAndFlagsOnReload(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var original = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
+        var restored = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
+        if (original == null || restored == null) { helper.fail("Could not create cactus minions"); return; }
+        original.setCactusSize(3); original.setHealth(4.0F); original.setDonatorSummoned(true);
+        var tag = new net.minecraft.nbt.CompoundTag(); original.addAdditionalSaveData(tag);
+        restored.readAdditionalSaveData(tag);
+        if (restored.getCactusSize() != 3 || restored.getMaxHealth() != 15.0F || restored.getHealth() != 4.0F
+                || !restored.isDonatorSummoned() || restored.getBbHeight() != 3.0F)
+        { helper.fail("Reload must preserve cactus health, size, dimensions and summon flag"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusMinionSplitsOnlyOnce(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var parent = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
+        if (parent == null) { helper.fail("Could not create cactus parent"); return; }
+        parent.setPos(base.getX(), base.getY(), base.getZ()); parent.setCactusSize(3); parent.setDonatorSummoned(true);
+        level.addFreshEntity(parent); var area = parent.getBoundingBox().inflate(5);
+        parent.die(level.damageSources().generic()); parent.die(level.damageSources().generic());
+        var children = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.CactusMinionEntity.class, area, e -> e != parent);
+        if (children.size() != 3 || children.stream().anyMatch(e -> e.getCactusSize() != 1 || !e.isDonatorSummoned()))
+        { helper.fail("A size-three cactus must split only once into three flagged size-one children"); return; }
+        children.forEach(net.minecraft.world.entity.Entity::discard); parent.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void cactusSpikeRingAndAimedBurstUseProjectiles(GameTestHelper helper)
     {
         var level = helper.getLevel(); var origin = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
