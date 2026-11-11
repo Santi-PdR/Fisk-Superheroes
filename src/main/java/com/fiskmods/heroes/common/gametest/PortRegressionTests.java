@@ -1167,6 +1167,7 @@ public final class PortRegressionTests
             PosePlayer(net.minecraft.server.level.ServerLevel level)
             { super(level, new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "scaled-pose-test")); }
             void updatePose() { updatePlayerPose(); }
+            net.minecraft.world.phys.AABB boxFor(net.minecraft.world.entity.Pose pose) { return getBoundingBoxForPose(pose); }
         }
         var level = helper.getLevel();
         var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
@@ -1202,8 +1203,16 @@ public final class PortRegressionTests
         player.updatePose();
         if (player.getPose() != net.minecraft.world.entity.Pose.SWIMMING)
         { helper.fail("Normal-sized player must still crawl under a one-block ceiling"); return; }
-        level.removeBlock(pos.below(), false);
         level.removeBlock(pos.above(), false);
+        player.updatePose();
+        if (player.getPose() != net.minecraft.world.entity.Pose.STANDING)
+        { helper.fail("Normal player must stand again after leaving the tunnel"); return; }
+        data.getData().set(scale, 5.0F);
+        com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(player);
+        var giantBox = player.boxFor(net.minecraft.world.entity.Pose.STANDING);
+        if (Math.abs(giantBox.getYsize() - 9.0D) > 0.001D || Math.abs(giantBox.getXsize() - 3.0D) > 0.001D)
+        { helper.fail("Giant prospective pose must use giant dimensions"); return; }
+        level.removeBlock(pos.below(), false);
         helper.succeed();
     }
 

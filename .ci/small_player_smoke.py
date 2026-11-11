@@ -118,8 +118,28 @@ def main():
                                 lambda m: .0625 < float(m.group(1)) < .56 and 2.1 < float(m.group(4)) < 12
                                 and float(m.group(5)) <= 1.0,
                                 30, 'growth stops before ceiling collision', server)
+                # Exit on foot. A pending expansion should complete as soon as it has room.
+                start_server = len(SERVER.read_text(errors='replace'))
+                start_client = len(CLIENT.read_text(errors='replace'))
+                if hero == 'ant_man':
+                    xdo('key', 'c')
+                    time.sleep(1)
+                xdo('keydown', 'w')
+                time.sleep(3.5)
+                xdo('keyup', 'w')
+                restored = (r'Size pose: side=server, hero=fiskheroes:' + hero + r', scale=1\.0, pose=STANDING, x='
+                            + NUMBER + r', y=' + NUMBER + r', z=' + NUMBER + r', height=' + NUMBER + r', eye=' + NUMBER)
+                wait_sample(SERVER, start_server, restored,
+                            lambda m: float(m.group(3)) > 13 and abs(float(m.group(4)) - 1.8) < .005,
+                            30, hero + ' exits and restores normal size standing', server)
+                camera_normal = (r'Size camera: hero=fiskheroes:' + hero + r', scale=1\.0, pose=STANDING, x='
+                                 + NUMBER + r', y=' + NUMBER + r', z=' + NUMBER + r', cameraY=' + NUMBER + r', eye=' + NUMBER)
+                wait_sample(CLIENT, start_client, camera_normal,
+                            lambda m: float(m.group(3)) > 13 and abs((float(m.group(4)) - float(m.group(2))) - 1.62) < .03,
+                            30, hero + ' restores normal first-person camera outside', client)
             # Ordinary players must retain vanilla crawling in the very same tunnel.
             command('execute as Dev run suit fiskheroes:the_flash')
+            command('tp Dev 0.5 180 5.5 0 0')
             start_server = len(SERVER.read_text(errors='replace'))
             start_client = len(CLIENT.read_text(errors='replace'))
             pose = r'Size pose: side=server, hero=fiskheroes:the_flash, scale=1\.0, pose=SWIMMING,'
