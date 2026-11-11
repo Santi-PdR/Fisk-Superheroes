@@ -1385,6 +1385,59 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void trickArrowEffectsRequireSuccessfulDamage(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create arrow target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setInvulnerable(true);
+        target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(target);
+        for (String type : new String[] {"carrot", "gross", "phantom", "tutridium", "blaze", "fire_charge"})
+        {
+            var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, type);
+            arrow.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); arrow.setDeltaMovement(4, 0, 0);
+            level.addFreshEntity(arrow); arrow.tick(); arrow.discard();
+            if (!target.getActiveEffects().isEmpty() || target.isOnFire())
+            { helper.fail(type + " arrow must not apply post-damage effects to an invulnerable target"); return; }
+        }
+        target.setInvulnerable(false);
+        var carrot = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "carrot");
+        carrot.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); carrot.setDeltaMovement(4, 0, 0);
+        level.addFreshEntity(carrot); carrot.tick();
+        if (!target.hasEffect(net.minecraft.world.effect.MobEffects.NIGHT_VISION))
+        { helper.fail("A successful carrot arrow hit must still apply night vision"); return; }
+        carrot.discard(); target.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void enderArrowUsesImpactAndAvoidsObstructedDestination(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5); player.fallDistance = 10;
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "ender_pearl");
+        arrow.setPos(base.getX() + 1, base.getY() + .5, base.getZ() + .5); arrow.setDeltaMovement(4, 0, 0);
+        level.addFreshEntity(arrow); arrow.tick();
+        if (Math.abs(player.getX() - (wall.getX() - .5)) > .01 || Math.abs(player.getY() - (wall.getY() + .5)) > .1
+                || player.fallDistance != 0 || !"normal".equals(arrow.getArrowType()))
+        { helper.fail("Ender arrow must teleport to the impact face, not its previous position"); return; }
+        arrow.discard();
+        player.setPos(base.getX(), base.getY(), base.getZ() + .5); player.fallDistance = 10;
+        var obstruction = wall.west().above(); level.setBlockAndUpdate(obstruction, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var blocked = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "ender_pearl");
+        blocked.setPos(base.getX() + 1, base.getY() + .5, base.getZ() + .5); blocked.setDeltaMovement(4, 0, 0);
+        level.addFreshEntity(blocked); blocked.tick();
+        if (Math.abs(player.getX() - base.getX()) > .01 || player.fallDistance != 10)
+        { helper.fail("Ender arrow must not teleport a player into a solid ceiling"); return; }
+        blocked.discard(); level.removeBlock(obstruction, false); level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void flashRingPartialSuitPreservesOtherArmor(GameTestHelper helper)
     {
         var level = helper.getLevel();

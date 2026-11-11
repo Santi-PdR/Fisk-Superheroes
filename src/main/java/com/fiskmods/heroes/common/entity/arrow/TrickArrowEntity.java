@@ -448,6 +448,11 @@ public class TrickArrowEntity extends Arrow
         {
             burstVial(result.getLocation(), result.getEntity() instanceof LivingEntity living ? living : null);
         }
+        if ("ender_pearl".equals(getArrowType()) && !level().isClientSide)
+        {
+            teleportShooter(result);
+            setArrowType(ItemTrickArrow.NORMAL);
+        }
         if (!(result.getEntity() instanceof LivingEntity target))
         {
             if (boxingGlove) finishBoxingGloveHit(incomingMotion);
@@ -459,42 +464,7 @@ public class TrickArrowEntity extends Arrow
         }
         if (level().isClientSide) return;
 
-        switch (getArrowType())
-        {
-            case "ender_pearl" ->
-            {
-                teleportShooter();
-                setArrowType(ItemTrickArrow.NORMAL);
-            }
-            case "carrot" -> target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200));
-            case "fire_charge", "blaze" -> target.setSecondsOnFire(5);
-            case "fireball" -> target.setSecondsOnFire(3);
-            case "boxing_glove" ->
-            {
-                Vec3 velocity = getDeltaMovement();
-                target.knockback(1.2F, -velocity.x, -velocity.z);
-                finishBoxingGloveHit(incomingMotion);
-            }
-            case "pufferfish", "explosive_pufferfish" ->
-            {
-                if (random.nextInt(3) == 0) target.addEffect(new MobEffectInstance(MobEffects.POISON, 80));
-            }
-            case "slime" ->
-            {
-                // The reference slime arrow applies Slowness for 3 seconds with a 3/4 chance.
-                if (random.nextInt(4) != 0) target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60));
-            }
-            case "phantom" -> target.addEffect(new MobEffectInstance(
-                    com.fiskmods.heroes.common.hero.modifier.ModEffects.PHASE_SUPPRESSANT.get(), 100, 0, false, false, true));
-            case "tutridium" -> target.addEffect(new MobEffectInstance(
-                    com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get(), 200, 0, false, false, true));
-            case "gross" -> target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 180));
-            default -> { }
-        }
-        if ("blaze".equals(getArrowType()))
-        {
-            com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(target, 0.1F);
-        }
+        if (boxingGlove) finishBoxingGloveHit(incomingMotion);
         if ("cactus".equals(getArrowType()))
         {
             // The original cactus arrow bursts on every impact, including living targets.
@@ -507,6 +477,41 @@ public class TrickArrowEntity extends Arrow
         {
             spawnFireballBurst(result.getLocation(), target);
         }
+    }
+
+    /** Vanilla calls this only after the target actually accepted projectile damage. */
+    @Override
+    protected void doPostHurtEffects(LivingEntity target)
+    {
+        super.doPostHurtEffects(target);
+        if (level().isClientSide) return;
+        switch (getArrowType())
+        {
+            case "carrot" -> target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200));
+            case "fire_charge", "blaze" -> target.setSecondsOnFire(5);
+            case "fireball" -> target.setSecondsOnFire(3);
+            case "boxing_glove" ->
+            {
+                Vec3 velocity = getDeltaMovement();
+                target.knockback(1.2F, -velocity.x, -velocity.z);
+            }
+            case "pufferfish", "explosive_pufferfish" ->
+            {
+                if (random.nextInt(3) == 0) target.addEffect(new MobEffectInstance(MobEffects.POISON, 80));
+            }
+            case "slime" ->
+            {
+                if (random.nextInt(4) != 0) target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60));
+            }
+            case "phantom" -> target.addEffect(new MobEffectInstance(
+                    com.fiskmods.heroes.common.hero.modifier.ModEffects.PHASE_SUPPRESSANT.get(), 100, 0, false, false, true));
+            case "tutridium" -> target.addEffect(new MobEffectInstance(
+                    com.fiskmods.heroes.common.hero.modifier.ModEffects.TUTRIDIUM.get(), 200, 0, false, false, true));
+            case "gross" -> target.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 180));
+            default -> { }
+        }
+        if ("blaze".equals(getArrowType()))
+            com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(target, 0.1F);
     }
 
     /** Restores the reusable, bouncing normal arrow state after a boxing-glove impact. */
@@ -568,7 +573,7 @@ public class TrickArrowEntity extends Arrow
 
         if ("ender_pearl".equals(type))
         {
-            teleportShooter();
+            teleportShooter(result);
             setArrowType(ItemTrickArrow.NORMAL);
         }
         else if ("fire_charge".equals(type))
@@ -834,20 +839,28 @@ public class TrickArrowEntity extends Arrow
         return profile;
     }
 
-    private void teleportShooter()
+    private void teleportShooter(net.minecraft.world.phys.HitResult hit)
     {
-        if (level().isClientSide || !(getOwner() instanceof Player player)) return;
-        double x = getX();
-        double y = getY();
-        double z = getZ();
-        if (player instanceof net.minecraft.server.level.ServerPlayer serverPlayer)
+        if (level().isClientSide || !(getOwner() instanceof Player player) || !player.isAlive()) return;
+        Vec3 destination = hit.getLocation();
+        if (hit instanceof BlockHitResult block)
         {
-            serverPlayer.teleportTo(x, y, z);
+            var direction = block.getDirection();
+            destination = destination.add(direction.getStepX() * 0.5D,
+                    direction == net.minecraft.core.Direction.DOWN ? -player.getBbHeight() : 0.0D,
+                    direction.getStepZ() * 0.5D);
         }
-        else
-        {
-            player.teleportTo(x, y, z);
-        }
+        // Generic Forge teleport event is applicable to custom projectiles; the vanilla
+        // EnderPearl event specifically requires an actual ThrownEnderpearl instance.
+        var event = new net.minecraftforge.event.entity.EntityTeleportEvent(player,
+                destination.x, destination.y, destination.z);
+        if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return;
+        destination = event.getTarget();
+        var box = player.getBoundingBox().move(destination.subtract(player.position()));
+        if (!level().getWorldBorder().isWithinBounds(box)
+                || level().getBlockCollisions(player, box).iterator().hasNext()) return;
+        player.stopRiding();
+        player.teleportTo(destination.x, destination.y, destination.z);
         player.fallDistance = 0.0F;
         player.hurt(level().damageSources().fall(), 5.0F);
     }
