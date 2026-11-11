@@ -5,3 +5,15 @@ allprojects { project ->
         dependencies.add('runtimeOnly', project.fg.deobf('ci:playeranim:1.0.2'))
     }
 }
+allprojects { project ->
+    tasks.configureEach { task ->
+        if (task.name == 'runClient' || task.name == 'runServer') {
+            task.dependsOn('createSrgToMcp')
+            task.doFirst {
+                def args = task.getRunConfig().get().getJvmArgs()
+                args.add('-Dmixin.env.remapRefMap=true')
+                args.add('-Dmixin.env.refMapRemappingFile=' + project.file('build/createSrgToMcp/output.srg').absolutePath)
+            }
+        }
+    }
+}
