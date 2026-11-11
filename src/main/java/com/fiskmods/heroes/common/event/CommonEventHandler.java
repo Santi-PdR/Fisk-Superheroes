@@ -70,7 +70,8 @@ public class CommonEventHandler
     public static void onCactusRecruitment(PlayerInteractEvent.RightClickBlock event)
     {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        if (player.isShiftKeyDown()) return;
+        if (player.isShiftKeyDown() || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
+                || !player.getMainHandItem().isEmpty()) return;
 
         var iteration = HeroTracker.getHero(player);
         if (iteration == null || !com.fiskmods.heroes.common.hero.ability.AbilityHandler.isKeyPressed(player, "AIM")) return;
@@ -94,22 +95,7 @@ public class CommonEventHandler
         if (player.getPersistentData().getLong(CACTUS_COOLDOWN_UNTIL) > now) return;
 
         var level = (net.minecraft.server.level.ServerLevel) player.level();
-        var target = blockHit.getBlockPos();
-        int bottom = target.getY();
-        int top = target.getY();
-        while (level.getBlockState(target.atY(bottom - 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) bottom--;
-        while (level.getBlockState(target.atY(top + 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) top++;
-
-        for (int y = top; y >= bottom; --y)
-        {
-            level.destroyBlock(target.atY(y), false, player);
-        }
-
-        var minion = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
-        if (minion == null) return;
-        minion.setCactusSize(top - bottom + 1);
-        minion.moveTo(target.getX() + 0.5D, bottom, target.getZ() + 0.5D, player.getYRot(), 0.0F);
-        level.addFreshEntity(minion);
+        if (!recruitCactusColumn(level, player, blockHit.getBlockPos())) return;
 
         com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "RECRUIT");
         int cooldown = Math.max(1, Math.round(entry.getInt(player, com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME)
@@ -117,6 +103,57 @@ public class CommonEventHandler
         player.getPersistentData().putLong(CACTUS_COOLDOWN_UNTIL, now + cooldown);
         event.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
         event.setCanceled(true);
+    }
+
+    /** Preflight every block and entity spawn before consuming a cactus column. */
+    public static boolean recruitCactusColumn(net.minecraft.server.level.ServerLevel level, ServerPlayer player,
+            net.minecraft.core.BlockPos target)
+    {
+        if (!level.getBlockState(target).is(net.minecraft.world.level.block.Blocks.CACTUS)) return false;
+        int bottom = target.getY(), top = bottom;
+        while (bottom > level.getMinBuildHeight()
+                && level.getBlockState(target.atY(bottom - 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) --bottom;
+        while (top + 1 < level.getMaxBuildHeight()
+                && level.getBlockState(target.atY(top + 1)).is(net.minecraft.world.level.block.Blocks.CACTUS)) ++top;
+
+        var states = new java.util.ArrayList<net.minecraft.world.level.block.state.BlockState>();
+        for (int y = bottom; y <= top; ++y)
+        {
+            var pos = target.atY(y);
+            if (!level.getWorldBorder().isWithinBounds(pos) || !level.mayInteract(player, pos)) return false;
+            var event = new net.minecraftforge.event.level.BlockEvent.BreakEvent(level, pos, level.getBlockState(pos), player);
+            if (net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return false;
+            states.add(event.getState());
+        }
+        for (int y = bottom; y <= top; ++y)
+            if (!level.getBlockState(target.atY(y)).equals(states.get(y - bottom))) return false;
+
+        var minion = com.fiskmods.heroes.common.entity.ModEntities.CACTUS_MINION.get().create(level);
+        if (minion == null) return false;
+        minion.setCactusSize(top - bottom + 1);
+        minion.moveTo(target.getX() + 0.5D, bottom, target.getZ() + 0.5D, player.getYRot(), 0.0F);
+        if (!level.addFreshEntity(minion)) return false;
+        for (int y = bottom; y <= top; ++y)
+        {
+            if (!level.getBlockState(target.atY(y)).equals(states.get(y - bottom)))
+            {
+                minion.discard();
+                return false;
+            }
+        }
+        for (int y = top; y >= bottom; --y)
+        {
+            var pos = target.atY(y);
+            if (!level.getBlockState(pos).equals(states.get(y - bottom)) || !level.removeBlock(pos, false))
+            {
+                // Roll back already-consumed blocks if another event changed the world during spawn.
+                for (int restore = y + 1; restore <= top; ++restore)
+                    level.setBlock(target.atY(restore), states.get(restore - bottom), 2);
+                minion.discard();
+                return false;
+            }
+        }
+        return true;
     }
 
     /** LivingTick fires inside Player.tick, after vanilla overwrites noPhysics with spectator mode. */

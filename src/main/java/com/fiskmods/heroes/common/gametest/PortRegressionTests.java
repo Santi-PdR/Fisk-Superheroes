@@ -1384,6 +1384,61 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    public static final class CactusRecruitmentGuard
+    {
+        private final net.minecraft.core.BlockPos blocked;
+        private boolean blockBreak, entitySpawn;
+        CactusRecruitmentGuard(net.minecraft.core.BlockPos blocked) { this.blocked = blocked; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onBreak(net.minecraftforge.event.level.BlockEvent.BreakEvent event)
+        {
+            if (blockBreak && event.getPos().equals(blocked)) event.setCanceled(true);
+        }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onSpawn(net.minecraftforge.event.entity.EntityJoinLevelEvent event)
+        {
+            if (entitySpawn && event.getEntity() instanceof com.fiskmods.heroes.common.entity.CactusMinionEntity
+                    && event.getEntity().blockPosition().equals(blocked.below())) event.setCanceled(true);
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusRecruitmentRespectsProtectionAndSpawnCancellation(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        level.setBlockAndUpdate(base.below(), net.minecraft.world.level.block.Blocks.SAND.defaultBlockState());
+        level.setBlockAndUpdate(base, net.minecraft.world.level.block.Blocks.CACTUS.defaultBlockState());
+        level.setBlockAndUpdate(base.above(), net.minecraft.world.level.block.Blocks.CACTUS.defaultBlockState());
+        var player = net.minecraftforge.common.util.FakePlayerFactory.getMinecraft(level);
+        var guard = new CactusRecruitmentGuard(base.above());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            guard.blockBreak = true;
+            boolean broken = com.fiskmods.heroes.common.event.CommonEventHandler.recruitCactusColumn(level, player, base);
+            if (broken || !level.getBlockState(base).is(net.minecraft.world.level.block.Blocks.CACTUS)
+                    || !level.getBlockState(base.above()).is(net.minecraft.world.level.block.Blocks.CACTUS))
+            { helper.fail("Canceled break event must preserve the entire cactus"); return; }
+            guard.blockBreak = false; guard.entitySpawn = true;
+            boolean spawned = com.fiskmods.heroes.common.event.CommonEventHandler.recruitCactusColumn(level, player, base);
+            if (spawned || !level.getBlockState(base).is(net.minecraft.world.level.block.Blocks.CACTUS)
+                    || !level.getBlockState(base.above()).is(net.minecraft.world.level.block.Blocks.CACTUS))
+            { helper.fail("Canceled spawn must preserve the entire cactus"); return; }
+            guard.entitySpawn = false;
+            boolean recruited = com.fiskmods.heroes.common.event.CommonEventHandler.recruitCactusColumn(level, player, base);
+            var minions = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.CactusMinionEntity.class,
+                    new net.minecraft.world.phys.AABB(base).inflate(2), e -> e.getCactusSize() == 2);
+            if (!recruited || !level.isEmptyBlock(base) || !level.isEmptyBlock(base.above()) || minions.size() != 1)
+            { helper.fail("Permitted recruitment must consume exactly the column and create one matching minion"); return; }
+            minions.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
+            level.removeBlock(base, false); level.removeBlock(base.above(), false); level.removeBlock(base.below(), false);
+        }
+    }
+
     @GameTest(template = "test_empty")
     public static void damageProfileReducesOnlyNewKnockback(GameTestHelper helper)
     {
