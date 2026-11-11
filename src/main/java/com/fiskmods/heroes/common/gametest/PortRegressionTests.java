@@ -1388,7 +1388,8 @@ public final class PortRegressionTests
     public static void automaticQuiverCraftingAndRestock(GameTestHelper helper)
     {
         var level = helper.getLevel();
-        var player = helper.makeMockPlayer();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "auto-quiver-test"));
         var normal = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
         var stored = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("explosive"); stored.setCount(2);
         com.fiskmods.heroes.common.item.ItemQuiver.createInventory(normal).setStackInSlot(0, stored);
@@ -1440,6 +1441,58 @@ public final class PortRegressionTests
         if (player.getFoodData().getFoodLevel() != 14 || result.getCount() != 1 || !returned)
         { helper.fail("Eating carrot arrow must restore hunger and return one normal trick arrow"); return; }
         helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void teleportAvoidsHeadCollisionAndClearsFallDistance(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer();
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        player.setYRot(0); player.setXRot(0); player.fallDistance = 20;
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Teleport data missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.TELEPORTATION, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.RANGE, 8.0F);
+        var wall = base.offset(0, 1, 4);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        entry.getModifier().onActivate(player, entry, data);
+        if (player.getZ() >= wall.getZ() - .25 || player.getZ() <= base.getZ() + 1
+                || !level.noCollision(player, player.getBoundingBox()) || player.fallDistance != 0)
+        { helper.fail("Teleport must stop before head-level obstruction and clear fall distance"); return; }
+        level.removeBlock(wall, false);
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        entry.getModifier().onActivate(player, entry, data);
+        if (player.getZ() < base.getZ() + 8)
+        { helper.fail("Teleport must still travel its full range in open space"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void telekinesisReleaseAndStaleOwnershipAreRecoverable(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "telekinesis-cleanup-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null || data == null) { helper.fail("Telekinesis test setup missing"); return; }
+        target.setPos(helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1)).getCenter());
+        level.addFreshEntity(target);
+        var tag = com.fiskmods.heroes.common.hero.modifier.TelekinesisState.GRABBED_BY_TAG;
+        target.getPersistentData().putInt(tag, player.getId());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TELEKINESIS, true);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID, target.getId());
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        if (target.getPersistentData().contains(tag) || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID) != -1)
+        { helper.fail("Suit change or disconnect must release the original grabbed entity"); return; }
+        target.getPersistentData().putInt(tag, 987654321);
+        if (!com.fiskmods.heroes.common.hero.modifier.TelekinesisState.canClaim(player, target)
+                || target.getPersistentData().contains(tag))
+        { helper.fail("A stale saved grab owner must not permanently lock the entity"); return; }
+        target.discard(); helper.succeed();
     }
 
     @GameTest(template = "test_empty")

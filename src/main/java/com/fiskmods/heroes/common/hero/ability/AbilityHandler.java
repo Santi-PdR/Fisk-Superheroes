@@ -449,6 +449,7 @@ public final class AbilityHandler
         if (data != null)
         {
             data.getData().set(Vars.AIMING, false);
+            com.fiskmods.heroes.common.hero.modifier.TelekinesisState.release(player, data);
             data.getData().set(Vars.TELEKINESIS, false);
             data.getData().set(Vars.GRAB_ID, -1);
             data.getData().set(Vars.GRAB_DISTANCE, 0.0F);

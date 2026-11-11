@@ -453,18 +453,24 @@ class ModifierTeleportation extends Modifier
             double ty = entity.getY() + look.y * d;
             double tz = entity.getZ() + look.z * d;
 
-            if (!level.getBlockState(net.minecraft.core.BlockPos.containing(tx, ty, tz)).isAir())
-            {
-                break;
-            }
+            // Check the complete, scaled player body, not only the feet block.
+            // This also respects partial collision shapes and avoids teleporting into ceilings.
+            var candidate = entity.getBoundingBox().move(tx - entity.getX(), ty - entity.getY(), tz - entity.getZ());
+            if (!level.noCollision(entity, candidate)) break;
 
             x = tx;
             y = ty;
             z = tz;
         }
 
+        if (entity.distanceToSqr(x, y, z) < 1.0E-8D) return;
         entity.teleportTo(x, y, z);
-        entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5F, 1.2F);
+        entity.fallDistance = 0.0F;
+        JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
+        if (sounds != null && sounds.isJsonObject() && sounds.getAsJsonObject().has("TELEPORT"))
+            AbilityData.playSound(entity, entry, "TELEPORT");
+        else
+            entity.level().playSound(null, entity.blockPosition(), net.minecraft.sounds.SoundEvents.ENDERMAN_TELEPORT, SoundSource.PLAYERS, 0.5F, 1.2F);
     }
 
 }
@@ -591,7 +597,7 @@ class ModifierShadowform extends Modifier
 class ModifierTelekinesis extends Modifier
 {
     private static final String CHICKEN_CRUSH_TICK = "FiskHeroesTelekinesisCrushTick";
-    private static final String GRABBED_BY_TAG = "FiskHeroesGrabbedBy";
+    private static final String GRABBED_BY_TAG = TelekinesisState.GRABBED_BY_TAG;
 
     ModifierTelekinesis(ResourceLocation id)
     {
@@ -687,8 +693,7 @@ class ModifierTelekinesis extends Modifier
 
         for (Entity candidate : entity.level().getEntities(entity, search,
                 target -> target.isAlive() && canGrab(entry, target)
-                        && (!target.getPersistentData().contains(GRABBED_BY_TAG)
-                                || target.getPersistentData().getInt(GRABBED_BY_TAG) == entity.getId())))
+                        && TelekinesisState.canClaim(entity, target)))
         {
             var hit = candidate.getBoundingBox().inflate(0.2D).clip(start, end);
             if (hit.isEmpty()) continue;
@@ -784,14 +789,7 @@ class ModifierTelekinesis extends Modifier
 
     private static void release(LivingEntity entity, SHPlayerData data)
     {
-        int id = data.getData().get(Vars.GRAB_ID);
-        Entity grabbed = id >= 0 ? entity.level().getEntity(id) : null;
-        if (grabbed != null)
-        {
-            releaseTarget(entity, grabbed);
-        }
-        data.getData().set(Vars.GRAB_ID, -1);
-        data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
+        TelekinesisState.release(entity, data);
     }
 
     private static void releaseTarget(LivingEntity entity, Entity grabbed)
