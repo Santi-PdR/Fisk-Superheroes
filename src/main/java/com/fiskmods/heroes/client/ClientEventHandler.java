@@ -506,7 +506,8 @@ public class ClientEventHandler
         if (iteration == null || !data.getData().get(Vars.AIMING)) return;
         boolean hasShot = iteration.getHero().getPowerContainer().getEntries().stream().anyMatch(entry ->
                 entry.isEnabled() && (entry.getModifier().getId().getPath().equals("repulsor_blast")
-                        || entry.getModifier().getId().getPath().equals("energy_bolt")));
+                        || entry.getModifier().getId().getPath().equals("energy_bolt")
+                        || entry.getModifier().getId().getPath().equals("spike_burst")));
         if (hasShot) SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketAimedSuitShot());
     }
 

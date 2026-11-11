@@ -1,56 +1,65 @@
 package com.fiskmods.heroes.common.hero.modifier;
 
 import com.fiskmods.heroes.common.data.SHPlayerData;
+import com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity;
 import com.fiskmods.heroes.common.hero.power.Modifier;
 import com.fiskmods.heroes.common.hero.power.ModifierEntry;
 import com.fiskmods.heroes.common.hero.power.PowerProperty;
 import com.google.gson.JsonElement;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
 
-/** Señor Cactus's aimed, non-destructive spike shot. */
+/** Señor Cactus's radial spike key and separate aimed burst. */
 public final class ModifierSpikeBurst extends Modifier
 {
-    public ModifierSpikeBurst(ResourceLocation id)
+    public ModifierSpikeBurst(ResourceLocation id) { super(id); }
+
+    public static boolean canShoot(Player player)
     {
-        super(id);
+        return player.getAbilities().instabuild || player.getFoodData().getFoodLevel() >= 12;
     }
 
+    /** The SHOOT_SPIKES key emits 72 projectiles in a full circle, not a single hitscan. */
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (!(entity instanceof Player player) || !(player.level() instanceof ServerLevel level)) return;
-
-        float range = entry.getFloat(player, PowerProperty.RANGE);
-        if (range <= 0.0F) range = 24.0F;
-
-        Vec3 start = player.getEyePosition();
-        Vec3 look = player.getLookAngle().normalize();
-        HitResult hit = ProjectileUtil.getHitResultOnViewVector(player, target -> target != player && target.isAlive(), range);
-        Vec3 end = hit.getType() == HitResult.Type.MISS ? start.add(look.scale(range)) : hit.getLocation();
-
-        double distance = start.distanceTo(end);
-        int particles = Math.max(1, (int) Math.ceil(distance * 2.0D));
-        level.sendParticles(ParticleTypes.CRIT, start.x, start.y, start.z, particles,
-                look.x * distance * 0.5D, look.y * distance * 0.5D, look.z * distance * 0.5D, 0.0D);
-        level.sendParticles(new net.minecraft.core.particles.BlockParticleOption(
-                        ParticleTypes.BLOCK, net.minecraft.world.level.block.Blocks.CACTUS.defaultBlockState()),
-                end.x, end.y, end.z, 6, 0.12D, 0.12D, 0.12D, 0.03D);
-
-        if (hit instanceof EntityHitResult entityHit && entityHit.getEntity() instanceof LivingEntity target)
+        if (!(entity instanceof Player player) || !(player.level() instanceof ServerLevel level) || !canShoot(player)) return;
+        JsonElement profile = entry.get(player, PowerProperty.DAMAGE_PROFILE);
+        for (int i = 0; i < 72; ++i)
         {
-            JsonElement profile = entry.get(player, PowerProperty.DAMAGE_PROFILE);
-            float damage = DamageGroups.profileDamage(profile, 1.5F);
-            DamageGroups.withDamageProfile(profile, () -> target.hurt(player.damageSources().playerAttack(player), damage));
+            CactusSpikeEntity spike = new CactusSpikeEntity(player);
+            spike.setDamageProfile(profile);
+            spike.shootFromRotation(player, player.getXRot(), i * 5.0F, 0.0F, 4.5F, 0.0F);
+            level.addFreshEntity(spike);
         }
+        if (!player.getAbilities().instabuild) player.causeFoodExhaustion(6.0F);
+        level.playSound(null, player.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
 
+    /** Right click while aiming fires an eleven-spike spread in the look direction. */
+    public static boolean fireAimed(Player player, ModifierEntry entry)
+    {
+        if (!(player.level() instanceof ServerLevel level) || !canShoot(player)
+                || player.isShiftKeyDown() || !player.getMainHandItem().isEmpty()) return false;
+        JsonElement profile = entry.get(player, PowerProperty.DAMAGE_PROFILE);
+        for (int i = 0; i < 11; ++i)
+        {
+            CactusSpikeEntity spike = new CactusSpikeEntity(player);
+            spike.setDamageProfile(profile);
+            spike.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 4.5F, 0.0F);
+            if (i != 0)
+                spike.setDeltaMovement(spike.getDeltaMovement().add(
+                        (level.random.nextDouble() - .5D) * .9D,
+                        (level.random.nextDouble() - .5D) * .9D,
+                        (level.random.nextDouble() - .5D) * .9D));
+            level.addFreshEntity(spike);
+        }
+        if (!player.getAbilities().instabuild) player.causeFoodExhaustion(1.0F);
         AbilityData.playSound(player, entry, "SHOOT");
+        return true;
     }
 }

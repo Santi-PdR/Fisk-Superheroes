@@ -19,6 +19,7 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
     private static final int MAX_AGE = 200;
     private static final float DAMAGE = 1.5F;
     private static final JsonObject DAMAGE_PROFILE = createDamageProfile();
+    private JsonObject damageProfile = DAMAGE_PROFILE.deepCopy();
 
     public CactusSpikeEntity(EntityType<? extends CactusSpikeEntity> type, Level level)
     {
@@ -66,7 +67,8 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
         if (getOwner() instanceof LivingEntity owner)
         {
             DamageGroups.applyProfileDamage(target, owner,
-                    level().damageSources().thrown(this, owner), DAMAGE, DAMAGE_PROFILE);
+                    level().damageSources().thrown(this, owner),
+                    DamageGroups.profileDamage(damageProfile, DAMAGE), damageProfile);
         }
         discard();
     }
@@ -77,12 +79,36 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
         discard();
     }
 
+    public void setDamageProfile(com.google.gson.JsonElement profile)
+    {
+        damageProfile = profile != null && profile.isJsonObject() ? profile.getAsJsonObject().deepCopy() : DAMAGE_PROFILE.deepCopy();
+    }
+
+    @Override
+    public void addAdditionalSaveData(net.minecraft.nbt.CompoundTag tag)
+    {
+        super.addAdditionalSaveData(tag);
+        tag.putString("DamageProfile", damageProfile.toString());
+    }
+
+    @Override
+    public void readAdditionalSaveData(net.minecraft.nbt.CompoundTag tag)
+    {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("DamageProfile", net.minecraft.nbt.Tag.TAG_STRING))
+        {
+            try { setDamageProfile(com.google.gson.JsonParser.parseString(tag.getString("DamageProfile"))); }
+            catch (com.google.gson.JsonParseException ignored) { setDamageProfile(null); }
+        }
+    }
+
     private static JsonObject createDamageProfile()
     {
         JsonObject profile = new JsonObject();
         profile.addProperty("damage", DAMAGE);
         JsonObject types = new JsonObject();
-        types.addProperty("PROJECTILE", 1.0D);
+        types.addProperty("CACTUS", 1.0D);
+        types.addProperty("SHARP", 1.0D);
         profile.add("types", types);
         return profile;
     }

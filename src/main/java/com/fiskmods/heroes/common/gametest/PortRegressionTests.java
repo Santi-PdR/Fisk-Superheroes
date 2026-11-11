@@ -1385,6 +1385,76 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void cactusSpikeRingAndAimedBurstUseProjectiles(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var origin = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer(); player.setPos(origin.getX() + .5, origin.getY(), origin.getZ() + .5);
+        player.getAbilities().instabuild = false; player.getFoodData().setFoodLevel(20);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(com.fiskmods.heroes.common.hero.modifier.Modifiers.SPIKES, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.DAMAGE_PROFILE,
+                com.google.gson.JsonParser.parseString("{\"damage\":4.5,\"types\":{\"CACTUS\":1.0,\"SHARP\":1.0}}"));
+        entry.getModifier().onActivate(player, entry, data);
+        var area = player.getBoundingBox().inflate(12);
+        var spikes = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class, area,
+                spike -> spike.getOwner() == player);
+        if (spikes.size() != 72 || player.getFoodData().getExhaustionLevel() != 6.0F
+                || spikes.stream().noneMatch(spike -> spike.getDeltaMovement().x > 4.4)
+                || spikes.stream().noneMatch(spike -> spike.getDeltaMovement().x < -4.4))
+        { helper.fail("Spike ring must fire 72 radial projectiles and cost six exhaustion"); return; }
+        spikes.forEach(net.minecraft.world.entity.Entity::discard);
+        float before = player.getFoodData().getExhaustionLevel();
+        if (!com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.fireAimed(player, entry))
+        { helper.fail("Aimed cactus burst should fire with adequate food"); return; }
+        spikes = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class, area,
+                spike -> spike.getOwner() == player && !spike.isRemoved());
+        if (spikes.size() != 11 || Math.abs(player.getFoodData().getExhaustionLevel() - before - 1) > .001
+                || spikes.stream().noneMatch(spike -> spike.getDeltaMovement().z > 4.4))
+        { helper.fail("Aimed burst must fire eleven spikes forward and cost one exhaustion"); return; }
+        var saved = new net.minecraft.nbt.CompoundTag(); spikes.get(0).addAdditionalSaveData(saved);
+        var copy = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.CACTUS_SPIKE.get(), level);
+        copy.readAdditionalSaveData(saved); var restored = new net.minecraft.nbt.CompoundTag(); copy.addAdditionalSaveData(restored);
+        if (!restored.getString("DamageProfile").contains("4.5") || !restored.getString("DamageProfile").contains("CACTUS"))
+        { helper.fail("Configured spike damage must survive projectile save and reload"); return; }
+        spikes.forEach(net.minecraft.world.entity.Entity::discard);
+        player.getFoodData().setFoodLevel(11);
+        entry.getModifier().onActivate(player, entry, data);
+        if (com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.fireAimed(player, entry)
+                || !level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class, area,
+                    spike -> spike.getOwner() == player && !spike.isRemoved()).isEmpty())
+        { helper.fail("Spike attacks must not fire below twelve hunger"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusSpikeAppliesConfiguredDamageAndCactusType(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create spike target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(target);
+        var spike = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(player);
+        spike.setDamageProfile(com.google.gson.JsonParser.parseString("{\"damage\":4.5,\"types\":{\"CACTUS\":1.0,\"SHARP\":1.0}}"));
+        spike.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); spike.setDeltaMovement(4, 0, 0);
+        level.addFreshEntity(spike); float health = target.getHealth(); spike.tick();
+        if (!spike.isRemoved() || Math.abs(target.getHealth() - (health - 4.5F)) > .01)
+        { helper.fail("Actual spike impact must apply its configured damage"); return; }
+        var cactus = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:senor_cactus");
+        var victim = helper.makeMockPlayer(); var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(victim);
+        if (cactus == null || data == null) { helper.fail("Cactus hero data missing"); return; }
+        data.setHero(cactus.getDefaultIteration()); victim.getAbilities().invulnerable = false; victim.setHealth(20);
+        var originalSpike = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(player);
+        var tag = new net.minecraft.nbt.CompoundTag(); originalSpike.addAdditionalSaveData(tag);
+        var profile = com.google.gson.JsonParser.parseString(tag.getString("DamageProfile"));
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(victim, player,
+                level.damageSources().thrown(originalSpike, player), 1.5F, profile);
+        if (victim.getHealth() != 20.0F) { helper.fail("Default cactus spike must respect cactus immunity"); return; }
+        target.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void trickArrowEffectsRequireSuccessfulDamage(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));

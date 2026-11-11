@@ -255,15 +255,19 @@ public final class AbilityHandler
         for (ModifierEntry entry : iteration.getHero().getPowerContainer().getEntries())
         {
             String path = entry.getModifier().getId().getPath();
-            if (!(path.equals("repulsor_blast") || path.equals("energy_bolt"))
+            if (!(path.equals("repulsor_blast") || path.equals("energy_bolt") || path.equals("spike_burst"))
                     || !entry.isEnabled() || !entry.isModifierEnabled(player, data)) continue;
+            if (path.equals("spike_burst") && (player.isShiftKeyDown()
+                    || !com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.canShoot(player))) return false;
 
             String cooldownKey = "aim_shot:" + entry.getModifier().getId();
             long now = player.level().getGameTime();
             Map<String, Long> cooldowns = ABILITY_COOLDOWNS.computeIfAbsent(player.getUUID(), ignored -> new HashMap<>());
             if (cooldowns.getOrDefault(cooldownKey, 0L) > now) return false;
             cooldowns.put(cooldownKey, now + Math.max(0, entry.getInt(player, PowerProperty.COOLDOWN_TIME)));
-            entry.getModifier().onActivate(player, entry, data);
+            if (path.equals("spike_burst"))
+                com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.fireAimed(player, entry);
+            else entry.getModifier().onActivate(player, entry, data);
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Aimed suit shot: player={}, modifier={}",
                     player.getGameProfile().getName(), entry.getModifier().getId());
             return true;
@@ -354,6 +358,9 @@ public final class AbilityHandler
             }
             return null;
         }
+
+        if ("SHOOT_SPIKES".equals(key)
+                && !com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.canShoot(player)) return null;
 
         int cooldown = entry.getInt(player, PowerProperty.COOLDOWN_TIME);
         // Charged beams use COOLDOWN_TIME as their charge decay, not a key-down lockout.
