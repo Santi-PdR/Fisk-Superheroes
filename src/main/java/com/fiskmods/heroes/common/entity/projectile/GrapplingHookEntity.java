@@ -57,6 +57,8 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         this(owner);
         entityData.set(PAIR, true);
         setTarget(target);
+        if (Boolean.getBoolean("fiskheroes.ciGrappleDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Grapple pair launched: owner={}, target={}", owner.getName().getString(), target.getId());
     }
 
     private void setTarget(Entity target)
@@ -242,6 +244,8 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         setPos(point);
         setDeltaMovement(Vec3.ZERO);
         setNoGravity(true);
+        if (Boolean.getBoolean("fiskheroes.ciGrappleDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Grapple block attached: pair={}, target={}, block={}", isPair(), getAttachedEntity(), hit.getBlockPos());
     }
 
     private void attachToEntity(Entity entity)
@@ -249,6 +253,8 @@ public final class GrapplingHookEntity extends ThrowableItemProjectile
         setTarget(entity);
         entityData.set(ATTACHED, true);
         setPos(entity.getX(), entity.getY() + entity.getBbHeight() * 0.5D, entity.getZ());
+        if (Boolean.getBoolean("fiskheroes.ciGrappleDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Grapple entity attached: owner={}, target={}", getOwner(), entity.getId());
         setDeltaMovement(Vec3.ZERO);
         setNoGravity(true);
     }

@@ -27,6 +27,7 @@ public final class WebRopeRenderer
 {
     private static final ResourceLocation TEXTURE = new ResourceLocation("fiskheroes", "textures/models/web_rope.png");
     private static final double RADIUS = 0.018D;
+    private static final java.util.Set<String> GRAPPLE_LOGGED = java.util.concurrent.ConcurrentHashMap.newKeySet();
 
     private WebRopeRenderer()
     {
@@ -70,6 +71,10 @@ public final class WebRopeRenderer
                 Vec3 end = hook.getPosition(event.getPartialTick());
                 if (start.distanceToSqr(end) >= 0.04D)
                 {
+                    if (Boolean.getBoolean("fiskheroes.ciGrappleDiagnostics")
+                            && GRAPPLE_LOGGED.add(hook.getId() + ":" + hook.isAttached()))
+                        com.fiskmods.heroes.FiskHeroes.LOGGER.info("Grapple rope rendered: pair={}, attached={}, endpoint={}",
+                                hook.isPair(), hook.isAttached(), attachment.getId());
                     drawRope(consumer, pose, start, end, 0x383838);
                     rendered = true;
                 }

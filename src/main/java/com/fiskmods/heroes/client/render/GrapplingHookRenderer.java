@@ -22,6 +22,7 @@ import net.minecraft.util.Mth;
 public final class GrapplingHookRenderer extends EntityRenderer<GrapplingHookEntity>
 {
     private static final ResourceLocation TEXTURE = FiskHeroes.id("textures/models/grappling_hook.png");
+    private static final java.util.Set<String> LOGGED = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final ModelPart model;
     private final ModelPart[] claws;
 
@@ -53,6 +54,8 @@ public final class GrapplingHookRenderer extends EntityRenderer<GrapplingHookEnt
     public void render(GrapplingHookEntity hook, float yaw, float partial, PoseStack pose,
             MultiBufferSource buffers, int light)
     {
+        if (Boolean.getBoolean("fiskheroes.ciGrappleDiagnostics") && LOGGED.add(hook.getId() + ":" + hook.isAttached()))
+            FiskHeroes.LOGGER.info("Grapple 3D model rendered: pair={}, attached={}", hook.isPair(), hook.isAttached());
         float angle = .5F + 1.2F * (1.0F - hook.grappleProgress(partial));
         for (ModelPart claw : claws) claw.xRot = angle;
         pose.pushPose();

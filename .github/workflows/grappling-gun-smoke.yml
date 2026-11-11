@@ -1,0 +1,73 @@
+name: Grappling Gun Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/grappling_gun_smoke.py'
+      - '.ci/small_player_smoke.py'
+      - '.github/workflows/grappling-gun-smoke.yml'
+      - '.ci/client_identity.gradle'
+      - 'build.gradle'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemGrapplingGun.java'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/GrapplingHookEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/GrapplingHookRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/WebRopeRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientModEvents.java'
+concurrency:
+  group: grapple-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
+      - name: Prepare server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-grapple-server run-grapple-client/config
+          printf 'earlyWindowControl = false\n' > run-grapple-client/config/fml.toml
+          echo 'eula=true' > run-grapple-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-grapple-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Exercise grappling gun
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/grappling_gun_smoke.py 2>&1 | tee ci-grapple-test.log
+      - name: Upload captures and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: grapple-diagnostics
+          path: |
+            ci-grapple-*.png
+            ci-grapple-*.log
+          if-no-files-found: ignore
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          { cat ci-grapple-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'Grapple|Exception|Error|FATAL' "ci-grapple-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-grapple-$f.log" 2>/dev/null || true; done; } > /tmp/grapple-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard FETCH_HEAD
+            cp /tmp/grapple-log.txt .ci/grapple-log.txt
+            git add -f .ci/grapple-log.txt
+            git diff --cached --quiet && break
+            git commit -m 'ci: energy guns diagnostics [skip ci]' --no-verify
+            git push origin "HEAD:$GITHUB_REF_NAME" && break
+            sleep 5
+          done
