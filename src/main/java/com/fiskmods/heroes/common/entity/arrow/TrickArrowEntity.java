@@ -959,6 +959,27 @@ public class TrickArrowEntity extends Arrow
             com.fiskmods.heroes.common.entity.projectile.SmokeBurst.detonate(serverLevel, center);
     }
 
+    @Override
+    public void handleEntityEvent(byte event)
+    {
+        if (event == 17 && level().isClientSide)
+        {
+            ItemStack stack = getFireworkStack();
+            CompoundTag fireworks = stack.isEmpty() ? null : stack.getTagElement("Fireworks");
+            if (fireworks != null && !fireworks.getList("Explosions", CompoundTag.TAG_COMPOUND).isEmpty())
+            {
+                Vec3 motion = getDeltaMovement();
+                level().createFireworks(getX(), getY(), getZ(), motion.x, motion.y, motion.z, fireworks);
+                if (Boolean.getBoolean("fiskheroes.ciArrowDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Firework arrow rendered payload explosions: {}", fireworks.getList("Explosions", CompoundTag.TAG_COMPOUND).size());
+            }
+            else
+                for (int i = 0; i < 3; ++i)
+                    level().addParticle(net.minecraft.core.particles.ParticleTypes.POOF, getX(), getY(), getZ(), 0, 0.005D, 0);
+        }
+        super.handleEntityEvent(event);
+    }
+
     /** Firework arrows flash nearby targets instead of behaving like explosive arrows. */
     private void spawnFlashbang() { spawnFlashbang(null); }
 
@@ -983,13 +1004,8 @@ public class TrickArrowEntity extends Arrow
                 if (duration > 0) target.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, duration, 0, false, true));
             }
         }
-        level().playSound(null, getX(), getY(), getZ(), net.minecraft.sounds.SoundEvents.FIREWORK_ROCKET_BLAST,
-                net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
-        if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
-        {
-            serverLevel.sendParticles(net.minecraft.core.particles.ParticleTypes.FLASH,
-                    getX(), getY(), getZ(), 1, 0.0D, 0.0D, 0.0D, 0.0D);
-        }
+        // The tracked stack carries the rocket's colors, trail and flicker to each client.
+        level().broadcastEntityEvent(this, (byte) 17);
     }
 
     /** Absorbs nearby source water, matching the utility effect implied by a sponge-tipped arrow. */
