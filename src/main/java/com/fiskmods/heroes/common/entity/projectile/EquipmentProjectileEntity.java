@@ -249,8 +249,9 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
             float damage = DamageGroups.profileDamage(profile, 0.0F);
             if (damage > 0.0F && getOwner() instanceof LivingEntity attacker)
             {
-                DamageGroups.withDamageProfile(profile, () -> living.hurt(
-                        attacker instanceof Player player ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker), damage));
+                DamageGroups.applyProfileDamage(living, attacker,
+                        attacker instanceof Player player ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker),
+                        damage, profile);
             }
 
         }

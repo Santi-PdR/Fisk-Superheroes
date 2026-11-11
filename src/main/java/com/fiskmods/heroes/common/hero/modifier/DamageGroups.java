@@ -75,13 +75,40 @@ public final class DamageGroups
                 && definition.getAsJsonObject().get("properties") != null
                 && definition.getAsJsonObject().get("properties").isJsonObject()
                         ? definition.getAsJsonObject().getAsJsonObject("properties") : null;
+        // Original profiles apply dropoff using the target's pre-hit invulnerability,
+        // then shorten/clear that cooldown. This lets rapid webs and batarangs land
+        // consecutive hits without every hit receiving the full first-shot damage.
+        if (properties != null)
+        {
+            JsonElement dropoff = properties.get("DAMAGE_DROPOFF");
+            if (dropoff != null && dropoff.isJsonPrimitive() && dropoff.getAsJsonPrimitive().isNumber())
+            {
+                float fraction = dropoff.getAsFloat();
+                if (Float.isFinite(fraction))
+                    amount *= Math.max(0.0F, 1.0F - Math.max(0.0F, fraction)
+                            * Math.max(0, target.invulnerableTime) / target.invulnerableDuration);
+            }
+            if (!(amount > 0.0F)) return false;
+            JsonElement cooldown = properties.get("HIT_COOLDOWN");
+            if (cooldown != null && cooldown.isJsonPrimitive() && cooldown.getAsJsonPrimitive().isNumber())
+            {
+                double ticks = cooldown.getAsDouble();
+                if (Double.isFinite(ticks))
+                {
+                    int delay = (int) Math.max(0.0D, Math.min(target.invulnerableDuration, ticks));
+                    if (delay == 0 || target.invulnerableTime <= target.invulnerableDuration - delay)
+                        target.invulnerableTime = 0;
+                }
+            }
+        }
+        final float adjustedDamage = amount;
         boolean cookEntity = properties != null && properties.has("COOK_ENTITY")
                 && properties.get("COOK_ENTITY").getAsBoolean();
         boolean wasBurning = target.isOnFire();
         if (cookEntity) target.setSecondsOnFire(1);
 
         boolean[] accepted = { false };
-        withDamageProfile(definition, () -> accepted[0] = target.hurt(source, amount));
+        withDamageProfile(definition, () -> accepted[0] = target.hurt(source, adjustedDamage));
         if (!accepted[0])
         {
             if (cookEntity && !wasBurning) target.clearFire();

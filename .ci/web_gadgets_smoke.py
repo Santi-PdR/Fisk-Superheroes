@@ -91,7 +91,9 @@ def main():
             command('execute as @e[type=minecraft:iron_golem,tag=impact_target,limit=1] unless data entity @s {Health:100.0f} unless data entity @s ActiveEffects[{Id:2}] run say IMPACT_WEB_OK')
             wait_for(server_log, r'IMPACT_WEB_OK', 20, 'impact web damages without sticky slowdown', server)
             command('kill @e[type=minecraft:iron_golem,tag=impact_target]')
-            command('tp Dev 0.5 180 0.5 0 -25')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["rapid_target"],Attributes:[{Name:"minecraft:generic.knockback_resistance",Base:1.0d}]}')
+            command('scoreboard objectives add web_smoke dummy')
             xdo('keydown', 'c')
             try:
                 time.sleep(1); xdo('click', '4')
@@ -105,6 +107,10 @@ def main():
                     int(shots[i + 1][1]) - int(shots[i][1]) != 2 for i in range(4)):
                 raise RuntimeError(f'Rapid web cadence is not two ticks: {shots}')
             print('PASS: rapid web burst fires one projectile every two server ticks', flush=True)
+            command('execute store result score webhealth web_smoke run data get entity @e[type=minecraft:iron_golem,tag=rapid_target,limit=1] Health 10')
+            command('execute if score webhealth web_smoke matches ..949 run say RAPID_WEB_MULTIHIT_OK')
+            wait_for(server_log, r'RAPID_WEB_MULTIHIT_OK', 20, 'rapid burst lands multiple damaging hits', server)
+            command('kill @e[type=minecraft:iron_golem,tag=rapid_target]')
             command('kill @e[type=fiskheroes:equipment_projectile]')
             command('tp Dev 0.5 180 0.5 0 0')
             command('fill -2 180 7 2 183 7 minecraft:stone')

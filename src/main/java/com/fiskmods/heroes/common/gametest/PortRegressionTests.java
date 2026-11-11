@@ -3487,6 +3487,71 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty")
+    public static void gadgetDamageProfilesRespectHurtCooldownAndDropoff(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var attacker = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (attacker == null || target == null) { helper.fail("Missing damage test actors"); return; }
+        attacker.setNoAi(true); target.setNoAi(true);
+        var props = new com.google.gson.JsonObject();
+        props.addProperty("DAMAGE_DROPOFF", 0.6F);
+        props.addProperty("HIT_COOLDOWN", 0);
+        var profile = new com.google.gson.JsonObject();
+        profile.add("properties", props);
+        var source = level.damageSources().mobAttack(attacker);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        if (Math.abs(target.getHealth() - 88.8F) > 0.01F)
+        { helper.fail("Consecutive gadget hits must bypass cooldown but use pre-hit damage dropoff"); return; }
+        target.setHealth(100.0F); target.invulnerableTime = 0;
+        props.remove("DAMAGE_DROPOFF"); props.addProperty("HIT_COOLDOWN", 5);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        if (Math.abs(target.getHealth() - 92.0F) > 0.01F)
+        { helper.fail("Nonzero profile cooldown must still block hits during its first five ticks"); return; }
+        target.invulnerableTime = target.invulnerableDuration - 5;
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile);
+        if (Math.abs(target.getHealth() - 84.0F) > 0.01F)
+        { helper.fail("Profile cooldown must allow the next hit after five ticks"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void rapidWebProjectilesEachDamageTheTarget(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "rapid-web-damage-test"));
+        player.setPos(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D);
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Rapid web target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(player.getX(), player.getY(), player.getZ() + 3.0D);
+        level.addFreshEntity(target);
+        var props = new com.google.gson.JsonObject();
+        props.addProperty("DAMAGE_DROPOFF", 0.2F); props.addProperty("HIT_COOLDOWN", 0);
+        var profile = new com.google.gson.JsonObject();
+        profile.addProperty("damage", 4.0F); profile.add("properties", props);
+        var config = new com.google.gson.JsonObject(); config.add("damageProfile", profile);
+        for (int i = 0; i < 5; ++i)
+        {
+            var web = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(player,
+                    "fiskheroes:rapid_webs", config, new net.minecraft.world.item.ItemStack(
+                            com.fiskmods.heroes.common.item.ModItems.IMPACT_WEB.get()), 0);
+            web.setPos(player.getX(), player.getY() + 1.5D, player.getZ());
+            web.setDeltaMovement(0, 0, 4);
+            level.addFreshEntity(web);
+            web.tick();
+        }
+        if (Math.abs(target.getHealth() - 83.2F) > 0.05F)
+        { helper.fail("Five rapid web projectiles must each hit, with profile damage dropoff"); return; }
+        target.discard();
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void impactWebDamagesWithoutStickySlowdown(GameTestHelper helper)
     {
