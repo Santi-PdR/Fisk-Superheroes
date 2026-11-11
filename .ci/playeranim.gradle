@@ -1,0 +1,7 @@
+// CI-only, remap the pinned production Player Animator jar for the dev client.
+allprojects { project ->
+    repositories { flatDir { dirs project.file('.ci/playeranim-dependency') } }
+    afterEvaluate {
+        dependencies.add('runtimeOnly', project.fg.deobf('ci:playeranim:1.0.2'))
+    }
+}

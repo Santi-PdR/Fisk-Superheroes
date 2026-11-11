@@ -8,9 +8,6 @@ import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.client.texture.TextureResolver;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.HeroTracker;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -18,13 +15,14 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
 
 /** Scoped texture for an item rendered for a specific wearer, not necessarily the local player. */
 public final class SuitItemRenderContext
 {
     private static final ThreadLocal<ResourceLocation> TEXTURE = new ThreadLocal<>();
     private static final ThreadLocal<LivingEntity> WEARER = new ThreadLocal<>();
+    private record Frame(@Nullable ResourceLocation texture, @Nullable LivingEntity wearer) {}
+    private static final ThreadLocal<java.util.ArrayDeque<Frame>> FRAMES = ThreadLocal.withInitial(java.util.ArrayDeque::new);
     private static final Set<String> HELD_DIAGNOSTICS = ConcurrentHashMap.newKeySet();
 
     private SuitItemRenderContext() {}
@@ -40,15 +38,23 @@ public final class SuitItemRenderContext
         return TextureResolver.resolve(model.getResources().get(alias.getAsString()), wearer);
     }
 
-    /** Called by the hand-render coremod with the same owner and arguments vanilla supplied. */
-    public static void renderHeld(ItemRenderer renderer, LivingEntity wearer, ItemStack stack,
-            ItemDisplayContext context, boolean leftHand, PoseStack pose, MultiBufferSource buffers,
-            @Nullable Level level, int light, int overlay, int seed)
+    /** Entered inside ItemRenderer so other mods can still inject at the vanilla call site. */
+    public static void push(@Nullable LivingEntity wearer, ItemStack stack, ItemDisplayContext context)
     {
+        // Stowed item rendering supplies its own texture with withTexture; inventory and
+        // other non-hand renders must retain that surrounding context unchanged.
+        if (context != ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                && context != ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                && context != ItemDisplayContext.THIRD_PERSON_RIGHT_HAND
+                && context != ItemDisplayContext.THIRD_PERSON_LEFT_HAND)
+        {
+            FRAMES.get().push(new Frame(TEXTURE.get(), WEARER.get()));
+            return;
+        }
         HeroIteration hero = wearer instanceof Player player ? HeroTracker.getWornSuit(player) : null;
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        ResourceLocation livery = resolveLivery(HeroModelRegistry.get(hero), wearer, itemId);
-        if (itemId.getNamespace().equals(FiskHeroes.MODID)
+        ResourceLocation livery = wearer != null ? resolveLivery(HeroModelRegistry.get(hero), wearer, itemId) : null;
+        if (wearer != null && itemId.getNamespace().equals(FiskHeroes.MODID)
                 && (itemId.getPath().equals("katana") || itemId.getPath().equals("desert_eagle")
                         || itemId.getPath().equals("beretta_93r") || itemId.getPath().equals("cold_gun")
                         || itemId.getPath().equals("heat_gun")))
@@ -61,17 +67,19 @@ public final class SuitItemRenderContext
                         wearer.getName().getString(), heroName, itemId, context, livery != null ? livery : "default");
             }
         }
-        LivingEntity previous = WEARER.get();
-        WEARER.set(wearer);
-        try
-        {
-            withTexture(livery, () -> renderer.renderStatic(wearer, stack, context, leftHand, pose, buffers,
-                    level, light, overlay, seed));
-        }
-        finally
-        {
-            if (previous == null) WEARER.remove(); else WEARER.set(previous);
-        }
+        FRAMES.get().push(new Frame(TEXTURE.get(), WEARER.get()));
+        if (wearer == null) WEARER.remove(); else WEARER.set(wearer);
+        if (livery == null) TEXTURE.remove(); else TEXTURE.set(livery);
+    }
+
+    /** Restore the enclosing render even when nested rendering or an exception occurs. */
+    public static void pop()
+    {
+        var frames = FRAMES.get();
+        Frame previous = frames.pop();
+        if (previous.wearer() == null) WEARER.remove(); else WEARER.set(previous.wearer());
+        if (previous.texture() == null) TEXTURE.remove(); else TEXTURE.set(previous.texture());
+        if (frames.isEmpty()) FRAMES.remove();
     }
 
     static void withTexture(@Nullable ResourceLocation texture, Runnable render)
