@@ -1536,6 +1536,42 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void ownerlessCactusArrowStillBursts(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 1, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level);
+        arrow.setArrowType("cactus"); arrow.setPos(base.getX() + 1, base.getY() + 1.5, base.getZ() + .5);
+        arrow.setDeltaMovement(4, 0, 0); level.addFreshEntity(arrow); arrow.tick();
+        var spikes = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class,
+                new net.minecraft.world.phys.AABB(wall).inflate(4));
+        if (spikes.size() < 20 || spikes.size() > 21 || spikes.stream().anyMatch(e -> e.getOwner() != null))
+        { helper.fail("Cactus arrows without a living owner must still spawn 20 or 21 ownerless spikes"); return; }
+        spikes.forEach(net.minecraft.world.entity.Entity::discard); arrow.discard(); level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void ownerlessCactusSpikesSurviveRejectedHitsAndCanDamage(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Could not create target"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setInvulnerable(true);
+        target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(target);
+        var spike = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.CACTUS_SPIKE.get(), level);
+        spike.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); spike.setDeltaMovement(4, 0, 0);
+        level.addFreshEntity(spike); spike.tick();
+        if (spike.isRemoved()) { helper.fail("Rejected damage must not consume the spike"); return; }
+        target.setInvulnerable(false); target.invulnerableTime = 0; float health = target.getHealth();
+        spike.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); spike.setDeltaMovement(4, 0, 0); spike.tick();
+        if (!spike.isRemoved() || Math.abs(target.getHealth() - (health - 1.5F)) > .01)
+        { helper.fail("Ownerless spike must apply default damage and disappear on a successful hit"); return; }
+        target.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void cactusSpikeAppliesConfiguredDamageAndCactusType(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));

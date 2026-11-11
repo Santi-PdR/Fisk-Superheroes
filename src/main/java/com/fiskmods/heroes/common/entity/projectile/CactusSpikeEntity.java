@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 
-/** Small, fixed-damage spike emitted by the Cactus Arrow's impact burst. */
+/** Spike projectile shared by Señor Cactus and Cactus Arrow. */
 public final class CactusSpikeEntity extends ThrowableItemProjectile
 {
     private static final int MAX_AGE = 200;
@@ -55,22 +55,26 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
     @Override
     protected void onHitEntity(EntityHitResult hit)
     {
-        if (!(hit.getEntity() instanceof LivingEntity target) || !(level() instanceof ServerLevel))
-        {
-            discard();
-            return;
-        }
-
-        // The original spike sometimes reset hurt resistance before applying its small hit,
-        // which lets several spikes in one cactus burst connect instead of collapsing into one.
+        if (!(level() instanceof ServerLevel)) return;
+        var target = hit.getEntity();
+        // The original sometimes clears hurt resistance and only consumes the spike on a successful hit.
         if (random.nextBoolean()) target.invulnerableTime = 0;
-        if (getOwner() instanceof LivingEntity owner)
+        var owner = getOwner();
+        var source = level().damageSources().thrown(this, owner);
+        float damage = DamageGroups.profileDamage(damageProfile, DAMAGE);
+        boolean accepted;
+        if (target instanceof LivingEntity living)
         {
-            DamageGroups.applyProfileDamage(target, owner,
-                    level().damageSources().thrown(this, owner),
-                    DamageGroups.profileDamage(damageProfile, DAMAGE), damageProfile);
+            accepted = DamageGroups.applyProfileDamage(living, owner instanceof LivingEntity ? (LivingEntity) owner : null,
+                    source, damage, damageProfile);
         }
-        discard();
+        else
+        {
+            boolean[] hitAccepted = { false };
+            DamageGroups.withDamageProfile(damageProfile, () -> hitAccepted[0] = target.hurt(source, damage));
+            accepted = hitAccepted[0];
+        }
+        if (accepted) discard();
     }
 
     @Override
@@ -110,6 +114,9 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
         types.addProperty("CACTUS", 1.0D);
         types.addProperty("SHARP", 1.0D);
         profile.add("types", types);
+        JsonObject properties = new JsonObject();
+        properties.addProperty("REDUCE_KNOCKBACK", 0.75D);
+        profile.add("properties", properties);
         return profile;
     }
 }

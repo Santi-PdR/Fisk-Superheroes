@@ -1055,9 +1055,10 @@ public class TrickArrowEntity extends Arrow
         Vec3 incomingMotion = getDeltaMovement();
         for (int i = 0; i < count; ++i)
         {
-            if (!(getOwner() instanceof LivingEntity owner)) break;
-            com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity spike =
-                    new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
+            com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity spike = getOwner() instanceof LivingEntity owner
+                    ? new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner)
+                    : new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(
+                            com.fiskmods.heroes.common.entity.ModEntities.CACTUS_SPIKE.get(), serverLevel);
             spike.setPos(getX(), getY(), getZ());
             // The reference spike inherits the Cactus Arrow's travel direction and adds a small
             // random spread; firing evenly in random directions made the burst look unrelated.
