@@ -125,6 +125,12 @@ public class ItemFlashRing extends Item
         {
             ItemHeroArmor.setHero(stack, found);
         }
+        else
+        {
+            // Replacing a previous suit must not leave its hero identity on the ring.
+            tag.remove(ItemHeroArmor.TAG_HERO);
+            tag.remove(ItemHeroArmor.TAG_ITERATION);
+        }
         return stack;
     }
 
@@ -157,15 +163,12 @@ public class ItemFlashRing extends Item
                 ItemStack[] previous = new ItemStack[4];
                 for (int i = 0; i < 4; ++i)
                 {
+                    // Swapping two eligible suits stores the complete previous equipment, as
+                    // in the original. Otherwise only occupied incoming slots are replaced:
+                    // partial suits must not strip unrelated armor from empty slots.
+                    if (!swapIntoRing && stored[i].isEmpty()) continue;
                     previous[i] = player.getItemBySlot(ARMOR_SLOTS[i]).copy();
-                    player.setItemSlot(ARMOR_SLOTS[i], ItemStack.EMPTY);
-                }
-                for (int i = 0; i < 4; ++i)
-                {
-                    if (!stored[i].isEmpty())
-                    {
-                        player.setItemSlot(ARMOR_SLOTS[i], stored[i].copy());
-                    }
+                    player.setItemSlot(ARMOR_SLOTS[i], stored[i].copy());
                 }
 
                 if (swapIntoRing)
@@ -177,7 +180,7 @@ public class ItemFlashRing extends Item
                     setContainedArmor(stack);
                     for (ItemStack oldPiece : previous)
                     {
-                        if (!oldPiece.isEmpty() && !player.getInventory().add(oldPiece))
+                        if (oldPiece != null && !oldPiece.isEmpty() && !player.getInventory().add(oldPiece))
                         {
                             player.drop(oldPiece, false);
                         }

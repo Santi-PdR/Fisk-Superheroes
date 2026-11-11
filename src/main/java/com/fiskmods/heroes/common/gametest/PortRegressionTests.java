@@ -1385,6 +1385,50 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void flashRingPartialSuitPreservesOtherArmor(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "flash-ring-test"));
+        var oldHelmet = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_HELMET);
+        oldHelmet.getOrCreateTag().putString("marker", "original helmet");
+        var chest = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE);
+        chest.getOrCreateTag().putString("marker", "leave equipped");
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, oldHelmet);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, chest);
+        var ring = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.FLASH_RING.get());
+        com.fiskmods.heroes.common.item.ItemFlashRing.setContainedArmor(ring,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET));
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, ring);
+        ring.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        var equipped = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+        var keptChest = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST);
+        boolean returned = player.getInventory().items.stream().anyMatch(stack ->
+                stack.is(net.minecraft.world.item.Items.IRON_HELMET) && stack.hasTag()
+                && "original helmet".equals(stack.getTag().getString("marker")));
+        if (!equipped.is(net.minecraft.world.item.Items.DIAMOND_HELMET)
+                || keptChest != chest || !returned
+                || com.fiskmods.heroes.common.item.ItemFlashRing.getContainedArmor(ring) != null)
+        { helper.fail("Deploying a partial ring must preserve unaffected armor and return displaced pieces"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void flashRingReplacementClearsStaleHeroIdentity(GameTestHelper helper)
+    {
+        var ring = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.FLASH_RING.get());
+        ring.getOrCreateTag().putString(com.fiskmods.heroes.common.hero.ItemHeroArmor.TAG_HERO, "fiskheroes:the_flash");
+        ring.getOrCreateTag().putString(com.fiskmods.heroes.common.hero.ItemHeroArmor.TAG_ITERATION, "default");
+        com.fiskmods.heroes.common.item.ItemFlashRing.setContainedArmor(ring,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_HELMET));
+        if (ring.getTag().contains(com.fiskmods.heroes.common.hero.ItemHeroArmor.TAG_HERO)
+                || ring.getTag().contains(com.fiskmods.heroes.common.hero.ItemHeroArmor.TAG_ITERATION)
+                || com.fiskmods.heroes.common.item.ItemFlashRing.getContainedHero(ring) != null)
+        { helper.fail("Replacing ring contents must remove any previous hero identity"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void automaticQuiverCraftingAndRestock(GameTestHelper helper)
     {
         var level = helper.getLevel();
