@@ -1496,6 +1496,29 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void bouncingArrowsUseIncomingSpeedEvenCloseToWall(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer();
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        for (String type : new String[] {"slime", "pufferfish"})
+        {
+            var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, type);
+            arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5);
+            arrow.setDeltaMovement(2, 0, 0); level.addFreshEntity(arrow); arrow.tick();
+            double expected = "slime".equals(type) ? 1.2 : 1.0;
+            if (arrow.isAnchored() || arrow.isRemoved() || Math.abs(arrow.getDeltaMovement().x + expected * .99) > .05)
+            { helper.fail(type + " must bounce using approach velocity, not remaining distance to the wall"); return; }
+            arrow.discard();
+        }
+        level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureMasksAndHue(GameTestHelper helper)
     {
         int red = 0xFF0000FF; // NativeImage stores ABGR, not ARGB.

@@ -524,6 +524,7 @@ public class TrickArrowEntity extends Arrow
             startPufferfishFuse();
         }
 
+        Vec3 incomingMotion = getDeltaMovement();
         super.onHitBlock(result);
         String type = getArrowType();
         if (level().isClientSide) return;
@@ -581,7 +582,7 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("pufferfish".equals(type) || "slime".equals(type))
         {
-            bounceAtBlock(result, "pufferfish".equals(type) ? 0.5D : 0.6D);
+            bounceAtBlock(result, incomingMotion, "pufferfish".equals(type) ? 0.5D : 0.6D);
         }
         else if ("pulse".equals(type))
         {
@@ -837,9 +838,11 @@ public class TrickArrowEntity extends Arrow
         if (level().isEmptyBlock(pos)) level().setBlockAndUpdate(pos, state);
     }
 
-    private void bounceAtBlock(BlockHitResult hit, double factor)
+    private void bounceAtBlock(BlockHitResult hit, Vec3 incomingMotion, double factor)
     {
-        Vec3 motion = getDeltaMovement();
+        // Vanilla's onHitBlock replaces velocity with the remaining distance to the wall.
+        // Use the actual approach speed for the reference bounce and its speed threshold.
+        Vec3 motion = incomingMotion;
         if (motion.length() <= 0.25D || !level().getBlockState(hit.getBlockPos()).blocksMotion()) return;
         var adjacent = hit.getBlockPos().relative(hit.getDirection());
         if (!level().isEmptyBlock(adjacent)) return;
@@ -851,9 +854,10 @@ public class TrickArrowEntity extends Arrow
             case Z -> motion = new Vec3(motion.x * factor, motion.y * factor, -motion.z * factor);
         }
         setDeltaMovement(motion);
-        setPos(getX() + hit.getDirection().getStepX() * 0.05D,
-                getY() + hit.getDirection().getStepY() * 0.05D,
-                getZ() + hit.getDirection().getStepZ() * 0.05D);
+        Vec3 impact = hit.getLocation();
+        setPos(impact.x + hit.getDirection().getStepX() * 0.05D,
+                impact.y + hit.getDirection().getStepY() * 0.05D,
+                impact.z + hit.getDirection().getStepZ() * 0.05D);
         inGround = false;
         shakeTime = 0;
 
@@ -865,7 +869,6 @@ public class TrickArrowEntity extends Arrow
         net.minecraft.core.BlockPos pos = hit.getBlockPos();
         if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
-            Vec3 impact = hit.getLocation();
             serverLevel.sendParticles(particles, impact.x, impact.y, impact.z,
                     20, 0.2D, 0.2D, 0.2D, 0.1D);
             if ("slime".equals(getArrowType()))
