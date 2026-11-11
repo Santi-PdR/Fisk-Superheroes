@@ -1437,6 +1437,48 @@ public final class PortRegressionTests
         blocked.discard(); level.removeBlock(obstruction, false); level.removeBlock(wall, false); helper.succeed();
     }
 
+    public static final class EnderArrowTeleportGuard
+    {
+        private final net.minecraft.world.entity.player.Player player;
+        private boolean called;
+        EnderArrowTeleportGuard(net.minecraft.world.entity.player.Player player) { this.player = player; }
+
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onTeleport(net.minecraftforge.event.entity.EntityTeleportEvent event)
+        {
+            if (event.getEntity() == player)
+            {
+                called = true;
+                event.setCanceled(true);
+            }
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void enderArrowRespectsTeleportCancellation(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var player = helper.makeMockPlayer(); player.setPos(base.getX(), base.getY(), base.getZ() + .5); player.fallDistance = 10;
+        var guard = new EnderArrowTeleportGuard(player);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, player, "ender_pearl");
+            arrow.setPos(base.getX() + 1, base.getY() + .5, base.getZ() + .5); arrow.setDeltaMovement(4, 0, 0);
+            level.addFreshEntity(arrow); arrow.tick(); arrow.discard();
+            if (!guard.called || Math.abs(player.getX() - base.getX()) > .01 || player.fallDistance != 10)
+            { helper.fail("A canceled Forge teleport event must prevent the ender arrow from moving or damaging the player"); return; }
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
+            level.removeBlock(wall, false);
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty")
     public static void flashRingPartialSuitPreservesOtherArmor(GameTestHelper helper)
     {
