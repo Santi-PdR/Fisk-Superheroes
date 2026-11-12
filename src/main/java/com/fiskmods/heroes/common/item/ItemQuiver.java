@@ -150,12 +150,14 @@ public class ItemQuiver extends Item
         // Only the attached visual payloads are sent, not unrelated arrow stack data. Bound the
         // encoded size so unusually large player-provided NBT cannot exceed packet limits.
         String payload = "";
-        if (arrow.getItem() instanceof ItemTrickArrow && arrow.hasTag())
+        if (arrow.hasTag() && (arrow.getItem() instanceof ItemTrickArrow || arrow.is(Items.TIPPED_ARROW)))
         {
             var visual = new net.minecraft.nbt.CompoundTag();
-            for (String key : new String[] { "AttachedPotion", "AttachedItem" })
-                if (arrow.getTag().contains(key, net.minecraft.nbt.Tag.TAG_COMPOUND))
-                    visual.put(key, arrow.getTag().getCompound(key).copy());
+            String[] keys = arrow.getItem() instanceof ItemTrickArrow
+                    ? new String[] { "AttachedPotion", "AttachedItem" }
+                    : new String[] { "Potion", "CustomPotionEffects", "CustomPotionColor" };
+            for (String key : keys)
+                if (arrow.getTag().contains(key)) visual.put(key, arrow.getTag().get(key).copy());
             if (!visual.isEmpty())
             {
                 String encoded = visual.toString();

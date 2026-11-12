@@ -217,25 +217,24 @@ public class ItemCompoundBow extends BowItem
         var id = net.minecraft.resources.ResourceLocation.tryParse(data.getData().get(Vars.CURRENT_ARROW));
         if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) return ItemStack.EMPTY;
         var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
-        if (item instanceof ItemTrickArrow)
+        if (!(item instanceof ArrowItem)) return ItemStack.EMPTY;
+        ItemStack arrow = new ItemStack(item);
+        boolean trick = item instanceof ItemTrickArrow;
+        if (trick) ItemTrickArrow.setType(arrow, data.getData().get(Vars.CURRENT_ARROW_TYPE));
+        String payload = data.getData().get(Vars.CURRENT_ARROW_PAYLOAD);
+        if ((trick || arrow.is(Items.TIPPED_ARROW)) && !payload.isEmpty() && payload.length() <= 8192)
         {
-            ItemStack arrow = new ItemStack(item);
-            ItemTrickArrow.setType(arrow, data.getData().get(Vars.CURRENT_ARROW_TYPE));
-            String payload = data.getData().get(Vars.CURRENT_ARROW_PAYLOAD);
-            if (!payload.isEmpty() && payload.length() <= 8192)
+            try
             {
-                try
-                {
-                    var tag = net.minecraft.nbt.TagParser.parseTag(payload);
-                    for (String key : new String[] { "AttachedPotion", "AttachedItem" })
-                        if (tag.contains(key, net.minecraft.nbt.Tag.TAG_COMPOUND))
-                            arrow.getOrCreateTag().put(key, tag.getCompound(key).copy());
-                }
-                catch (com.mojang.brigadier.exceptions.CommandSyntaxException ignored) { }
+                var tag = net.minecraft.nbt.TagParser.parseTag(payload);
+                String[] keys = trick ? new String[] { "AttachedPotion", "AttachedItem" }
+                        : new String[] { "Potion", "CustomPotionEffects", "CustomPotionColor" };
+                for (String key : keys)
+                    if (tag.contains(key)) arrow.getOrCreateTag().put(key, tag.get(key).copy());
             }
-            return arrow;
+            catch (com.mojang.brigadier.exceptions.CommandSyntaxException ignored) { }
         }
-        return item instanceof ArrowItem ? item.getDefaultInstance() : ItemStack.EMPTY;
+        return arrow;
     }
 
     /** Prefer the selected quiver slot, then support the standard inventory arrow behavior. */

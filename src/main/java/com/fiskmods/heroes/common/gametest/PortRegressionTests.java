@@ -1403,6 +1403,15 @@ public final class PortRegressionTests
         displayed = com.fiskmods.heroes.common.item.ItemCompoundBow.getTrackedArrowForDisplay(received);
         if (!displayed.is(net.minecraft.world.item.Items.SPECTRAL_ARROW))
         { helper.fail("Tracked ammo must fall back to a normal offhand arrow"); return; }
+        var tipped = net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                net.minecraft.world.item.Items.TIPPED_ARROW.getDefaultInstance(), net.minecraft.world.item.alchemy.Potions.HEALING);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, tipped);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        received.getData().readUpdate(data.getData().writeDirty());
+        displayed = com.fiskmods.heroes.common.item.ItemCompoundBow.getTrackedArrowForDisplay(received);
+        if (!displayed.is(net.minecraft.world.item.Items.TIPPED_ARROW)
+                || net.minecraft.world.item.alchemy.PotionUtils.getPotion(displayed) != net.minecraft.world.item.alchemy.Potions.HEALING)
+        { helper.fail("Tracked tipped arrows must retain their potion tint"); return; }
         helper.succeed();
     }
 
