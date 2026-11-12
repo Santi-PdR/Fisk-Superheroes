@@ -87,13 +87,14 @@ def main():
             command('kill @e[tag=glitch_target]')
             command('fill -2 180 3 2 184 8 minecraft:air')
             command('fill -2 180 4 2 183 4 minecraft:stone')
-            command('setblock 0 181 3 minecraft:lever[face=wall,facing=north,powered=false]')
+            command('setblock 1 181 3 minecraft:lever[face=wall,facing=north,powered=false]')
             command('tp Dev 0.5 180 0.5 0 0')
             command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"pulse"}')
             shoot('ci-arrow-pulse.png')
+            command('execute as @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"pulse"}] run data get entity @s')
             wait_for(server_log, r'Pulse arrow impact: block=minecraft:stone, signal=true', 20,
                      'pulse arrow produces a temporary signal on the wall', server)
-            command('execute if block 0 181 3 minecraft:lever[powered=false] run say PULSE_LEVER_UNCHANGED_PASS')
+            command('execute if block 1 181 3 minecraft:lever[powered=false] run say PULSE_LEVER_UNCHANGED_PASS')
             wait_for(server_log, r'\[Server\] PULSE_LEVER_UNCHANGED_PASS', 15,
                      'pulse arrow does not permanently toggle the lever', server)
             print('PASS: real client fired five trick arrows against dedicated server', flush=True)
