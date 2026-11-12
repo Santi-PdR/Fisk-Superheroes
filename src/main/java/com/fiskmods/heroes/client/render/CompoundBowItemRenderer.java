@@ -89,6 +89,9 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
                 boolean left = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+                // The 1.20 item-in-hand renderer already applies the vanilla drawing pose.
+                // Counter its edgeward placement so the compound bow stays visible on screen.
+                if (drawing) pose.translate(left ? .38 : -.38, .28, 0);
                 pose.translate(left ? .25 : .75, .5, .5);
                 pose.mulPose(Axis.XP.rotationDegrees(-5));
                 pose.mulPose(Axis.ZP.rotationDegrees(left ? -230 : 230));

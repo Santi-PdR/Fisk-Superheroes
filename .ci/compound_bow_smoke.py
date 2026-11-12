@@ -42,7 +42,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:green_arrow')
             command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow')
-            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow')
+            command('item replace entity Dev hotbar.1 with fiskheroes:trick_arrow')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false', 30,
                      'first-person compound bow model', client)
             wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=false, missing=false', 30,
@@ -61,6 +61,15 @@ def main():
             command('execute if entity @e[type=fiskheroes:trick_arrow] run say BOW_SHOT_PASS')
             wait_for(server_log, r'BOW_SHOT_PASS', 15, 'bow fires on dedicated server', server)
             xdo('key', 'F5'); xdo('key', 'F5'); time.sleep(1)
+            xdo('mousedown', '3')
+            try:
+                wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=true, horizontal=false', 30,
+                         'vertical drawn bow rendered in first person', client)
+                time.sleep(.5)
+                subprocess.run(['scrot', 'ci-bow-draw-first-vertical.png'], check=True, timeout=30)
+            finally:
+                xdo('mouseup', '3')
+            command('item replace entity Dev hotbar.1 with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:spectral_arrow')
             xdo('mousedown', '3')
             try:
