@@ -140,7 +140,10 @@ public class ItemQuiver extends Item
 
         int quiverSlot = findQuiverSlot(player);
         ItemStack quiver = quiverSlot >= 0 ? player.getInventory().getItem(quiverSlot) : ItemStack.EMPTY;
-        data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? null : "fiskheroes:quiver");
+        // Use an explicit empty sentinel, rather than null: dirty-variable packets must carry
+        // removal to clients that previously saw a quiver equipped.
+        data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? "" : "fiskheroes:quiver");
+        data.getData().set(Vars.EQUIPPED_QUIVER_GLINT, !quiver.isEmpty() && quiver.isEnchanted());
         data.getData().set(Vars.EQUIPPED_QUIVER_SLOT, (byte) quiverSlot);
 
         ItemStack arrow = ItemCompoundBow.getArrowForDisplay(player);

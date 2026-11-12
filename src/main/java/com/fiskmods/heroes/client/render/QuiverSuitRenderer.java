@@ -27,6 +27,7 @@ final class QuiverSuitRenderer
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(FiskHeroes.MODID,
             "textures/heroes/quiver/quiver.png");
     private static final ModelPart QUIVER = createModel();
+    private static final java.util.Map<java.util.UUID, String> LOGGED = new java.util.HashMap<>();
 
     private QuiverSuitRenderer()
     {
@@ -36,8 +37,29 @@ final class QuiverSuitRenderer
             AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel,
             HeroModelData model, int armorSlot)
     {
-        ItemStack quiver = ItemQuiver.findQuiver(player);
-        if (quiver.isEmpty()) return;
+        boolean equipped, foil;
+        if (player.isLocalPlayer())
+        {
+            ItemStack quiver = ItemQuiver.findQuiver(player);
+            equipped = !quiver.isEmpty();
+            foil = equipped && quiver.isEnchanted();
+        }
+        else
+        {
+            // A tracking client does not receive the remote player's whole inventory.
+            // Its equipped-quiver data is published by the server instead.
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            equipped = data != null && !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER).isEmpty();
+            foil = equipped && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT);
+        }
+        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics"))
+        {
+            String state = equipped + "|" + foil;
+            if (!state.equals(LOGGED.put(player.getUUID(), state)))
+                FiskHeroes.LOGGER.info("Quiver appearance: wearer={}, equipped={}, foil={}",
+                        player.getName().getString(), equipped, foil);
+        }
+        if (!equipped) return;
 
         String textureKey = null;
         JsonObject archery = model.getCustom().get("fiskheroes:archery");
@@ -59,7 +81,7 @@ final class QuiverSuitRenderer
         pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(-30.0F));
 
         RenderType type = RenderType.entityTranslucent(texture);
-        VertexConsumer consumer = ItemRenderer.getFoilBuffer(buffer, type, false, quiver.isEnchanted());
+        VertexConsumer consumer = ItemRenderer.getFoilBuffer(buffer, type, false, foil);
         QUIVER.render(pose, consumer, light, OverlayTexture.NO_OVERLAY);
         pose.popPose();
     }

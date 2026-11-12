@@ -1438,6 +1438,42 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void quiverPresenceResetsForTrackingAndScripts(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var wearer = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-presence-test"));
+        var tracker = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-presence-tracker"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(wearer);
+        var remote = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(tracker);
+        if (data == null || remote == null) { helper.fail("Player data missing"); return; }
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(wearer);
+        if (js.getData("fiskheroes:equipped_quiver") != null
+                || com.fiskmods.heroes.pack.js.JSEntity.read(wearer, "equipped_quiver") != null)
+        { helper.fail("No quiver must appear as null to hero scripts"); return; }
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        quiver.enchant(com.fiskmods.heroes.common.enchantment.ModEnchantments.CAPACITY.get(), 1);
+        wearer.getInventory().setItem(1, quiver);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(wearer);
+        remote.getData().readUpdate(data.getData().writeDirty()); data.getData().clearDirty();
+        if (!"fiskheroes:quiver".equals(js.getData("fiskheroes:equipped_quiver"))
+                || !"fiskheroes:quiver".equals(remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER))
+                || !remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT))
+        { helper.fail("Equipped quiver must be visible to scripts and tracking clients"); return; }
+        wearer.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(wearer);
+        var removal = data.getData().writeDirty();
+        remote.getData().readUpdate(removal);
+        if (js.getData("fiskheroes:equipped_quiver") != null
+                || !remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER).isEmpty()
+                || remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT)
+                || !removal.contains(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER.getName().toString()))
+        { helper.fail("Quiver removal must synchronize and become null in scripts"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void compoundBowHonorsForgeNockAndLooseEvents(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));

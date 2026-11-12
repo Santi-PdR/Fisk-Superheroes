@@ -95,7 +95,9 @@ def main():
             command('execute as Dev run suit fiskheroes:the_flash')
             command('execute as Partner run suit fiskheroes:green_arrow')
             command('item replace entity Partner weapon.mainhand with fiskheroes:compound_bow')
-            command('item replace entity Partner hotbar.1 with fiskheroes:quiver{QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}}]}}')
+            command('item replace entity Partner hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}}]}}')
+            wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true',
+                     60, 'observer renders remote enchanted quiver', observer)
             time.sleep(3)
             subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
             subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
@@ -105,7 +107,10 @@ def main():
                          60, 'observer sees selected quiver arrow of remote player', observer)
             finally:
                 subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
+            start = len(observer_log.read_text(errors='replace'))
             command('item replace entity Partner hotbar.1 with minecraft:air')
+            wait_for_new(observer_log, r'Quiver appearance: wearer=Partner, equipped=false, foil=false', start,
+                         60, 'observer sees remote quiver removal', observer)
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle')
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')

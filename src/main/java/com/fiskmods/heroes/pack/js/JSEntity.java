@@ -40,15 +40,7 @@ public class JSEntity
             return null;
         }
 
-        SHPlayerData data = SHDataCapabilities.getPlayer(entity);
-
-        if (data == null)
-        {
-            return var.getDefault();
-        }
-
-        Object value = data.getData().get(var);
-        return value != null ? value : var.getDefault();
+        return scriptDataValue(entity, var);
     }
 
     /**
@@ -64,14 +56,17 @@ public class JSEntity
             return null;
         }
 
+        return scriptDataValue(entity, var);
+    }
+
+    private static Object scriptDataValue(Entity entity, DataVar<?> var)
+    {
         SHPlayerData data = SHDataCapabilities.getPlayer(entity);
-
-        if (data == null)
-        {
-            return var.getDefault();
-        }
-
-        Object value = data.getData().get(var);
+        Object value = data != null ? data.getData().get(var) : var.getDefault();
+        // The original quiver variable held a nullable object. Its 1.20 wire representation is
+        // an item-id string, so translate the empty sentinel back to null for existing scripts.
+        if (var == com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER
+                && (value == null || "".equals(value))) return null;
         return value != null ? value : var.getDefault();
     }
 

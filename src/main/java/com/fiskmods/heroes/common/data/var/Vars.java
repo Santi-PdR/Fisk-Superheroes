@@ -43,7 +43,9 @@ public final class Vars
     public static final DataVar<Boolean> ENERGY_PROJECTION = register("energy_projection", DataType.BOOLEAN, false, false);
     public static final DataVar<Float> ENERGY_PROJECTION_TIMER = register("energy_projection_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Byte> EQUIPPED_AMMO_BAG = register("equipped_ammo_bag", DataType.BYTE, (byte) -1, false);
-    public static final DataVar<String> EQUIPPED_QUIVER = register("equipped_quiver", DataType.STRING, null, false);
+    // Empty string is the wire-safe sentinel for the original nullable Quiver value.
+    public static final DataVar<String> EQUIPPED_QUIVER = register("equipped_quiver", DataType.STRING, "", false);
+    public static final DataVar<Boolean> EQUIPPED_QUIVER_GLINT = register("equipped_quiver_glint", DataType.BOOLEAN, false, false);
     public static final DataVar<Byte> EQUIPPED_QUIVER_SLOT = register("equipped_quiver_slot", DataType.BYTE, (byte) -1, false);
     public static final DataVar<Byte> EQUIPPED_TACHYON_DEVICE_SLOT = register("equipped_tachyon_device_slot", DataType.BYTE, (byte) -1, false);
     public static final DataVar<Byte> FLIGHT_ANIMATION = register("flight_animation", DataType.BYTE, (byte) 0, false);
