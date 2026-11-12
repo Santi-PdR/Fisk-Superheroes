@@ -3997,6 +3997,56 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void heroAttributeProfilesReplaceAndInheritCorrectly(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var ironMan = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk85");
+        var panther = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:black_panther");
+        var steel = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:citizen_steel");
+        if (data == null || ironMan == null || panther == null || steel == null)
+        { helper.fail("Profile test heroes or player data missing"); return; }
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(player);
+        var punch = com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE;
+        var weapon = com.fiskmods.heroes.common.hero.HeroAttribute.WEAPON_DAMAGE;
+        var jump = com.fiskmods.heroes.common.hero.HeroAttribute.JUMP_HEIGHT;
+
+        data.setHero(ironMan.getDefaultIteration());
+        js.setData("fiskheroes:dyn/nanites", true);
+        var active = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, ironMan);
+        if (active.get(punch).amount() != 8.5D || active.get(weapon).amount() != 1.5D)
+        { helper.fail("Active Iron Man must use the base attribute profile"); return; }
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var punchAttribute = player.getAttribute(com.fiskmods.heroes.common.hero.attribute.SHAttributes.PUNCH_DAMAGE.get());
+        if (punchAttribute == null || Math.abs(punchAttribute.getValue() - 9.5D) > 0.001D)
+        { helper.fail("Active Iron Man punch modifier not applied"); return; }
+        js.setData("fiskheroes:dyn/nanites", false);
+        var inactive = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, ironMan);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (inactive.containsKey(punch) || inactive.containsKey(weapon) || Math.abs(punchAttribute.getValue() - 1.0D) > 0.001D)
+        { helper.fail("Inactive nanites must drop base suit attributes and remove applied modifiers"); return; }
+
+        data.setHero(panther.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BLADE, true);
+        var claws = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, panther);
+        if (claws.get(punch).amount() != 10.5D || claws.get(weapon).amount() != 2.5D || claws.get(jump).amount() != 2.0D)
+        { helper.fail("Panther claws must replace punch damage while inheriting other defaults"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BLADE, false);
+        if (com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, panther).get(punch).amount() != 7.0D)
+        { helper.fail("Retracting claws must restore normal punch damage"); return; }
+
+        data.setHero(steel.getDefaultIteration());
+        js.setData("fiskheroes:dyn/steeled", true);
+        var steeled = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, steel);
+        if (steeled.get(punch).amount() != 9.0D || steeled.get(jump).amount() != 1.0D)
+        { helper.fail("Citizen Steel transformed profile must use its own attributes"); return; }
+        js.setData("fiskheroes:dyn/steeled", false);
+        if (com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, steel).get(punch).amount() != 5.5D)
+        { helper.fail("Untransformed Citizen Steel must restore base attributes"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void crossbonesPunchChargesAndConsumesOnMelee(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
@@ -4022,7 +4072,7 @@ public final class PortRegressionTests
                 || vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGE) < 0.99F)
         { helper.fail("Crouching should charge the punch in three ticks"); return; }
         var profile = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
-        if (profile.get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE).amount() != 14.5D)
+        if (profile.get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE).amount() != 8.5D)
         { helper.fail("Charged mode should select the PUNCH attribute profile"); return; }
         player.setShiftKeyDown(false);
         mod.tick(player, entry, data);

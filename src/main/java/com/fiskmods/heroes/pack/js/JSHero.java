@@ -119,7 +119,7 @@ public class JSHero
     public void addAttributeProfile(String name, Object function)
     {
         Map<HeroAttribute, Hero.AttributeMod> map = new LinkedHashMap<>();
-        boolean inherited = true;
+        boolean inherited = false;
 
         com.fiskmods.heroes.pack.ScriptFunction fn = JSContext.wrap(function);
 
@@ -406,7 +406,7 @@ public class JSHero
         private final Hero hero;
         private final String profile;
         private final Map<HeroAttribute, Hero.AttributeMod> map;
-        private boolean inherits = true;
+        private boolean inherits = false;
         private boolean revokesAugments;
 
         JSProfileBuilder(Hero hero, String profile, Map<HeroAttribute, Hero.AttributeMod> map)

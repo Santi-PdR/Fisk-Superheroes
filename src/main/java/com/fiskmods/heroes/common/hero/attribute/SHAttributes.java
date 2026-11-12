@@ -313,14 +313,9 @@ public class SHAttributes
                         map.clear();
                     }
 
-                    for (Map.Entry<HeroAttribute, Hero.AttributeMod> e : profileMods.entrySet())
-                    {
-                        Hero.AttributeMod current = map.get(e.getKey());
-                        Hero.AttributeMod add = e.getValue();
-
-                        map.put(e.getKey(), current == null ? add
-                                : new Hero.AttributeMod(current.amount() + add.amount(), add.operation()));
-                    }
+                    // Original profiles are keyed by attribute: their own entry takes
+                    // precedence over an inherited default, rather than adding to it.
+                    map.putAll(profileMods);
                 }
             }
         }
