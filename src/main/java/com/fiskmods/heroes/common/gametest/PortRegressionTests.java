@@ -1413,11 +1413,16 @@ public final class PortRegressionTests
         inventory = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
         if (inventory.insertItem(0, arrows, false).getCount() != 32 || inventory.getStackInSlot(0).getCount() != 48)
         { helper.fail("Holding II must expand each slot to forty-eight"); return; }
-        if (!quiver.isEnchantable() || !holding.canEnchant(quiver) || !bottomless.canEnchant(quiver)
+        var cleanQuiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        if (!cleanQuiver.isEnchantable() || !holding.canEnchant(quiver) || !bottomless.canEnchant(quiver)
                 || holding.canEnchant(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK))
                 || holding.isCompatibleWith(bottomless) || bottomless.isCompatibleWith(holding)
                 || holding.getMaxLevel() != 3 || bottomless.getMaxLevel() != 5)
-        { helper.fail("Quiver enchantments must be applicable and mutually exclusive with correct levels"); return; }
+        { helper.fail("Quiver enchantments: enchantable=" + cleanQuiver.isEnchantable()
+                + ", holding=" + holding.canEnchant(quiver) + ", bottomless=" + bottomless.canEnchant(quiver)
+                + ", stick=" + holding.canEnchant(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK))
+                + ", compatibility=" + holding.isCompatibleWith(bottomless) + "/" + bottomless.isCompatibleWith(holding)
+                + ", levels=" + holding.getMaxLevel() + "/" + bottomless.getMaxLevel()); return; }
         var random = net.minecraft.util.RandomSource.create(12345L);
         var baseline = net.minecraft.util.RandomSource.create(12345L);
         for (int i = 0; i < 100; ++i)
