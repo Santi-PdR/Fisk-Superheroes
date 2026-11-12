@@ -1361,6 +1361,97 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void archerBowKeepsHorizontalDrawAndBreaksFromShuriken(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "archery-break-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        player.getInventory().setItem(1, com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var modifier = new com.fiskmods.heroes.common.hero.modifier.ModifierArchery(new net.minecraft.resources.ResourceLocation("fiskheroes", "archery_test"));
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        if (data == null) { helper.fail("Archer data missing"); return; }
+        modifier.onActivate(player, entry, data); player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+        modifier.onToggle(player, entry, data); modifier.tick(player, entry, data);
+        if (!data.getData().get(com.fiskmods.heroes.common.data.var.Vars.HORIZONTAL_BOW)
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.HORIZONTAL_BOW_TIMER) <= 0)
+        { helper.fail("Horizontal bow must remain active while drawing after key release"); return; }
+        var source = level.damageSources().generic();
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(java.util.Map.of("BULLET", 1.0),
+                () -> modifier.modifyDamage(player, entry, source, 2));
+        if (com.fiskmods.heroes.common.item.ItemCompoundBow.isBroken(bow))
+        { helper.fail("Non-shuriken damage must not break the bow"); return; }
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(java.util.Map.of("SHURIKEN", 1.0),
+                () -> modifier.modifyDamage(player, entry, source, 2));
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        if (!item.isBroken(bow) || item.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND).getResult() != net.minecraft.world.InteractionResult.FAIL)
+        { helper.fail("Shuriken must break a horizontal bow and prevent it from being drawn"); return; }
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        if (!level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class,
+                player.getBoundingBox().inflate(4), e -> e.getOwner() == player).isEmpty())
+        { helper.fail("A broken bow must not fire, even if the use started before it broke"); return; }
+        player.stopUsingItem(); modifier.tick(player, entry, data);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.HORIZONTAL_BOW))
+        { helper.fail("Horizontal bow must reset after drawing ends"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void quiverEnchantmentsControlCapacityAndCompatibility(GameTestHelper helper)
+    {
+        var holding = com.fiskmods.heroes.common.enchantment.ModEnchantments.CAPACITY.get();
+        var bottomless = com.fiskmods.heroes.common.enchantment.ModEnchantments.INFINITY.get();
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var arrows = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal"); arrows.setCount(64);
+        var inventory = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
+        if (inventory.insertItem(0, arrows, false).getCount() != 48 || inventory.getStackInSlot(0).getCount() != 16)
+        { helper.fail("Unenchanted quiver must hold sixteen arrows per slot"); return; }
+        quiver.enchant(holding, 2);
+        inventory = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
+        if (inventory.insertItem(0, arrows, false).getCount() != 32 || inventory.getStackInSlot(0).getCount() != 48)
+        { helper.fail("Holding II must expand each slot to forty-eight"); return; }
+        if (!quiver.isEnchantable() || !holding.canEnchant(quiver) || !bottomless.canEnchant(quiver)
+                || holding.canEnchant(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK))
+                || holding.isCompatibleWith(bottomless) || bottomless.isCompatibleWith(holding)
+                || holding.getMaxLevel() != 3 || bottomless.getMaxLevel() != 5)
+        { helper.fail("Quiver enchantments must be applicable and mutually exclusive with correct levels"); return; }
+        var random = net.minecraft.util.RandomSource.create(12345L);
+        var baseline = net.minecraft.util.RandomSource.create(12345L);
+        for (int i = 0; i < 100; ++i)
+            if (com.fiskmods.heroes.common.item.ItemCompoundBow.rollBottomless(3, random) != (baseline.nextFloat() < .3F))
+            { helper.fail("Bottomless III must preserve an arrow with a thirty percent chance"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void bottomlessQuiverPreservesAmmoWithoutRecoverableDuplicates(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "bottomless-test"));
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        // Level ten guarantees the original 10%-per-level roll, without relying on test RNG.
+        quiver.enchant(com.fiskmods.heroes.common.enchantment.ModEnchantments.INFINITY.get(), 10);
+        var ammo = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("triple"); ammo.setCount(3);
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0, ammo);
+        player.getInventory().setItem(1, quiver);
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        var arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class,
+                player.getBoundingBox().inflate(4), arrow -> arrow.getOwner() == player);
+        if (arrows.size() != 3 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 3
+                || arrows.stream().anyMatch(a -> a.pickup != net.minecraft.world.entity.projectile.AbstractArrow.Pickup.CREATIVE_ONLY))
+        { helper.fail("Bottomless triple must preserve the bundle and prevent pickup of all three arrows"); return; }
+        arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void openQuiverCannotBeMovedOrReplaced(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

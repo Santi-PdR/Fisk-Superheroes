@@ -39,7 +39,7 @@ public class ItemCompoundBow extends BowItem
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack bow = player.getItemInHand(hand);
-        if (selectedArrow(player).isEmpty() && !player.getAbilities().instabuild)
+        if (isBroken(bow) || (selectedArrow(player).isEmpty() && !player.getAbilities().instabuild))
         {
             return InteractionResultHolder.fail(bow);
         }
@@ -51,7 +51,7 @@ public class ItemCompoundBow extends BowItem
     @Override
     public void releaseUsing(ItemStack bow, Level level, LivingEntity entity, int timeLeft)
     {
-        if (!(entity instanceof Player player) || level.isClientSide) return;
+        if (!(entity instanceof Player player) || level.isClientSide || isBroken(bow)) return;
 
         int quiverArrowSlot = ItemQuiver.getSelectedArrowSlot(player);
         ItemStack arrowStack = selectedArrow(player);
@@ -75,8 +75,11 @@ public class ItemCompoundBow extends BowItem
         float inaccuracy = horizontal ? 0.5F : 1.0F;
         arrow.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, velocity * power, inaccuracy);
         prepareArrow(arrow, bow, power);
+        int bottomlessLevel = quiverAmmo ? EnchantmentHelper.getItemEnchantmentLevel(
+                com.fiskmods.heroes.common.enchantment.ModEnchantments.INFINITY.get(), ItemQuiver.findQuiver(player)) : 0;
         boolean infinite = player.getAbilities().instabuild || (!quiverAmmo && arrowStack.is(Items.ARROW)
-                && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0);
+                && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0)
+                || rollBottomless(bottomlessLevel, level.getRandom());
         if (infinite) arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
 
         if (level.addFreshEntity(arrow))
@@ -106,6 +109,30 @@ public class ItemCompoundBow extends BowItem
             player.awardStat(Stats.ITEM_USED.get(this));
             player.gameEvent(GameEvent.PROJECTILE_SHOOT);
         }
+    }
+
+    public static boolean isBroken(ItemStack stack)
+    {
+        return stack.hasTag() && stack.getTag().getBoolean("Broken");
+    }
+
+    public static void setBroken(ItemStack stack, boolean broken)
+    {
+        stack.getOrCreateTag().putBoolean("Broken", broken);
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, net.minecraft.world.level.Level level,
+            java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag)
+    {
+        if (isBroken(stack)) tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.bow.broken")
+                .withStyle(net.minecraft.ChatFormatting.ITALIC));
+    }
+
+    /** Each Bottomless level gives a ten-percent chance not to consume the quiver arrow. */
+    public static boolean rollBottomless(int level, net.minecraft.util.RandomSource random)
+    {
+        return level > 0 && random.nextFloat() < .1F * level;
     }
 
     /**

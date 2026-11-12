@@ -62,8 +62,8 @@ public final class Vars
     public static final DataVar<Boolean> HEAT_VISION = register("heat_vision", DataType.BOOLEAN, false, false);
     public static final DataVar<Double> HEAT_VISION_LENGTH = register("heat_vision_length", DataType.DOUBLE, 0.0D, false);
     public static final DataVar<Float> HEAT_VISION_TIMER = register("heat_vision_timer", DataType.FLOAT, 0.0F, false);
-    public static final DataVar<Boolean> HORIZONTAL_BOW = register("horizontal_bow", DataType.BOOLEAN, false, false);
-    public static final DataVar<Float> HORIZONTAL_BOW_TIMER = register("horizontal_bow_timer", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Boolean> HORIZONTAL_BOW = register("horizontal_bow", DataType.BOOLEAN, false, true);
+    public static final DataVar<Float> HORIZONTAL_BOW_TIMER = register("horizontal_bow_timer", DataType.FLOAT, 0.0F, true);
     public static final DataVar<Boolean> HOVERING = register("hovering", DataType.BOOLEAN, false, false);
     public static final DataVar<Float> INTANGIBILITY_TIMER = register("intangibility_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> INTANGIBLE = register("intangible", DataType.BOOLEAN, false, false);
@@ -100,7 +100,7 @@ public final class Vars
     public static final DataVar<Float> PREV_HAT_TIP = register("prev_hat_tip", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Double> PREV_HEAT_VISION_LENGTH = register("prev_heat_vision_length", DataType.DOUBLE, 0.0D, false);
     public static final DataVar<Float> PREV_HEAT_VISION_TIMER = register("prev_heat_vision_timer", DataType.FLOAT, 0.0F, false);
-    public static final DataVar<Float> PREV_HORIZONTAL_BOW_TIMER = register("prev_horizontal_bow_timer", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> PREV_HORIZONTAL_BOW_TIMER = register("prev_horizontal_bow_timer", DataType.FLOAT, 0.0F, true);
     public static final DataVar<Float> PREV_INTANGIBILITY_TIMER = register("prev_intangibility_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> PREV_INVISIBILITY_TIMER = register("prev_invisibility_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Float> PREV_JETPACKING_TIMER = register("prev_jetpacking_timer", DataType.FLOAT, 0.0F, false);

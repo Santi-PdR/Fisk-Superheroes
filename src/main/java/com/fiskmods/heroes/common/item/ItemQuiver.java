@@ -71,6 +71,9 @@ public class ItemQuiver extends Item
         super(properties.stacksTo(1));
     }
 
+    @Override public int getEnchantmentValue() { return 10; }
+    @Override public boolean isEnchantable(ItemStack stack) { return stack.getCount() == 1; }
+
     public static ItemStackHandler createInventory(ItemStack stack)
     {
         ItemStackHandler handler = new ItemStackHandler(5)
@@ -79,6 +82,14 @@ public class ItemQuiver extends Item
             protected void onContentsChanged(int slot)
             {
                 if (!stack.isEmpty()) stack.getOrCreateTag().put(INVENTORY_TAG, serializeNBT());
+            }
+
+            @Override
+            public int getSlotLimit(int slot)
+            {
+                int level = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
+                        com.fiskmods.heroes.common.enchantment.ModEnchantments.CAPACITY.get(), stack);
+                return 16 * (1 + Math.max(0, Math.min(3, level)));
             }
 
             @Override

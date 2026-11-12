@@ -42,6 +42,8 @@ public final class ClientModEvents
                             ? net.minecraft.util.Mth.clamp((stack.getUseDuration() - entity.getUseItemRemainingTicks())
                                     / com.fiskmods.heroes.common.item.ItemCompoundBow.getDrawDuration(entity), 0.0F, 1.0F)
                             : 0.0F);
+            ItemProperties.register(ModItems.COMPOUND_BOW.get(), FiskHeroes.id("broken"),
+                    (stack, level, entity, seed) -> com.fiskmods.heroes.common.item.ItemCompoundBow.isBroken(stack) ? 1.0F : 0.0F);
             ItemProperties.register(ModItems.TRICK_ARROW.get(), FiskHeroes.id("arrow_type"),
                     (stack, level, entity, seed) -> ItemTrickArrow.getTypeIndex(stack));
         });
