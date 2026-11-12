@@ -368,9 +368,9 @@ def main():
             time.sleep(1)
             xdo('click', '1')
             time.sleep(2)
-            command('execute if data entity @e[type=minecraft:iron_golem,tag=fisk_melee_smoke,limit=1] {Health:84.5f} run say CROSSBONES_CHARGED_HIT_OK')
+            command('execute if data entity @e[type=minecraft:iron_golem,tag=fisk_melee_smoke,limit=1] {Health:90.5f} run say CROSSBONES_CHARGED_HIT_OK')
             wait_for(r'\[CHAT\].*CROSSBONES_CHARGED_HIT_OK', 45,
-                     'real client charged punch deals the 15.5 damage profile', process)
+                     'real client charged punch deals the 9.5 damage profile', process)
             # A five-control suit used to extend below the screen and overlap the hotbar.
             # Read the same geometry used by the renderer and click hit testing, then use F6
             # and click the third row to activate intangibility on the server.
