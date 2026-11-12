@@ -48,6 +48,7 @@ def main():
             xdo('keydown', 'v'); time.sleep(1); xdo('mousedown', '3'); time.sleep(1)
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=true, horizontal=true', 30,
                      'horizontal drawn bow rendered in first person', client)
+            wait_for(client_log, r'Compound bow nocked arrow rendered: type=normal', 30, 'nocked arrow rendered with bow', client)
             xdo('keyup', 'v'); time.sleep(.5)
             subprocess.run(['scrot', 'ci-bow-draw-first.png'], check=True, timeout=30)
             xdo('key', 'F5'); time.sleep(1)

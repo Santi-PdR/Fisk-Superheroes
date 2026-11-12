@@ -1360,6 +1360,61 @@ public final class PortRegressionTests
         arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
     }
 
+    public static final class CompoundBowForgeGuard
+    {
+        private final net.minecraft.world.entity.player.Player player;
+        boolean nockSeen, looseSeen, preventNock = true, preventLoose = true;
+        CompoundBowForgeGuard(net.minecraft.world.entity.player.Player player) { this.player = player; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void nock(net.minecraftforge.event.entity.player.ArrowNockEvent event)
+        {
+            if (event.getEntity() != player) return;
+            nockSeen = event.hasAmmo();
+            if (preventNock) event.setAction(net.minecraft.world.InteractionResultHolder.fail(event.getBow()));
+        }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void loose(net.minecraftforge.event.entity.player.ArrowLooseEvent event)
+        {
+            if (event.getEntity() != player) return;
+            looseSeen = event.hasAmmo();
+            if (preventLoose) event.setCharge(0);
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void compoundBowHonorsForgeNockAndLooseEvents(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "bow-forge-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var ammo = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal"); ammo.setCount(2);
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0, ammo);
+        player.getInventory().setItem(1, quiver);
+        var guard = new CompoundBowForgeGuard(player); var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            if (item.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND).getResult() != net.minecraft.world.InteractionResult.FAIL || !guard.nockSeen)
+            { helper.fail("Forge nock action must see quiver ammunition and prevent drawing"); return; }
+            guard.preventNock = false; item.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+            item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+            var bounds = player.getBoundingBox().inflate(4);
+            var arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class, bounds, e -> e.getOwner() == player);
+            if (!guard.looseSeen || !arrows.isEmpty() || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 2)
+            { helper.fail("Forge loose charge override must prevent firing and consumption"); return; }
+            guard.preventLoose = false; item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+            arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class, bounds, e -> e.getOwner() == player);
+            if (arrows.size() != 1 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 1)
+            { helper.fail("Allowed Forge events must still produce a shot and consume ammunition"); return; }
+            arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+    }
+
     @GameTest(template = "test_empty")
     public static void archerBowKeepsHorizontalDrawAndBreaksFromShuriken(GameTestHelper helper)
     {

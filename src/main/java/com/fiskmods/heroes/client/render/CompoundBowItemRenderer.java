@@ -24,6 +24,9 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
     private static final java.util.Set<String> LOGGED = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private static CompoundBowItemRenderer instance;
     private final ModelPart base, bottom, top;
+    private com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity displayedArrow;
+    private net.minecraft.world.entity.player.Player displayedOwner;
+    private ItemStack displayedAmmo = ItemStack.EMPTY;
 
     private CompoundBowItemRenderer()
     {
@@ -107,7 +110,43 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
         base.render(pose, consumer, light, overlay);
         top.render(pose, consumer, light, overlay);
         if (!ItemCompoundBow.isBroken(stack)) drawStrings(pose, buffers, arches);
+        if (drawing && wearer instanceof net.minecraft.world.entity.player.Player player)
+            drawArrow(player, pose, buffers, light, arches);
+        else if (displayedOwner != null && !displayedOwner.isUsingItem())
+        {
+            displayedArrow = null; displayedOwner = null; displayedAmmo = ItemStack.EMPTY;
+        }
         pose.popPose();
+    }
+
+    /** Reuse the actual projectile renderer and selected arrow's payload while the bow is drawn. */
+    private void drawArrow(net.minecraft.world.entity.player.Player player, PoseStack pose, MultiBufferSource buffers,
+            int light, float draw)
+    {
+        ItemStack ammo = ItemCompoundBow.getArrowForDisplay(player);
+        if (ammo.isEmpty()) return;
+        if (displayedArrow == null || displayedOwner != player || displayedArrow.level() != player.level()
+                || !ItemStack.isSameItemSameTags(displayedAmmo, ammo))
+        {
+            displayedOwner = player;
+            displayedAmmo = ammo.copyWithCount(1);
+            if (ammo.getItem() instanceof com.fiskmods.heroes.common.item.ItemTrickArrow trick)
+                displayedArrow = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity) trick.createArrow(player.level(), ammo, player);
+            else displayedArrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), player.level(), player, "normal");
+            displayedArrow.setYRot(0); displayedArrow.yRotO = 0;
+            displayedArrow.setXRot(0); displayedArrow.xRotO = 0;
+        }
+        float y1 = .91F - .55F * draw, y2 = -2.3F + .55F * draw;
+        float z = .625F + Mth.sin(1.075F + draw) - .9F;
+        pose.pushPose();
+        pose.translate(0, (y1 + y2) / 2 - .15F, z + draw * 1.3F);
+        pose.scale(2.3F, 2.3F, 2.3F);
+        var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(displayedArrow);
+        renderer.render(displayedArrow, 0, Minecraft.getInstance().getFrameTime(), pose, buffers, light);
+        pose.popPose();
+        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("arrow|" + displayedArrow.getArrowType()))
+            FiskHeroes.LOGGER.info("Compound bow nocked arrow rendered: type={}", displayedArrow.getArrowType());
     }
 
     private static void drawStrings(PoseStack pose, MultiBufferSource buffers, float draw)

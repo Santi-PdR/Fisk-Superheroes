@@ -51,10 +51,11 @@ public class ItemCompoundBow extends BowItem
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack bow = player.getItemInHand(hand);
-        if (isBroken(bow) || (selectedArrow(player).isEmpty() && !player.getAbilities().instabuild))
-        {
-            return InteractionResultHolder.fail(bow);
-        }
+        if (isBroken(bow)) return InteractionResultHolder.fail(bow);
+        boolean hasAmmo = !selectedArrow(player).isEmpty() || player.getAbilities().instabuild;
+        var result = net.minecraftforge.event.ForgeEventFactory.onArrowNock(bow, level, player, hand, hasAmmo);
+        if (result != null) return result;
+        if (!hasAmmo) return InteractionResultHolder.fail(bow);
 
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(bow);
@@ -63,16 +64,20 @@ public class ItemCompoundBow extends BowItem
     @Override
     public void releaseUsing(ItemStack bow, Level level, LivingEntity entity, int timeLeft)
     {
-        if (!(entity instanceof Player player) || level.isClientSide || isBroken(bow)) return;
+        if (!(entity instanceof Player player) || isBroken(bow)) return;
+        ItemStack arrowStack = selectedArrow(player);
+        boolean hasAmmo = !arrowStack.isEmpty() || player.getAbilities().instabuild;
+        int chargeTicks = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(bow, level, player,
+                getUseDuration(bow) - timeLeft, hasAmmo);
+        if (chargeTicks < 0 || level.isClientSide) return;
 
         int quiverArrowSlot = ItemQuiver.getSelectedArrowSlot(player);
-        ItemStack arrowStack = selectedArrow(player);
+        arrowStack = selectedArrow(player);
         boolean creativeAmmo = arrowStack.isEmpty() && player.getAbilities().instabuild;
         if (creativeAmmo) arrowStack = Items.ARROW.getDefaultInstance();
         if (arrowStack.isEmpty() || !(arrowStack.getItem() instanceof ArrowItem arrowItem)) return;
         boolean quiverAmmo = quiverArrowSlot >= 0;
 
-        int chargeTicks = getUseDuration(bow) - timeLeft;
         float power = getPowerForTime(chargeTicks, player);
         if (power < 0.1F) return;
 
@@ -194,6 +199,13 @@ public class ItemCompoundBow extends BowItem
             // Both type-specific launch speed and damage are handled by TrickArrowEntity, so
             // special arrows behave the same when launched by vanilla bows.
         }
+    }
+
+    /** Display the same ammunition selected for firing, including a creative-mode fallback. */
+    public static ItemStack getArrowForDisplay(Player player)
+    {
+        ItemStack arrow = selectedArrow(player);
+        return arrow.isEmpty() && player.getAbilities().instabuild ? Items.ARROW.getDefaultInstance() : arrow;
     }
 
     /** Prefer the selected quiver slot, then support the standard inventory arrow behavior. */
