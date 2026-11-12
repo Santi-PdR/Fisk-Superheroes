@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -93,6 +93,19 @@ def main():
             command('tp Dev 0 180 0 0 0')
             command('tp Partner 0 180 4 180 0')
             command('execute as Dev run suit fiskheroes:the_flash')
+            command('execute as Partner run suit fiskheroes:green_arrow')
+            command('item replace entity Partner weapon.mainhand with fiskheroes:compound_bow')
+            command('item replace entity Partner hotbar.1 with fiskheroes:quiver{QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}}]}}')
+            time.sleep(3)
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousedown', '3'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Compound bow nocked arrow rendered: type=cactus, wearer=Partner',
+                         60, 'observer sees selected quiver arrow of remote player', observer)
+            finally:
+                subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
+            command('item replace entity Partner hotbar.1 with minecraft:air')
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle')
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
