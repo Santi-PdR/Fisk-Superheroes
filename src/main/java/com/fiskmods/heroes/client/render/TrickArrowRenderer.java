@@ -21,6 +21,7 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
 {
     private static final TrickArrowModel MODEL = new TrickArrowModel();
     private static boolean loggedModel;
+    private static final java.util.Set<String> LOGGED_TIPS = new java.util.HashSet<>();
     private static final ResourceLocation TEXTURE = new ResourceLocation("fiskheroes", "textures/heroes/arrow/arrow.png");
 
     public TrickArrowRenderer(EntityRendererProvider.Context context)
@@ -63,8 +64,19 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
         float shake = arrow.shakeTime - partialTick;
         if (shake > 0) poseStack.mulPose(Axis.ZP.rotationDegrees(-net.minecraft.util.Mth.sin(shake * 3) * shake));
         poseStack.translate(0, .5, 0);
+        String type = arrow.getArrowType();
+        boolean tipped = "blaze".equals(type) || "tutridium".equals(type) || "vibranium".equals(type);
         MODEL.render(poseStack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(
-                getTextureLocation(arrow))), packedLight, false);
+                getTextureLocation(arrow))), packedLight, tipped);
+        if (tipped)
+        {
+            ResourceLocation tip = new ResourceLocation("fiskheroes", "textures/models/arrow_head_" + type + ".png");
+            int tipLight = "blaze".equals(type) ? net.minecraft.client.renderer.LightTexture.FULL_BRIGHT : packedLight;
+            MODEL.renderHead(poseStack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(tip)), tipLight);
+            if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED_TIPS.add(type))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Trick arrow tipped head rendered: type={}, glow={}, missing={}",
+                        type, "blaze".equals(type), net.minecraft.client.Minecraft.getInstance().getResourceManager().getResource(tip).isEmpty());
+        }
         poseStack.popPose();
         if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && !loggedModel)
         {
@@ -98,7 +110,6 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
         return switch (arrow.getArrowType())
         {
             case "explosive", "triple_explosive", "detonator" -> new ItemStack(Blocks.TNT);
-            case "blaze" -> new ItemStack(Items.FIRE_CHARGE);
             case "boxing_glove" -> new ItemStack(Items.RED_WOOL);
             case "cactus" -> new ItemStack(Blocks.CACTUS);
             case "carrot" -> new ItemStack(Items.CARROT);
@@ -119,8 +130,6 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
             case "sponge" -> new ItemStack(Blocks.SPONGE);
             case "torch" -> new ItemStack(Blocks.TORCH);
             case "grappling_hook" -> new ItemStack(Items.CHAIN);
-            case "tutridium" -> com.fiskmods.heroes.common.item.ModItems.TUTRIDIUM_GEM.get().getDefaultInstance();
-            case "vibranium" -> com.fiskmods.heroes.common.item.ModItems.VIBRANIUM_INGOT.get().getDefaultInstance();
             case "vine" -> new ItemStack(Blocks.VINE);
             default -> ItemStack.EMPTY;
         };

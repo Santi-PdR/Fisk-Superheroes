@@ -104,6 +104,17 @@ def main():
                          'nocked spectral arrow uses its own renderer', client)
             finally:
                 xdo('mouseup', '3')
+            for kind in ('vibranium', 'tutridium', 'blaze'):
+                command(f'item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{{ArrowType:"{kind}"}}')
+                xdo('mousedown', '3')
+                try:
+                    glow = 'true' if kind == 'blaze' else 'false'
+                    wait_for(client_log, fr'Trick arrow tipped head rendered: type={kind}, glow={glow}, missing=false', 30,
+                             f'{kind} arrow uses its original textured tip', client)
+                    time.sleep(.5)
+                    subprocess.run(['scrot', f'ci-arrow-tipped-{kind}.png'], check=True, timeout=30)
+                finally:
+                    xdo('mouseup', '3')
             command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow{Broken:1b}')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false, horizontal=false, broken=true', 30,
                      'broken bow renders without strings', client)

@@ -65,17 +65,19 @@ final class TrickArrowModel
         for (int i = 0; i < feathers.length; i++) feathers[i] = model.getChild("feather" + i);
     }
 
-    void render(PoseStack pose, VertexConsumer out, int light, boolean inQuiver)
+    void renderHead(PoseStack pose, VertexConsumer out, int light)
     {
-        if (!inQuiver)
-        {
-            pose.pushPose();
-            pose.translate(0, -9.0 / 16, 0);
-            pose.scale(.3F, .4F, .15F);
-            pose.translate(0, 9.0 / 16, 0);
-            head.render(pose, out, light, OverlayTexture.NO_OVERLAY);
-            pose.popPose();
-        }
+        pose.pushPose();
+        pose.translate(0, -9.0 / 16, 0);
+        pose.scale(.3F, .4F, .15F);
+        pose.translate(0, 9.0 / 16, 0);
+        head.render(pose, out, light, OverlayTexture.NO_OVERLAY);
+        pose.popPose();
+    }
+
+    void render(PoseStack pose, VertexConsumer out, int light, boolean omitHead)
+    {
+        if (!omitHead) renderHead(pose, out, light);
         pose.pushPose();
         pose.scale(.3F, 1, .3F);
         stick.render(pose, out, light, OverlayTexture.NO_OVERLAY);
