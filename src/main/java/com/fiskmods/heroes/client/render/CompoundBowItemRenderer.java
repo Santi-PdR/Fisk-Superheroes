@@ -92,7 +92,7 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
                 // The 1.20 item-in-hand renderer already applies the vanilla drawing pose.
                 // Recenter it and move it away from the camera: the old 1.7 transform alone
                 // intersects the camera and clips most of the model in 1.20's perspective.
-                if (drawing) pose.translate(left ? .38 : -.38, .28, -.7);
+                if (drawing) pose.translate(left ? .42 : -.42, .40, -1.1);
                 pose.translate(left ? .25 : .75, .5, .5);
                 pose.mulPose(Axis.XP.rotationDegrees(-5));
                 pose.mulPose(Axis.ZP.rotationDegrees(left ? -230 : 230));
