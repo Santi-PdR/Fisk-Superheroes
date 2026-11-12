@@ -55,7 +55,7 @@ def main():
             subprocess.run(['scrot', 'ci-quiver-hud.png'], check=True, timeout=30)
             xdo('mousedown', '3'); time.sleep(1); xdo('mouseup', '3')
             command('execute if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"cactus"}] run say QUIVER_CACTUS_PASS')
-            wait_for(server_log, r'QUIVER_CACTUS_PASS', 15,
+            wait_for(server_log, r'\[Server\] QUIVER_CACTUS_PASS', 15,
                      'scroll selection reaches server and fires the chosen arrow', server)
             command('kill @e[type=fiskheroes:trick_arrow]')
             xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '5'); time.sleep(.8); xdo('keyup', 'Shift_L')
@@ -63,7 +63,7 @@ def main():
                      'empty selection shows fallback arrow name', client)
             xdo('mousedown', '3'); time.sleep(1); xdo('mouseup', '3')
             command('execute if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"normal"}] run say QUIVER_FALLBACK_PASS')
-            wait_for(server_log, r'QUIVER_FALLBACK_PASS', 15,
+            wait_for(server_log, r'\[Server\] QUIVER_FALLBACK_PASS', 15,
                      'server fires fallback arrow from an empty selected slot', server)
             command('kill @e[type=fiskheroes:trick_arrow]')
             start = len(client_log.read_text(errors='replace'))
@@ -86,7 +86,7 @@ def main():
             subprocess.run(['scrot', 'ci-bow-draw-third.png'], check=True, timeout=30)
             xdo('mouseup', '3'); time.sleep(.5)
             command('execute if entity @e[type=fiskheroes:trick_arrow] run say BOW_SHOT_PASS')
-            wait_for(server_log, r'BOW_SHOT_PASS', 15, 'bow fires on dedicated server', server)
+            wait_for(server_log, r'\[Server\] BOW_SHOT_PASS', 15, 'bow fires on dedicated server', server)
             xdo('key', 'F5'); xdo('key', 'F5'); time.sleep(1)
             xdo('mousedown', '3')
             try:
@@ -141,9 +141,9 @@ def main():
             time.sleep(3)
             xdo('click', '1'); time.sleep(2)
             command('execute if entity @e[type=minecraft:iron_golem,tag=fisk_bow_melee,nbt={Health:90.5f}] run say BOW_MELEE_DAMAGE_PASS')
-            wait_for(server_log, r'BOW_MELEE_DAMAGE_PASS', 20, 'bow melee hit includes Green Arrow weapon bonus', server)
-            command('execute if entity Dev[nbt={SelectedItem:{id:"fiskheroes:compound_bow",tag:{Damage:1}}}] run say BOW_MELEE_DURABILITY_PASS')
-            wait_for(server_log, r'BOW_MELEE_DURABILITY_PASS', 20, 'bow melee hit consumes one durability', server)
+            wait_for(server_log, r'\[Server\] BOW_MELEE_DAMAGE_PASS', 20, 'bow melee hit includes Green Arrow weapon bonus', server)
+            command('execute if entity @a[name=Dev,nbt={SelectedItem:{id:"fiskheroes:compound_bow",tag:{Damage:1}}}] run say BOW_MELEE_DURABILITY_PASS')
+            wait_for(server_log, r'\[Server\] BOW_MELEE_DURABILITY_PASS', 20, 'bow melee hit consumes one durability', server)
             print('PASS: real client renders and fires the 3D compound bow in both views', flush=True)
         finally:
             for process in reversed(processes):
