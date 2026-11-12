@@ -1445,7 +1445,7 @@ public final class PortRegressionTests
         var owner = new net.minecraftforge.common.util.FakePlayer(level,
                 new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "glitch-owner"));
         owner.setPos(origin.getX() - 15, origin.getY(), origin.getZ());
-        var targets = new net.minecraft.world.entity.monster.Zombie[2];
+        var targets = new net.minecraft.world.entity.animal.IronGolem[2];
         var arrows = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity[3];
         for (int i = 0; i < 3; ++i)
         {
@@ -1456,8 +1456,8 @@ public final class PortRegressionTests
                             net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
             if (i < 2)
             {
-                targets[i] = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
-                if (targets[i] == null) { helper.fail("Zombie creation failed"); return; }
+                targets[i] = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+                if (targets[i] == null) { helper.fail("Iron golem creation failed"); return; }
                 targets[i].setNoAi(true); targets[i].setNoGravity(true);
                 targets[i].setPos(x + .5, origin.getY(), origin.getZ() + 5.5);
                 level.addFreshEntity(targets[i]);
@@ -1510,8 +1510,8 @@ public final class PortRegressionTests
         var owner = new net.minecraftforge.common.util.FakePlayer(level,
                 new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "glitch-event-owner"));
         owner.setPos(origin.getX() - 10, origin.getY(), origin.getZ());
-        var target = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
-        if (target == null) { helper.fail("Zombie creation failed"); return; }
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Iron golem creation failed"); return; }
         target.setNoAi(true); target.setNoGravity(true);
         target.setPos(origin.getX() + .5, origin.getY(), origin.getZ() + 3.5);
         level.addFreshEntity(target);
