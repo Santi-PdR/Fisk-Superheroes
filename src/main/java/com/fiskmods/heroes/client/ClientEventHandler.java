@@ -492,22 +492,36 @@ public class ClientEventHandler
         event.setSwingHand(false);
     }
 
-    /** Iron Man's repulsor and Mark 50 cannon fire on use in air while aiming. */
+    /** Empty-hand aimed attacks also need an explicit packet when vanilla sends no item use. */
     @SubscribeEvent
     public static void onUseSuitShot(InputEvent.InteractionKeyMappingTriggered event)
     {
         Minecraft mc = Minecraft.getInstance();
         if (!event.isUseItem() || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND
                 || abilityClickMode || mc.screen != null || mc.player == null
-                || !mc.player.getMainHandItem().isEmpty() || mc.hitResult == null
-                || mc.hitResult.getType() != net.minecraft.world.phys.HitResult.Type.MISS) return;
+                || !mc.player.getMainHandItem().isEmpty() || mc.hitResult == null) return;
         SHPlayerData data = SHDataCapabilities.getPlayer(mc.player);
         var iteration = data != null ? data.getHero() : null;
         if (iteration == null || !data.getData().get(Vars.AIMING)) return;
-        boolean hasShot = iteration.getHero().getPowerContainer().getEntries().stream().anyMatch(entry ->
+        boolean spike = iteration.getHero().getPowerContainer().getEntries().stream().anyMatch(entry ->
+                entry.isEnabled() && entry.getModifier().getId().getPath().equals("spike_burst"));
+        boolean miss = mc.hitResult.getType() == net.minecraft.world.phys.HitResult.Type.MISS;
+        if (!miss && spike)
+        {
+            // Right-clicking a cactus is recruitment, not a shot. Other nearby targets must
+            // still be shootable, even when vanilla's short interaction ray hits them.
+            if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit
+                    && mc.level != null && mc.level.getBlockState(hit.getBlockPos()).is(net.minecraft.world.level.block.Blocks.CACTUS)) return;
+            if (mc.player.isShiftKeyDown() || !com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.canShoot(mc.player)) return;
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketAimedSuitShot());
+            event.setCanceled(true);
+            event.setSwingHand(false);
+            return;
+        }
+        if (!miss) return;
+        boolean hasShot = spike || iteration.getHero().getPowerContainer().getEntries().stream().anyMatch(entry ->
                 entry.isEnabled() && (entry.getModifier().getId().getPath().equals("repulsor_blast")
-                        || entry.getModifier().getId().getPath().equals("energy_bolt")
-                        || entry.getModifier().getId().getPath().equals("spike_burst")));
+                        || entry.getModifier().getId().getPath().equals("energy_bolt")));
         if (hasShot) SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketAimedSuitShot());
     }
 

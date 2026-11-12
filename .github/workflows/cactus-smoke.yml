@@ -10,8 +10,10 @@ on:
       - '.ci/client_identity.gradle'
       - 'build.gradle'
       - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/CactusSpikeEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/CactusSpikeRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/common/hero/modifier/ModifierSpikeBurst.java'
       - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientModEvents.java'
       - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
 concurrency:
   group: cactus-${{ github.ref }}
@@ -57,7 +59,7 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         run: |
-          { cat ci-cactus-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'CACTUS_|Aimed suit shot|Exception|Error|FATAL' "ci-cactus-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-cactus-$f.log" 2>/dev/null || true; done; } > /tmp/cactus-log.txt
+          { cat ci-cactus-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'CACTUS_|Cactus spike 3D|Aimed suit shot|Exception|Error|FATAL' "ci-cactus-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-cactus-$f.log" 2>/dev/null || true; done; } > /tmp/cactus-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           for i in 1 2 3 4 5; do
