@@ -180,6 +180,7 @@ public class ClientEventHandler
         }
 
         LocalPlayer player = Minecraft.getInstance().player;
+        com.fiskmods.heroes.client.hud.QuiverHud.tick(Minecraft.getInstance());
 
         if (player == null)
         {
@@ -652,6 +653,7 @@ public class ClientEventHandler
         com.fiskmods.heroes.common.data.RenderTickInfo.set(com.fiskmods.heroes.client.ClientEventHandler.partialTicks());
 
         SuitHud.render(event.getGuiGraphics(), event.getPartialTick());
+        com.fiskmods.heroes.client.hud.QuiverHud.render(event.getGuiGraphics());
         com.fiskmods.heroes.client.hud.ChronosScope.render(event.getGuiGraphics(), event.getPartialTick());
     }
 }

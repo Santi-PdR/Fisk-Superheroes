@@ -18,6 +18,8 @@ on:
       - 'src/main/java/com/fiskmods/heroes/client/render/CompoundBowModel.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/QuiverSuitRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/QuiverArrowModel.java'
+      - 'src/main/java/com/fiskmods/heroes/client/hud/QuiverHud.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/TrickArrowRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/common/item/ItemQuiver.java'
       - 'src/main/java/com/fiskmods/heroes/common/item/ItemCompoundBow.java'
@@ -63,6 +65,7 @@ jobs:
           name: bow-diagnostics
           path: |
             ci-bow-*.png
+            ci-quiver-hud.png
             ci-bow-*.log
           if-no-files-found: ignore
       - name: Publish diagnostic summary
@@ -70,9 +73,9 @@ jobs:
         env:
           CAPTURE: ${{ inputs.capture || github.event_name == 'push' }}
         run: |
-          { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
+          { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Quiver HUD|Quiver shafts|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
           if [ "$CAPTURE" = "true" ]; then
-            for image in ci-bow-draw-first.png ci-bow-draw-first-vertical.png ci-bow-draw-third.png ci-bow-broken.png; do
+            for image in ci-bow-draw-first.png ci-bow-draw-first-vertical.png ci-bow-draw-third.png ci-bow-broken.png ci-quiver-hud.png; do
               if [ -f "$image" ]; then
                 echo "==== BEGIN $image ====" >> /tmp/bow-log.txt
                 base64 "$image" >> /tmp/bow-log.txt
