@@ -28,6 +28,7 @@ public final class PulseSignalBlock extends Block
 
     public static boolean trigger(Level level, BlockPos target, Direction face)
     {
+        if (level.isClientSide) return false;
         Block block = ModBlocks.PULSE_SIGNAL.get();
         BlockPos source = target.relative(face);
         boolean existing = level.getBlockState(source).is(block);
