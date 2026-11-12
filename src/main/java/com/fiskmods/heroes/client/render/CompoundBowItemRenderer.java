@@ -107,6 +107,9 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
                     pose.translate(.2F * horizontal, .3F * horizontal, -.2F * horizontal);
                     pose.mulPose(Axis.ZP.rotationDegrees(20 * horizontal));
                     pose.mulPose(Axis.XP.rotationDegrees(-10 * horizontal));
+                    // Vanilla's 1.20 drawing pose points the original horizontal bow almost
+                    // directly into the camera. Turn its limbs across the view while drawing.
+                    pose.mulPose(Axis.XP.rotationDegrees((left ? 40 : -40) * horizontal));
                 }
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->

@@ -44,6 +44,7 @@ jobs:
           chmod +x gradlew
           mkdir -p run-bow-server run-bow-client/config
           printf 'earlyWindowControl = false\n' > run-bow-client/config/fml.toml
+          printf 'tutorialStep:none\n' > run-bow-client/options.txt
           echo 'eula=true' > run-bow-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=8\nsimulation-distance=8\n' > run-bow-server/server.properties
           ./gradlew classes --no-daemon --console=plain
@@ -63,7 +64,7 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         env:
-          CAPTURE: ${{ inputs.capture }}
+          CAPTURE: ${{ inputs.capture || github.event_name == 'push' }}
         run: |
           { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
           if [ "$CAPTURE" = "true" ]; then
