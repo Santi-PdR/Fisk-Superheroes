@@ -664,16 +664,12 @@ public class TrickArrowEntity extends Arrow
         {
             var pos = result.getBlockPos();
             var state = level().getBlockState(pos);
-            // Preserve the original ten-tick powered signal in addition to activating directly
-            // clickable vanilla devices. The invisible source is only placed into the open side
-            // of the struck block and removes itself after the pulse expires.
-            if (getOwner() instanceof Player player
-                    && (state.getBlock() instanceof net.minecraft.world.level.block.ButtonBlock
-                            || state.getBlock() instanceof net.minecraft.world.level.block.LeverBlock))
-            {
-                state.use(level(), player, net.minecraft.world.InteractionHand.MAIN_HAND, result);
-            }
-            com.fiskmods.heroes.common.block.PulseSignalBlock.trigger(level(), pos, result.getDirection());
+            // Pulse arrows supply temporary redstone power; they do not click or permanently
+            // change the state of levers and buttons struck by the projectile.
+            boolean signaled = com.fiskmods.heroes.common.block.PulseSignalBlock.trigger(level(), pos, result.getDirection());
+            if (Boolean.getBoolean("fiskheroes.ciArrowDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Pulse arrow impact: block={}, signal={}",
+                        net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(state.getBlock()), signaled);
             level().updateNeighborsAt(pos, state.getBlock());
             var adjacent = pos.relative(result.getDirection());
             level().updateNeighborsAt(adjacent, level().getBlockState(adjacent).getBlock());

@@ -81,7 +81,21 @@ def main():
             command('execute if score target arrow_health matches ..99 run say ARROW_GLITCH_WALL_PASS')
             wait_for(server_log, r'ARROW_GLITCH_WALL_PASS', 15, 'glitch arrow damages a target beyond a thick wall', server)
             wait_for(client_log, r'Trick arrow original 3D model rendered', 15, 'trick arrow model rendered by real client', client)
-            print('PASS: real client fired four trick arrows against dedicated server', flush=True)
+            # The pulse must power the struck lever temporarily without clicking it on.
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('kill @e[tag=glitch_target]')
+            command('fill -2 180 3 2 184 8 minecraft:air')
+            command('setblock 0 181 4 minecraft:stone')
+            command('setblock 0 181 3 minecraft:lever[face=wall,facing=north,powered=false]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"pulse"}')
+            shoot('ci-arrow-pulse.png')
+            wait_for(server_log, r'Pulse arrow impact: block=minecraft:lever, signal=true', 20,
+                     'pulse arrow strikes and temporarily powers a lever', server)
+            command('execute if block 0 181 3 minecraft:lever[powered=false] run say PULSE_LEVER_UNCHANGED_PASS')
+            wait_for(server_log, r'\[Server\] PULSE_LEVER_UNCHANGED_PASS', 15,
+                     'pulse arrow does not permanently toggle the lever', server)
+            print('PASS: real client fired five trick arrows against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

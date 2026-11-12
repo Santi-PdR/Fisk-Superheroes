@@ -1527,6 +1527,77 @@ public final class PortRegressionTests
         });
     }
 
+    /** Exposes the actual projectile block-impact handler without relying on random bow spread. */
+    private static final class PulseImpactArrow extends com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity
+    {
+        PulseImpactArrow(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity shooter)
+        {
+            super(com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, shooter, "pulse");
+        }
+        void impact(net.minecraft.core.BlockPos target)
+        {
+            var point = net.minecraft.world.phys.Vec3.atCenterOf(target).add(0, 0, -0.5D);
+            setPos(point.x, point.y, point.z - .2D);
+            setDeltaMovement(0, 0, 1);
+            onHitBlock(new net.minecraft.world.phys.BlockHitResult(point, net.minecraft.core.Direction.NORTH, target, false));
+        }
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 80)
+    public static void pulseArrowPowersLeverWithoutTogglingIt(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var lever = helper.absolutePos(new net.minecraft.core.BlockPos(1, 190, 2));
+        var source = lever.north();
+        level.setBlockAndUpdate(lever.south(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var state = net.minecraft.world.level.block.Blocks.LEVER.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.LeverBlock.FACE, net.minecraft.world.level.block.state.properties.AttachFace.WALL)
+                .setValue(net.minecraft.world.level.block.LeverBlock.FACING, net.minecraft.core.Direction.NORTH);
+        level.setBlockAndUpdate(lever, state);
+        var arrow = new PulseImpactArrow(level, helper.makeMockPlayer());
+        arrow.impact(lever);
+        if (!level.getBlockState(lever).is(net.minecraft.world.level.block.Blocks.LEVER)
+                || level.getBlockState(lever).getValue(net.minecraft.world.level.block.LeverBlock.POWERED)
+                || !level.getBlockState(source).is(com.fiskmods.heroes.common.block.ModBlocks.PULSE_SIGNAL.get())
+                || !level.hasNeighborSignal(lever))
+        { helper.fail("Pulse arrow must temporarily power a lever without toggling it"); return; }
+        helper.runAfterDelay(13, () -> {
+            boolean ok = level.isEmptyBlock(source)
+                    && level.getBlockState(lever).is(net.minecraft.world.level.block.Blocks.LEVER)
+                    && !level.getBlockState(lever).getValue(net.minecraft.world.level.block.LeverBlock.POWERED)
+                    && !level.hasNeighborSignal(lever);
+            level.removeBlock(lever, false); level.removeBlock(lever.south(), false);
+            if (!ok) helper.fail("Pulse must expire without leaving the lever powered");
+            else helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 80)
+    public static void repeatedPulseRefreshesTemporaryPower(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var target = helper.absolutePos(new net.minecraft.core.BlockPos(1, 190, 2));
+        var source = target.north();
+        level.setBlockAndUpdate(target, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        if (!com.fiskmods.heroes.common.block.PulseSignalBlock.trigger(level, target, net.minecraft.core.Direction.NORTH))
+        { helper.fail("Initial pulse failed"); return; }
+        helper.runAfterDelay(6, () -> {
+            if (!com.fiskmods.heroes.common.block.PulseSignalBlock.trigger(level, target, net.minecraft.core.Direction.NORTH))
+            { helper.fail("A second pulse must refresh an existing signal"); return; }
+        });
+        helper.runAfterDelay(12, () -> {
+            if (!level.getBlockState(source).is(com.fiskmods.heroes.common.block.ModBlocks.PULSE_SIGNAL.get())
+                    || !level.hasNeighborSignal(target))
+                helper.fail("Refreshed pulse must remain powered after the first pulse would have expired");
+        });
+        helper.runAfterDelay(19, () -> {
+            boolean ok = level.isEmptyBlock(source) && !level.hasNeighborSignal(target);
+            level.removeBlock(target, false);
+            if (!ok) helper.fail("Refreshed signal must expire after the new ten-tick window");
+            else helper.succeed();
+        });
+    }
+
     public static final class GlitchImpactGuard
     {
         final net.minecraft.world.entity.projectile.Projectile arrow;
