@@ -69,6 +69,8 @@ public class TrickArrowEntity extends Arrow
             "fiskheroes", "entity.arrow.pufferfish.primed");
     /** Remaining fuse after an explosive pufferfish arrow hits a block or entity. */
     private int pufferfishFuseTicks = -1;
+    /** A successful living-entity hit carries the primed arrow with that entity. */
+    private java.util.UUID pufferfishTarget;
     private ItemStack vialPotion = ItemStack.EMPTY;
     private ItemStack fireworkStack = ItemStack.EMPTY;
     private int fireworkAge;
@@ -229,7 +231,21 @@ public class TrickArrowEntity extends Arrow
     public void tick()
     {
         boolean glitch = "glitch".equals(getArrowType());
-        boolean ghost = glitch || "explosive_pufferfish".equals(getArrowType()) && entityData.get(PUFFERFISH_FUSING);
+        boolean pufferfish = "explosive_pufferfish".equals(getArrowType());
+        if (pufferfish && pufferfishTarget != null && level() instanceof net.minecraft.server.level.ServerLevel server)
+        {
+            var target = server.getEntity(pufferfishTarget);
+            if (!(target instanceof LivingEntity living) || target.isRemoved())
+            {
+                discard();
+                return;
+            }
+            // The original embedded-arrow data updates at the target's center each tick.
+            setPos(living.getX(), living.getY() + living.getBbHeight() * 0.5D, living.getZ());
+            setDeltaMovement(Vec3.ZERO);
+        }
+        boolean ghost = glitch || pufferfish && (pufferfishTarget != null
+                || level().isClientSide && entityData.get(PUFFERFISH_FUSING) && !inGround);
         if (isNoPhysics() != ghost) setNoPhysics(ghost);
         if (glitch)
         {
@@ -265,10 +281,23 @@ public class TrickArrowEntity extends Arrow
             spawnFlashbang();
             discard();
         }
-        else if ("explosive_pufferfish".equals(getArrowType()) && pufferfishFuseTicks >= 0
-                && --pufferfishFuseTicks <= 0)
+        else if (pufferfish && !level().isClientSide)
         {
-            detonate(1.5F, false);
+            if (pufferfishTarget == null && inGround) startPufferfishFuse();
+            else if (pufferfishTarget == null && pufferfishFuseTicks >= 0)
+            {
+                // If the supporting block disappeared, the original arrow falls and its
+                // in-ground timer resets; it is no longer primed until it settles again.
+                pufferfishFuseTicks = -1;
+                entityData.set(PUFFERFISH_FUSING, false);
+            }
+            if (pufferfishFuseTicks >= 0 && --pufferfishFuseTicks <= 0)
+            {
+                if (Boolean.getBoolean("fiskheroes.ciArrowDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Pufferfish arrow detonation: x={}, y={}, z={}, attached={}",
+                            getX(), getY(), getZ(), pufferfishTarget != null);
+                detonate(1.5F, false);
+            }
         }
     }
 
@@ -450,12 +479,14 @@ public class TrickArrowEntity extends Arrow
             return;
         }
 
-        if ("explosive_pufferfish".equals(getArrowType()))
+        boolean pufferfishHit = "explosive_pufferfish".equals(getArrowType())
+                && result.getEntity() instanceof LivingEntity;
+        byte oldPierce = getPierceLevel();
+        if (pufferfishHit)
         {
-            startPufferfishFuse();
-            // Vanilla 1.20 discards a non-piercing arrow as soon as it hits a living target.
-            // The original arrow embeds in the target and stays alive until its fuse expires.
-            setPierceLevel((byte) Math.max(1, getPierceLevel()));
+            // Keep vanilla from discarding the arrow before a successful living hit can
+            // attach it. Rejected hits still bounce and must not light the fuse.
+            setPierceLevel((byte) Math.max(1, oldPierce));
         }
 
         if ("sponge".equals(getArrowType()))
@@ -488,14 +519,15 @@ public class TrickArrowEntity extends Arrow
         {
             super.setBaseDamage(baseDamage);
         }
-        if ("explosive_pufferfish".equals(getArrowType()))
+        if (pufferfishHit)
         {
-            // Keep the projectile at the impact point while its fuse ticks; otherwise the
-            // piercing-arrow path would continue through the target and carry the blast away.
-            Vec3 impact = result.getLocation();
-            setPos(impact.x, impact.y, impact.z);
-            setDeltaMovement(Vec3.ZERO);
-            setNoGravity(true);
+            setPierceLevel(oldPierce);
+            if (pufferfishTarget != null)
+            {
+                LivingEntity target = (LivingEntity) result.getEntity();
+                setPos(target.getX(), target.getY() + target.getBbHeight() * 0.5D, target.getZ());
+                setDeltaMovement(Vec3.ZERO);
+            }
         }
         if ("vial".equals(getArrowType()) && !level().isClientSide)
         {
@@ -551,6 +583,11 @@ public class TrickArrowEntity extends Arrow
             case "pufferfish", "explosive_pufferfish" ->
             {
                 if (random.nextInt(3) == 0) target.addEffect(new MobEffectInstance(MobEffects.POISON, 80));
+                if ("explosive_pufferfish".equals(getArrowType()))
+                {
+                    pufferfishTarget = target.getUUID();
+                    startPufferfishFuse();
+                }
             }
             case "slime" ->
             {
@@ -602,11 +639,6 @@ public class TrickArrowEntity extends Arrow
             }
             return;
         }
-        if ("explosive_pufferfish".equals(getArrowType()))
-        {
-            startPufferfishFuse();
-        }
-
         Vec3 incomingMotion = getDeltaMovement();
         super.onHitBlock(result);
         String type = getArrowType();
@@ -656,9 +688,9 @@ public class TrickArrowEntity extends Arrow
             spawnCactusSpikes();
             detonate(2.0F, false);
         }
-        else if ("pufferfish".equals(type) || "slime".equals(type))
+        else if ("pufferfish".equals(type) || "explosive_pufferfish".equals(type) || "slime".equals(type))
         {
-            bounceAtBlock(result, incomingMotion, "pufferfish".equals(type) ? 0.5D : 0.6D);
+            bounceAtBlock(result, incomingMotion, "slime".equals(type) ? 0.6D : 0.5D);
         }
         else if ("pulse".equals(type))
         {
@@ -684,7 +716,8 @@ public class TrickArrowEntity extends Arrow
         if ("glitch".equals(getArrowType())) return;
         if (("grappling_hook".equals(getArrowType()) || "vine".equals(getArrowType()))
                 && !isGrappleSnapped()) return;
-        if ("detonator".equals(getArrowType()) && player != getOwner()) return;
+        if (("detonator".equals(getArrowType()) || "explosive_pufferfish".equals(getArrowType()))
+                && (player != getOwner() || pufferfishTarget != null)) return;
         if (ItemTrickArrow.EXPLOSIVE.equals(getArrowType()) && inGround)
         {
             detonateIfExplosive();
@@ -1140,6 +1173,7 @@ public class TrickArrowEntity extends Arrow
         tag.putInt("VineUseTicks", vineUseTicks);
         tag.putFloat("GrappleFireSpread", grappleFireSpread);
         tag.putInt("PufferfishFuseTicks", pufferfishFuseTicks);
+        if (pufferfishTarget != null) tag.putUUID("PufferfishTarget", pufferfishTarget);
         tag.putBoolean("PufferfishFusing", entityData.get(PUFFERFISH_FUSING));
         if (!fireworkStack.isEmpty()) tag.put("FireworkStack", fireworkStack.save(new CompoundTag()));
         tag.putInt("FireworkAge", fireworkAge);
@@ -1161,6 +1195,7 @@ public class TrickArrowEntity extends Arrow
         vineUseTicks = Math.max(0, tag.getInt("VineUseTicks"));
         grappleFireSpread = net.minecraft.util.Mth.clamp(tag.getFloat("GrappleFireSpread"), 0.0F, 1.0F);
         pufferfishFuseTicks = tag.contains("PufferfishFuseTicks") ? tag.getInt("PufferfishFuseTicks") : -1;
+        pufferfishTarget = tag.hasUUID("PufferfishTarget") ? tag.getUUID("PufferfishTarget") : null;
         entityData.set(PUFFERFISH_FUSING, tag.getBoolean("PufferfishFusing") || pufferfishFuseTicks >= 0);
         fireworkStack = tag.contains("FireworkStack", CompoundTag.TAG_COMPOUND)
                 ? ItemStack.of(tag.getCompound("FireworkStack")) : ItemStack.EMPTY;

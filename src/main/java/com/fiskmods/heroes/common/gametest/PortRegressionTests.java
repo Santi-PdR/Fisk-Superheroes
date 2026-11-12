@@ -2620,6 +2620,95 @@ public final class PortRegressionTests
         target.discard(); helper.succeed();
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void explosivePufferfishFollowsTheVictimAndSurvivesSave(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer();
+        owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Pufferfish target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(base.getX() + .5, base.getY(), base.getZ() + 2.5); level.addFreshEntity(target);
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "explosive_pufferfish");
+        arrow.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+        arrow.setDeltaMovement(0, 0, 3); level.addFreshEntity(arrow); arrow.tick();
+        var tag = new net.minecraft.nbt.CompoundTag(); arrow.addAdditionalSaveData(tag);
+        if (arrow.isRemoved() || !tag.hasUUID("PufferfishTarget") || !tag.getUUID("PufferfishTarget").equals(target.getUUID())
+                || !tag.getBoolean("PufferfishFusing") || target.getHealth() >= target.getMaxHealth())
+        { helper.fail("Successful hit must damage, attach and prime explosive pufferfish"); return; }
+        float healthAfterHit = target.getHealth();
+        arrow.discard();
+        var restored = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level);
+        restored.readAdditionalSaveData(tag); restored.setOwner(owner); level.addFreshEntity(restored);
+        target.setPos(base.getX() + 6.5, base.getY(), base.getZ() + 2.5);
+        restored.tick();
+        if (Math.abs(restored.getX() - target.getX()) > .01D
+                || Math.abs(restored.getY() - (target.getY() + target.getBbHeight() * .5D)) > .01D)
+        { helper.fail("Restored primed arrow must follow the moving target's center"); return; }
+        helper.runAfterDelay(35, () -> {
+            boolean ok = restored.isRemoved() && target.getHealth() < healthAfterHit;
+            target.discard(); restored.discard();
+            if (!ok) helper.fail("Attached pufferfish must explode at the moving target after its fuse");
+            else helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty")
+    public static void explosivePufferfishBouncesAndRestrictsPickup(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "puffer-owner"));
+        var other = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "puffer-other"));
+        var bounce = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "explosive_pufferfish");
+        bounce.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5);
+        bounce.setDeltaMovement(2, 0, 0); level.addFreshEntity(bounce); bounce.tick();
+        var tag = new net.minecraft.nbt.CompoundTag(); bounce.addAdditionalSaveData(tag);
+        if (bounce.isAnchored() || bounce.getDeltaMovement().x >= 0 || tag.getBoolean("PufferfishFusing"))
+        { helper.fail("A fast pufferfish must bounce without lighting its fuse"); return; }
+        bounce.discard();
+        var settled = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "explosive_pufferfish");
+        settled.pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED;
+        settled.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5);
+        settled.setDeltaMovement(.2, 0, 0); level.addFreshEntity(settled); settled.tick();
+        tag = new net.minecraft.nbt.CompoundTag(); settled.addAdditionalSaveData(tag);
+        if (!settled.isAnchored() || !tag.getBoolean("PufferfishFusing"))
+        { helper.fail("A settled pufferfish must start its fuse"); return; }
+        settled.shakeTime = 0; settled.playerTouch(other);
+        if (settled.isRemoved()) { helper.fail("Another player must not collect the pufferfish arrow"); return; }
+        settled.playerTouch(owner);
+        if (!settled.isRemoved()) { helper.fail("The shooter must be able to collect the settled arrow"); return; }
+        level.removeBlock(wall, false); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void rejectedPufferfishHitDoesNotPrime(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer(); owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (target == null) { helper.fail("Pufferfish target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setInvulnerable(true);
+        target.setPos(base.getX() + .5, base.getY(), base.getZ() + 2.5); level.addFreshEntity(target);
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "explosive_pufferfish");
+        arrow.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+        arrow.setDeltaMovement(0, 0, 3); level.addFreshEntity(arrow); arrow.tick();
+        var tag = new net.minecraft.nbt.CompoundTag(); arrow.addAdditionalSaveData(tag);
+        boolean ok = !tag.getBoolean("PufferfishFusing") && !tag.hasUUID("PufferfishTarget") && arrow.getDeltaMovement().z < 0;
+        arrow.discard(); target.discard();
+        if (!ok) helper.fail("Invulnerable targets must reject and bounce the arrow without priming it");
+        else helper.succeed();
+    }
+
     @GameTest(template = "test_empty")
     public static void bouncingArrowsUseIncomingSpeedEvenCloseToWall(GameTestHelper helper)
     {

@@ -97,7 +97,18 @@ def main():
             command('execute if block 1 181 3 minecraft:lever[powered=false] run say PULSE_LEVER_UNCHANGED_PASS')
             wait_for(server_log, r'\[Server\] PULSE_LEVER_UNCHANGED_PASS', 15,
                      'pulse arrow does not permanently toggle the lever', server)
-            print('PASS: real client fired five trick arrows against dedicated server', flush=True)
+            # Move the struck target before the fuse expires; the explosion should follow it.
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('fill -2 180 3 2 184 8 minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"explosive_pufferfish"}')
+            command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["puffer_target"]}')
+            xdo('mousedown', '3'); time.sleep(1.7); xdo('mouseup', '3')
+            time.sleep(.15)
+            command('tp @e[tag=puffer_target,limit=1] 3.5 180 4.5')
+            wait_for(server_log, r'Pufferfish arrow detonation: x=3\.5, y=[0-9.]+, z=4\.5, attached=true', 20,
+                     'pufferfish explosion follows the moving target', server)
+            print('PASS: real client fired six trick arrows against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
