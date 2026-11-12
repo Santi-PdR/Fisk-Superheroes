@@ -36,6 +36,7 @@ public final class Vars
     public static final DataVar<Boolean> CRYO_CHARGING = register("cryo_charging", DataType.BOOLEAN, false, false);
     public static final DataVar<String> CURRENT_ARROW = register("current_arrow", DataType.STRING, "", false);
     public static final DataVar<String> CURRENT_ARROW_TYPE = register("current_arrow_type", DataType.STRING, "", false);
+    public static final DataVar<String> CURRENT_ARROW_PAYLOAD = register("current_arrow_payload", DataType.STRING, "", false);
     public static final DataVar<String> DISGUISE = register("disguise", DataType.STRING, "", false);
     public static final DataVar<Float> ENERGY_CHARGE = register("energy_charge", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> ENERGY_CHARGING = register("energy_charging", DataType.BOOLEAN, false, false);

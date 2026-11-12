@@ -1385,6 +1385,17 @@ public final class PortRegressionTests
         if (!displayed.is(com.fiskmods.heroes.common.item.ModItems.TRICK_ARROW.get())
                 || !"cactus".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(displayed)))
         { helper.fail("Tracking data must retain the selected arrow subtype"); return; }
+        var vial = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("vial");
+        var potion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                net.minecraft.world.item.Items.SPLASH_POTION.getDefaultInstance(), net.minecraft.world.item.alchemy.Potions.SWIFTNESS);
+        com.fiskmods.heroes.common.item.ItemTrickArrow.setAttachedPotion(vial, potion);
+        inv.setStackInSlot(1, vial);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        tag = data.getData().writeDirty(); received.getData().readUpdate(tag);
+        displayed = com.fiskmods.heroes.common.item.ItemCompoundBow.getTrackedArrowForDisplay(received);
+        var seenPotion = com.fiskmods.heroes.common.item.ItemTrickArrow.getAttachedPotion(displayed);
+        if (net.minecraft.world.item.alchemy.PotionUtils.getPotion(seenPotion) != net.minecraft.world.item.alchemy.Potions.SWIFTNESS)
+        { helper.fail("Tracked vial must preserve its actual visual potion payload"); return; }
         player.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
         player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPECTRAL_ARROW));
         com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);

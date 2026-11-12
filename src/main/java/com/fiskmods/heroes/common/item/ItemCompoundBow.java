@@ -217,7 +217,24 @@ public class ItemCompoundBow extends BowItem
         var id = net.minecraft.resources.ResourceLocation.tryParse(data.getData().get(Vars.CURRENT_ARROW));
         if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) return ItemStack.EMPTY;
         var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
-        if (item instanceof ItemTrickArrow) return ItemTrickArrow.createStack(data.getData().get(Vars.CURRENT_ARROW_TYPE));
+        if (item instanceof ItemTrickArrow)
+        {
+            ItemStack arrow = new ItemStack(item);
+            ItemTrickArrow.setType(arrow, data.getData().get(Vars.CURRENT_ARROW_TYPE));
+            String payload = data.getData().get(Vars.CURRENT_ARROW_PAYLOAD);
+            if (!payload.isEmpty() && payload.length() <= 8192)
+            {
+                try
+                {
+                    var tag = net.minecraft.nbt.TagParser.parseTag(payload);
+                    for (String key : new String[] { "AttachedPotion", "AttachedItem" })
+                        if (tag.contains(key, net.minecraft.nbt.Tag.TAG_COMPOUND))
+                            arrow.getOrCreateTag().put(key, tag.getCompound(key).copy());
+                }
+                catch (com.mojang.brigadier.exceptions.CommandSyntaxException ignored) { }
+            }
+            return arrow;
+        }
         return item instanceof ArrowItem ? item.getDefaultInstance() : ItemStack.EMPTY;
     }
 

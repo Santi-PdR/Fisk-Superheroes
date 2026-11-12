@@ -147,6 +147,22 @@ public class ItemQuiver extends Item
         String arrowId = arrow.isEmpty() ? "" : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(arrow.getItem()).toString();
         data.getData().set(Vars.CURRENT_ARROW, arrowId);
         data.getData().set(Vars.CURRENT_ARROW_TYPE, arrow.getItem() instanceof ItemTrickArrow ? ItemTrickArrow.getType(arrow) : "");
+        // Only the attached visual payloads are sent, not unrelated arrow stack data. Bound the
+        // encoded size so unusually large player-provided NBT cannot exceed packet limits.
+        String payload = "";
+        if (arrow.getItem() instanceof ItemTrickArrow && arrow.hasTag())
+        {
+            var visual = new net.minecraft.nbt.CompoundTag();
+            for (String key : new String[] { "AttachedPotion", "AttachedItem" })
+                if (arrow.getTag().contains(key, net.minecraft.nbt.Tag.TAG_COMPOUND))
+                    visual.put(key, arrow.getTag().getCompound(key).copy());
+            if (!visual.isEmpty())
+            {
+                String encoded = visual.toString();
+                if (encoded.length() <= 8192) payload = encoded;
+            }
+        }
+        data.getData().set(Vars.CURRENT_ARROW_PAYLOAD, payload);
     }
 
     public static ItemStack getSelectedArrow(Player player)
