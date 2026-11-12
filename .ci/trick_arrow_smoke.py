@@ -108,7 +108,26 @@ def main():
             command('tp @e[tag=puffer_target,limit=1] 3.5 180 4.5')
             wait_for(server_log, r'Pufferfish arrow detonation: x=3\.5, y=[0-9.]+, z=4\.5, attached=true', 20,
                      'pufferfish explosion follows the moving target', server)
-            print('PASS: real client fired six trick arrows against dedicated server', flush=True)
+            # mobGriefing restricts mobs, not a player's torch and fire-charge arrows.
+            command('kill @e[tag=puffer_target]')
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('gamerule mobGriefing false')
+            command('fill -2 180 4 2 183 4 minecraft:stone')
+            command('setblock 0 180 3 minecraft:netherrack')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"torch"}')
+            shoot('ci-arrow-torch.png')
+            command('execute if block 0 181 3 minecraft:wall_torch[facing=north] run say PLAYER_TORCH_ARROW_PASS')
+            wait_for(server_log, r'\[Server\] PLAYER_TORCH_ARROW_PASS', 15,
+                     'player torch arrow places a wall torch with mobGriefing disabled', server)
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('setblock 0 181 3 minecraft:air')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"fire_charge"}')
+            shoot('ci-arrow-fire-charge.png')
+            command('execute if block 0 181 3 minecraft:fire run say PLAYER_FIRE_ARROW_PASS')
+            wait_for(server_log, r'\[Server\] PLAYER_FIRE_ARROW_PASS', 15,
+                     'player fire-charge arrow places fire with mobGriefing disabled', server)
+            print('PASS: real client fired eight trick arrows against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

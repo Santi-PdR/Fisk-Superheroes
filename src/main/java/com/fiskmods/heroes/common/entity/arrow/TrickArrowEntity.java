@@ -864,7 +864,10 @@ public class TrickArrowEntity extends Arrow
         detonated = true;
 
         JsonObject profile = fireballDamageProfile();
-        for (LivingEntity target : level().getEntitiesOfClass(LivingEntity.class,
+        var fireballType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.FIREBALL);
+        var damageSource = new net.minecraft.world.damagesource.DamageSource(fireballType, this, getOwner());
+        for (net.minecraft.world.entity.Entity target : level().getEntities(this,
                 new net.minecraft.world.phys.AABB(center.x - FIREBALL_ARROW_RADIUS,
                         center.y - FIREBALL_ARROW_RADIUS, center.z - FIREBALL_ARROW_RADIUS,
                         center.x + FIREBALL_ARROW_RADIUS, center.y + FIREBALL_ARROW_RADIUS,
@@ -877,10 +880,20 @@ public class TrickArrowEntity extends Arrow
 
             float damage = Math.max(1.0F,
                     FIREBALL_ARROW_DAMAGE * (1.0F - (float) distance / FIREBALL_ARROW_RADIUS));
-            if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target,
-                    getOwner() instanceof LivingEntity owner ? owner : null,
-                    level().damageSources().magic(), damage, profile))
-                target.setSecondsOnFire(3);
+            boolean accepted;
+            if (target instanceof LivingEntity living)
+            {
+                accepted = com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(living,
+                        getOwner() instanceof LivingEntity owner ? owner : null, damageSource, damage, profile);
+            }
+            else
+            {
+                boolean[] result = { false };
+                com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(profile,
+                        () -> result[0] = target.hurt(damageSource, damage));
+                accepted = result[0];
+            }
+            if (accepted) target.setSecondsOnFire(3);
         }
 
         if (level() instanceof net.minecraft.server.level.ServerLevel serverLevel)
@@ -950,12 +963,23 @@ public class TrickArrowEntity extends Arrow
     /** Only consume a placeable payload when it was actually placed, and orient wall torches. */
     private boolean placeImpactBlock(BlockHitResult hit, boolean torch)
     {
-        if (!level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING)) return false;
+        if (!torch && !com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.get()) return false;
         var direction = hit.getDirection();
-        var pos = hit.getBlockPos().relative(direction);
-        if (!level().isEmptyBlock(pos)) return false;
-        if (getOwner() instanceof Player player && (!level().mayInteract(player, pos)
-                || !player.mayUseItemAt(pos, direction, getPickupItem()))) return false;
+        var hitPos = hit.getBlockPos();
+        // Torches may replace a thin snow layer or another replaceable block at the hit,
+        // otherwise they are placed on the open side of the impacted block.
+        var hitState = level().getBlockState(hitPos);
+        var pos = torch && hitState.canBeReplaced() && hitState.getFluidState().isEmpty()
+                ? hitPos : hitPos.relative(direction);
+        var existing = level().getBlockState(pos);
+        if (torch ? !existing.canBeReplaced() || !existing.getFluidState().isEmpty() : !existing.isAir()) return false;
+        var owner = getOwner();
+        if (owner instanceof Player player)
+        {
+            if (!level().mayInteract(player, pos) || !player.mayUseItemAt(pos, direction, getPickupItem())) return false;
+        }
+        else if (!(owner instanceof LivingEntity) || !level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING))
+            return false;
         net.minecraft.world.level.block.state.BlockState state;
         if (torch)
         {

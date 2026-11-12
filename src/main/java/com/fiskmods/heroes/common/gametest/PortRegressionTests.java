@@ -2517,6 +2517,111 @@ public final class PortRegressionTests
         arrow.discard(); target.discard(); level.removeBlock(wall, false); helper.succeed();
     }
 
+    public static final class FireballDamageGuard
+    {
+        final net.minecraft.world.entity.Entity projectile, owner;
+        boolean correctSource;
+        FireballDamageGuard(net.minecraft.world.entity.Entity projectile, net.minecraft.world.entity.Entity owner)
+        { this.projectile = projectile; this.owner = owner; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onHurt(net.minecraftforge.event.entity.living.LivingHurtEvent event)
+        {
+            var source = event.getSource();
+            if (source.getDirectEntity() == projectile && source.getEntity() == owner
+                    && source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)) correctSource = true;
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void fireballSplashUsesFireDamageAndHitsNonlivingTargets(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var wall = base.offset(4, 0, 0); level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fireball-owner"));
+        owner.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var blaze = net.minecraft.world.entity.EntityType.BLAZE.create(level);
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        if (target == null || blaze == null || boat == null) { helper.fail("Missing fireball test entities"); return; }
+        target.setNoAi(true); target.setNoGravity(true); target.setPos(wall.getX() + 1.5, wall.getY(), wall.getZ() + .5); level.addFreshEntity(target);
+        blaze.setNoAi(true); blaze.setNoGravity(true); blaze.setPos(wall.getX() + .5, wall.getY(), wall.getZ() - .5); level.addFreshEntity(blaze);
+        boat.setNoGravity(true); boat.setPos(wall.getX() + .5, wall.getY(), wall.getZ() + 1.5); level.addFreshEntity(boat);
+        float targetHealth = target.getHealth(), blazeHealth = blaze.getHealth();
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "fireball");
+        arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5); arrow.setDeltaMovement(2, 0, 0);
+        var guard = new FireballDamageGuard(arrow, owner);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            level.addFreshEntity(arrow); arrow.tick();
+            if (!guard.correctSource || target.getHealth() >= targetHealth || !target.isOnFire()
+                    || blaze.getHealth() != blazeHealth || blaze.isOnFire()
+                    || (!boat.isRemoved() && boat.getDamage() <= 0))
+            { helper.fail("Fireball splash must credit shooter, honor fire immunity and affect nearby boats"); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
+            arrow.discard(); target.discard(); blaze.discard(); boat.discard(); level.removeBlock(wall, false);
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void placeableArrowPermissionsAndFireRule(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var rule = level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING);
+        boolean oldRule = rule.get(); boolean oldConfig = com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.get();
+        var player = helper.makeMockPlayer(); player.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var mob = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (mob == null) { helper.fail("Missing mob shooter"); return; }
+        mob.setPos(base.getX() - 10, base.getY(), base.getZ());
+        java.util.List<net.minecraft.core.BlockPos> cleanup = new java.util.ArrayList<>();
+        try
+        {
+            rule.set(false, level.getServer());
+            for (int i = 0; i < 5; ++i)
+            {
+                var wall = base.offset(4, 0, i * 4); var adjacent = wall.west();
+                level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                level.setBlockAndUpdate(adjacent.below(), net.minecraft.world.level.block.Blocks.NETHERRACK.defaultBlockState());
+                cleanup.add(wall); cleanup.add(adjacent); cleanup.add(adjacent.below());
+                String type = i == 0 ? "torch" : "fire_charge";
+                if (i == 0) level.setBlockAndUpdate(adjacent, net.minecraft.world.level.block.Blocks.SNOW.defaultBlockState());
+                if (i == 3) com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(false);
+                var arrow = i == 4 ? new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                        com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level)
+                        : new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, i == 2 ? mob : player, type);
+                arrow.setArrowType(type);
+                arrow.setPos(wall.getX() - .1, wall.getY() + .5, wall.getZ() + .5);
+                arrow.setDeltaMovement(2, 0, 0); level.addFreshEntity(arrow); arrow.tick();
+                var placed = level.getBlockState(adjacent);
+                boolean valid = switch (i)
+                {
+                    case 0 -> placed.is(net.minecraft.world.level.block.Blocks.WALL_TORCH) && "normal".equals(arrow.getArrowType());
+                    case 1 -> placed.is(net.minecraft.world.level.block.Blocks.FIRE) && "normal".equals(arrow.getArrowType());
+                    default -> placed.isAir() && "fire_charge".equals(arrow.getArrowType());
+                };
+                arrow.discard();
+                if (!valid) { helper.fail("Incorrect arrow placement or permission for case " + i + ": " + placed); return; }
+                if (i == 3) com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(true);
+            }
+            helper.succeed();
+        }
+        finally
+        {
+            rule.set(oldRule, level.getServer());
+            com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(oldConfig);
+            for (var pos : cleanup) level.removeBlock(pos, false);
+            mob.discard();
+        }
+    }
+
     @GameTest(template = "test_empty")
     public static void torchArrowPlacesWallTorchAndRetainsUnplaceablePayload(GameTestHelper helper)
     {
