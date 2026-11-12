@@ -3306,6 +3306,36 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void catchingSmokeAndFireballArrowsPreservesTheirItems(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var catcher = helper.makeMockPlayer();
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 220, 1));
+        catcher.setPos(pos.getX() + .5, pos.getY(), pos.getZ() + .5);
+        var bystander = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (bystander == null) { helper.fail("Iron golem missing"); return; }
+        bystander.setNoAi(true); bystander.setNoGravity(true);
+        bystander.setPos(pos.getX() + 1.5, pos.getY(), pos.getZ() + .5); level.addFreshEntity(bystander);
+        var fireball = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, catcher, "fireball");
+        fireball.setPos(pos.getX() + .5, pos.getY() + 1, pos.getZ() + .5);
+        if (!fireball.onCaught(catcher) || !fireball.isRemoved()
+                || !"fireball".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(catcher.getMainHandItem()))
+                || !catcher.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.TRICK_ARROW.get())
+                || bystander.getHealth() != bystander.getMaxHealth() || bystander.isOnFire())
+        { bystander.discard(); helper.fail("Caught fireball arrows must be kept, not burst on bystanders"); return; }
+        catcher.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        var smoke = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, catcher, "smoke_bomb");
+        smoke.setPos(pos.getX() + .5, pos.getY() + 1, pos.getZ() + .5);
+        if (!smoke.onCaught(catcher) || !smoke.isRemoved()
+                || !catcher.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.TRICK_ARROW.get())
+                || !"smoke_bomb".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(catcher.getMainHandItem())))
+        { bystander.discard(); helper.fail("A caught smoke arrow must remain in hand after releasing its cloud"); return; }
+        bystander.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shieldControlDistinguishesToggleAndHold(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

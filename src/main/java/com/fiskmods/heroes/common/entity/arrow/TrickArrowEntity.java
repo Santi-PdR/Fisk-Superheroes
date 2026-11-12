@@ -714,19 +714,17 @@ public class TrickArrowEntity extends Arrow
             discard();
             return true;
         }
-        if ("fireball".equals(type))
-        {
-            spawnFireballBurst(position(), null);
-            discard();
-            return true;
-        }
         if ("smoke_bomb".equals(type))
         {
+            // Original smoke arrows call the base catch first (which gives the arrow to
+            // the catcher), then trigger their cloud at the projectile's position.
+            catcher.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, getPickupItem().copy());
             spawnSmokeCloud(position());
             discard();
             return true;
         }
 
+        // Fireball arrows only burst on impact; catching them uses the ordinary base path.
         catcher.setItemSlot(net.minecraft.world.entity.EquipmentSlot.MAINHAND, getPickupItem().copy());
         discard();
         return true;
