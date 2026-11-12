@@ -1527,7 +1527,10 @@ public final class PortRegressionTests
             {
                 if (guard.impacts != 1 || target.getHealth() != target.getMaxHealth()
                         || arrow.isRemoved() || arrow.getZ() < target.getZ() + 1)
-                { helper.fail("Forge SKIP_ENTITY must prevent damage and allow a piercing glitch arrow to continue"); return; }
+                { helper.fail("Forge SKIP_ENTITY must prevent damage and allow a piercing glitch arrow to continue: impacts="
+                        + guard.impacts + " health=" + target.getHealth() + "/" + target.getMaxHealth()
+                        + " removed=" + arrow.isRemoved() + " arrowZ=" + arrow.getZ() + " targetZ=" + target.getZ()
+                        + " targetRemoved=" + target.isRemoved()); return; }
                 arrow.discard(); target.discard(); helper.succeed();
             }
             finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
