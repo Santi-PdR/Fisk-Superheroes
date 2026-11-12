@@ -1449,23 +1449,37 @@ public final class PortRegressionTests
         var remote = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(tracker);
         if (data == null || remote == null) { helper.fail("Player data missing"); return; }
         var js = new com.fiskmods.heroes.pack.js.JSEntity(wearer);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:green_arrow");
+        if (hero == null) { helper.fail("Green Arrow hero pack missing"); return; }
+        wearer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get()));
         if (js.getData("fiskheroes:equipped_quiver") != null
-                || com.fiskmods.heroes.pack.js.JSEntity.read(wearer, "equipped_quiver") != null)
-        { helper.fail("No quiver must appear as null to hero scripts"); return; }
+                || com.fiskmods.heroes.pack.js.JSEntity.read(wearer, "equipped_quiver") != null
+                || hero.isKeyBindEnabled(wearer, "QUIVER_CYCLE")
+                || !hero.isKeyBindEnabled(wearer, "HORIZONTAL_BOW"))
+        { helper.fail("Green Arrow's actual script must disable cycling without a quiver"); return; }
         var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
         quiver.enchant(com.fiskmods.heroes.common.enchantment.ModEnchantments.CAPACITY.get(), 1);
         wearer.getInventory().setItem(1, quiver);
         com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(wearer);
         remote.getData().readUpdate(data.getData().writeDirty()); data.getData().clearDirty();
         if (!"fiskheroes:quiver".equals(js.getData("fiskheroes:equipped_quiver"))
+                || !hero.isKeyBindEnabled(wearer, "QUIVER_CYCLE")
                 || !"fiskheroes:quiver".equals(remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER))
                 || !remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT))
         { helper.fail("Equipped quiver must be visible to scripts and tracking clients"); return; }
+        wearer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STICK));
+        if (hero.isKeyBindEnabled(wearer, "QUIVER_CYCLE"))
+        { helper.fail("Green Arrow cycling must remain disabled without a bow in hand"); return; }
+        wearer.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get()));
         wearer.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
         com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(wearer);
         var removal = data.getData().writeDirty();
         remote.getData().readUpdate(removal);
         if (js.getData("fiskheroes:equipped_quiver") != null
+                || hero.isKeyBindEnabled(wearer, "QUIVER_CYCLE")
                 || !remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER).isEmpty()
                 || remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT)
                 || !removal.contains(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER.getName().toString()))
