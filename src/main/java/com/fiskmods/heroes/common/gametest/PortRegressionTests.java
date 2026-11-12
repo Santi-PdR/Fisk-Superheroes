@@ -1360,6 +1360,41 @@ public final class PortRegressionTests
         arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void quiverPublishesSelectedArrowForTrackingClients(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "tracked-quiver-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var inv = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
+        inv.setStackInSlot(0, com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal"));
+        inv.setStackInSlot(1, com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("cactus"));
+        player.getInventory().setItem(1, quiver);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SELECTED_ARROW, (byte) 1);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        var tag = new net.minecraft.nbt.CompoundTag(); data.getData().writeTo(tag);
+        var other = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "tracked-viewer-test"));
+        var received = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(other);
+        if (received == null) { helper.fail("Viewer data missing"); return; }
+        received.getData().readUpdate(tag);
+        var displayed = com.fiskmods.heroes.common.item.ItemCompoundBow.getTrackedArrowForDisplay(received);
+        if (!displayed.is(com.fiskmods.heroes.common.item.ModItems.TRICK_ARROW.get())
+                || !"cactus".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(displayed)))
+        { helper.fail("Tracking data must retain the selected arrow subtype"); return; }
+        player.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPECTRAL_ARROW));
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        tag = new net.minecraft.nbt.CompoundTag(); data.getData().writeTo(tag); received.getData().readUpdate(tag);
+        displayed = com.fiskmods.heroes.common.item.ItemCompoundBow.getTrackedArrowForDisplay(received);
+        if (!displayed.is(net.minecraft.world.item.Items.SPECTRAL_ARROW))
+        { helper.fail("Tracked ammo must fall back to a normal offhand arrow"); return; }
+        helper.succeed();
+    }
+
     public static final class CompoundBowForgeGuard
     {
         private final net.minecraft.world.entity.player.Player player;

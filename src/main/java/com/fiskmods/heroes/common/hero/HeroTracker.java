@@ -99,7 +99,10 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SCALE, 1.0F);
         }
 
-        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        // Other clients cannot inspect a remote player's inventory; keep the authoritative
+        // quiver and arrow data received from the server instead of replacing it with empty slots.
+        if (!player.level().isClientSide || player.isLocalPlayer())
+            com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
 
         // Once a suit packet has arrived, the server is authoritative. A local COMMON config may
         // differ from the server's requireFullSuit setting and must not overwrite its decision.

@@ -204,8 +204,21 @@ public class ItemCompoundBow extends BowItem
     /** Display the same ammunition selected for firing, including a creative-mode fallback. */
     public static ItemStack getArrowForDisplay(Player player)
     {
+        if (player.level().isClientSide && !player.isLocalPlayer())
+            return getTrackedArrowForDisplay(SHDataCapabilities.getPlayer(player));
         ItemStack arrow = selectedArrow(player);
         return arrow.isEmpty() && player.getAbilities().instabuild ? Items.ARROW.getDefaultInstance() : arrow;
+    }
+
+    /** Reconstructs the nocked type from server data when a remote inventory is unavailable. */
+    public static ItemStack getTrackedArrowForDisplay(@javax.annotation.Nullable SHPlayerData data)
+    {
+        if (data == null) return ItemStack.EMPTY;
+        var id = net.minecraft.resources.ResourceLocation.tryParse(data.getData().get(Vars.CURRENT_ARROW));
+        if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id)) return ItemStack.EMPTY;
+        var item = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
+        if (item instanceof ItemTrickArrow) return ItemTrickArrow.createStack(data.getData().get(Vars.CURRENT_ARROW_TYPE));
+        return item instanceof ArrowItem ? item.getDefaultInstance() : ItemStack.EMPTY;
     }
 
     /** Prefer the selected quiver slot, then support the standard inventory arrow behavior. */

@@ -145,8 +145,9 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(displayedArrow);
         renderer.render(displayedArrow, 0, Minecraft.getInstance().getFrameTime(), pose, buffers, light);
         pose.popPose();
-        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("arrow|" + displayedArrow.getArrowType()))
-            FiskHeroes.LOGGER.info("Compound bow nocked arrow rendered: type={}", displayedArrow.getArrowType());
+        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("arrow|" + player.getUUID() + "|" + displayedArrow.getArrowType()))
+            FiskHeroes.LOGGER.info("Compound bow nocked arrow rendered: type={}, wearer={}",
+                    displayedArrow.getArrowType(), player.getName().getString());
     }
 
     private static void drawStrings(PoseStack pose, MultiBufferSource buffers, float draw)

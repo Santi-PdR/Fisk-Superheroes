@@ -143,9 +143,10 @@ public class ItemQuiver extends Item
         data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? null : "fiskheroes:quiver");
         data.getData().set(Vars.EQUIPPED_QUIVER_SLOT, (byte) quiverSlot);
 
-        ItemStack arrow = quiver.isEmpty() ? ItemStack.EMPTY : getSelectedArrow(player);
+        ItemStack arrow = ItemCompoundBow.getArrowForDisplay(player);
         String arrowId = arrow.isEmpty() ? "" : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(arrow.getItem()).toString();
         data.getData().set(Vars.CURRENT_ARROW, arrowId);
+        data.getData().set(Vars.CURRENT_ARROW_TYPE, arrow.getItem() instanceof ItemTrickArrow ? ItemTrickArrow.getType(arrow) : "");
     }
 
     public static ItemStack getSelectedArrow(Player player)
