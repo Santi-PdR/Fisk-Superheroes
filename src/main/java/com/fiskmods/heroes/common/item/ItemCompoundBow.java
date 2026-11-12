@@ -52,10 +52,10 @@ public class ItemCompoundBow extends BowItem
     {
         ItemStack bow = player.getItemInHand(hand);
         if (isBroken(bow)) return InteractionResultHolder.fail(bow);
-        boolean hasAmmo = !selectedArrow(player).isEmpty() || player.getAbilities().instabuild;
+        boolean hasAmmo = !selectedArrow(player).isEmpty();
         var result = net.minecraftforge.event.ForgeEventFactory.onArrowNock(bow, level, player, hand, hasAmmo);
         if (result != null) return result;
-        if (!hasAmmo) return InteractionResultHolder.fail(bow);
+        if (!hasAmmo && !player.getAbilities().instabuild) return InteractionResultHolder.fail(bow);
 
         player.startUsingItem(hand);
         return InteractionResultHolder.consume(bow);
@@ -66,15 +66,18 @@ public class ItemCompoundBow extends BowItem
     {
         if (!(entity instanceof Player player) || isBroken(bow)) return;
         ItemStack arrowStack = selectedArrow(player);
-        boolean hasAmmo = !arrowStack.isEmpty() || player.getAbilities().instabuild;
+        boolean hasInfiniteSupply = player.getAbilities().instabuild
+                || EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0;
+        boolean hasAmmo = !arrowStack.isEmpty() || hasInfiniteSupply;
         int chargeTicks = net.minecraftforge.event.ForgeEventFactory.onArrowLoose(bow, level, player,
                 getUseDuration(bow) - timeLeft, hasAmmo);
         if (chargeTicks < 0 || level.isClientSide) return;
 
         int quiverArrowSlot = ItemQuiver.getSelectedArrowSlot(player);
         arrowStack = selectedArrow(player);
-        boolean creativeAmmo = arrowStack.isEmpty() && player.getAbilities().instabuild;
-        if (creativeAmmo) arrowStack = Items.ARROW.getDefaultInstance();
+        // A bow drawn with ammunition can still fire an Infinity fallback if the last arrow
+        // disappears before release, matching Forge's BowItem behavior.
+        if (arrowStack.isEmpty() && hasInfiniteSupply) arrowStack = Items.ARROW.getDefaultInstance();
         if (arrowStack.isEmpty() || !(arrowStack.getItem() instanceof ArrowItem arrowItem)) return;
         boolean quiverAmmo = quiverArrowSlot >= 0;
 
@@ -84,7 +87,7 @@ public class ItemCompoundBow extends BowItem
         String type = arrowStack.getItem() instanceof ItemTrickArrow ? ItemTrickArrow.getType(arrowStack) : "";
         boolean triple = "triple".equals(type) || "triple_explosive".equals(type);
         ItemStack projectileStack = triple ? ItemTrickArrow.createStack("triple".equals(type) ? "normal" : "explosive") : arrowStack.copy();
-        AbstractArrow arrow = arrowItem.createArrow(level, projectileStack, player);
+        AbstractArrow arrow = customArrow(arrowItem.createArrow(level, projectileStack, player));
         boolean horizontal = false;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
         if (data != null) horizontal = data.getData().get(Vars.HORIZONTAL_BOW);
@@ -94,8 +97,7 @@ public class ItemCompoundBow extends BowItem
         prepareArrow(arrow, bow, power);
         int bottomlessLevel = quiverAmmo ? EnchantmentHelper.getItemEnchantmentLevel(
                 com.fiskmods.heroes.common.enchantment.ModEnchantments.INFINITY.get(), ItemQuiver.findQuiver(player)) : 0;
-        boolean infinite = player.getAbilities().instabuild || (!quiverAmmo && arrowStack.is(Items.ARROW)
-                && EnchantmentHelper.getItemEnchantmentLevel(Enchantments.INFINITY_ARROWS, bow) > 0)
+        boolean infinite = player.getAbilities().instabuild || (!quiverAmmo && arrowItem.isInfinite(arrowStack, bow, player))
                 || rollBottomless(bottomlessLevel, level.getRandom());
         if (infinite) arrow.pickup = AbstractArrow.Pickup.CREATIVE_ONLY;
 
@@ -107,7 +109,7 @@ public class ItemCompoundBow extends BowItem
                 // center arrow follows the aim and two arrows fan out on either side.
                 for (float offset : new float[] { -8.0F, 8.0F })
                 {
-                    AbstractArrow extra = trickArrow.createArrow(level, projectileStack.copy(), player);
+                    AbstractArrow extra = customArrow(trickArrow.createArrow(level, projectileStack.copy(), player));
                     extra.shootFromRotation(player, player.getXRot(), player.getYRot() + offset, 0.0F,
                             velocity * power, inaccuracy * 1.5F);
                     prepareArrow(extra, bow, power);
@@ -193,12 +195,6 @@ public class ItemCompoundBow extends BowItem
         if (knockback > 0) arrow.setKnockback(knockback);
         if (EnchantmentHelper.getItemEnchantmentLevel(Enchantments.FLAMING_ARROWS, bow) > 0) arrow.setSecondsOnFire(100);
 
-        if (arrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
-        {
-            // The original ArrowType applies these factors to the projectile itself. Applying
-            // Both type-specific launch speed and damage are handled by TrickArrowEntity, so
-            // special arrows behave the same when launched by vanilla bows.
-        }
     }
 
     /** Display the same ammunition selected for firing, including a creative-mode fallback. */
@@ -243,15 +239,16 @@ public class ItemCompoundBow extends BowItem
         ItemStack quiverArrow = ItemQuiver.getSelectedArrow(player);
         if (!quiverArrow.isEmpty()) return quiverArrow;
 
+        // As in vanilla, held ammo takes precedence over the general inventory when no
+        // selected quiver arrow is available. Return live stacks so release consumes that slot.
+        ItemStack offhand = player.getOffhandItem();
+        if (ItemQuiver.isArrow(offhand)) return offhand;
+        ItemStack mainhand = player.getMainHandItem();
+        if (ItemQuiver.isArrow(mainhand)) return mainhand;
         for (ItemStack stack : player.getInventory().items)
         {
             if (ItemQuiver.isArrow(stack)) return stack;
         }
-        // Vanilla bows accept ammunition in the offhand too. Returning the live stack lets the
-        // normal release path consume one arrow from that slot when the quiver and main inventory
-        // are empty.
-        ItemStack offhand = player.getOffhandItem();
-        if (ItemQuiver.isArrow(offhand)) return offhand;
         return ItemStack.EMPTY;
     }
 

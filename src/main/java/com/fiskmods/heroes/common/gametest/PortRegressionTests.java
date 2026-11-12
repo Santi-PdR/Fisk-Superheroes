@@ -1419,19 +1419,20 @@ public final class PortRegressionTests
     {
         private final net.minecraft.world.entity.player.Player player;
         boolean nockSeen, looseSeen, preventNock = true, preventLoose = true;
+        int nockCalls, looseCalls;
         CompoundBowForgeGuard(net.minecraft.world.entity.player.Player player) { this.player = player; }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void nock(net.minecraftforge.event.entity.player.ArrowNockEvent event)
         {
             if (event.getEntity() != player) return;
-            nockSeen = event.hasAmmo();
+            ++nockCalls; nockSeen = event.hasAmmo();
             if (preventNock) event.setAction(net.minecraft.world.InteractionResultHolder.fail(event.getBow()));
         }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void loose(net.minecraftforge.event.entity.player.ArrowLooseEvent event)
         {
             if (event.getEntity() != player) return;
-            looseSeen = event.hasAmmo();
+            ++looseCalls; looseSeen = event.hasAmmo();
             if (preventLoose) event.setCharge(0);
         }
     }
@@ -1465,6 +1466,78 @@ public final class PortRegressionTests
             arrows = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity.class, bounds, e -> e.getOwner() == player);
             if (arrows.size() != 1 || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 1)
             { helper.fail("Allowed Forge events must still produce a shot and consume ammunition"); return; }
+            arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void compoundBowPrioritizesQuiverThenHeldAmmunition(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "bow-ammo-priority-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        player.getInventory().setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW, 3));
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPECTRAL_ARROW, 2));
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        if (!com.fiskmods.heroes.common.item.ItemCompoundBow.getArrowForDisplay(player).is(net.minecraft.world.item.Items.SPECTRAL_ARROW))
+        { helper.fail("Held ammunition should take precedence over loose inventory arrows"); return; }
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        var arrows = level.getEntitiesOfClass(net.minecraft.world.entity.projectile.AbstractArrow.class,
+                player.getBoundingBox().inflate(4), e -> e.getOwner() == player);
+        if (arrows.size() != 1 || !(arrows.get(0) instanceof net.minecraft.world.entity.projectile.SpectralArrow)
+                || player.getOffhandItem().getCount() != 1 || player.getInventory().getItem(1).getCount() != 3)
+        { helper.fail("Shooting must use and consume only the held spectral arrow"); return; }
+        arrows.forEach(net.minecraft.world.entity.Entity::discard);
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var special = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("cactus"); special.setCount(2);
+        com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).setStackInSlot(0, special);
+        player.getInventory().setItem(2, quiver);
+        if (!"cactus".equals(com.fiskmods.heroes.common.item.ItemTrickArrow.getType(
+                com.fiskmods.heroes.common.item.ItemCompoundBow.getArrowForDisplay(player))))
+        { helper.fail("Selected quiver ammunition must still take precedence over the offhand"); return; }
+        item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+        arrows = level.getEntitiesOfClass(net.minecraft.world.entity.projectile.AbstractArrow.class,
+                player.getBoundingBox().inflate(4), e -> e.getOwner() == player && !e.isRemoved());
+        if (arrows.size() != 1 || !(arrows.get(0) instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick)
+                || !"cactus".equals(trick.getArrowType()) || player.getOffhandItem().getCount() != 1
+                || com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver).getStackInSlot(0).getCount() != 1)
+        { helper.fail("The selected quiver arrow alone must be fired and consumed"); return; }
+        arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void compoundBowForgeEventsAndInfinityFallback(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "bow-infinity-fallback-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        var guard = new CompoundBowForgeGuard(player); guard.preventNock = false; guard.preventLoose = false;
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            player.getAbilities().instabuild = true;
+            if (item.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND).getResult() == net.minecraft.world.InteractionResult.FAIL
+                    || guard.nockCalls != 1 || guard.nockSeen)
+            { helper.fail("Creative nocking without arrows must report no actual ammo to Forge but still draw"); return; }
+            player.stopUsingItem(); player.getAbilities().instabuild = false;
+            bow.enchant(net.minecraft.world.item.enchantment.Enchantments.INFINITY_ARROWS, 1);
+            player.getInventory().setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ARROW));
+            item.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+            player.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
+            item.releaseUsing(bow, level, player, item.getUseDuration(bow) - 30);
+            var arrows = level.getEntitiesOfClass(net.minecraft.world.entity.projectile.AbstractArrow.class,
+                    player.getBoundingBox().inflate(4), e -> e.getOwner() == player);
+            if (guard.looseCalls != 1 || !guard.looseSeen || arrows.size() != 1
+                    || arrows.get(0).pickup != net.minecraft.world.entity.projectile.AbstractArrow.Pickup.CREATIVE_ONLY)
+            { helper.fail("Infinity fallback must reach Forge and spawn a non-recoverable arrow after ammo disappears"); return; }
             arrows.forEach(net.minecraft.world.entity.Entity::discard); helper.succeed();
         }
         finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
