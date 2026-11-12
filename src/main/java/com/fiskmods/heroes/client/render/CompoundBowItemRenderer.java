@@ -24,7 +24,7 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
     private static final java.util.Set<String> LOGGED = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private static CompoundBowItemRenderer instance;
     private final ModelPart base, bottom, top;
-    private com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity displayedArrow;
+    private net.minecraft.world.entity.projectile.AbstractArrow displayedArrow;
     private net.minecraft.world.entity.player.Player displayedOwner;
     private ItemStack displayedAmmo = ItemStack.EMPTY;
 
@@ -130,10 +130,9 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
         {
             displayedOwner = player;
             displayedAmmo = ammo.copyWithCount(1);
-            if (ammo.getItem() instanceof com.fiskmods.heroes.common.item.ItemTrickArrow trick)
-                displayedArrow = (com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity) trick.createArrow(player.level(), ammo, player);
-            else displayedArrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
-                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), player.level(), player, "normal");
+            if (!(ammo.getItem() instanceof net.minecraft.world.item.ArrowItem arrowItem)) return;
+            // Each ArrowItem supplies its own entity and renderer (e.g. vanilla spectral arrows).
+            displayedArrow = arrowItem.createArrow(player.level(), ammo, player);
             displayedArrow.setYRot(0); displayedArrow.yRotO = 0;
             displayedArrow.setXRot(0); displayedArrow.xRotO = 0;
         }
@@ -145,9 +144,11 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(displayedArrow);
         renderer.render(displayedArrow, 0, Minecraft.getInstance().getFrameTime(), pose, buffers, light);
         pose.popPose();
-        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("arrow|" + player.getUUID() + "|" + displayedArrow.getArrowType()))
+        String type = displayedArrow instanceof com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity trick
+                ? trick.getArrowType() : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(ammo.getItem()).toString();
+        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("arrow|" + player.getUUID() + "|" + type))
             FiskHeroes.LOGGER.info("Compound bow nocked arrow rendered: type={}, wearer={}",
-                    displayedArrow.getArrowType(), player.getName().getString());
+                    type, player.getName().getString());
     }
 
     private static void drawStrings(PoseStack pose, MultiBufferSource buffers, float draw)
