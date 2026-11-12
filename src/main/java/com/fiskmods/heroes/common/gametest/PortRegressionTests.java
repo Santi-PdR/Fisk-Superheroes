@@ -1438,6 +1438,60 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void quiverVisibleArrowCountsSyncAndReset(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-visible-counts"));
+        var tracker = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-counts-tracker"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var remote = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(tracker);
+        if (data == null || remote == null) { helper.fail("Missing player data"); return; }
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        quiver.enchant(com.fiskmods.heroes.common.enchantment.ModEnchantments.CAPACITY.get(), 3);
+        var inventory = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
+        int[] amounts = { 1, 21, 22, 43, 64 };
+        for (int i = 0; i < amounts.length; ++i)
+        {
+            var arrow = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal");
+            arrow.setCount(amounts[i]); inventory.setStackInSlot(i, arrow);
+        }
+        int[] boundaries = { 0, 1, 21, 22, 42, 43, 63, 64 };
+        int[] expected = { 0, 1, 1, 2, 2, 3, 3, 4 };
+        for (int i = 0; i < boundaries.length; ++i)
+        {
+            var probe = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+            var arrow = com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("normal");
+            arrow.setCount(boundaries[i]);
+            com.fiskmods.heroes.common.item.ItemQuiver.createInventory(probe).setStackInSlot(0, arrow);
+            if (com.fiskmods.heroes.common.item.ItemQuiver.visualCount(
+                    com.fiskmods.heroes.common.item.ItemQuiver.visualCounts(probe), 0) != expected[i])
+            { helper.fail("Wrong visual count for " + boundaries[i] + " arrows"); return; }
+        }
+        player.getInventory().setItem(1, quiver);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        remote.getData().readUpdate(data.getData().writeDirty()); data.getData().clearDirty();
+        var visible = remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_CONTENTS);
+        if (!"11234".equals(visible)
+                || com.fiskmods.heroes.common.item.ItemQuiver.visualCount("zzzzz", 0) != 0
+                || com.fiskmods.heroes.common.item.ItemQuiver.visualCount("1", 0) != 0
+                || com.fiskmods.heroes.common.item.ItemQuiver.visualCount(visible, 5) != 0)
+        { helper.fail("Visible counts must use the original 21-arrow grouping and safely bound invalid data"); return; }
+        inventory.setStackInSlot(2, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        remote.getData().readUpdate(data.getData().writeDirty()); data.getData().clearDirty();
+        if (!"11034".equals(remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_CONTENTS)))
+        { helper.fail("Removing a slot must update the tracking client's visual counts"); return; }
+        player.getInventory().setItem(1, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        remote.getData().readUpdate(data.getData().writeDirty());
+        if (!"00000".equals(remote.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_CONTENTS)))
+        { helper.fail("Removing the quiver must clear its tracking visual counts"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void quiverPresenceResetsForTrackingAndScripts(GameTestHelper helper)
     {
         var level = helper.getLevel();

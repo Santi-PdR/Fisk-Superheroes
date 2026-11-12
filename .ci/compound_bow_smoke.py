@@ -42,7 +42,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:green_arrow')
             command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow')
-            command('item replace entity Dev hotbar.1 with fiskheroes:trick_arrow')
+            command('item replace entity Dev hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:22b}]}}')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false', 30,
                      'first-person compound bow model', client)
             wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=false, missing=false', 30,
@@ -56,6 +56,8 @@ def main():
             xdo('key', 'F5'); time.sleep(1)
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=THIRD_PERSON_RIGHT_HAND, drawing=true, horizontal=true', 30,
                      'horizontal drawn bow rendered in third person', client)
+            wait_for(client_log, r'Quiver shafts rendered: wearer=Dev, counts=20000, total=2', 30,
+                     'third-person quiver displays its arrows', client)
             subprocess.run(['scrot', 'ci-bow-draw-third.png'], check=True, timeout=30)
             xdo('mouseup', '3'); time.sleep(.5)
             command('execute if entity @e[type=fiskheroes:trick_arrow] run say BOW_SHOT_PASS')

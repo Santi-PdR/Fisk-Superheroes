@@ -23,7 +23,7 @@ import net.minecraftforge.network.simple.SimpleChannel;
 public class SHNetwork
 {
     // Version 12 synchronizes sticky-web attachment metadata.
-    private static final String PROTOCOL = "12";
+    private static final String PROTOCOL = "13";
 
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(FiskHeroes.MODID, "main"),

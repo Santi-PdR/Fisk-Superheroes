@@ -144,6 +144,7 @@ public class ItemQuiver extends Item
         // removal to clients that previously saw a quiver equipped.
         data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? "" : "fiskheroes:quiver");
         data.getData().set(Vars.EQUIPPED_QUIVER_GLINT, !quiver.isEmpty() && quiver.isEnchanted());
+        data.getData().set(Vars.EQUIPPED_QUIVER_CONTENTS, visualCounts(quiver));
         data.getData().set(Vars.EQUIPPED_QUIVER_SLOT, (byte) quiverSlot);
 
         ItemStack arrow = ItemCompoundBow.getArrowForDisplay(player);
@@ -168,6 +169,28 @@ public class ItemQuiver extends Item
             }
         }
         data.getData().set(Vars.CURRENT_ARROW_PAYLOAD, payload);
+    }
+
+    /** Original quivers show one shaft per group of 21 arrows, up to four per slot. */
+    public static String visualCounts(ItemStack quiver)
+    {
+        char[] counts = { '0', '0', '0', '0', '0' };
+        if (quiver.isEmpty() || !(quiver.getItem() instanceof ItemQuiver)) return new String(counts);
+        ItemStackHandler inventory = createInventory(quiver);
+        for (int slot = 0; slot < counts.length; ++slot)
+        {
+            ItemStack stack = inventory.getStackInSlot(slot);
+            if (isArrow(stack)) counts[slot] = (char) ('0' + Math.min(4, (stack.getCount() - 1) / 21 + 1));
+        }
+        return new String(counts);
+    }
+
+    /** Bounds network values before they can control the renderer's per-frame work. */
+    public static int visualCount(String counts, int slot)
+    {
+        if (counts == null || slot < 0 || slot >= 5 || counts.length() != 5) return 0;
+        char value = counts.charAt(slot);
+        return value >= '0' && value <= '4' ? value - '0' : 0;
     }
 
     public static ItemStack getSelectedArrow(Player player)

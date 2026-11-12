@@ -93,9 +93,11 @@ def main():
             command('tp Dev 0 180 0 0 0')
             command('tp Partner 0 180 4 180 0')
             command('execute as Dev run suit fiskheroes:the_flash')
-            command('item replace entity Partner hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}}]}}')
+            command('item replace entity Partner hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}},{Slot:1,id:"minecraft:arrow",Count:22b}]}}')
             wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true, visible=true, hero=false',
                      60, 'observer sees enchanted quiver on unsuited player', observer)
+            wait_for(observer_log, r'Quiver shafts rendered: wearer=Partner, counts=12000, total=3',
+                     60, 'observer renders synchronized quiver arrow quantities', observer)
             start = len(observer_log.read_text(errors='replace'))
             command('item replace entity Partner weapon.mainhand with fiskheroes:quiver')
             wait_for_new(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=(true|false), visible=false, hero=false', start,
@@ -117,6 +119,11 @@ def main():
             command('item replace entity Partner hotbar.1 with minecraft:air')
             wait_for_new(observer_log, r'Quiver appearance: wearer=Partner, equipped=false, foil=false', start,
                          60, 'observer sees remote quiver removal', observer)
+            start = len(observer_log.read_text(errors='replace'))
+            command('item replace entity Partner hotbar.1 with fiskheroes:quiver')
+            wait_for_new(observer_log, r'Quiver shafts rendered: wearer=Partner, counts=00000, total=0', start,
+                         60, 'observer sees an empty quiver without ghost arrows', observer)
+            command('item replace entity Partner hotbar.1 with minecraft:air')
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle')
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
