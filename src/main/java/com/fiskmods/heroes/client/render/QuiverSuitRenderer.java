@@ -141,7 +141,9 @@ public final class QuiverSuitRenderer
                 // The vanilla projectile renderer points down its local Z axis; turn it upright
                 // in the back-mounted quiver and keep the original 0.7 model scale.
                 pose.translate(offset[0], offset[1] - .08, offset[2]);
-                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(90));
+                // Vanilla's tail is on negative X after its -90 degree yaw. Point
+                // that end upward so the fletching protrudes rather than the tip.
+                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-90));
                 pose.scale(.7F, .7F, .7F);
                 arrowRenderer.renderQuiverShaft(arrow, net.minecraft.client.Minecraft.getInstance().getFrameTime(), pose, buffer, light);
                 pose.popPose();
