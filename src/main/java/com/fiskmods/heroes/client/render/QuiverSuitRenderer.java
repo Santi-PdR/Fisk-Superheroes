@@ -140,7 +140,9 @@ public final class QuiverSuitRenderer
                 pose.pushPose();
                 // The vanilla projectile renderer points down its local Z axis; turn it upright
                 // in the back-mounted quiver and keep the original 0.7 model scale.
-                pose.translate(offset[0], offset[1] - .08, offset[2]);
+                // Keep the fletching just outside the open end and in front of the
+                // head's back face; otherwise it can look detached when occluded.
+                pose.translate(offset[0], offset[1] + .08, offset[2] + .09);
                 // Vanilla's tail is on negative X after its -90 degree yaw. Point
                 // that end upward so the fletching protrudes rather than the tip.
                 pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-90));
