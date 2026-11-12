@@ -93,11 +93,17 @@ def main():
             command('tp Dev 0 180 0 0 0')
             command('tp Partner 0 180 4 180 0')
             command('execute as Dev run suit fiskheroes:the_flash')
-            command('execute as Partner run suit fiskheroes:green_arrow')
-            command('item replace entity Partner weapon.mainhand with fiskheroes:compound_bow')
             command('item replace entity Partner hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}}]}}')
-            wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true',
-                     60, 'observer renders remote enchanted quiver', observer)
+            wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true, visible=true, hero=false',
+                     60, 'observer sees enchanted quiver on unsuited player', observer)
+            start = len(observer_log.read_text(errors='replace'))
+            command('item replace entity Partner weapon.mainhand with fiskheroes:quiver')
+            wait_for_new(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=(true|false), visible=false, hero=false', start,
+                         60, 'back-mounted quiver is hidden when held', observer)
+            command('item replace entity Partner weapon.mainhand with fiskheroes:compound_bow')
+            command('execute as Partner run suit fiskheroes:green_arrow')
+            wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true, visible=true, hero=true',
+                     60, 'observer renders remote enchanted quiver with suit', observer)
             time.sleep(3)
             subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
             subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)

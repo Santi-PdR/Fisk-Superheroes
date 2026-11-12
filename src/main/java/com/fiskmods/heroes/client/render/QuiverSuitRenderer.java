@@ -52,17 +52,19 @@ final class QuiverSuitRenderer
             equipped = data != null && !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER).isEmpty();
             foil = equipped && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_GLINT);
         }
+        // The original hides the back-mounted quiver while it is held in the main hand.
+        boolean visible = equipped && !(player.getMainHandItem().getItem() instanceof ItemQuiver);
         if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics"))
         {
-            String state = equipped + "|" + foil;
+            String state = equipped + "|" + foil + "|" + visible + "|" + (model != null);
             if (!state.equals(LOGGED.put(player.getUUID(), state)))
-                FiskHeroes.LOGGER.info("Quiver appearance: wearer={}, equipped={}, foil={}",
-                        player.getName().getString(), equipped, foil);
+                FiskHeroes.LOGGER.info("Quiver appearance: wearer={}, equipped={}, foil={}, visible={}, hero={}",
+                        player.getName().getString(), equipped, foil, visible, model != null);
         }
-        if (!equipped) return;
+        if (!visible) return;
 
         String textureKey = null;
-        JsonObject archery = model.getCustom().get("fiskheroes:archery");
+        JsonObject archery = model != null ? model.getCustom().get("fiskheroes:archery") : null;
         if (archery != null)
         {
             JsonElement texture = archery.get("textureQuiver");

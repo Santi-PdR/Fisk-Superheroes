@@ -65,6 +65,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         if (iteration == null)
         {
             logRenderDiagnostic("missing-suit:" + player.getUUID(), "Suit layer found no equipped hero for {}", player.getGameProfile().getName());
+            QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, getParentModel(), null, 1);
             return;
         }
 
@@ -73,6 +74,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         if (model == null)
         {
             logRenderDiagnostic("missing-model:" + iteration.getRegistryName(), "No suit model loaded for {}", iteration.getRegistryName());
+            QuiverSuitRenderer.render(poseStack, buffer, packedLight, player, getParentModel(), null, 1);
             return;
         }
 
