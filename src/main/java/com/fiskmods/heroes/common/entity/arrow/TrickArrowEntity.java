@@ -75,6 +75,8 @@ public class TrickArrowEntity extends Arrow
     private int fireworkLifetime = -1;
     private int fireworkStrength = 120;
     private float fireworkRadius;
+    /** Mirrors Forge's per-projectile ignored entities for cancelled impact events. */
+    private final java.util.Set<Integer> glitchIgnoredEntities = new java.util.HashSet<>();
 
     public TrickArrowEntity(EntityType<? extends TrickArrowEntity> type, Level level)
     {
@@ -226,17 +228,29 @@ public class TrickArrowEntity extends Arrow
     @Override
     public void tick()
     {
-        // Glitch arrows ignore block impacts in onHitBlock, but must keep projectile collision
-        // enabled so they can still strike entities. Entity.noPhysics disables both kinds of hit
-        // detection in 1.20.1, unlike the original arrow's block-only no-clip behavior.
-        noPhysics = "explosive_pufferfish".equals(getArrowType()) && entityData.get(PUFFERFISH_FUSING);
-        // AbstractArrow hard-codes vanilla gravity (0.05) in this Minecraft version. Compensate
-        // immediately before its tick so each variant receives the original ArrowType gravity.
-        if (!isNoGravity() && !inGround)
+        boolean glitch = "glitch".equals(getArrowType());
+        boolean ghost = glitch || "explosive_pufferfish".equals(getArrowType()) && entityData.get(PUFFERFISH_FUSING);
+        if (isNoPhysics() != ghost) setNoPhysics(ghost);
+        if (glitch)
         {
-            setDeltaMovement(getDeltaMovement().add(0.0D, 0.05D - getPhysics().gravity(), 0.0D));
+            // Vanilla truncates the entity ray at the first block and also embeds arrows
+            // whose starting point is inside a solid block. A no-physics tick avoids both;
+            // process the full entity ray ourselves, retaining Forge's impact hooks.
+            inGround = false;
+            if (!level().isClientSide) hitGlitchEntities();
+            if (isRemoved()) return;
         }
+        // AbstractArrow hard-codes vanilla gravity (0.05) for ordinary arrows.
+        if (!glitch && !isNoGravity() && !inGround)
+            setDeltaMovement(getDeltaMovement().add(0.0D, 0.05D - getPhysics().gravity(), 0.0D));
         super.tick();
+        if (glitch && !isRemoved())
+        {
+            // Vanilla deliberately faces no-physics arrows backwards and omits gravity.
+            setYRot(getYRot() + 180.0F);
+            yRotO += 180.0F;
+            if (!isNoGravity()) setDeltaMovement(getDeltaMovement().add(0, -getPhysics().gravity(), 0));
+        }
         spawnTypeParticles();
         tickGrapple();
         if ("detonator".equals(getArrowType()) && inGround && level().hasNeighborSignal(blockPosition()))
@@ -256,6 +270,53 @@ public class TrickArrowEntity extends Arrow
         {
             detonate(1.5F, false);
         }
+    }
+
+    /** Trace entities over the complete trajectory, even when the ray crosses solid blocks. */
+    private void hitGlitchEntities()
+    {
+        Vec3 start = position();
+        Vec3 end = start.add(getDeltaMovement());
+        while (!isRemoved())
+        {
+            EntityHitResult hit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(
+                    level(), this, start, end, getBoundingBox().expandTowards(getDeltaMovement()).inflate(1),
+                    target -> canHitEntity(target) && !glitchIgnoredEntities.contains(target.getId()));
+            if (hit == null) break;
+            if (hit.getEntity() instanceof Player target && getOwner() instanceof Player owner && !owner.canHarmPlayer(target)) break;
+            var result = net.minecraftforge.event.ForgeEventFactory.onProjectileImpactResultNullable(this, hit);
+            if (result == null || result == net.minecraftforge.event.entity.ProjectileImpactEvent.ImpactResult.SKIP_ENTITY)
+            {
+                glitchIgnoredEntities.add(hit.getEntity().getId());
+                break;
+            }
+            if (result == net.minecraftforge.event.entity.ProjectileImpactEvent.ImpactResult.STOP_AT_CURRENT_NO_DAMAGE)
+            {
+                discard();
+                break;
+            }
+            if (result == net.minecraftforge.event.entity.ProjectileImpactEvent.ImpactResult.STOP_AT_CURRENT)
+                setPierceLevel((byte) 0);
+            onHit(hit);
+            hasImpulse = true;
+            if (getPierceLevel() <= 0) break;
+        }
+    }
+
+    @Override
+    protected EntityHitResult findHitEntity(Vec3 start, Vec3 end)
+    {
+        // With noPhysics and piercing enabled, vanilla's collision loop would repeatedly
+        // rediscover the same entity without ever processing it. The full ray is handled above.
+        return isNoPhysics() ? null : super.findHitEntity(start, end);
+    }
+
+    @Override
+    public void playerTouch(Player player)
+    {
+        // noPhysics is an implementation detail for the glitch arrow, not permission to
+        // pick it up in midair as a vanilla no-physics arrow.
+        if (!"glitch".equals(getArrowType())) super.playerTouch(player);
     }
 
     /** Preserve the type-specific trails used by the original fire and pulse arrows. */

@@ -1437,6 +1437,103 @@ public final class PortRegressionTests
         }
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void glitchArrowsCrossThickWallsAndStillHitEntities(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var origin = helper.absolutePos(new net.minecraft.core.BlockPos(1, 160, 1));
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "glitch-owner"));
+        owner.setPos(origin.getX() - 15, origin.getY(), origin.getZ());
+        var targets = new net.minecraft.world.entity.monster.Zombie[2];
+        var arrows = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity[3];
+        for (int i = 0; i < 3; ++i)
+        {
+            int x = origin.getX() + i * 6;
+            for (int z = 2; z <= 3; ++z)
+                for (int y = 0; y <= 2; ++y)
+                    level.setBlockAndUpdate(new net.minecraft.core.BlockPos(x, origin.getY() + y, origin.getZ() + z),
+                            net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            if (i < 2)
+            {
+                targets[i] = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+                if (targets[i] == null) { helper.fail("Zombie creation failed"); return; }
+                targets[i].setNoAi(true); targets[i].setNoGravity(true);
+                targets[i].setPos(x + .5, origin.getY(), origin.getZ() + 5.5);
+                level.addFreshEntity(targets[i]);
+            }
+            arrows[i] = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                    com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner,
+                    i == 2 ? "normal" : "glitch");
+            arrows[i].setPos(x + .5, origin.getY() + 1, origin.getZ() + .5);
+            arrows[i].setNoGravity(true);
+            arrows[i].setDeltaMovement(0, 0, i == 0 ? .55 : 6);
+            level.addFreshEntity(arrows[i]);
+        }
+        arrows[0].pickup = net.minecraft.world.entity.projectile.AbstractArrow.Pickup.ALLOWED;
+        arrows[0].playerTouch(owner);
+        if (arrows[0].isRemoved()) { helper.fail("A flying glitch arrow must not be picked up"); return; }
+        helper.runAfterDelay(20, () -> {
+            if (targets[0].getHealth() >= targets[0].getMaxHealth()
+                    || targets[1].getHealth() >= targets[1].getMaxHealth())
+            { helper.fail("Glitch arrows must hit through thick walls at both slow and fast speeds"); return; }
+            if (!arrows[2].isAnchored()) { helper.fail("An ordinary arrow must still embed in the wall"); return; }
+            for (var arrow : arrows) arrow.discard();
+            for (var target : targets) target.discard();
+            for (int i = 0; i < 3; ++i) for (int z = 2; z <= 3; ++z) for (int y = 0; y <= 2; ++y)
+                level.removeBlock(new net.minecraft.core.BlockPos(origin.getX() + i * 6, origin.getY() + y, origin.getZ() + z), false);
+            helper.succeed();
+        });
+    }
+
+    public static final class GlitchImpactGuard
+    {
+        final net.minecraft.world.entity.projectile.Projectile arrow;
+        int impacts;
+        GlitchImpactGuard(net.minecraft.world.entity.projectile.Projectile arrow) { this.arrow = arrow; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onImpact(net.minecraftforge.event.entity.ProjectileImpactEvent event)
+        {
+            if (event.getProjectile() == arrow && event.getRayTraceResult() instanceof net.minecraft.world.phys.EntityHitResult)
+            {
+                ++impacts;
+                event.setImpactResult(net.minecraftforge.event.entity.ProjectileImpactEvent.ImpactResult.SKIP_ENTITY);
+            }
+        }
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void glitchArrowRespectsForgeSkipAndDoesNotLoopWithPiercing(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var origin = helper.absolutePos(new net.minecraft.core.BlockPos(1, 190, 1));
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "glitch-event-owner"));
+        owner.setPos(origin.getX() - 10, origin.getY(), origin.getZ());
+        var target = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (target == null) { helper.fail("Zombie creation failed"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(origin.getX() + .5, origin.getY(), origin.getZ() + 3.5);
+        level.addFreshEntity(target);
+        var arrow = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "glitch");
+        arrow.setPos(origin.getX() + .5, origin.getY() + 1, origin.getZ() + .5);
+        arrow.setNoGravity(true); arrow.setPierceLevel((byte) 1); arrow.setDeltaMovement(0, 0, 1);
+        var guard = new GlitchImpactGuard(arrow);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        level.addFreshEntity(arrow);
+        helper.runAfterDelay(8, () -> {
+            try
+            {
+                if (guard.impacts != 1 || target.getHealth() != target.getMaxHealth()
+                        || arrow.isRemoved() || arrow.getZ() < target.getZ() + 1)
+                { helper.fail("Forge SKIP_ENTITY must prevent damage and allow a piercing glitch arrow to continue"); return; }
+                arrow.discard(); target.discard(); helper.succeed();
+            }
+            finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+        });
+    }
+
     @GameTest(template = "test_empty")
     public static void quiverVisibleArrowCountsSyncAndReset(GameTestHelper helper)
     {
