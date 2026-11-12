@@ -311,14 +311,6 @@ public class TrickArrowEntity extends Arrow
         return isNoPhysics() ? null : super.findHitEntity(start, end);
     }
 
-    @Override
-    public void playerTouch(Player player)
-    {
-        // noPhysics is an implementation detail for the glitch arrow, not permission to
-        // pick it up in midair as a vanilla no-physics arrow.
-        if (!"glitch".equals(getArrowType())) super.playerTouch(player);
-    }
-
     /** Preserve the type-specific trails used by the original fire and pulse arrows. */
     private void spawnTypeParticles()
     {
@@ -692,6 +684,8 @@ public class TrickArrowEntity extends Arrow
     @Override
     public void playerTouch(Player player)
     {
+        // noPhysics is an implementation detail, not permission to pick it up midair.
+        if ("glitch".equals(getArrowType())) return;
         if (("grappling_hook".equals(getArrowType()) || "vine".equals(getArrowType()))
                 && !isGrappleSnapped()) return;
         if ("detonator".equals(getArrowType()) && player != getOwner()) return;

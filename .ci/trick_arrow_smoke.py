@@ -10,7 +10,7 @@ from small_player_smoke import wait_for, xdo
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true')
     server_log, client_log = Path('ci-arrow-server.log'), Path('ci-arrow-client.log')
     processes = []
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
@@ -71,7 +71,17 @@ def main():
             command('data get entity Dev Pos')
             command('execute positioned 0.5 180 7.5 if entity @a[name=Dev,distance=..2] run say ARROW_ENDER_WALL_PASS')
             wait_for(server_log, r'ARROW_ENDER_WALL_PASS', 15, 'ender arrow teleports near actual wall impact', server)
-            print('PASS: real client fired three trick arrows against dedicated server', flush=True)
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('fill -2 180 6 2 184 7 minecraft:stone')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"glitch"}')
+            command('summon minecraft:iron_golem 0.5 180 12.5 {NoAI:1b,Silent:1b,Tags:["glitch_target"]}')
+            shoot('ci-arrow-glitch.png')
+            command('scoreboard objectives add arrow_health dummy')
+            command('execute store result score target arrow_health run data get entity @e[tag=glitch_target,limit=1] Health 1')
+            command('execute if score target arrow_health matches ..99 run say ARROW_GLITCH_WALL_PASS')
+            wait_for(server_log, r'ARROW_GLITCH_WALL_PASS', 15, 'glitch arrow damages a target beyond a thick wall', server)
+            wait_for(client_log, r'Trick arrow original 3D model rendered', 15, 'trick arrow model rendered by real client', client)
+            print('PASS: real client fired four trick arrows against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
