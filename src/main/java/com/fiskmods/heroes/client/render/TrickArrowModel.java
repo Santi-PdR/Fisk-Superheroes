@@ -10,19 +10,42 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 
-/** The original ModelArrow shaft and three fletchings, using its 64 by 32 texture layout.
- * The arrowhead is enclosed by the quiver and is deliberately not rendered here. */
-final class QuiverArrowModel
+/** Original ModelArrow geometry and 64 by 32 texture layout. */
+final class TrickArrowModel
 {
     private final ModelPart stick;
+    private final ModelPart head;
     private final ModelPart[] feathers = new ModelPart[3];
 
-    QuiverArrowModel()
+    TrickArrowModel()
     {
         MeshDefinition mesh = new MeshDefinition();
         PartDefinition root = mesh.getRoot();
         root.addOrReplaceChild("stick", CubeListBuilder.create().texOffs(0, 0)
                 .addBox(-.5F, -9, -.5F, 1, 18, 1), PartPose.ZERO);
+        PartDefinition headDef = root.addOrReplaceChild("head", CubeListBuilder.create().texOffs(4, 0)
+                .addBox(-.5F, -3, -1, 1, 3, 2), PartPose.offset(0, -9, 0));
+        headDef.addOrReplaceChild("tip", CubeListBuilder.create().texOffs(8, 0)
+                .addBox(-.5F, -.5F, -.5F, 1, 1, 1), PartPose.offsetAndRotation(0, -7.8F, 0, 0, 0, .7853982F));
+        headDef.addOrReplaceChild("middle", CubeListBuilder.create().texOffs(8, 12)
+                .addBox(-1, -2, -.5F, 2, 2, 1), PartPose.offset(0, -1, 0));
+        headDef.addOrReplaceChild("front", CubeListBuilder.create().texOffs(4, 5)
+                .addBox(-.5F, -5, -1, 1, 5, 1), PartPose.offsetAndRotation(0, -2.85F, 0, -.09599311F, 0, 0));
+        headDef.addOrReplaceChild("back", CubeListBuilder.create().texOffs(4, 5)
+                .addBox(-.5F, -5, 0, 1, 5, 1), PartPose.offsetAndRotation(0, -2.85F, 0, .09599311F, 0, 0));
+        for (int side = 0; side < 2; ++side)
+        {
+            float direction = side == 0 ? -1 : 1;
+            PartDefinition edge = headDef.addOrReplaceChild("edge" + side, CubeListBuilder.create().texOffs(8, 5)
+                    .addBox(-.5F, -6, -.5F, 1, 6, 1),
+                    PartPose.offsetAndRotation(direction * 2.3F, -2, 0, 0, 0, -direction * .34906584F));
+            edge.addOrReplaceChild("lower", CubeListBuilder.create().texOffs(4, 11)
+                    .addBox(-.5F, 0, -.5F, 1, 3, 1),
+                    PartPose.offsetAndRotation(side == 0 ? -.22F : .28F, -.45F, 0, 0, 0, direction * 1.2217305F));
+            edge.addOrReplaceChild("middle", CubeListBuilder.create().texOffs(11, 1)
+                    .addBox(-.5F, -4, -.5F, 1, 4, 1),
+                    PartPose.offsetAndRotation(-direction, 0, 0, 0, -.06981317F, direction * .06981317F));
+        }
         for (int i = 0; i < feathers.length; i++)
         {
             float angle = i == 0 ? 0 : i == 1 ? 2.0943952F : -2.0943952F;
@@ -38,11 +61,21 @@ final class QuiverArrowModel
         }
         ModelPart model = LayerDefinition.create(mesh, 64, 32).bakeRoot();
         stick = model.getChild("stick");
+        head = model.getChild("head");
         for (int i = 0; i < feathers.length; i++) feathers[i] = model.getChild("feather" + i);
     }
 
-    void render(PoseStack pose, VertexConsumer out, int light)
+    void render(PoseStack pose, VertexConsumer out, int light, boolean inQuiver)
     {
+        if (!inQuiver)
+        {
+            pose.pushPose();
+            pose.translate(0, -9.0 / 16, 0);
+            pose.scale(.3F, .4F, .15F);
+            pose.translate(0, 9.0 / 16, 0);
+            head.render(pose, out, light, OverlayTexture.NO_OVERLAY);
+            pose.popPose();
+        }
         pose.pushPose();
         pose.scale(.3F, 1, .3F);
         stick.render(pose, out, light, OverlayTexture.NO_OVERLAY);

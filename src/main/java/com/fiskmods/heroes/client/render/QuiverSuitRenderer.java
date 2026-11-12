@@ -28,7 +28,7 @@ public final class QuiverSuitRenderer
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(FiskHeroes.MODID,
             "textures/heroes/quiver/quiver.png");
     private static final ModelPart QUIVER = createModel();
-    private static final QuiverArrowModel SHAFT = new QuiverArrowModel();
+    private static final TrickArrowModel SHAFT = new TrickArrowModel();
     private static final double[][][] ARROW_OFFSETS = createArrowOffsets();
     private static net.minecraft.world.level.Level cacheLevel;
     private static final java.util.Map<java.util.UUID, String> LOGGED = new java.util.HashMap<>();
@@ -145,7 +145,7 @@ public final class QuiverSuitRenderer
                 pose.translate(.0075 + offset[0], offset[1], -.022 + offset[2]);
                 pose.scale(.7F, .7F, .7F);
                 SHAFT.render(pose, buffer.getBuffer(RenderType.entityCutoutNoCull(
-                        arrowRenderer.getTextureLocation(arrow))), light);
+                        arrowRenderer.getTextureLocation(arrow))), light, true);
                 pose.popPose();
             }
         }

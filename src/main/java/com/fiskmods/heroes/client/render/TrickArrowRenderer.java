@@ -19,6 +19,8 @@ import com.mojang.math.Axis;
 
 public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
 {
+    private static final TrickArrowModel MODEL = new TrickArrowModel();
+    private static boolean loggedModel;
     private static final ResourceLocation TEXTURE = new ResourceLocation("fiskheroes", "textures/heroes/arrow/arrow.png");
 
     public TrickArrowRenderer(EntityRendererProvider.Context context)
@@ -51,7 +53,24 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
     public void render(TrickArrowEntity arrow, float entityYaw, float partialTick, PoseStack poseStack,
             MultiBufferSource buffers, int packedLight)
     {
-        super.render(arrow, entityYaw, partialTick, poseStack, buffers, packedLight);
+        poseStack.pushPose();
+        float modelYaw = net.minecraft.util.Mth.rotLerp(partialTick, arrow.yRotO, arrow.getYRot());
+        float modelPitch = net.minecraft.util.Mth.lerp(partialTick, arrow.xRotO, arrow.getXRot());
+        poseStack.mulPose(Axis.YP.rotationDegrees(modelYaw - 90));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(modelPitch));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(90));
+        poseStack.mulPose(Axis.YP.rotationDegrees(180));
+        float shake = arrow.shakeTime - partialTick;
+        if (shake > 0) poseStack.mulPose(Axis.ZP.rotationDegrees(-net.minecraft.util.Mth.sin(shake * 3) * shake));
+        poseStack.translate(0, .5, 0);
+        MODEL.render(poseStack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(
+                getTextureLocation(arrow))), packedLight, false);
+        poseStack.popPose();
+        if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && !loggedModel)
+        {
+            loggedModel = true;
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Trick arrow original 3D model rendered");
+        }
 
         ItemStack payload = payload(arrow);
         if (payload.isEmpty()) return;
