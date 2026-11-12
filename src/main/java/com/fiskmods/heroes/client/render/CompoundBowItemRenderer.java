@@ -45,6 +45,26 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack pose,
             MultiBufferSource buffers, int light, int overlay)
     {
+        if (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED)
+        {
+            // The original custom bow renderer handled equipped views only. Inventories,
+            // item frames and dropped items use the flat icon, including the broken variant.
+            var minecraft = Minecraft.getInstance();
+            var manager = minecraft.getModelManager();
+            boolean broken = ItemCompoundBow.isBroken(stack);
+            var model = manager.getModel(FiskHeroes.id(broken
+                    ? "item/compound_bow_inventory_broken" : "item/compound_bow_inventory"));
+            if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED.add("icon|" + context + "|" + broken))
+                FiskHeroes.LOGGER.info("Compound bow icon rendered: context={}, broken={}, missing={}",
+                        context, broken, model == manager.getMissingModel());
+            pose.pushPose();
+            // The outer custom model has already applied ItemRenderer's -0.5 centering;
+            // undo it before the generated model applies its own transform and centering.
+            pose.translate(.5, .5, .5);
+            minecraft.getItemRenderer().render(stack, context, false, pose, buffers, light, overlay, model);
+            pose.popPose();
+            return;
+        }
         var wearer = SuitItemRenderContext.wearer();
         boolean drawing = wearer != null && wearer.isUsingItem() && wearer.getUseItem() == stack && !ItemCompoundBow.isBroken(stack);
         float draw = drawing ? Mth.clamp((stack.getUseDuration() - wearer.getUseItemRemainingTicks()
@@ -105,7 +125,8 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
         }
         bottom.xRot = .1308997F - arches;
         top.xRot = .18151425F - arches;
-        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        var consumer = net.minecraft.client.renderer.entity.ItemRenderer.getFoilBufferDirect(buffers,
+                RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)), true, stack.hasFoil());
         bottom.render(pose, consumer, light, overlay);
         base.render(pose, consumer, light, overlay);
         top.render(pose, consumer, light, overlay);

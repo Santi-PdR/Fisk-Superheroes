@@ -45,6 +45,8 @@ def main():
             command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false', 30,
                      'first-person compound bow model', client)
+            wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=false, missing=false', 30,
+                     'unbroken bow inventory icon is loaded', client)
             xdo('keydown', 'v'); time.sleep(1); xdo('mousedown', '3'); time.sleep(1)
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=true, horizontal=true', 30,
                      'horizontal drawn bow rendered in first person', client)
@@ -69,6 +71,8 @@ def main():
             command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow{Broken:1b}')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false, horizontal=false, broken=true', 30,
                      'broken bow renders without strings', client)
+            wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=true, missing=false', 30,
+                     'broken bow inventory icon is loaded', client)
             subprocess.run(['scrot', 'ci-bow-broken.png'], check=True, timeout=30)
             print('PASS: real client renders and fires the 3D compound bow in both views', flush=True)
         finally:

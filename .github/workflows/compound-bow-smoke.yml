@@ -63,11 +63,11 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         env:
-          CAPTURE: ${{ inputs.capture }}
+          CAPTURE: ${{ inputs.capture || github.event_name == 'push' }}
         run: |
           { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
           if [ "$CAPTURE" = "true" ]; then
-            for image in ci-bow-draw-first.png ci-bow-draw-third.png; do
+            for image in ci-bow-draw-first.png ci-bow-draw-third.png ci-bow-broken.png; do
               if [ -f "$image" ]; then
                 echo "==== BEGIN $image ====" >> /tmp/bow-log.txt
                 base64 "$image" >> /tmp/bow-log.txt

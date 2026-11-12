@@ -50,6 +50,13 @@ public final class ClientModEvents
     }
 
     @SubscribeEvent
+    public static void registerBowInventoryModels(net.minecraftforge.client.event.ModelEvent.RegisterAdditional event)
+    {
+        event.register(FiskHeroes.id("item/compound_bow_inventory"));
+        event.register(FiskHeroes.id("item/compound_bow_inventory_broken"));
+    }
+
+    @SubscribeEvent
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerEntityRenderer(ModEntities.TRICK_ARROW.get(), TrickArrowRenderer::new);
