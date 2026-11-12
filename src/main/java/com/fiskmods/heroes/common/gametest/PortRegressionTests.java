@@ -1329,12 +1329,13 @@ public final class PortRegressionTests
     public static void compoundBowMeleeDurabilityAndRepair(GameTestHelper helper)
     {
         var level = helper.getLevel();
-        var attacker = helper.makeMockPlayer();
+        var attacker = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "bow-melee-test"));
         var target = helper.makeMockPlayer();
         target.getAbilities().invulnerable = false;
         var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
         var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
-        attacker.getAbilities().instabuild = false;
+        attacker.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED).setBaseValue(1000.0D);
         attacker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
         attacker.getAttributes().addTransientAttributeModifiers(bow.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
@@ -1356,10 +1357,10 @@ public final class PortRegressionTests
         if (!item.isValidRepairItem(bow, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_INGOT))
                 || item.isValidRepairItem(bow, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_INGOT)))
         { helper.fail("Compound bow must accept iron but not gold for repair"); return; }
-        attacker.getAbilities().instabuild = true;
+        attacker.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
         if (item.canAttackBlock(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), level, pos, attacker))
         { helper.fail("Creative bow attacks must not break blocks"); return; }
-        attacker.getAbilities().instabuild = false;
+        attacker.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         if (!item.canAttackBlock(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), level, pos, attacker))
         { helper.fail("Survival bow attacks must still be able to break blocks"); return; }
         helper.succeed();
