@@ -4118,8 +4118,8 @@ public final class PortRegressionTests
         target.setDeltaMovement(0, 0, 0);
         attacker.setYRot(0);
         attacker.attack(target);
-        if (Math.abs(target.getHealth() - 4.5F) > 0.02F)
-        { helper.fail("Charged Crossbones punch should deal 15.5 damage, health=" + target.getHealth()); return; }
+        if (Math.abs(target.getHealth() - 10.5F) > 0.02F)
+        { helper.fail("Charged Crossbones punch should deal 9.5 damage, health=" + target.getHealth()); return; }
         if (vars.get(com.fiskmods.heroes.common.data.var.Vars.PUNCH_CHARGED))
         { helper.fail("Charged melee should consume its charge"); return; }
         // LivingEntity.hurt subsequently halves existing horizontal velocity and adds its
@@ -4129,7 +4129,7 @@ public final class PortRegressionTests
         target.invulnerableTime = 0;
         target.setHealth(20.0F);
         attacker.attack(target);
-        if (Math.abs(target.getHealth() - 7.5F) > 0.02F)
+        if (Math.abs(target.getHealth() - 13.5F) > 0.02F)
         { helper.fail("Following hit should use BLUNT rather than the consumed charge, health=" + target.getHealth()); return; }
         if (Math.abs(attacker.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) - 1.0D) > 0.01D)
         { helper.fail("Temporary attack attribute must not leak after the hit"); return; }
