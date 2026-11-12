@@ -115,6 +115,16 @@ def main():
                     subprocess.run(['scrot', f'ci-arrow-tipped-{kind}.png'], check=True, timeout=30)
                 finally:
                     xdo('mouseup', '3')
+            for kind in ('triple', 'triple_explosive'):
+                command(f'item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{{ArrowType:"{kind}"}}')
+                xdo('mousedown', '3')
+                try:
+                    wait_for(client_log, fr'Trick arrow triple model rendered: type={kind}, shafts=3', 30,
+                             f'{kind} displays three nocked arrows', client)
+                    time.sleep(.5)
+                    subprocess.run(['scrot', f'ci-arrow-{kind}.png'], check=True, timeout=30)
+                finally:
+                    xdo('mouseup', '3')
             command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow{Broken:1b}')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false, horizontal=false, broken=true', 30,
                      'broken bow renders without strings', client)

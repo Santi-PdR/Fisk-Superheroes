@@ -22,6 +22,7 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
     private static final TrickArrowModel MODEL = new TrickArrowModel();
     private static boolean loggedModel;
     private static final java.util.Set<String> LOGGED_TIPS = new java.util.HashSet<>();
+    private static final java.util.Set<String> LOGGED_TRIPLES = new java.util.HashSet<>();
     private static final ResourceLocation TEXTURE = new ResourceLocation("fiskheroes", "textures/heroes/arrow/arrow.png");
 
     public TrickArrowRenderer(EntityRendererProvider.Context context)
@@ -65,9 +66,40 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
         if (shake > 0) poseStack.mulPose(Axis.ZP.rotationDegrees(-net.minecraft.util.Mth.sin(shake * 3) * shake));
         poseStack.translate(0, .5, 0);
         String type = arrow.getArrowType();
+        boolean triple = "triple".equals(type) || "triple_explosive".equals(type);
         boolean tipped = "blaze".equals(type) || "tutridium".equals(type) || "vibranium".equals(type);
-        MODEL.render(poseStack, buffers.getBuffer(net.minecraft.client.renderer.RenderType.entityCutoutNoCull(
-                getTextureLocation(arrow))), packedLight, tipped);
+        var shaftType = net.minecraft.client.renderer.RenderType.entityCutoutNoCull(getTextureLocation(arrow));
+        if (triple)
+        {
+            // Match the original three slightly splayed shafts while the bundle is nocked.
+            poseStack.translate(-.01, 0, 0);
+            for (int i = 0; i < 3; ++i)
+            {
+                poseStack.pushPose();
+                if (i != 0)
+                {
+                    int sign = i == 1 ? 1 : -1;
+                    poseStack.translate(sign * .03, 0, 0);
+                    poseStack.mulPose(Axis.ZP.rotationDegrees(sign * 3.5F));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(sign * 2));
+                }
+                MODEL.render(poseStack, buffers.getBuffer(shaftType), packedLight, false);
+                if ("triple_explosive".equals(type))
+                {
+                    poseStack.pushPose();
+                    poseStack.translate(0, -.65, 0);
+                    poseStack.scale(.3F, .3F, .3F);
+                    net.minecraft.client.Minecraft.getInstance().getItemRenderer().renderStatic(
+                            new ItemStack(Blocks.TNT), net.minecraft.world.item.ItemDisplayContext.GROUND,
+                            packedLight, OverlayTexture.NO_OVERLAY, poseStack, buffers, arrow.level(), arrow.getId());
+                    poseStack.popPose();
+                }
+                poseStack.popPose();
+            }
+            if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics") && LOGGED_TRIPLES.add(type))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Trick arrow triple model rendered: type={}, shafts=3", type);
+        }
+        else MODEL.render(poseStack, buffers.getBuffer(shaftType), packedLight, tipped);
         if (tipped)
         {
             ResourceLocation tip = new ResourceLocation("fiskheroes", "textures/models/arrow_head_" + type + ".png");
@@ -109,7 +141,7 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
 
         return switch (arrow.getArrowType())
         {
-            case "explosive", "triple_explosive", "detonator" -> new ItemStack(Blocks.TNT);
+            case "explosive", "detonator" -> new ItemStack(Blocks.TNT);
             case "boxing_glove" -> new ItemStack(Items.RED_WOOL);
             case "cactus" -> new ItemStack(Blocks.CACTUS);
             case "carrot" -> new ItemStack(Items.CARROT);

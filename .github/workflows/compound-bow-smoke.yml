@@ -66,7 +66,7 @@ jobs:
           path: |
             ci-bow-*.png
             ci-quiver-hud.png
-            ci-arrow-tipped-*.png
+            ci-arrow-*.png
             ci-bow-*.log
           if-no-files-found: ignore
       - name: Publish diagnostic summary
@@ -74,9 +74,9 @@ jobs:
         env:
           CAPTURE: ${{ inputs.capture || github.event_name == 'push' }}
         run: |
-          { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Quiver HUD|Quiver shafts|Trick arrow original|Trick arrow tipped|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
+          { cat ci-bow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'BOW_|Compound bow 3D|Compound bow nocked|Quiver HUD|Quiver shafts|Trick arrow original|Trick arrow tipped|Trick arrow triple|Exception|Error|FATAL' "ci-bow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-bow-$f.log" 2>/dev/null || true; done; } > /tmp/bow-log.txt
           if [ "$CAPTURE" = "true" ]; then
-            for image in ci-bow-draw-first.png ci-bow-draw-first-vertical.png ci-bow-draw-third.png ci-bow-broken.png ci-quiver-hud.png ci-arrow-tipped-vibranium.png ci-arrow-tipped-tutridium.png ci-arrow-tipped-blaze.png; do
+            for image in ci-bow-draw-first.png ci-bow-draw-first-vertical.png ci-bow-draw-third.png ci-bow-broken.png ci-quiver-hud.png ci-arrow-tipped-vibranium.png ci-arrow-tipped-tutridium.png ci-arrow-tipped-blaze.png ci-arrow-triple.png ci-arrow-triple_explosive.png; do
               if [ -f "$image" ]; then
                 echo "==== BEGIN $image ====" >> /tmp/bow-log.txt
                 base64 "$image" >> /tmp/bow-log.txt
