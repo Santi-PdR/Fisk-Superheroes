@@ -127,7 +127,26 @@ def main():
             command('execute if block 0 181 3 minecraft:fire run say PLAYER_FIRE_ARROW_PASS')
             wait_for(server_log, r'\[Server\] PLAYER_FIRE_ARROW_PASS', 15,
                      'player fire-charge arrow places fire with mobGriefing disabled', server)
-            print('PASS: real client fired eight trick arrows against dedicated server', flush=True)
+            # A direct hit must be FIREBALL damage, not vanilla ARROW damage. Use a blaze
+            # for a real fire-immune target, then prove a normal arrow can hurt the same mob.
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('fill -2 180 3 2 184 8 minecraft:air')
+            command('difficulty normal')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('summon minecraft:blaze 0.5 180 5.5 {NoAI:1b,NoGravity:1b,Silent:1b,PersistenceRequired:1b,Tags:["fire_immune_target"]}')
+            command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"fireball"}')
+            shoot('ci-arrow-fireball-immune.png')
+            command('execute if entity @e[tag=fire_immune_target,nbt={Health:20.0f}] if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"normal",Detonated:1b}] run say FIREBALL_DIRECT_IMMUNITY_PASS')
+            wait_for(server_log, r'\[Server\] FIREBALL_DIRECT_IMMUNITY_PASS', 15,
+                     'fireball direct hit detonates without damaging a fire-immune blaze', server)
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            command('item replace entity Dev weapon.offhand with minecraft:arrow')
+            shoot('ci-arrow-ordinary-control.png')
+            command('execute store result score target arrow_health run data get entity @e[tag=fire_immune_target,limit=1] Health 1')
+            command('execute if score target arrow_health matches ..19 run say NORMAL_ARROW_BLAZE_CONTROL_PASS')
+            wait_for(server_log, r'\[Server\] NORMAL_ARROW_BLAZE_CONTROL_PASS', 15,
+                     'ordinary arrow still damages the same blaze', server)
+            print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

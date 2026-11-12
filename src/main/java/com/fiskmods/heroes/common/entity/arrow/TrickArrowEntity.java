@@ -864,9 +864,7 @@ public class TrickArrowEntity extends Arrow
         detonated = true;
 
         JsonObject profile = fireballDamageProfile();
-        var fireballType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.FIREBALL);
-        var damageSource = new net.minecraft.world.damagesource.DamageSource(fireballType, this, getOwner());
+        var damageSource = ArrowDamageSources.fireball(this);
         for (net.minecraft.world.entity.Entity target : level().getEntities(this,
                 new net.minecraft.world.phys.AABB(center.x - FIREBALL_ARROW_RADIUS,
                         center.y - FIREBALL_ARROW_RADIUS, center.z - FIREBALL_ARROW_RADIUS,

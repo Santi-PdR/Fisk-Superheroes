@@ -2532,6 +2532,74 @@ public final class PortRegressionTests
         }
     }
 
+    public static final class DirectArrowDamageRecorder
+    {
+        final net.minecraft.world.entity.Entity target;
+        net.minecraft.world.damagesource.DamageSource source;
+        DirectArrowDamageRecorder(net.minecraft.world.entity.Entity target) { this.target = target; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onHurt(net.minecraftforge.event.entity.living.LivingHurtEvent event)
+        {
+            if (event.getEntity() == target) source = event.getSource();
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void directFireballHitUsesFireDamageWithoutChangingOtherArrows(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var shooter = helper.makeMockPlayer(); shooter.setPos(base.getX() - 20, base.getY(), base.getZ());
+        for (int i = 0; i < 5; ++i)
+        {
+            var target = i == 3 ? net.minecraft.world.entity.EntityType.BLAZE.create(level)
+                    : net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+            if (target == null) { helper.fail("Missing direct-hit target"); return; }
+            target.setNoAi(true); target.setNoGravity(true);
+            target.setPos(base.getX() + 4, base.getY(), base.getZ() + i * 6 + .5);
+            level.addFreshEntity(target);
+            net.minecraft.world.entity.projectile.AbstractArrow arrow;
+            if (i == 2)
+            {
+                arrow = new net.minecraft.world.entity.projectile.Arrow(net.minecraft.world.entity.EntityType.ARROW, level);
+                arrow.setOwner(shooter);
+            }
+            else
+            {
+                var trick = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
+                        com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level);
+                trick.setArrowType(i == 1 ? "normal" : "fireball");
+                if (i != 4) trick.setOwner(shooter);
+                arrow = trick;
+            }
+            arrow.setPos(target.getX() - 2, base.getY() + 1, target.getZ());
+            arrow.setDeltaMovement(3, 0, 0);
+            float health = target.getHealth();
+            var recorder = new DirectArrowDamageRecorder(target);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+            try
+            {
+                level.addFreshEntity(arrow); arrow.tick();
+                var source = recorder.source;
+                boolean valid;
+                if (i == 3)
+                    valid = target.getHealth() == health && !target.isOnFire();
+                else
+                    valid = target.getHealth() < health && source != null && source.getDirectEntity() == arrow
+                            && source.getEntity() == (i == 4 ? null : shooter)
+                            && source.is(i == 0 || i == 4 ? net.minecraft.world.damagesource.DamageTypes.FIREBALL
+                                    : net.minecraft.world.damagesource.DamageTypes.ARROW)
+                            && ((i == 0 || i == 4) == source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE));
+                if (!valid) { helper.fail("Incorrect direct arrow damage source or fire immunity in case " + i); return; }
+            }
+            finally
+            {
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+                arrow.discard(); target.discard();
+            }
+        }
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty")
     public static void fireballSplashUsesFireDamageAndHitsNonlivingTargets(GameTestHelper helper)
     {
