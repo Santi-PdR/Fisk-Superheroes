@@ -1326,6 +1326,46 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void compoundBowMeleeDurabilityAndRepair(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var attacker = helper.makeMockPlayer();
+        var target = helper.makeMockPlayer();
+        target.getAbilities().invulnerable = false;
+        var bow = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COMPOUND_BOW.get());
+        var item = (com.fiskmods.heroes.common.item.ItemCompoundBow) bow.getItem();
+        attacker.getAbilities().instabuild = false;
+        attacker.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_SPEED).setBaseValue(1000.0D);
+        attacker.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, bow);
+        attacker.getAttributes().addTransientAttributeModifiers(bow.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        if (Math.abs(attacker.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE) - 5.0D) > .001D
+                || bow.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.OFFHAND)
+                    .containsKey(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE))
+        { helper.fail("Bow must add four main-hand melee damage only"); return; }
+        target.setHealth(20.0F);
+        attacker.attack(target);
+        if (Math.abs(target.getHealth() - 15.0F) > .02F || bow.getDamageValue() != 1)
+        { helper.fail("Actual bow hit must deal five damage and use one durability: health=" + target.getHealth() + ", damage=" + bow.getDamageValue()); return; }
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 0, 1));
+        item.mineBlock(bow, level, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), pos, attacker);
+        if (bow.getDamageValue() != 3)
+        { helper.fail("Breaking a solid block with the bow must cost two durability"); return; }
+        item.mineBlock(bow, level, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), pos, attacker);
+        if (bow.getDamageValue() != 3)
+        { helper.fail("Breaking a zero-hardness block must not wear the bow"); return; }
+        if (!item.isValidRepairItem(bow, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_INGOT))
+                || item.isValidRepairItem(bow, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GOLD_INGOT)))
+        { helper.fail("Compound bow must accept iron but not gold for repair"); return; }
+        attacker.getAbilities().instabuild = true;
+        if (item.canAttackBlock(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), level, pos, attacker))
+        { helper.fail("Creative bow attacks must not break blocks"); return; }
+        attacker.getAbilities().instabuild = false;
+        if (!item.canAttackBlock(net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), level, pos, attacker))
+        { helper.fail("Survival bow attacks must still be able to break blocks"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void quiverBowCreativeAndTripleAmmoDoNotDuplicate(GameTestHelper helper)
     {
         var level = helper.getLevel();

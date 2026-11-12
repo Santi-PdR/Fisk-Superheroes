@@ -36,6 +36,51 @@ public class ItemCompoundBow extends BowItem
     }
 
     @Override
+    public com.google.common.collect.Multimap<net.minecraft.world.entity.ai.attributes.Attribute,
+            net.minecraft.world.entity.ai.attributes.AttributeModifier> getDefaultAttributeModifiers(
+            net.minecraft.world.entity.EquipmentSlot slot)
+    {
+        if (slot != net.minecraft.world.entity.EquipmentSlot.MAINHAND)
+            return super.getDefaultAttributeModifiers(slot);
+        var modifiers = com.google.common.collect.HashMultimap.<net.minecraft.world.entity.ai.attributes.Attribute,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier>create(super.getDefaultAttributeModifiers(slot));
+        modifiers.put(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE,
+                new net.minecraft.world.entity.ai.attributes.AttributeModifier(BASE_ATTACK_DAMAGE_UUID,
+                        "Compound bow melee damage", 4.0D,
+                        net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+        return modifiers;
+    }
+
+    @Override
+    public boolean hurtEnemy(ItemStack stack, LivingEntity target, LivingEntity attacker)
+    {
+        stack.hurtAndBreak(1, attacker, entity -> entity.broadcastBreakEvent(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        return true;
+    }
+
+    @Override
+    public boolean mineBlock(ItemStack stack, Level level, net.minecraft.world.level.block.state.BlockState state,
+            net.minecraft.core.BlockPos pos, LivingEntity miner)
+    {
+        if (!level.isClientSide && state.getDestroySpeed(level, pos) != 0.0F)
+            stack.hurtAndBreak(2, miner, entity -> entity.broadcastBreakEvent(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        return true;
+    }
+
+    @Override
+    public boolean canAttackBlock(net.minecraft.world.level.block.state.BlockState state, Level level,
+            net.minecraft.core.BlockPos pos, Player player)
+    {
+        return !player.isCreative();
+    }
+
+    @Override
+    public boolean isValidRepairItem(ItemStack stack, ItemStack repair)
+    {
+        return repair.is(Items.IRON_INGOT) || super.isValidRepairItem(stack, repair);
+    }
+
+    @Override
     public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer)
     {
         consumer.accept(new net.minecraftforge.client.extensions.common.IClientItemExtensions()

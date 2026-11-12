@@ -131,6 +131,19 @@ def main():
             wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=true, missing=false', 30,
                      'broken bow inventory icon is loaded', client)
             subprocess.run(['scrot', 'ci-bow-broken.png'], check=True, timeout=30)
+            # Original bow is also a melee weapon. Check its damage and durability through
+            # a real survival client hitting a dedicated-server target with Green Arrow's suit.
+            command('item replace entity Dev weapon.mainhand with fiskheroes:compound_bow')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('summon minecraft:iron_golem 0.5 180 2.5 {NoAI:1b,Tags:["fisk_bow_melee"]}')
+            command('gamemode survival Dev')
+            time.sleep(3)
+            xdo('click', '1'); time.sleep(2)
+            command('execute if entity @e[type=minecraft:iron_golem,tag=fisk_bow_melee,nbt={Health:90.5f}] run say BOW_MELEE_DAMAGE_PASS')
+            wait_for(server_log, r'BOW_MELEE_DAMAGE_PASS', 20, 'bow melee hit includes Green Arrow weapon bonus', server)
+            command('execute if entity Dev[nbt={SelectedItem:{id:"fiskheroes:compound_bow",tag:{Damage:1}}}] run say BOW_MELEE_DURABILITY_PASS')
+            wait_for(server_log, r'BOW_MELEE_DURABILITY_PASS', 20, 'bow melee hit consumes one durability', server)
             print('PASS: real client renders and fires the 3D compound bow in both views', flush=True)
         finally:
             for process in reversed(processes):
