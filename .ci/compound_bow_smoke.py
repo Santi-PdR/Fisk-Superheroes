@@ -5,7 +5,7 @@ import signal
 import subprocess
 import time
 from pathlib import Path
-from small_player_smoke import wait_for, xdo
+from small_player_smoke import wait_for, wait_sample, xdo
 
 
 def main():
@@ -58,7 +58,18 @@ def main():
             wait_for(server_log, r'QUIVER_CACTUS_PASS', 15,
                      'scroll selection reaches server and fires the chosen arrow', server)
             command('kill @e[type=fiskheroes:trick_arrow]')
-            xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '4'); time.sleep(.8); xdo('keyup', 'Shift_L')
+            xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '5'); time.sleep(.8); xdo('keyup', 'Shift_L')
+            wait_for(client_log, r'Quiver HUD rendered: selected=2, occupied=2, name=Normal Arrow', 30,
+                     'empty selection shows fallback arrow name', client)
+            xdo('mousedown', '3'); time.sleep(1); xdo('mouseup', '3')
+            command('execute if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"normal"}] run say QUIVER_FALLBACK_PASS')
+            wait_for(server_log, r'QUIVER_FALLBACK_PASS', 15,
+                     'server fires fallback arrow from an empty selected slot', server)
+            command('kill @e[type=fiskheroes:trick_arrow]')
+            start = len(client_log.read_text(errors='replace'))
+            xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '4'); time.sleep(.3); xdo('click', '4'); time.sleep(.8); xdo('keyup', 'Shift_L')
+            wait_sample(client_log, start, r'Quiver HUD rendered: selected=0, occupied=2, name=Normal Arrow',
+                        lambda _: True, 30, 'scroll selection wraps back to normal arrow', client)
             xdo('keydown', 'v'); time.sleep(1); xdo('mousedown', '3'); time.sleep(1)
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=true, horizontal=true', 30,
                      'horizontal drawn bow rendered in first person', client)

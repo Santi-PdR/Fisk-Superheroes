@@ -39,8 +39,9 @@ public final class QuiverHud
             highlightTicks = 0;
             return;
         }
-        int selected = Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5;
-        ItemStack stack = ItemQuiver.createInventory(quiver).getStackInSlot(selected);
+        // An empty selected slot falls back to the first occupied one when firing;
+        // the original HUD's item name follows that same effective arrow.
+        ItemStack stack = ItemQuiver.getSelectedArrow(mc.player);
         if (stack.isEmpty()) highlightTicks = 0;
         else if (!ItemStack.isSameItemSameTags(stack, highlighted)) highlightTicks = 40;
         else if (highlightTicks > 0) --highlightTicks;
@@ -82,11 +83,12 @@ public final class QuiverHud
         }
         if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics"))
         {
-            String state = selected + "|" + present;
+            String shown = highlighted.isEmpty() ? "empty" : highlighted.getHoverName().getString();
+            String state = selected + "|" + present + "|" + shown;
             if (!state.equals(diagnostic))
             {
                 diagnostic = state;
-                FiskHeroes.LOGGER.info("Quiver HUD rendered: selected={}, occupied={}", selected, present);
+                FiskHeroes.LOGGER.info("Quiver HUD rendered: selected={}, occupied={}, name={}", selected, present, shown);
             }
         }
     }
