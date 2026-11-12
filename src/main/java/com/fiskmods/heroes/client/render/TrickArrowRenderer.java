@@ -69,13 +69,6 @@ public class TrickArrowRenderer extends ArrowRenderer<TrickArrowEntity>
         poseStack.popPose();
     }
 
-    /** Render the shaft alone for arrows stored inside a quiver, without impact payloads. */
-    public void renderQuiverShaft(TrickArrowEntity arrow, float partialTick, PoseStack pose,
-            MultiBufferSource buffers, int light)
-    {
-        super.render(arrow, 0, partialTick, pose, buffers, light);
-    }
-
     private static ItemStack payload(TrickArrowEntity arrow)
     {
         if ("firework".equals(arrow.getArrowType()) && !arrow.getFireworkStack().isEmpty())

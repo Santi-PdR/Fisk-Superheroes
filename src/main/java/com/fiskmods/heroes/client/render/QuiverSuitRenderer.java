@@ -28,6 +28,7 @@ public final class QuiverSuitRenderer
     private static final ResourceLocation DEFAULT_TEXTURE = new ResourceLocation(FiskHeroes.MODID,
             "textures/heroes/quiver/quiver.png");
     private static final ModelPart QUIVER = createModel();
+    private static final QuiverArrowModel SHAFT = new QuiverArrowModel();
     private static final double[][][] ARROW_OFFSETS = createArrowOffsets();
     private static net.minecraft.world.level.Level cacheLevel;
     private static final java.util.Map<java.util.UUID, String> LOGGED = new java.util.HashMap<>();
@@ -138,16 +139,13 @@ public final class QuiverSuitRenderer
             {
                 double[] offset = ARROW_OFFSETS[slot][i];
                 pose.pushPose();
-                // The vanilla projectile renderer points down its local Z axis; turn it upright
-                // in the back-mounted quiver and keep the original 0.7 model scale.
-                // Keep the fletching just outside the open end and in front of the
-                // head's back face; otherwise it can look detached when occluded.
-                pose.translate(offset[0], offset[1] + .08, offset[2] + .09);
-                // Vanilla's tail is on negative X after its -90 degree yaw. Point
-                // that end upward so the fletching protrudes rather than the tip.
-                pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(-90));
+                // Original QuiverRenderer turns ModelArrow upside down before placing
+                // its offset and scale; fletchings protrude from the open top.
+                pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(180));
+                pose.translate(.0075 + offset[0], offset[1], -.022 + offset[2]);
                 pose.scale(.7F, .7F, .7F);
-                arrowRenderer.renderQuiverShaft(arrow, net.minecraft.client.Minecraft.getInstance().getFrameTime(), pose, buffer, light);
+                SHAFT.render(pose, buffer.getBuffer(RenderType.entityCutoutNoCull(
+                        arrowRenderer.getTextureLocation(arrow))), light);
                 pose.popPose();
             }
         }
@@ -163,7 +161,7 @@ public final class QuiverSuitRenderer
             double sz = (slotRandom.nextFloat() - .5) / 10;
             for (int i = 0; i < 4; ++i)
             {
-                java.util.Random random = new java.util.Random((i + 1) * 1000000000L);
+                java.util.Random random = new java.util.Random((i + 1) * 1000000000);
                 result[slot][i][0] = sx + (random.nextFloat() - .5) / 20;
                 result[slot][i][1] = random.nextFloat() / 10 - .075;
                 result[slot][i][2] = sz + (random.nextFloat() - .5) / 20;
