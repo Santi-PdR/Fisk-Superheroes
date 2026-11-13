@@ -46,6 +46,8 @@ final class ParticleEmitterRenderer
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
     private static final Map<UUID, Integer> LAST_TICK = new HashMap<>();
     private static final java.util.Set<String> FIRST_PERSON_CLOUD_DIAGNOSTICS = new java.util.HashSet<>();
+    private static final boolean PARTICLE_DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciParticleDiagnostics");
+    private static final java.util.Set<String> EMITTER_DIAGNOSTICS = new java.util.HashSet<>();
 
     private ParticleEmitterRenderer() { }
 
@@ -56,6 +58,7 @@ final class ParticleEmitterRenderer
         CONDITIONS.clear();
         LAST_TICK.clear();
         FIRST_PERSON_CLOUD_DIAGNOSTICS.clear();
+        EMITTER_DIAGNOSTICS.clear();
         LocalParticleEmitter.clear();
     }
 
@@ -401,13 +404,45 @@ final class ParticleEmitterRenderer
                 double x = player.getX() + sideOrigin.x + random(randOffset.x * scale);
                 double y = player.getY() + 1.5D * scale - sideOrigin.y + random(randOffset.y * scale);
                 double z = player.getZ() + sideOrigin.z + random(randOffset.z * scale);
-                ParticleOptions options = emitter.options(sideMotion, randMotion);
-                level.addParticle(options, x, y, z,
-                        rgb ? 0.0D : sideMotion.x + random(randMotion.x) * scale,
-                        rgb ? 0.0D : sideMotion.y + random(randMotion.y) * scale,
-                        rgb ? 0.0D : sideMotion.z + random(randMotion.z) * scale);
+                double vx = rgb ? 0.0D : sideMotion.x + random(randMotion.x) * scale;
+                double vy = rgb ? 0.0D : sideMotion.y + random(randMotion.y) * scale;
+                double vz = rgb ? 0.0D : sideMotion.z + random(randMotion.z) * scale;
+                if (emitter.smokeType())
+                {
+                    if (spawnEmitterSmoke(player, emitter, x, y, z, vx, vy, vz, sideMotion, randMotion, scale)
+                            && PARTICLE_DIAGNOSTICS && EMITTER_DIAGNOSTICS.add(emitter.type + ":" + firstPerson))
+                        FiskHeroes.LOGGER.info("Suit emitter smoke rendered: type={}, firstPerson={}", emitter.type, firstPerson);
+                }
+                else level.addParticle(emitter.options(sideMotion, randMotion), x, y, z, vx, vy, vz);
             }
         }
+    }
+
+    /** Approximate the original animated smoke using a tinted vanilla smoke sprite, not snowflakes or dust. */
+    private static boolean spawnEmitterSmoke(Player player, Emitter emitter, double x, double y, double z,
+            double vx, double vy, double vz, Vec3 color, Vec3 colorRandom, float scale)
+    {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.level == null || mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(x, y, z) > 1024.0D) return false;
+        var setting = mc.options.particles().get();
+        if (setting == net.minecraft.client.ParticleStatus.MINIMAL
+                || setting == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) return false;
+        boolean mysterio = emitter.type.equals("MYSTERIO_SMOKE");
+        var particle = mc.particleEngine.createParticle(mysterio ? ParticleTypes.LARGE_SMOKE : ParticleTypes.SMOKE,
+                x, y, z, vx, vy, vz);
+        if (particle == null) return false;
+        if (emitter.type.equals("ENERGY_SMOKE"))
+            particle.setColor(Mth.clamp((float) (color.x + random(colorRandom.x)), 0F, 1F),
+                    Mth.clamp((float) (color.y + random(colorRandom.y)), 0F, 1F),
+                    Mth.clamp((float) (color.z + random(colorRandom.z)), 0F, 1F));
+        else if (mysterio)
+        {
+            float gray = 0.9F + player.getRandom().nextFloat() * 0.1F;
+            particle.setColor(gray, gray, gray);
+        }
+        else particle.setColor(0.7F + player.getRandom().nextFloat() * 0.3F, 1F, 1F);
+        particle.scale(scale * (mysterio ? 2F : 1F));
+        return true;
     }
 
     private static ModelPart anchorForSide(PlayerModel<?> model, String name, int side)
@@ -504,6 +539,11 @@ final class ParticleEmitterRenderer
         Vec3 randOffset(boolean fp) { return vector(randOffset, fp); }
         Vec3 randMotion(boolean fp) { return vector(randMotion, fp); }
         boolean rgb() { return type.equals("ENERGY_SMOKE") || type.equals("FIREWORK_BACKGROUND"); }
+        boolean smokeType()
+        {
+            return type.equals("CRYO_SMOKE") || type.equals("FREEZE_SMOKE")
+                    || type.equals("MYSTERIO_SMOKE") || type.equals("ENERGY_SMOKE");
+        }
 
         boolean condition(Player player, boolean fp)
         {
@@ -536,8 +576,6 @@ final class ParticleEmitterRenderer
                 case "BIG_SMOKE", "THICK_SMOKE", "MINECRAFT:LARGESMOKE" -> ParticleTypes.LARGE_SMOKE;
                 case "FLAME", "FLAME_BALL" -> ParticleTypes.FLAME;
                 case "BLUE_FLAME" -> ParticleTypes.SOUL_FIRE_FLAME;
-                case "CRYO_SMOKE", "FREEZE_SMOKE" -> ParticleTypes.SNOWFLAKE;
-                case "MYSTERIO_SMOKE" -> ParticleTypes.PORTAL;
                 case "SPARK", "BULLET_SPARK" -> ParticleTypes.ELECTRIC_SPARK;
                 case "MINECRAFT:LARGEEXPLODE" -> ParticleTypes.EXPLOSION;
                 case "MINECRAFT:FIREWORK" -> ParticleTypes.FIREWORK;

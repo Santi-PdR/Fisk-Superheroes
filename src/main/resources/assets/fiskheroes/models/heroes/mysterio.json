@@ -50,6 +50,10 @@
       "data": "1 - entity.getInterpolatedData('fiskheroes:mask_open_timer2')",
       "conditionals": ["vars:MASK_OPEN"]
     },
+    "fiskheroes:particles": {
+      "particleType": "fiskheroes:mysterio_smoke",
+      "conditionals": ["vars:SUPER_BOOST"]
+    },
     "fiskheroes:spellcasting": {
       "colorGeneric": "0x66FF47"
     },
@@ -106,6 +110,7 @@
     }
   },
   "vars": {
-    "MASK_OPEN": "entity.getData('fiskheroes:mask_open_timer2') > 0"
+    "MASK_OPEN": "entity.getData('fiskheroes:mask_open_timer2') > 0",
+    "SUPER_BOOST": "entity.getData('fiskheroes:dyn/flight_super_boost') > 0"
   }
 }

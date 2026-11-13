@@ -20,6 +20,33 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void mysterioBoostSmokeTracksCurrentState(GameTestHelper helper)
+    {
+        try (var stream = PortRegressionTests.class.getResourceAsStream("/assets/fiskheroes/models/heroes/mysterio.json"))
+        {
+            if (stream == null) { helper.fail("Mysterio model is missing"); return; }
+            var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+            var particle = json.getAsJsonObject("custom").getAsJsonObject("fiskheroes:particles");
+            if (particle == null || !"fiskheroes:mysterio_smoke".equals(particle.get("particleType").getAsString())
+                    || !"vars:SUPER_BOOST".equals(particle.getAsJsonArray("conditionals").get(0).getAsString()))
+            { helper.fail("Mysterio boost must bind the smoke emitter with its condition"); return; }
+            String expression = json.getAsJsonObject("vars").get("SUPER_BOOST").getAsString();
+            var function = com.fiskmods.heroes.pack.js.JSExpressions.compile(expression);
+            var player = helper.makeMockPlayer();
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            if (function == null || data == null) { helper.fail("Mysterio smoke condition unavailable"); return; }
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST, (byte) 0);
+            if (function.callBoolean(player)) { helper.fail("Smoke must be off when Mysterio is not boosting"); return; }
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST, (byte) 2);
+            if (!function.callBoolean(player)) { helper.fail("Smoke must turn on during the boost"); return; }
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST, (byte) 0);
+            if (function.callBoolean(player)) { helper.fail("Smoke must turn off after the boost"); return; }
+            helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Mysterio boost smoke test failed: " + e); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureRoutesCachePerLayerAndInvalidate(GameTestHelper helper)
     {
         var available = new java.util.HashSet<net.minecraft.resources.ResourceLocation>();

@@ -11,7 +11,7 @@ from small_player_smoke import wait_for, xdo
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciPerformanceDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciPerformanceDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true')
     server_log, client_log = Path('ci-arrow-server.log'), Path('ci-arrow-client.log')
     processes = []
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
@@ -185,6 +185,28 @@ def main():
                      'speed ability input reaches the server', server)
             wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:savitar, key=SUPER_SPEED, modifier=fiskheroes:super_speed', 30,
                      'speed ability still activates after the optimizations', server)
+            # Killer Frost's held charge must create cyan smoke, not snowflake sprites, in
+            # both camera perspectives. Wait for the actual particle engine to create it.
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('execute as Dev run suit fiskheroes:killer_frost')
+            xdo('keydown', 'c')
+            try:
+                wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:killer_frost, key=CHARGE_ICE',
+                         30, 'Killer Frost charge reaches the server', server)
+                wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=false',
+                         45, 'Killer Frost emits cryogenic smoke in third person', client)
+                subprocess.run(['scrot', 'ci-killer-frost-smoke-third.png'], check=True, timeout=30)
+            finally:
+                xdo('keyup', 'c')
+            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(.5)
+            xdo('keydown', 'c')
+            try:
+                wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=true',
+                         45, 'Killer Frost emits cryogenic smoke in first person', client)
+                subprocess.run(['scrot', 'ci-killer-frost-smoke-first.png'], check=True, timeout=30)
+            finally:
+                xdo('keyup', 'c')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
