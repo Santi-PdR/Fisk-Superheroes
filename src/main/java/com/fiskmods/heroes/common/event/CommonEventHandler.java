@@ -214,8 +214,10 @@ public class CommonEventHandler
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(entity, data);
             }
         }
-        ModifierHandler.tickTracked(entity);
+        // Landing/crouching clears manual flight first; suit scripts may deliberately restore it
+        // (e.g. Vision's flight while intangible) during their tick handler.
         com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(event.player);
+        ModifierHandler.tickTracked(entity);
         com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(event.player);
 
         if (entity instanceof ServerPlayer serverPlayer)

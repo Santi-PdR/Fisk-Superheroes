@@ -3320,6 +3320,18 @@ public final class PortRegressionTests
         com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(player);
         if (data.getData().get(flying)) { helper.fail("Landing must stop controlled flight"); return; }
         PacketInput.clearServerState(player);
+        var vision = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:vision");
+        if (vision == null) { helper.fail("Vision missing"); return; }
+        data.setHero(vision.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, true);
+        // CommonEventHandler clears manual flight before running suit scripts. Vision's script
+        // must still be able to grant flight while phasing even when standing on a platform.
+        com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(player);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (!data.getData().get(flying)) { helper.fail("Vision must retain suit-script flight while intangible"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.INTANGIBLE, false);
+        data.getData().set(flying, false);
+        data.setHero(hero.getDefaultIteration());
         player.setOnGround(false);
         PacketInput.applyServerInput(player, true, false, 0, 0, false);
         PacketInput.applyServerInput(player, false, false, 0, 0, false);
