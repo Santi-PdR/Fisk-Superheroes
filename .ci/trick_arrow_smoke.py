@@ -263,7 +263,7 @@ def main():
                 visible = 0
                 for _ in range(3):
                     time.sleep(1)
-                    subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
+                    subprocess.run(['scrot', '-o', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
                     after = Image.open('ci-arrow-killer-frost-smoke-first.png').convert('RGB').crop(region)
                     visible = sum(1 for (r, g, b), (r0, g0, b0) in zip(after.getdata(), before.getdata())
                                   if r > 175 and g > 225 and b > 225 and g - r >= 5
