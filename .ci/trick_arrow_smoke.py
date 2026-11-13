@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise potion and firework arrow impacts with a real client and dedicated server."""
 import os
+import re
 import signal
 import subprocess
 import time
@@ -155,14 +156,16 @@ def main():
             command('difficulty peaceful')
             command('execute as Dev run suit fiskheroes:iron_man_mk85')
             xdo('key', 'F5')
-            model_cache = wait_for(client_log, r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)',
-                                   60, 'Iron Man model expressions are reused over 100 lookups', client)
+            model_pattern = r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)'
+            wait_for(client_log, model_pattern, 60, 'Iron Man model expressions are reused over 100 lookups', client)
+            model_cache = re.search(model_pattern, client_log.read_text(errors='replace'))
             if int(model_cache.group(1)) >= 30:
                 raise RuntimeError('Too many model expression compilations: ' + model_cache.group(1))
             print('MODEL_CACHE: 100 lookups, ' + model_cache.group(1) + ' compilations', flush=True)
             command('execute as Dev run suit fiskheroes:savitar rgb')
-            texture_cache = wait_for(client_log, r'Expression cache: owner=textures, lookups=100, compilations=([0-9]+)',
-                                     90, 'animated Savitar texture expressions are reused over 100 lookups', client)
+            texture_pattern = r'Expression cache: owner=textures, lookups=100, compilations=([0-9]+)'
+            wait_for(client_log, texture_pattern, 90, 'animated Savitar texture expressions are reused over 100 lookups', client)
+            texture_cache = re.search(texture_pattern, client_log.read_text(errors='replace'))
             if int(texture_cache.group(1)) >= 30:
                 raise RuntimeError('Too many texture expression compilations: ' + texture_cache.group(1))
             print('TEXTURE_CACHE: 100 lookups, ' + texture_cache.group(1) + ' compilations', flush=True)
