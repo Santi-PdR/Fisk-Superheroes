@@ -23,194 +23,197 @@ TEXTURE_CACHE: 100 lookups, 1 compilations
 PASS: animated texture getter returned changing values: 102, 108
 PASS: speed ability input reaches the server
 PASS: speed ability still activates after the optimizations
+PASS: Killer Frost charge reaches the server
+PASS: Killer Frost emits cryogenic smoke in third person
+PASS: Killer Frost emits cryogenic smoke in first person
 PASS: real client fired fireball and ordinary arrow controls against dedicated server
 ==== server diagnostics ====
-[02:29:33] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[02:58:08] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[02:29:43] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[02:29:43] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[02:29:43] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[02:29:43] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[02:30:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_VIAL_SWIFTNESS_PASS
-[02:30:48] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_FIREWORK_BLIND_PASS
-[02:30:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_ENDER_WALL_PASS
-[02:31:05] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_GLITCH_WALL_PASS
-[02:31:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_TORCH_ARROW_PASS
-[02:31:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_FIRE_ARROW_PASS
-[02:31:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
+[02:58:16] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[02:58:16] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
+[02:58:16] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[02:58:16] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
+[02:59:02] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_VIAL_SWIFTNESS_PASS
+[02:59:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_FIREWORK_BLIND_PASS
+[02:59:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_ENDER_WALL_PASS
+[02:59:26] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_GLITCH_WALL_PASS
+[02:59:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_TORCH_ARROW_PASS
+[03:00:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_FIRE_ARROW_PASS
+[03:00:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
 ==== server tail ====
-[02:30:29] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
-[02:30:30] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 207 block(s)
-[02:30:31] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:30:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -10.0,240.0,10.0
-[02:30:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -10.0,240.0,10.0
-[02:30:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -10.0,240.0,10.0
-[02:30:32] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Bow]
-[02:30:32] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Vial Arrow]
-[02:30:33] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
-[02:30:38] [Server thread/INFO] [minecraft/MinecraftServer]: Iron Golem has the following entity data: {Brain: {memories: {}}, HurtByTimestamp: 42, Attributes: [{Base: 0.25d, Modifiers: [{Amount: 0.20000000298023224d, Operation: 2, UUID: [I; -1850824106, 929776792, -1822740609, 1745290805], Name: "effect.minecraft.speed 0"}], Name: "minecraft:generic.movement_speed"}], Invulnerable: 0b, FallFlying: 0b, PortalCooldown: 0, AbsorptionAmount: 0.0f, FallDistance: 0.0f, CanUpdate: 1b, DeathTime: 0s, HandDropChances: [0.085f, 0.085f], PersistenceRequired: 0b, UUID: [I; 1737423692, -2032450738, -1695636302, 777235049], Tags: ["vial_target"], AngerTime: 0, Motion: [0.0d, 0.0d, 0.0d], Health: 91.0f, Silent: 1b, PlayerCreated: 0b, LeftHanded: 0b, Air: 300s, OnGround: 0b, NoAI: 1b, Rotation: [0.0f, 0.0f], HandItems: [{}, {}], ArmorDropChances: [0.085f, 0.085f, 0.085f, 0.085f], Pos: [0.5d, 180.0d, 8.5d], Fire: 0s, ArmorItems: [{}, {}, {}, {}], CanPickUpLoot: 0b, HurtTime: 0s, ActiveEffects: [{"forge:id": "minecraft:speed", Ambient: 0b, CurativeItems: [{id: "minecraft:milk_bucket", Count: 1b}], ShowIcon: 1b, ShowParticles: 1b, Duration: 3542, Id: 1, Amplifier: 0b}]}
-[02:30:38] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has the following entity data: [{Slot: 0b, id: "minecraft:bow", Count: 1b, tag: {Damage: 0}}, {Slot: -106b, id: "fiskheroes:trick_arrow", Count: 1b, tag: {ArrowType: "vial", AttachedPotion: {id: "minecraft:splash_potion", Count: 1b, tag: {Potion: "minecraft:swiftness"}}}}]
-[02:30:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_VIAL_SWIFTNESS_PASS
-[02:30:41] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
-[02:30:42] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:30:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Firework Arrow]
-[02:30:43] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
-[02:30:48] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_FIREWORK_BLIND_PASS
-[02:30:49] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
-[02:30:49] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 25 block(s)
-[02:30:50] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:30:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Ender Pearl Arrow]
-[02:30:55] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has the following entity data: [0.4594493977256206d, 180.0d, 7.5d]
-[02:30:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_ENDER_WALL_PASS
-[02:30:57] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:30:57] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 50 block(s)
-[02:30:58] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Entangled Arrow]
-[02:30:59] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
-[02:31:03] [Server thread/INFO] [minecraft/MinecraftServer]: Created new objective [arrow_health]
-[02:31:04] [Server thread/INFO] [minecraft/MinecraftServer]: Health on Iron Golem after scale factor of 1.00 is 87
-[02:31:05] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_GLITCH_WALL_PASS
-[02:31:06] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
-[02:31:07] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
-[02:31:08] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 75 block(s)
-[02:31:08] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
-[02:31:09] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 1, 181, 3
-[02:31:10] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:31:11] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Pulse Arrow]
-[02:31:13] [Server thread/INFO] [Fisk's Superheroes/]: Pulse arrow impact: block=minecraft:stone, signal=true
-[02:31:15] [Server thread/INFO] [minecraft/MinecraftServer]: entity.fiskheroes.trick_arrow has the following entity data: {damage: 2.0d, Owner: [I; 940439953, -167562164, -1601161573, -1389718966], shake: 0b, FireworkAge: 0, ShotFromCrossbow: 0b, ArrowType: "pulse", Invulnerable: 0b, FireworkStrength: 120, PortalCooldown: 0, life: 48s, FallDistance: 0.0f, SoundEvent: "minecraft:entity.arrow.hit", PufferfishFusing: 0b, CanUpdate: 1b, Detonated: 0b, UUID: [I; 555371336, -102153279, -1960934986, 1973623539], GrappleSnapped: 0b, Motion: [0.024201779492105783d, -0.033665073266190386d, 3.465000033378601d], PierceLevel: 0b, FireworkRadius: 0.0f, inGround: 1b, GrappleFireSpread: 0.0f, pickup: 2b, LeftOwner: 1b, Air: 300s, OnGround: 0b, PufferfishFuseTicks: -1, Rotation: [0.4002002f, 0.27008295f], FireworkLifetime: -1, inBlockState: {Name: "minecraft:stone"}, crit: 0b, Pos: [0.5240970220453173d, 181.53626422648378d, 3.950001774397796d], HasBeenShot: 1b, Fire: -1s, ExplosionRadius: 2.0f, VineUseTicks: 0}
-[02:31:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PULSE_LEVER_UNCHANGED_PASS
-[02:31:17] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
-[02:31:18] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 21 block(s)
-[02:31:19] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:31:20] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Explosive Pufferfish Arrow]
-[02:31:20] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
-[02:31:23] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Iron Golem to 3.500000, 180.000000, 4.500000
-[02:31:24] [Server thread/INFO] [Fisk's Superheroes/]: Pufferfish arrow detonation: x=3.5, y=181.3500000230968, z=4.5, attached=true
-[02:31:25] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
-[02:31:25] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
-[02:31:26] [Server thread/INFO] [minecraft/MinecraftServer]: Gamerule mobGriefing is now set to: false
-[02:31:27] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
-[02:31:27] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 180, 3
-[02:31:28] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:31:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Torch Arrow]
-[02:31:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_TORCH_ARROW_PASS
-[02:31:34] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
-[02:31:35] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 3
-[02:31:35] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Fire Charge Arrow]
-[02:31:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_FIRE_ARROW_PASS
-[02:31:42] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
-[02:31:42] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 21 block(s)
-[02:31:43] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Normal
-[02:31:44] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:31:44] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Blaze
-[02:31:45] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Fireball Arrow]
-[02:31:47] [Server thread/INFO] [Fisk's Superheroes/]: Fireball arrow direct impact: target=minecraft:blaze
-[02:31:50] [Server thread/INFO] [minecraft/MinecraftServer]: Blaze has the following entity data: {NoGravity: 1b, Brain: {memories: {}}, HurtByTimestamp: 0, Attributes: [{Base: 0.23000000417232513d, Name: "minecraft:generic.movement_speed"}], Invulnerable: 0b, FallFlying: 0b, PortalCooldown: 0, AbsorptionAmount: 0.0f, FallDistance: 0.0f, CanUpdate: 1b, DeathTime: 0s, HandDropChances: [0.085f, 0.085f], PersistenceRequired: 1b, UUID: [I; 1458448621, 989152985, -1136622767, 388882544], Tags: ["fire_immune_target"], Motion: [0.0d, 0.0d, 0.0d], Health: 20.0f, Silent: 1b, LeftHanded: 0b, Air: 300s, OnGround: 0b, NoAI: 1b, Rotation: [0.0f, 0.0f], HandItems: [{}, {}], ArmorDropChances: [0.085f, 0.085f, 0.085f, 0.085f], Pos: [0.5d, 180.0d, 5.5d], Fire: 0s, ArmorItems: [{}, {}, {}, {}], CanPickUpLoot: 0b, HurtTime: 0s}
-[02:31:50] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] FIREBALL_DIRECT_IMMUNITY_PASS
-[02:31:51] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
-[02:31:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Arrow]
-[02:31:54] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [Take Aim]
-[02:31:56] [Server thread/INFO] [minecraft/MinecraftServer]: Health on Blaze after scale factor of 1.00 is 13
-[02:31:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
-[02:31:59] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Blaze
-[02:31:59] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
-[02:32:00] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Iron Man/Mark 85.
-[02:32:02] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped RGB.
-[02:32:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[02:32:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:savitar_rgb, index=1, matching=[SUPER_SPEED]
-[02:32:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:savitar, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[02:59:01] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has the following entity data: [{Slot: 0b, id: "minecraft:bow", Count: 1b, tag: {Damage: 0}}, {Slot: -106b, id: "fiskheroes:trick_arrow", Count: 1b, tag: {ArrowType: "vial", AttachedPotion: {id: "minecraft:splash_potion", Count: 1b, tag: {Potion: "minecraft:swiftness"}}}}]
+[02:59:02] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_VIAL_SWIFTNESS_PASS
+[02:59:03] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
+[02:59:03] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Firework Arrow]
+[02:59:05] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
+[02:59:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_FIREWORK_BLIND_PASS
+[02:59:10] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
+[02:59:11] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 25 block(s)
+[02:59:11] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:12] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Ender Pearl Arrow]
+[02:59:17] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has the following entity data: [0.47952285724026406d, 180.0d, 7.5d]
+[02:59:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_ENDER_WALL_PASS
+[02:59:18] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:19] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 50 block(s)
+[02:59:19] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Entangled Arrow]
+[02:59:20] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
+[02:59:25] [Server thread/INFO] [minecraft/MinecraftServer]: Created new objective [arrow_health]
+[02:59:25] [Server thread/INFO] [minecraft/MinecraftServer]: Health on Iron Golem after scale factor of 1.00 is 87
+[02:59:26] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] ARROW_GLITCH_WALL_PASS
+[02:59:27] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
+[02:59:27] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
+[02:59:28] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 75 block(s)
+[02:59:29] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
+[02:59:29] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 1, 181, 3
+[02:59:30] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:31] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Pulse Arrow]
+[02:59:33] [Server thread/INFO] [Fisk's Superheroes/]: Pulse arrow impact: block=minecraft:stone, signal=true
+[02:59:35] [Server thread/INFO] [minecraft/MinecraftServer]: entity.fiskheroes.trick_arrow has the following entity data: {damage: 2.0d, Owner: [I; 940439953, -167562164, -1601161573, -1389718966], shake: 0b, FireworkAge: 0, ShotFromCrossbow: 0b, ArrowType: "pulse", Invulnerable: 0b, FireworkStrength: 120, PortalCooldown: 0, life: 41s, FallDistance: 0.0f, SoundEvent: "minecraft:entity.arrow.hit", PufferfishFusing: 0b, CanUpdate: 1b, Detonated: 0b, UUID: [I; 1323816679, -503365020, -1573318214, 573134819], GrappleSnapped: 0b, Motion: [-0.0224304235264882d, -0.027377851707763124d, 3.465000033378601d], PierceLevel: 0b, FireworkRadius: 0.0f, inGround: 1b, GrappleFireSpread: 0.0f, pickup: 2b, LeftOwner: 1b, Air: 300s, OnGround: 0b, PufferfishFuseTicks: -1, Rotation: [-0.37091637f, 0.3740778f], FireworkLifetime: -1, inBlockState: {Name: "minecraft:stone"}, crit: 0b, Pos: [0.4776666644149285d, 181.54252423599874d, 3.950002112369567d], HasBeenShot: 1b, Fire: -1s, ExplosionRadius: 2.0f, VineUseTicks: 0}
+[02:59:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PULSE_LEVER_UNCHANGED_PASS
+[02:59:37] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
+[02:59:37] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 21 block(s)
+[02:59:38] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:39] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Explosive Pufferfish Arrow]
+[02:59:40] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
+[02:59:42] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Iron Golem to 3.500000, 180.000000, 4.500000
+[02:59:43] [Server thread/INFO] [Fisk's Superheroes/]: Pufferfish arrow detonation: x=3.5, y=181.3500000230968, z=4.5, attached=true
+[02:59:44] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
+[02:59:45] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
+[02:59:45] [Server thread/INFO] [minecraft/MinecraftServer]: Gamerule mobGriefing is now set to: false
+[02:59:46] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
+[02:59:47] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 180, 3
+[02:59:47] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:59:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Torch Arrow]
+[02:59:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_TORCH_ARROW_PASS
+[02:59:54] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
+[02:59:55] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 3
+[02:59:56] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Fire Charge Arrow]
+[03:00:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] PLAYER_FIRE_ARROW_PASS
+[03:00:01] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.trick_arrow
+[03:00:02] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 21 block(s)
+[03:00:02] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Normal
+[03:00:03] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[03:00:04] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Blaze
+[03:00:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Fireball Arrow]
+[03:00:06] [Server thread/INFO] [Fisk's Superheroes/]: Fireball arrow direct impact: target=minecraft:blaze
+[03:00:09] [Server thread/INFO] [minecraft/MinecraftServer]: Blaze has the following entity data: {NoGravity: 1b, Brain: {memories: {}}, HurtByTimestamp: 0, Attributes: [{Base: 0.23000000417232513d, Name: "minecraft:generic.movement_speed"}], Invulnerable: 0b, FallFlying: 0b, PortalCooldown: 0, AbsorptionAmount: 0.0f, FallDistance: 0.0f, CanUpdate: 1b, DeathTime: 0s, HandDropChances: [0.085f, 0.085f], PersistenceRequired: 1b, UUID: [I; 478019212, -183808160, -1587035961, -280739517], Tags: ["fire_immune_target"], Motion: [0.0d, 0.0d, 0.0d], Health: 20.0f, Silent: 1b, LeftHanded: 0b, Air: 300s, OnGround: 0b, NoAI: 1b, Rotation: [0.0f, 0.0f], HandItems: [{}, {}], ArmorDropChances: [0.085f, 0.085f, 0.085f, 0.085f], Pos: [0.5d, 180.0d, 5.5d], Fire: 0s, ArmorItems: [{}, {}, {}, {}], CanPickUpLoot: 0b, HurtTime: 0s}
+[03:00:10] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] FIREBALL_DIRECT_IMMUNITY_PASS
+[03:00:11] [Server thread/INFO] [minecraft/MinecraftServer]: No entity was found
+[03:00:12] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Arrow]
+[03:00:14] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [Take Aim]
+[03:00:16] [Server thread/INFO] [minecraft/MinecraftServer]: Health on Blaze after scale factor of 1.00 is 13
+[03:00:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
+[03:00:18] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [Monster Hunter]
+[03:00:18] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Blaze
+[03:00:19] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
+[03:00:19] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Iron Man/Mark 85.
+[03:00:21] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped RGB.
+[03:00:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[03:00:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:savitar_rgb, index=1, matching=[SUPER_SPEED]
+[03:00:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:savitar, key=SUPER_SPEED, modifier=fiskheroes:super_speed
+[03:00:24] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[03:00:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[03:00:25] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Killer Frost.
+[03:00:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[03:00:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:killer_frost, index=1, matching=[CHARGE_ICE]
+[03:00:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:killer_frost, key=CHARGE_ICE, modifier=fiskheroes:cryo_charge
+[03:00:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[03:00:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:killer_frost, index=1, matching=[CHARGE_ICE]
+[03:00:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:killer_frost, key=CHARGE_ICE, modifier=fiskheroes:cryo_charge
 ==== client diagnostics ====
-[02:30:02] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[02:58:29] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[02:30:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_VIAL_SWIFTNESS_PASS
-[02:30:48] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_FIREWORK_BLIND_PASS
-[02:30:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_ENDER_WALL_PASS
-[02:31:05] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_GLITCH_WALL_PASS
-[02:31:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_TORCH_ARROW_PASS
-[02:31:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_FIRE_ARROW_PASS
-[02:31:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
+[02:59:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_VIAL_SWIFTNESS_PASS
+[02:59:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_FIREWORK_BLIND_PASS
+[02:59:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_ENDER_WALL_PASS
+[02:59:26] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_GLITCH_WALL_PASS
+[02:59:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_TORCH_ARROW_PASS
+[03:00:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_FIRE_ARROW_PASS
+[03:00:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
 ==== client tail ====
-[02:30:18] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[02:30:18] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
-[02:30:18] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[02:30:18] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:forge for mod file /
-[02:30:18] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[02:30:18] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
-[02:30:18] [Worker-Main-3/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
-[02:30:18] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[02:30:19] [Worker-Main-2/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
-[02:30:20] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[02:30:21] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@73e2862a into net.minecraft.network.Connection@154b5e43
-[02:30:22] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[02:30:22] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7873
-[02:30:23] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[02:30:23] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[02:58:43] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@7f8d4ff4 into net.minecraft.network.Connection@77644bb
+[02:58:44] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[02:58:44] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7873
+[02:58:44] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[02:58:44] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[02:58:44] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[02:30:23] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
-[02:30:23] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[02:30:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
-[02:30:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
-[02:30:23] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[02:30:23] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[02:30:23] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
-[02:30:23] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
-[02:30:23] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[02:30:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[02:30:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[02:30:27] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[02:30:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[02:30:29] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[02:30:32] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 3 advancements
-[02:30:35] [Render thread/INFO] [Fisk's Superheroes/]: Trick arrow original 3D model rendered
-[02:30:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_VIAL_SWIFTNESS_PASS
-[02:30:46] [Render thread/INFO] [Fisk's Superheroes/]: Firework arrow rendered payload explosions: 1
-[02:30:48] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_FIREWORK_BLIND_PASS
-[02:30:54] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 4 advancements
-[02:30:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_ENDER_WALL_PASS
-[02:31:05] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_GLITCH_WALL_PASS
-[02:31:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PULSE_LEVER_UNCHANGED_PASS
-[02:31:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:entity.arrow.pufferfish.primed as fiskheroes:entity.arrow.pufferfish.primed
-[02:31:25] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 32 advancements
-[02:31:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_TORCH_ARROW_PASS
-[02:31:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_FIRE_ARROW_PASS
-[02:31:50] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] FIREBALL_DIRECT_IMMUNITY_PASS
-[02:31:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has made the advancement [Take Aim]
-[02:31:54] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 34 advancements
-[02:31:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
-[02:32:00] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:iron_man_mk85, screen=427x240, titleY=124, rows=[Rect[x=4, y=135, width=127, height=10], Rect[x=4, y=146, width=127, height=10], Rect[x=4, y=157, width=127, height=10], Rect[x=4, y=168, width=127, height=10]]
-[02:32:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:iron_man_mk85 slot fiskheroes:chestplate from fiskheroes:textures/heroes/iron_man_mk85_reactor.png
-[02:32:00] [Render thread/INFO] [Fisk's Superheroes/]: Quiver appearance: wearer=Dev, equipped=false, foil=false, visible=false, hero=true
-[02:32:00] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=15
-[02:32:01] [Render thread/INFO] [Fisk's Superheroes/]: Texture route cache: lookups=100, resolutions=2
-[02:32:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:helmet from fiskheroes:textures/heroes/savitar_layer1.png
-[02:32:02] [Render thread/INFO] [Fisk's Superheroes/]: Texture expression value: expression=(entity.ticksExisted() * 6 % 360) | 0, value=102
-[02:32:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:chestplate from fiskheroes:textures/heroes/savitar_layer1.png
-[02:32:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:leggings from fiskheroes:textures/heroes/savitar_layer2.png
-[02:32:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:boots from fiskheroes:textures/heroes/savitar_layer1.png
-[02:32:02] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:savitar_rgb, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=159, height=10], Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
-[02:32:02] [Render thread/INFO] [Fisk's Superheroes/]: Texture expression value: expression=(entity.ticksExisted() * 6 % 360) | 0, value=108
-[02:32:03] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=model:fiskheroes:savitar_rgb, lookups=100, compilations=2
-[02:32:03] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=textures, lookups=100, compilations=1
-[02:32:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:32:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:32:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[02:58:44] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[02:58:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
+[02:58:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
+[02:58:44] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[02:58:44] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[02:58:44] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
+[02:58:44] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
+[02:58:44] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
+[02:58:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[02:58:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:58:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:58:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:58:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[02:58:54] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 3 advancements
+[02:58:57] [Render thread/INFO] [Fisk's Superheroes/]: Trick arrow original 3D model rendered
+[02:59:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_VIAL_SWIFTNESS_PASS
+[02:59:06] [Render thread/INFO] [Fisk's Superheroes/]: Firework arrow rendered payload explosions: 1
+[02:59:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_FIREWORK_BLIND_PASS
+[02:59:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_ENDER_WALL_PASS
+[02:59:26] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] ARROW_GLITCH_WALL_PASS
+[02:59:27] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 31 advancements
+[02:59:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PULSE_LEVER_UNCHANGED_PASS
+[02:59:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:entity.arrow.pufferfish.primed as fiskheroes:entity.arrow.pufferfish.primed
+[02:59:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_TORCH_ARROW_PASS
+[03:00:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] PLAYER_FIRE_ARROW_PASS
+[03:00:10] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] FIREBALL_DIRECT_IMMUNITY_PASS
+[03:00:14] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has made the advancement [Take Aim]
+[03:00:14] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 33 advancements
+[03:00:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] NORMAL_ARROW_BLAZE_CONTROL_PASS
+[03:00:18] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Dev has made the advancement [Monster Hunter]
+[03:00:18] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 34 advancements
+[03:00:19] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:iron_man_mk85, screen=427x240, titleY=124, rows=[Rect[x=4, y=135, width=127, height=10], Rect[x=4, y=146, width=127, height=10], Rect[x=4, y=157, width=127, height=10], Rect[x=4, y=168, width=127, height=10]]
+[03:00:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:iron_man_mk85 slot fiskheroes:chestplate from fiskheroes:textures/heroes/iron_man_mk85_reactor.png
+[03:00:19] [Render thread/INFO] [Fisk's Superheroes/]: Quiver appearance: wearer=Dev, equipped=false, foil=false, visible=false, hero=true
+[03:00:19] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=15
+[03:00:19] [Render thread/INFO] [Fisk's Superheroes/]: Texture route cache: lookups=100, resolutions=2
+[03:00:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:helmet from fiskheroes:textures/heroes/savitar_layer1.png
+[03:00:21] [Render thread/INFO] [Fisk's Superheroes/]: Texture expression value: expression=(entity.ticksExisted() * 6 % 360) | 0, value=102
+[03:00:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:chestplate from fiskheroes:textures/heroes/savitar_layer1.png
+[03:00:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:leggings from fiskheroes:textures/heroes/savitar_layer2.png
+[03:00:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:savitar_rgb slot fiskheroes:boots from fiskheroes:textures/heroes/savitar_layer1.png
+[03:00:21] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:savitar_rgb, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=159, height=10], Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[03:00:21] [Render thread/INFO] [Fisk's Superheroes/]: Texture expression value: expression=(entity.ticksExisted() * 6 % 360) | 0, value=108
+[03:00:21] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=model:fiskheroes:savitar_rgb, lookups=100, compilations=2
+[03:00:21] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=textures, lookups=100, compilations=1
+[03:00:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:00:22] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:00:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:00:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:killer_frost slot fiskheroes:helmet from fiskheroes:textures/heroes/killer_frost_hair.png
+[03:00:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:killer_frost slot fiskheroes:chestplate from fiskheroes:textures/heroes/killer_frost_coat_hair.png
+[03:00:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:killer_frost slot fiskheroes:leggings from fiskheroes:textures/heroes/killer_frost_pants_coat.png
+[03:00:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:killer_frost slot fiskheroes:boots from fiskheroes:textures/heroes/killer_frost_boots.png
+[03:00:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:killer_frost, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[03:00:25] [Render thread/INFO] [Fisk's Superheroes/]: Expression cache: owner=model:fiskheroes:killer_frost, lookups=100, compilations=2
+[03:00:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:00:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:00:25] [Render thread/INFO] [Fisk's Superheroes/]: Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=false
+[03:00:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:00:27] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:killer_frost, texture=fiskheroes:textures/heroes/killer_frost_coat_hair.png, poseAligned=true
+[03:00:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:00:27] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:00:27] [Render thread/INFO] [Fisk's Superheroes/]: Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=true
