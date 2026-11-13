@@ -10,7 +10,7 @@ from small_player_smoke import wait_for, xdo
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciArrowDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciPerformanceDiagnostics=true')
     server_log, client_log = Path('ci-arrow-server.log'), Path('ci-arrow-client.log')
     processes = []
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
@@ -149,6 +149,26 @@ def main():
             command('execute if score target arrow_health matches ..19 run say NORMAL_ARROW_BLAZE_CONTROL_PASS')
             wait_for(server_log, r'\[Server\] NORMAL_ARROW_BLAZE_CONTROL_PASS', 15,
                      'ordinary arrow still damages the same blaze', server)
+            # Exercise script-heavy model variables and continuously changing texture getters
+            # in the actual renderer. Diagnostic counters are enabled only in this test.
+            command('kill @e[tag=fire_immune_target]')
+            command('difficulty peaceful')
+            command('execute as Dev run suit fiskheroes:iron_man_mk85')
+            xdo('key', 'F5')
+            model_cache = wait_for(client_log, r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)',
+                                   60, 'Iron Man model expressions are reused over 100 lookups', client)
+            if int(model_cache.group(1)) >= 30:
+                raise RuntimeError('Too many model expression compilations: ' + model_cache.group(1))
+            print('MODEL_CACHE: 100 lookups, ' + model_cache.group(1) + ' compilations', flush=True)
+            command('execute as Dev run suit fiskheroes:savitar rgb')
+            texture_cache = wait_for(client_log, r'Expression cache: owner=textures, lookups=100, compilations=([0-9]+)',
+                                     90, 'animated Savitar texture expressions are reused over 100 lookups', client)
+            if int(texture_cache.group(1)) >= 30:
+                raise RuntimeError('Too many texture expression compilations: ' + texture_cache.group(1))
+            print('TEXTURE_CACHE: 100 lookups, ' + texture_cache.group(1) + ' compilations', flush=True)
+            xdo('keydown', 'c'); time.sleep(.3); xdo('keyup', 'c')
+            wait_for(server_log, r'Ability input accepted: hero=fiskheroes:savitar, index=1', 30,
+                     'speed ability still activates after the optimizations', server)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
