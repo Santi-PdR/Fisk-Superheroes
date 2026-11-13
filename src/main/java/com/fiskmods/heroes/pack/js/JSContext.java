@@ -128,20 +128,24 @@ public final class JSContext
             return null;
         }
 
+        final boolean hasReceiver = call.getParameterCount() == 2;
         return args ->
         {
             try
             {
-                Object[] scriptArgs = args.clone();
+                // Most hot callbacks already pass JSEntity. Clone only when converting a raw
+                // Minecraft entity, preserving the caller's array without allocating needlessly.
+                Object[] scriptArgs = args;
                 for (int i = 0; i < scriptArgs.length; ++i)
                 {
                     if (scriptArgs[i] instanceof net.minecraft.world.entity.Entity entity)
                     {
+                        if (scriptArgs == args) scriptArgs = args.clone();
                         scriptArgs[i] = new JSEntity(entity);
                     }
                 }
 
-                if (call.getParameterCount() == 2)
+                if (hasReceiver)
                 {
                     return call.invoke(value, null, scriptArgs);
                 }

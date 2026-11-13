@@ -140,14 +140,17 @@ public class ItemQuiver extends Item
 
         int quiverSlot = findQuiverSlot(player);
         ItemStack quiver = quiverSlot >= 0 ? player.getInventory().getItem(quiverSlot) : ItemStack.EMPTY;
+        // Decode the quiver once for both its visible contents and the selected ammunition.
+        ItemStackHandler inventory = quiver.isEmpty() ? null : createInventory(quiver);
         // Use an explicit empty sentinel, rather than null: dirty-variable packets must carry
         // removal to clients that previously saw a quiver equipped.
         data.getData().set(Vars.EQUIPPED_QUIVER, quiver.isEmpty() ? "" : "fiskheroes:quiver");
         data.getData().set(Vars.EQUIPPED_QUIVER_GLINT, !quiver.isEmpty() && quiver.isEnchanted());
-        data.getData().set(Vars.EQUIPPED_QUIVER_CONTENTS, visualCounts(quiver));
+        data.getData().set(Vars.EQUIPPED_QUIVER_CONTENTS, visualCounts(inventory));
         data.getData().set(Vars.EQUIPPED_QUIVER_SLOT, (byte) quiverSlot);
 
-        ItemStack arrow = ItemCompoundBow.getArrowForDisplay(player);
+        ItemStack quiverArrow = inventory != null ? getSelectedArrow(inventory, data) : ItemStack.EMPTY;
+        ItemStack arrow = ItemCompoundBow.getArrowForDisplay(player, quiverArrow);
         String arrowId = arrow.isEmpty() ? "" : net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(arrow.getItem()).toString();
         data.getData().set(Vars.CURRENT_ARROW, arrowId);
         data.getData().set(Vars.CURRENT_ARROW_TYPE, arrow.getItem() instanceof ItemTrickArrow ? ItemTrickArrow.getType(arrow) : "");
@@ -174,9 +177,13 @@ public class ItemQuiver extends Item
     /** Original quivers show one shaft per group of 21 arrows, up to four per slot. */
     public static String visualCounts(ItemStack quiver)
     {
+        return visualCounts(quiver.isEmpty() || !(quiver.getItem() instanceof ItemQuiver) ? null : createInventory(quiver));
+    }
+
+    private static String visualCounts(ItemStackHandler inventory)
+    {
+        if (inventory == null) return "00000";
         char[] counts = { '0', '0', '0', '0', '0' };
-        if (quiver.isEmpty() || !(quiver.getItem() instanceof ItemQuiver)) return new String(counts);
-        ItemStackHandler inventory = createInventory(quiver);
         for (int slot = 0; slot < counts.length; ++slot)
         {
             ItemStack stack = inventory.getStackInSlot(slot);
@@ -198,9 +205,12 @@ public class ItemQuiver extends Item
         ItemStack quiver = findQuiver(player);
         if (quiver.isEmpty()) return ItemStack.EMPTY;
 
-        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        return getSelectedArrow(createInventory(quiver), SHDataCapabilities.getPlayer(player));
+    }
+
+    private static ItemStack getSelectedArrow(ItemStackHandler inventory, SHPlayerData data)
+    {
         int selected = data != null ? Byte.toUnsignedInt(data.getData().get(Vars.SELECTED_ARROW)) % 5 : 0;
-        ItemStackHandler inventory = createInventory(quiver);
         ItemStack arrow = inventory.getStackInSlot(selected);
         if (!arrow.isEmpty()) return arrow;
 

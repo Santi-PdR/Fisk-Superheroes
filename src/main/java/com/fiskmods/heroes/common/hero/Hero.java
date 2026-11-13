@@ -52,12 +52,15 @@ public class Hero implements Comparable<Hero>
     private boolean maskToggle = true;
 
     private final Map<HeroAttribute, List<AttributeMod>> attributes = new EnumMap<>(HeroAttribute.class);
+    private volatile Map<HeroAttribute, List<AttributeMod>> attributeSnapshot;
     private final Map<String, Map<HeroAttribute, AttributeMod>> attributeProfiles = new LinkedHashMap<>();
+    private volatile Map<String, Map<HeroAttribute, AttributeMod>> attributeProfileSnapshot;
     private final Map<String, Boolean> profileInheritsDefaults = new HashMap<>();
     private final Map<String, Boolean> profileRevokesAugments = new HashMap<>();
     private ScriptFunction attributeProfileFunc;
 
     private final List<KeyBind> keyBinds = new ArrayList<>();
+    private volatile List<KeyBind> keyBindSnapshot;
     private final Map<String, ScriptFunction> keyBindFuncs = new HashMap<>();
     private ScriptFunction keyBindEnabledFunc;
     private ScriptFunction modifierEnabledFunc;
@@ -192,12 +195,14 @@ public class Hero implements Comparable<Hero>
         if (attr != null)
         {
             attributes.computeIfAbsent(attr, k -> new ArrayList<>()).add(new AttributeMod(amount, operation));
+            attributeSnapshot = null;
         }
     }
 
     public void addAttributeProfile(String name, Map<HeroAttribute, AttributeMod> modifiers, boolean inheritDefaults)
     {
         attributeProfiles.put(name, modifiers);
+        attributeProfileSnapshot = null;
         profileInheritsDefaults.put(name, inheritDefaults);
     }
 
@@ -226,6 +231,7 @@ public class Hero implements Comparable<Hero>
     {
         keyBinds.add(new KeyBind(name, keyName, index));
         keyBinds.sort(Comparator.comparingInt(k -> k.index));
+        keyBindSnapshot = null;
     }
 
     public void addKeyBindFunc(String name, ScriptFunction function)
@@ -417,7 +423,9 @@ public class Hero implements Comparable<Hero>
 
     public Map<HeroAttribute, List<AttributeMod>> getAttributes()
     {
-        return ImmutableMap.copyOf(attributes);
+        Map<HeroAttribute, List<AttributeMod>> snapshot = attributeSnapshot;
+        if (snapshot == null) attributeSnapshot = snapshot = ImmutableMap.copyOf(attributes);
+        return snapshot;
     }
 
     public List<AttributeMod> getAttributes(HeroAttribute attribute)
@@ -427,7 +435,9 @@ public class Hero implements Comparable<Hero>
 
     public Map<String, Map<HeroAttribute, AttributeMod>> getAttributeProfiles()
     {
-        return ImmutableMap.copyOf(attributeProfiles);
+        Map<String, Map<HeroAttribute, AttributeMod>> snapshot = attributeProfileSnapshot;
+        if (snapshot == null) attributeProfileSnapshot = snapshot = ImmutableMap.copyOf(attributeProfiles);
+        return snapshot;
     }
 
     public ScriptFunction getAttributeProfileFunc()
@@ -437,7 +447,9 @@ public class Hero implements Comparable<Hero>
 
     public List<KeyBind> getKeyBinds()
     {
-        return ImmutableList.copyOf(keyBinds);
+        List<KeyBind> snapshot = keyBindSnapshot;
+        if (snapshot == null) keyBindSnapshot = snapshot = ImmutableList.copyOf(keyBinds);
+        return snapshot;
     }
 
     public boolean hasKeyBind(String name)

@@ -247,7 +247,15 @@ public class ItemCompoundBow extends BowItem
     {
         if (player.level().isClientSide && !player.isLocalPlayer())
             return getTrackedArrowForDisplay(SHDataCapabilities.getPlayer(player));
-        ItemStack arrow = selectedArrow(player);
+        return getArrowForDisplay(player, ItemQuiver.getSelectedArrow(player));
+    }
+
+    /** Variant for callers that already decoded the quiver this tick. */
+    static ItemStack getArrowForDisplay(Player player, ItemStack quiverArrow)
+    {
+        if (player.level().isClientSide && !player.isLocalPlayer())
+            return getTrackedArrowForDisplay(SHDataCapabilities.getPlayer(player));
+        ItemStack arrow = selectedArrow(player, quiverArrow);
         return arrow.isEmpty() && player.getAbilities().instabuild ? Items.ARROW.getDefaultInstance() : arrow;
     }
 
@@ -281,7 +289,11 @@ public class ItemCompoundBow extends BowItem
     /** Prefer the selected quiver slot, then support the standard inventory arrow behavior. */
     private static ItemStack selectedArrow(Player player)
     {
-        ItemStack quiverArrow = ItemQuiver.getSelectedArrow(player);
+        return selectedArrow(player, ItemQuiver.getSelectedArrow(player));
+    }
+
+    private static ItemStack selectedArrow(Player player, ItemStack quiverArrow)
+    {
         if (!quiverArrow.isEmpty()) return quiverArrow;
 
         // As in vanilla, held ammo takes precedence over the general inventory when no

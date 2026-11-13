@@ -20,6 +20,59 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void heroMetadataSnapshotsInvalidateOnMutation(GameTestHelper helper)
+    {
+        var hero = new com.fiskmods.heroes.common.hero.Hero(new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_test"));
+        var attributes = hero.getAttributes();
+        var profiles = hero.getAttributeProfiles();
+        var bindings = hero.getKeyBinds();
+        if (attributes != hero.getAttributes() || profiles != hero.getAttributeProfiles() || bindings != hero.getKeyBinds())
+        { helper.fail("Unchanged hero metadata should reuse its snapshots"); return; }
+        hero.addAttribute("punch_damage", 2.0, 0);
+        var profile = new java.util.EnumMap<com.fiskmods.heroes.common.hero.HeroAttribute, com.fiskmods.heroes.common.hero.Hero.AttributeMod>(
+                com.fiskmods.heroes.common.hero.HeroAttribute.class);
+        profile.put(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE,
+                new com.fiskmods.heroes.common.hero.Hero.AttributeMod(3.0, 0));
+        hero.addAttributeProfile("charged", profile, false);
+        hero.addKeyBind("TEST", "test.key", 1);
+        if (!attributes.isEmpty() || !profiles.isEmpty() || !bindings.isEmpty()
+                || hero.getAttributes() == attributes || hero.getAttributes().size() != 1
+                || hero.getAttributeProfiles() == profiles || hero.getAttributeProfiles().get("charged") != profile
+                || hero.getKeyBinds() == bindings || hero.getKeyBinds().size() != 1
+                || hero.profileInheritsDefaults("charged"))
+        { helper.fail("Mutations must invalidate each snapshot without changing previous snapshots or profile behavior"); return; }
+        hero.addAttribute("punch_damage", 4.0, 0);
+        hero.addKeyBind("EARLIER", "earlier.key", 0);
+        if (hero.getAttributes().get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE).size() != 2
+                || hero.getKeyBinds().get(0).index() != 0)
+        { helper.fail("Subsequent mutations must retain all modifiers and sorted bindings"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void scriptWrapperPreservesCallerArguments(GameTestHelper helper)
+    {
+        try
+        {
+            var engine = com.fiskmods.heroes.pack.js.JSContext.createEngine();
+            if (engine == null) { helper.fail("JavaScript engine unavailable"); return; }
+            var function = com.fiskmods.heroes.pack.js.JSContext.wrap(engine.eval("(function(a, b) { return a.ticksExisted() + b.ticksExisted(); })"));
+            var player = helper.makeMockPlayer();
+            player.tickCount = 17;
+            var wrapped = new com.fiskmods.heroes.pack.js.JSEntity(player);
+            Object[] arguments = { player, wrapped };
+            if (function == null || function.callInt(arguments) != 34 || arguments[0] != player || arguments[1] != wrapped
+                    || function.callInt(wrapped, wrapped) != 34)
+            { helper.fail("Script calls must wrap raw entities without mutating caller arrays and accept wrapped entities"); return; }
+            player.tickCount = 19;
+            if (function.callInt(arguments) != 38)
+            { helper.fail("Script calls must observe current entity state"); return; }
+            helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Script wrapper test failed: " + e); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void expressionCacheCompilesOnceButKeepsDynamicResults(GameTestHelper helper)
     {
         if (com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get("(entity.ticksExisted() * 6 % 360) | 0") != null
@@ -1531,6 +1584,37 @@ public final class PortRegressionTests
             ++looseCalls; looseSeen = event.hasAmmo();
             if (preventLoose) event.setCharge(0);
         }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void quiverSingleDecodeKeepsSelectionAndFallbacks(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "quiver-selection-test"));
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Player data missing"); return; }
+        var quiver = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.QUIVER.get());
+        var inventory = com.fiskmods.heroes.common.item.ItemQuiver.createInventory(quiver);
+        inventory.setStackInSlot(2, com.fiskmods.heroes.common.item.ItemTrickArrow.createStack("cactus"));
+        player.getInventory().setItem(1, quiver);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPECTRAL_ARROW));
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SELECTED_ARROW, (byte) 0);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        if (!"cactus".equals(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.CURRENT_ARROW_TYPE))
+                || !"00100".equals(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_CONTENTS)))
+        { helper.fail("An empty selected slot must use remaining quiver ammo before held arrows"); return; }
+        inventory.setStackInSlot(2, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        if (!"minecraft:spectral_arrow".equals(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.CURRENT_ARROW))
+                || !"00000".equals(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.EQUIPPED_QUIVER_CONTENTS)))
+        { helper.fail("Changing quiver contents must immediately update visuals and held-ammo fallback"); return; }
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        player.setGameMode(net.minecraft.world.level.GameType.CREATIVE);
+        com.fiskmods.heroes.common.item.ItemQuiver.updatePlayerData(player);
+        if (!"minecraft:arrow".equals(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.CURRENT_ARROW)))
+        { helper.fail("Creative fallback must still provide a normal arrow"); return; }
+        helper.succeed();
     }
 
     @GameTest(template = "test_empty", timeoutTicks = 100)
