@@ -2928,15 +2928,22 @@ public final class PortRegressionTests
             rule.set(false, level.getServer());
             for (int i = 0; i < 5; ++i)
             {
-                var wall = base.offset(4, 0, i * 4); var adjacent = wall.west();
-                // Tests share a world; another test may have left fire at this height.
-                level.setBlockAndUpdate(adjacent, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
+                // Reuse a single position in the same loaded chunk, clearing it after all
+                // support-block updates so every case starts with a known placement target.
+                var wall = base.offset(4, 0, 0); var adjacent = wall.west();
                 level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
                 level.setBlockAndUpdate(adjacent.below(), net.minecraft.world.level.block.Blocks.NETHERRACK.defaultBlockState());
+                level.setBlockAndUpdate(adjacent, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
                 cleanup.add(wall); cleanup.add(adjacent); cleanup.add(adjacent.below());
                 String type = i == 0 ? "torch" : "fire_charge";
                 if (i == 0) level.setBlockAndUpdate(adjacent, net.minecraft.world.level.block.Blocks.SNOW.defaultBlockState());
                 if (i == 3) com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(false);
+                boolean configBefore = com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.get();
+                var before = level.getBlockState(adjacent);
+                if (i > 0 && !before.isAir())
+                { helper.fail("Arrow case " + i + " did not start in air: " + before); return; }
+                if (i == 3 && configBefore)
+                { helper.fail("Arrow case 3 could not disable the config"); return; }
                 var arrow = i == 4 ? new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
                         com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level)
                         : new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
@@ -2952,7 +2959,9 @@ public final class PortRegressionTests
                     default -> placed.isAir() && "fire_charge".equals(arrow.getArrowType());
                 };
                 arrow.discard();
-                if (!valid) { helper.fail("Incorrect arrow placement or permission for case " + i + ": " + placed); return; }
+                if (!valid) { helper.fail("Incorrect arrow placement or permission for case " + i + ": before=" + before
+                        + ", after=" + placed + ", type=" + arrow.getArrowType() + ", configBefore=" + configBefore
+                        + ", configAfter=" + com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.get()); return; }
                 if (i == 3) com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(true);
             }
             helper.succeed();
