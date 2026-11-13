@@ -2849,7 +2849,9 @@ public final class PortRegressionTests
         }
     }
 
-    @GameTest(template = "test_empty")
+    // This test places fire beyond the tiny structure template. Run in its own batch so
+    // simultaneous tests cannot place blocks or projectiles at those same world coordinates.
+    @GameTest(template = "test_empty", batch = "isolated_arrow_permissions")
     public static void placeableArrowPermissionsAndFireRule(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
