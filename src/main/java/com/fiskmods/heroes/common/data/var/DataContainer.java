@@ -54,7 +54,9 @@ public class DataContainer
      */
     public void updatePrevious()
     {
-        prevValues.clear();
+        // Keep existing map entries instead of clearing and reallocating one node per variable
+        // on every tick. values() is public and mutable, so also remove keys deleted by callers.
+        prevValues.keySet().retainAll(values.keySet());
         prevValues.putAll(values);
     }
 

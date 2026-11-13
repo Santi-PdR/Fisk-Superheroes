@@ -39,6 +39,7 @@ public class SHPlayerData implements IDataHolder
     private HeroIteration prevHero;
     private int heroChangeTime;
     private final java.util.Set<ResourceLocation> toggles = new java.util.LinkedHashSet<>();
+    private java.util.Set<ResourceLocation> toggleSnapshot;
     private final java.util.Map<ResourceLocation, Boolean> soundStates = new java.util.HashMap<>();
     private final java.util.Map<ResourceLocation, Long> spellCooldowns = new java.util.HashMap<>();
 
@@ -182,25 +183,21 @@ public class SHPlayerData implements IDataHolder
 
     public java.util.Set<ResourceLocation> getEnabledToggles()
     {
-        return java.util.Set.copyOf(toggles);
+        if (toggleSnapshot == null) toggleSnapshot = java.util.Set.copyOf(toggles);
+        return toggleSnapshot;
     }
 
     public void replaceEnabledToggles(java.util.Set<ResourceLocation> enabled)
     {
         toggles.clear();
         toggles.addAll(enabled);
+        toggleSnapshot = null;
     }
 
     public void setToggleEnabled(ResourceLocation id, boolean state)
     {
-        if (state)
-        {
-            toggles.add(id);
-        }
-        else
-        {
-            toggles.remove(id);
-        }
+        boolean changed = state ? toggles.add(id) : toggles.remove(id);
+        if (changed) toggleSnapshot = null;
     }
 
     public void copyFrom(SHPlayerData other)
@@ -211,6 +208,7 @@ public class SHPlayerData implements IDataHolder
         suitDisabledTime = other.suitDisabledTime;
         toggles.clear();
         toggles.addAll(other.toggles);
+        toggleSnapshot = null;
         spellCooldowns.clear();
         spellCooldowns.putAll(other.spellCooldowns);
     }
@@ -284,6 +282,7 @@ public class SHPlayerData implements IDataHolder
         }
 
         toggles.clear();
+        toggleSnapshot = null;
 
         if (tag.contains("Toggles"))
         {
@@ -322,6 +321,7 @@ public class SHPlayerData implements IDataHolder
         prevHero = null;
         data.resetAll();
         toggles.clear();
+        toggleSnapshot = null;
         spellCooldowns.clear();
     }
 }

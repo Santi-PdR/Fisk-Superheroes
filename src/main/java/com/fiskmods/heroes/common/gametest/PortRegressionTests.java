@@ -20,6 +20,78 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void previousDataRetainsTickSemantics(GameTestHelper helper)
+    {
+        var data = new com.fiskmods.heroes.common.data.var.DataContainer();
+        var timer = new com.fiskmods.heroes.common.data.var.DataVar<Float>(
+                new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_timer_test"),
+                com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP, 0F, true);
+        var action = new com.fiskmods.heroes.common.data.var.DataVar<Integer>(
+                new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_action_test"),
+                com.fiskmods.heroes.common.data.DataType.INT, 0, true);
+        data.set(timer, 2F); data.set(action, 1);
+        data.updatePrevious();
+        data.set(timer, 4F); data.set(action, 2);
+        if (data.getPrevious(timer) != 2F || data.getInterpolated(timer, .5F) != 3F || data.getPrevious(action) != 1)
+        { helper.fail("Previous values and interpolation must reflect the last tick"); return; }
+        data.updatePrevious();
+        data.values().remove(timer);
+        data.set(action, 3);
+        if (data.getPrevious(timer) != 4F || data.getPrevious(action) != 2)
+        { helper.fail("Previous values must not change until the next snapshot"); return; }
+        data.updatePrevious();
+        data.set(timer, 6F);
+        if (data.getPrevious(timer) != 6F || data.getPrevious(action) != 3)
+        { helper.fail("Removed keys must not leave stale previous values when reintroduced"); return; }
+        data.values().put(timer, null);
+        data.updatePrevious();
+        data.set(timer, 8F);
+        if (data.getPrevious(timer) != 8F)
+        { helper.fail("Null previous values must retain the current-value fallback"); return; }
+        data.readFrom(new net.minecraft.nbt.CompoundTag());
+        data.updatePrevious();
+        data.set(action, 9);
+        if (data.getPrevious(action) != 9)
+        { helper.fail("Loading an empty container must clear previous entries on the next tick"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void toggleSnapshotsFollowAllStateChanges(GameTestHelper helper)
+    {
+        var data = new com.fiskmods.heroes.common.data.SHPlayerData();
+        var a = new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_a");
+        var b = new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_b");
+        var empty = data.getEnabledToggles();
+        if (empty != data.getEnabledToggles()) { helper.fail("Unchanged toggle snapshots should be reused"); return; }
+        data.setToggleEnabled(a, true);
+        var first = data.getEnabledToggles();
+        data.setToggleEnabled(a, true);
+        if (!empty.isEmpty() || !first.contains(a) || first != data.getEnabledToggles())
+        { helper.fail("A toggle change must invalidate the snapshot, but a no-op must not"); return; }
+        try { first.add(b); helper.fail("Toggle snapshots must be immutable"); return; }
+        catch (UnsupportedOperationException expected) { }
+        data.setToggleEnabled(a, false);
+        data.setToggleEnabled(b, true);
+        if (!first.contains(a) || data.getEnabledToggles().contains(a) || !data.getEnabledToggles().contains(b))
+        { helper.fail("Old snapshots must remain unchanged after toggles change"); return; }
+        data.replaceEnabledToggles(java.util.Set.of(a, b));
+        if (data.getEnabledToggles().size() != 2) { helper.fail("Replacement must invalidate the snapshot"); return; }
+        var saved = new net.minecraft.nbt.CompoundTag(); data.writeTo(saved);
+        data.reset();
+        if (!data.getEnabledToggles().isEmpty()) { helper.fail("Reset must clear the snapshot"); return; }
+        data.readFrom(saved);
+        if (!data.getEnabledToggles().equals(java.util.Set.of(a, b)))
+        { helper.fail("Loading must invalidate the snapshot"); return; }
+        var other = new com.fiskmods.heroes.common.data.SHPlayerData();
+        other.setToggleEnabled(b, true); other.getEnabledToggles();
+        other.copyFrom(data);
+        if (!other.getEnabledToggles().equals(java.util.Set.of(a, b)))
+        { helper.fail("Copying player data must invalidate the snapshot"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void heroMetadataSnapshotsInvalidateOnMutation(GameTestHelper helper)
     {
         var hero = new com.fiskmods.heroes.common.hero.Hero(new net.minecraft.resources.ResourceLocation("fiskheroes", "snapshot_test"));
