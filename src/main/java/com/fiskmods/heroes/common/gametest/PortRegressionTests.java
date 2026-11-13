@@ -2655,6 +2655,8 @@ public final class PortRegressionTests
             for (int i = 0; i < 5; ++i)
             {
                 var wall = base.offset(4, 0, i * 4); var adjacent = wall.west();
+                // Tests share a world; another test may have left fire at this height.
+                level.setBlockAndUpdate(adjacent, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState());
                 level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
                 level.setBlockAndUpdate(adjacent.below(), net.minecraft.world.level.block.Blocks.NETHERRACK.defaultBlockState());
                 cleanup.add(wall); cleanup.add(adjacent); cleanup.add(adjacent.below());
