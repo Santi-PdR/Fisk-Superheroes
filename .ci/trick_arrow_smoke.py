@@ -175,7 +175,9 @@ def main():
                 raise RuntimeError('Savitar RGB texture did not produce changing tick values: ' + str(animated_values))
             print('PASS: animated texture getter returned changing values: ' + ', '.join(animated_values[:2]), flush=True)
             xdo('keydown', 'c'); time.sleep(.3); xdo('keyup', 'c')
-            wait_for(server_log, r'Ability input accepted: hero=fiskheroes:savitar, index=1', 30,
+            wait_for(server_log, r'Ability input accepted: hero=fiskheroes:savitar_rgb, index=1', 30,
+                     'speed ability input reaches the server', server)
+            wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:savitar, key=SUPER_SPEED, modifier=fiskheroes:super_speed', 30,
                      'speed ability still activates after the optimizations', server)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
