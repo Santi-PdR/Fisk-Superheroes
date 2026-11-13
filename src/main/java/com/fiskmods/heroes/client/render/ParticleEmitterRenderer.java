@@ -111,14 +111,50 @@ final class ParticleEmitterRenderer
             emitCloud(player, effect);
         }
 
-        // The Monitor binds its telekinesis cloud directly to the modifier state instead of
-        // declaring it as particle_cloud. Keep it active only while the server-synced grab power
-        // is held, matching the original renderer helper's condition.
+        // The original telekinesis aura surrounds the grabbed entity, not the caster.
         effect = suit.getCustom().get("fiskheroes:telekinesis");
         if (effect != null && data != null && data.getData().get(Vars.TELEKINESIS))
         {
-            emitCloud(player, effect);
+            Entity target = player.level().getEntity(data.getData().get(Vars.GRAB_ID));
+            if (target != null && target.isAlive()) emitTelekinesisAura(target, effect);
         }
+    }
+
+    private static void emitTelekinesisAura(Entity target, JsonObject effect)
+    {
+        if (!effect.has("particles") || !effect.get("particles").isJsonPrimitive()) return;
+        ResourceLocation id = ResourceLocation.tryParse(effect.get("particles").getAsString());
+        JsonObject cloud = id != null ? CLOUDS.computeIfAbsent(id, ParticleEmitterRenderer::loadCloud) : null;
+        Minecraft mc = Minecraft.getInstance();
+        if (cloud == null || mc.level == null || mc.options.particles().get() == net.minecraft.client.ParticleStatus.MINIMAL
+                || mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(target.position()) > 1024.0D) return;
+
+        JsonObject colors = cloud.has("color") && cloud.get("color").isJsonObject()
+                ? cloud.getAsJsonObject("color") : new JsonObject();
+        Integer start = colors.has("start") && colors.get("start").isJsonPrimitive()
+                ? com.fiskmods.heroes.common.util.CloudColorMath.hexColor(colors.get("start").getAsString()) : null;
+        Integer end = colors.has("end") && colors.get("end").isJsonPrimitive()
+                ? com.fiskmods.heroes.common.util.CloudColorMath.hexColor(colors.get("end").getAsString()) : null;
+        Random pattern = new Random(253151369061L + (long) (target.tickCount / 6) * 7694536L);
+        int count = Math.min(64, 1 + (int) (Math.sqrt(target.getBbWidth() * target.getBbHeight()) * 10.0D));
+        for (int i = 0; i < count; ++i)
+        {
+            if (mc.options.particles().get() == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) continue;
+            Vec3 rotation = randomUnit(pattern);
+            Vec3 direction = randomUnit(pattern);
+            float[] fallback = start == null || end == null ? cloudColor(cloud, pattern) : null;
+            mc.particleEngine.add(new TelekinesisAuraParticle(mc.level, target, rotation, direction, start, end, fallback));
+        }
+        if (PARTICLE_DIAGNOSTICS && EMITTER_DIAGNOSTICS.add("aura:" + id))
+            FiskHeroes.LOGGER.info("Telekinesis aura emitted around target: type={}, target={}, count={}, distance={}",
+                    id, target.getType(), count, mc.player != null ? target.distanceTo(mc.player) : -1);
+    }
+
+    private static Vec3 randomUnit(Random random)
+    {
+        Vec3 vector = new Vec3(random.nextDouble() * 2.0D - 1.0D, random.nextDouble() * 2.0D - 1.0D,
+                random.nextDouble() * 2.0D - 1.0D);
+        return vector.lengthSqr() < 1.0E-8 ? new Vec3(1, 0, 0) : vector.normalize();
     }
 
     private static void emitCloud(Player player, JsonObject effect)

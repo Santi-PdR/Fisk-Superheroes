@@ -17,7 +17,7 @@ public final class CloudColorMath
         };
     }
 
-    private static Integer hexColor(String value)
+    public static Integer hexColor(String value)
     {
         if (value == null) return null;
         String text = value.startsWith("0x") || value.startsWith("0X") ? value.substring(2)

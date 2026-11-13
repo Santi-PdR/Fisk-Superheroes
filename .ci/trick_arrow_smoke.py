@@ -314,6 +314,50 @@ def main():
                 print('PASS: telekinesis chain originates at the eye-relative hand and rendered arm', flush=True)
             finally:
                 xdo('keyup', 'v')
+            # The Monitor's blue telekinesis aura belongs to the grabbed target,
+            # not to the caster. First check that holding the key without a target
+            # does not create an aura, then grab a golem and inspect the pixels.
+            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(1)
+            command('kill @e[type=minecraft:iron_golem]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('execute as Dev run suit fiskheroes:the_monitor')
+            wait_for(client_log, r'First-person suit arm rendered: hero=fiskheroes:the_monitor,', 45,
+                     'Monitor suit synchronized to the client', client)
+            xdo('keydown', 'v')
+            try:
+                wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEKINESIS',
+                         30, 'Monitor telekinesis activates without target', server)
+                time.sleep(2)
+                if 'Telekinesis aura emitted around target:' in client_log.read_text(errors='replace'):
+                    raise RuntimeError('Monitor emitted telekinesis aura without a grabbed target')
+                print('PASS: no telekinesis aura without a grabbed target', flush=True)
+            finally:
+                xdo('keyup', 'v')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["monitor_target"]}')
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-monitor-aura-before.png'], check=True, timeout=30)
+            baseline = Image.open('ci-arrow-monitor-aura-before.png').convert('RGB').crop(
+                    (wx + int(width * .3), wy + int(height * .2), wx + int(width * .7), wy + int(height * .8)))
+            xdo('keydown', 'v')
+            try:
+                wait_for(client_log, r'Telekinesis aura emitted around target: type=fiskheroes:telekinesis_monitor, '
+                         r'target=entity.minecraft.iron_golem, count=[0-9]+, distance=', 45,
+                         'Monitor aura attaches to the grabbed golem', client)
+                visible = 0
+                for _ in range(8):
+                    time.sleep(.5)
+                    subprocess.run(['scrot', '-o', 'ci-arrow-monitor-aura.png'], check=True, timeout=30)
+                    after = Image.open('ci-arrow-monitor-aura.png').convert('RGB').crop(
+                            (wx + int(width * .3), wy + int(height * .2), wx + int(width * .7), wy + int(height * .8)))
+                    visible = sum(1 for (r, g, b), (r0, g0, b0) in zip(after.getdata(), baseline.getdata())
+                                  if r < 110 and g > 75 and b > 150 and b > r * 1.5
+                                  and abs(r-r0) + abs(g-g0) + abs(b-b0) > 50)
+                    if visible >= 80: break
+                if visible < 80:
+                    raise RuntimeError(f'Monitor target aura was not visibly blue: {visible} changed pixels')
+                print(f'PASS: visible blue telekinesis aura around target ({visible} changed pixels)', flush=True)
+            finally:
+                xdo('keyup', 'v')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
