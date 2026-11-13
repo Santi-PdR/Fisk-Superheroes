@@ -20,6 +20,49 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void expressionCacheCompilesOnceButKeepsDynamicResults(GameTestHelper helper)
+    {
+        var count = new java.util.concurrent.atomic.AtomicInteger();
+        var cache = new com.fiskmods.heroes.pack.js.ExpressionCache(expression -> {
+            count.incrementAndGet();
+            return "bad".equals(expression) ? null : com.fiskmods.heroes.pack.js.JSExpressions.compile(expression);
+        });
+        var player = helper.makeMockPlayer();
+        var function = cache.get("entity.isSprinting()");
+        if (function == null) { helper.fail("Expression failed to compile"); return; }
+        player.setSprinting(false);
+        if (function.callBoolean(player)) { helper.fail("Expected not sprinting"); return; }
+        player.setSprinting(true);
+        for (int i = 0; i < 100; ++i)
+            if (cache.get("entity.isSprinting()") != function || !function.callBoolean(player))
+            { helper.fail("Cache must reuse the function but evaluate current entity state"); return; }
+        if (cache.get("bad") != null || cache.get("bad") != null || count.get() != 2)
+        { helper.fail("Failed expressions should also be cached"); return; }
+        cache.clear();
+        if (cache.get("entity.isSprinting()") == null || count.get() != 3)
+        { helper.fail("Clearing the cache must allow recompilation after reload"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heroAttributeIdsAreCachedAndStablePerPlayer(GameTestHelper helper)
+    {
+        var data = new com.fiskmods.heroes.common.data.SHPlayerData();
+        var owner = java.util.UUID.randomUUID();
+        var attribute = com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE;
+        var expected = java.util.UUID.nameUUIDFromBytes(("fiskheroes:" + owner + ":punch_damage:hero")
+                .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        var first = data.heroAttributeId(owner, attribute);
+        if (!first.equals(expected) || first != data.heroAttributeId(owner, attribute)
+                || first.equals(data.heroAttributeId(owner, com.fiskmods.heroes.common.hero.HeroAttribute.ARROW_DAMAGE)))
+        { helper.fail("Attribute IDs must be deterministic, distinct and reused"); return; }
+        var different = data.heroAttributeId(java.util.UUID.randomUUID(), attribute);
+        if (first.equals(different) || !first.equals(data.heroAttributeId(owner, attribute)))
+        { helper.fail("Changing owner must invalidate the per-player ID cache"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void tonfaSwingUsesIndependentPhysicalHandBits(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

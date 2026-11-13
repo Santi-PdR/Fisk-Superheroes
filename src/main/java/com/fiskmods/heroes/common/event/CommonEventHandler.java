@@ -214,7 +214,7 @@ public class CommonEventHandler
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(entity, data);
             }
         }
-        ModifierHandler.tick(entity);
+        ModifierHandler.tickTracked(entity);
         com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(event.player);
 
         if (entity instanceof ServerPlayer serverPlayer)

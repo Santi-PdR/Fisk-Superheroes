@@ -1,7 +1,6 @@
 package com.fiskmods.heroes.client.render;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,7 +14,6 @@ import com.fiskmods.heroes.client.texture.TextureResolver;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.fiskmods.heroes.common.hero.ItemHeroArmor;
 import com.fiskmods.heroes.pack.ScriptFunction;
-import com.fiskmods.heroes.pack.js.JSExpressions;
 import com.fiskmods.heroes.pack.js.JSEntity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -42,6 +40,7 @@ import net.minecraft.world.item.ItemStack;
  */
 public class HeroModelData
 {
+    private static final java.util.regex.Pattern DATA_NAME = java.util.regex.Pattern.compile("^[a-zA-Z0-9_]+:[a-zA-Z0-9_./-]+$");
     private final ResourceLocation hero;
     private String parent;
     private final Map<String, String> resources = new LinkedHashMap<>();
@@ -51,7 +50,7 @@ public class HeroModelData
     private final Map<String, JsonElement> animations = new LinkedHashMap<>();
     private final Map<String, String> vars = new LinkedHashMap<>();
     private final Map<String, String> itemIcons = new LinkedHashMap<>();
-    private final Map<String, ScriptFunction> renderExpressions = new HashMap<>();
+    private final com.fiskmods.heroes.pack.js.ExpressionCache expressions;
 
     private JsonElement texture;
     private JsonElement lights;
@@ -59,6 +58,7 @@ public class HeroModelData
     public HeroModelData(ResourceLocation hero)
     {
         this.hero = hero;
+        this.expressions = new com.fiskmods.heroes.pack.js.ExpressionCache("model:" + hero);
     }
 
     public ResourceLocation getHero()
@@ -287,7 +287,7 @@ public class HeroModelData
         }
 
         String expression = value.getAsString();
-        if (expression.matches("^[a-zA-Z0-9_]+:[a-zA-Z0-9_./-]+$"))
+        if (DATA_NAME.matcher(expression).matches())
         {
             Object data = JSEntity.read(entity, expression);
             if (data == null)
@@ -307,7 +307,7 @@ public class HeroModelData
             return defaultValue;
         }
 
-        ScriptFunction function = renderExpressions.computeIfAbsent(expression, JSExpressions::compile);
+        ScriptFunction function = expressions.get(expression);
         if (function == null)
         {
             return defaultValue;
@@ -361,7 +361,7 @@ public class HeroModelData
 
         if (script != null)
         {
-            ScriptFunction function = JSExpressions.compile(script);
+            ScriptFunction function = expressions.get(script);
 
             if (function != null)
             {

@@ -14,6 +14,24 @@ import net.minecraft.resources.ResourceLocation;
 public class SHPlayerData implements IDataHolder
 {
     private final DataContainer data = new DataContainer();
+    // These ids are deterministic, but deriving them hashes strings. Keep them for the lifetime
+    // of this capability instead of computing all of them on every server tick.
+    private java.util.UUID attributeIdOwner;
+    private final java.util.UUID[] attributeIds = new java.util.UUID[com.fiskmods.heroes.common.hero.HeroAttribute.values().length];
+
+    public java.util.UUID heroAttributeId(java.util.UUID owner, com.fiskmods.heroes.common.hero.HeroAttribute attribute)
+    {
+        if (!owner.equals(attributeIdOwner))
+        {
+            java.util.Arrays.fill(attributeIds, null);
+            attributeIdOwner = owner;
+        }
+        int index = attribute.ordinal();
+        if (attributeIds[index] == null)
+            attributeIds[index] = java.util.UUID.nameUUIDFromBytes(("fiskheroes:" + owner + ":" + attribute.getName() + ":hero")
+                    .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        return attributeIds[index];
+    }
 
     // Client-only session marker; the server sends the active suit, not merely its appearance.
     private boolean authoritativeHero;

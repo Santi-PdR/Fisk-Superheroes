@@ -106,9 +106,10 @@ public class SHAttributes
     }
 
     /** Stable, deterministic modifier id for (entity, attribute, source). */
-    private static UUID uuid(LivingEntity entity, HeroAttribute attribute, String source)
+    private static UUID uuid(LivingEntity entity, HeroAttribute attribute, SHPlayerData data)
     {
-        return UUID.nameUUIDFromBytes(("fiskheroes:" + entity.getUUID() + ":" + attribute.getName() + ":" + source).getBytes(StandardCharsets.UTF_8));
+        return data != null ? data.heroAttributeId(entity.getUUID(), attribute)
+                : UUID.nameUUIDFromBytes(("fiskheroes:" + entity.getUUID() + ":" + attribute.getName() + ":hero").getBytes(StandardCharsets.UTF_8));
     }
 
     /**
@@ -150,7 +151,7 @@ public class SHAttributes
                 continue;
             }
 
-            UUID id = uuid(entity, attribute, "hero");
+            UUID id = uuid(entity, attribute, data);
             AttributeModifier existing = instance.getModifier(id);
             Hero.AttributeMod mod = attribute == HeroAttribute.SPRINT_SPEED && !entity.isSprinting()
                     ? null : values.get(attribute);
@@ -252,6 +253,7 @@ public class SHAttributes
         if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
         AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
         if (step != null) step.removeModifier(SPEEDSTER_STEP);
+        SHPlayerData data = SHDataCapabilities.getPlayer(entity);
         for (HeroAttribute attribute : HeroAttribute.values())
         {
             Attribute vanilla = get(attribute);
@@ -265,7 +267,7 @@ public class SHAttributes
 
             if (instance != null)
             {
-                AttributeModifier modifier = instance.getModifier(uuid(entity, attribute, "hero"));
+                AttributeModifier modifier = instance.getModifier(uuid(entity, attribute, data));
 
                 if (modifier != null)
                 {

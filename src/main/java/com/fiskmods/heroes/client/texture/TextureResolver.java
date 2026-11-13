@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.pack.ScriptFunction;
-import com.fiskmods.heroes.pack.js.JSExpressions;
+import com.fiskmods.heroes.pack.js.ExpressionCache;
 import com.fiskmods.heroes.pack.js.JSEntity;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,6 +31,8 @@ import net.minecraft.world.entity.Entity;
 public final class TextureResolver
 {
     private static final Map<ResourceLocation, JsonObject> DEFINITIONS = new HashMap<>();
+    private static final Map<ResourceLocation, Boolean> RESOURCE_EXISTS = new HashMap<>();
+    private static final ExpressionCache EXPRESSIONS = new ExpressionCache("textures");
 
     private TextureResolver()
     {
@@ -39,6 +41,8 @@ public final class TextureResolver
     public static void clear()
     {
         DEFINITIONS.clear();
+        RESOURCE_EXISTS.clear();
+        EXPRESSIONS.clear();
     }
 
     /** Resolves the texture a resource name points to for the given entity. */
@@ -183,7 +187,7 @@ public final class TextureResolver
 
     private static boolean resourceExists(ResourceLocation id)
     {
-        return Minecraft.getInstance().getResourceManager().getResource(id).isPresent();
+        return RESOURCE_EXISTS.computeIfAbsent(id, key -> Minecraft.getInstance().getResourceManager().getResource(key).isPresent());
     }
 
     /** Evaluates one getter: a data variable, a script expression, or nothing. */
@@ -239,7 +243,7 @@ public final class TextureResolver
             return data instanceof Number || data instanceof Boolean ? data : 0;
         }
 
-        ScriptFunction function = JSExpressions.compile(key);
+        ScriptFunction function = EXPRESSIONS.get(key);
 
         if (function != null)
         {

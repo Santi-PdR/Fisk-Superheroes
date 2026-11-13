@@ -21,6 +21,13 @@ public final class ModifierHandler
 
     public static void tick(LivingEntity entity)
     {
+        HeroTracker.update(entity);
+        tickTracked(entity);
+    }
+
+    /** Tick after the caller has already updated the equipped suit this tick. */
+    public static void tickTracked(LivingEntity entity)
+    {
         SHPlayerData data = SHDataCapabilities.getPlayer(entity);
 
         if (data == null)
@@ -28,7 +35,6 @@ public final class ModifierHandler
             return;
         }
 
-        HeroTracker.update(entity);
         if (!entity.level().isClientSide)
             com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tick(entity, data);
         if (entity instanceof Player player)

@@ -39,6 +39,8 @@ import java.util.UUID;
 /** Client side execution of the original data driven suit particle emitters. */
 final class ParticleEmitterRenderer
 {
+    private static final java.util.regex.Pattern CLOUD_CHANNEL_EXPRESSION =
+            java.util.regex.Pattern.compile("(red|green|blue)\\s*([+*/-])\\s*([0-9.]+)");
     private static final Map<ResourceLocation, List<Emitter>> EMITTERS = new HashMap<>();
     private static final Map<ResourceLocation, JsonObject> CLOUDS = new HashMap<>();
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
@@ -225,8 +227,7 @@ final class ParticleEmitterRenderer
         if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isNumber()) return spec.getAsFloat();
         if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isString())
         {
-            java.util.regex.Matcher matcher = java.util.regex.Pattern
-                    .compile("(red|green|blue)\\s*([+*/-])\\s*([0-9.]+)").matcher(spec.getAsString());
+            java.util.regex.Matcher matcher = CLOUD_CHANNEL_EXPRESSION.matcher(spec.getAsString());
             if (!matcher.matches()) return 0.5F;
             int source = channelIndex(matcher.group(1));
             float value = source >= 0 && source != channel
