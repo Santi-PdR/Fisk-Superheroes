@@ -261,8 +261,11 @@ def main():
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=true',
                          45, 'Killer Frost emits cryogenic smoke in first person', client)
                 visible = 0
-                for _ in range(3):
-                    time.sleep(1)
+                # Smoke is generated at the camera plane and its random drift can
+                # temporarily carry it outside the frustum. Sample several independent
+                # frames while keeping the same visibility threshold.
+                for _ in range(12):
+                    time.sleep(.5)
                     subprocess.run(['scrot', '-o', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
                     after = Image.open('ci-arrow-killer-frost-smoke-first.png').convert('RGB').crop(region)
                     visible = sum(1 for (r, g, b), (r0, g0, b0) in zip(after.getdata(), before.getdata())
@@ -277,7 +280,8 @@ def main():
                 xdo('keyup', 'c')
             # Obsidian's chain must begin at the eye-relative first-person offset,
             # then follow the rendered arm when changing to third person.
-            command('kill @e[tag=chain_target]')
+            command('kill @e[type=minecraft:iron_golem]')
+            command('kill @e[type=minecraft:blaze]')
             command('tp Dev 0.5 180 0.5 0 0')
             command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["chain_target"]}')
             command('execute as Dev run suit fiskheroes:obsidian')
