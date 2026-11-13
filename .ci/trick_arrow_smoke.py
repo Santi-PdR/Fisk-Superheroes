@@ -350,7 +350,7 @@ def main():
                     after = Image.open('ci-arrow-monitor-aura.png').convert('RGB').crop(
                             (wx + int(width * .3), wy + int(height * .2), wx + int(width * .7), wy + int(height * .8)))
                     visible = sum(1 for (r, g, b), (r0, g0, b0) in zip(after.getdata(), baseline.getdata())
-                                  if r < 110 and g > 75 and b > 150 and b > r * 1.5
+                                  if r < 110 and g > 100 and b > 150 and g > r + 50 and b > r + 70
                                   and abs(r-r0) + abs(g-g0) + abs(b-b0) > 50)
                     if visible >= 80: break
                 if visible < 80:

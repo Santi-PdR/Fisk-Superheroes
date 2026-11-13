@@ -16,7 +16,7 @@ final class TelekinesisAuraParticle extends TextureSheetParticle
     private static final ResourceLocation[] SPRITES = new ResourceLocation[8];
     static
     {
-        for (int i = 0; i < SPRITES.length; ++i) SPRITES[i] = new ResourceLocation("minecraft", "particle/generic_" + i);
+        for (int i = 0; i < SPRITES.length; ++i) SPRITES[i] = new ResourceLocation("minecraft", "generic_" + i);
     }
 
     private final Entity target;
