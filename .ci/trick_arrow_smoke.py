@@ -219,8 +219,22 @@ def main():
                 print(f'PASS: third-person smoke anchors track right and left hands: {anchors}', flush=True)
                 time.sleep(1.5)
                 subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-third.png'], check=True, timeout=30)
+                # Turn both the body and camera, including a downward camera pitch. Correct
+                # world positions must not rotate a second time with the view matrix.
+                command('tp Dev 0.5 180 0.5 90 20')
+                turned_pattern = anchor_pattern.replace('yaw=([-+0-9.eE]+)', 'yaw=(8[7-9][0-9.eE+-]*|9[0-3][0-9.eE+-]*)')
+                wait_for(client_log, turned_pattern.replace('([01])', '(1)'), 45,
+                         'third-person arm anchors transformed after camera turn', client)
+                turned = {int(side): tuple(map(float, (yaw, dx, dy, dz))) for side, yaw, dx, dy, dz
+                          in re.findall(turned_pattern, client_log.read_text(errors='replace'))}
+                if (set(turned) != {0, 1} or abs(turned[0][1]) > .4 or abs(turned[1][1]) > .4
+                        or not (-.55 < turned[0][3] < -.2 and .2 < turned[1][3] < .55)
+                        or not (.4 < turned[0][2] < 1.4 and .4 < turned[1][2] < 1.4)):
+                    raise RuntimeError(f'Cryogenic smoke anchors moved incorrectly after camera turn: {turned}')
+                print(f'PASS: third-person smoke follows rotated hands and pitched camera: {turned}', flush=True)
             finally:
                 xdo('keyup', 'c')
+            command('tp Dev 0.5 180 0.5 0 0')
             xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(2)
             subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-before.png'], check=True, timeout=30)
             # Compare against the same camera and HUD before charging. A particle-engine

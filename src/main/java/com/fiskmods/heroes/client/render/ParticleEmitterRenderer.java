@@ -421,9 +421,12 @@ final class ParticleEmitterRenderer
                         renderPose.last().pose(), com.mojang.blaze3d.systems.RenderSystem.getInverseViewRotationMatrix(),
                         Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(), mirroredOffset);
                 renderPose.popPose();
-                if (PARTICLE_DIAGNOSTICS && ANCHOR_DIAGNOSTICS.add(emitter.type + ":" + emitter.anchor + ":" + side))
+                float diagnosticYaw = Mth.wrapDegrees(player.yBodyRot);
+                int yawQuadrant = Math.round(diagnosticYaw / 90.0F);
+                if (PARTICLE_DIAGNOSTICS && Math.abs(diagnosticYaw - yawQuadrant * 90.0F) < 3.0F
+                        && ANCHOR_DIAGNOSTICS.add(emitter.type + ":" + emitter.anchor + ":" + side + ":" + yawQuadrant))
                     FiskHeroes.LOGGER.info("Suit emitter anchor: type={}, anchor={}, side={}, yaw={}, dx={}, dy={}, dz={}",
-                            emitter.type, emitter.anchor, side, player.yBodyRot,
+                            emitter.type, emitter.anchor, side, diagnosticYaw,
                             origin.x - player.getX(), origin.y - player.getY(), origin.z - player.getZ());
             }
             else return; // Third-person particles need the actual model render transform.
