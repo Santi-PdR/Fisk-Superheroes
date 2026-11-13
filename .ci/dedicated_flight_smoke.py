@@ -85,6 +85,27 @@ def main():
             if re.search(r'Dev lost connection|flying is not enabled|Dev was kicked',
                          SERVER_LOG.read_text(errors='replace'), re.IGNORECASE):
                 raise RuntimeError('Player disconnected during ordinary long fall')
+            def double_jump():
+                for _ in range(2):
+                    xdo('keydown', 'space'); time.sleep(.08)
+                    xdo('keyup', 'space'); time.sleep(.07)
+
+            # Controlled flight has no ability key: the original activates it by double jump.
+            command('suit fiskheroes:iron_man')
+            command('tp Dev 0 220 0 0 0')
+            double_jump()
+            wait_for(SERVER_LOG, r'Controlled flight input: player=Dev, active=true',
+                     30, 'Iron Man double jump activates controlled flight', server)
+            command('execute store result score #ironstart flight_test run data get entity Dev Pos[1] 100')
+            time.sleep(5)
+            command('execute store result score #ironend flight_test run data get entity Dev Pos[1] 100')
+            command('scoreboard players operation #irondelta flight_test = #ironend flight_test')
+            command('scoreboard players operation #irondelta flight_test -= #ironstart flight_test')
+            command('execute if score #irondelta flight_test matches -100..100 run say IRON_FLIGHT_HOVER_OK')
+            wait_for(SERVER_LOG, r'\[Dev\] IRON_FLIGHT_HOVER_OK', 20, 'Iron Man hovers in survival', server)
+            double_jump()
+            wait_for(SERVER_LOG, r'Controlled flight input: player=Dev, active=false',
+                     30, 'a second double jump stops controlled flight', server)
             command('gamemode survival Dev')
             command('suit fiskheroes:vision')
             wait_for(CLIENT_LOG, r'\[CHAT\] Equipped Vision', 30, 'Vision suit equipped on dedicated server', client)

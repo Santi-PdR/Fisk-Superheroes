@@ -215,6 +215,7 @@ public class CommonEventHandler
             }
         }
         ModifierHandler.tickTracked(entity);
+        com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(event.player);
         com.fiskmods.heroes.common.hero.ability.PlayerSizeHandler.refreshIfChanged(event.player);
 
         if (entity instanceof ServerPlayer serverPlayer)

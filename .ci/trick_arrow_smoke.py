@@ -196,7 +196,7 @@ def main():
                          30, 'Killer Frost charge reaches the server', server)
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=false',
                          45, 'Killer Frost emits cryogenic smoke in third person', client)
-                subprocess.run(['scrot', 'ci-killer-frost-smoke-third.png'], check=True, timeout=30)
+                subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-third.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'c')
             xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(.5)
@@ -204,7 +204,7 @@ def main():
             try:
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=true',
                          45, 'Killer Frost emits cryogenic smoke in first person', client)
-                subprocess.run(['scrot', 'ci-killer-frost-smoke-first.png'], check=True, timeout=30)
+                subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'c')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)

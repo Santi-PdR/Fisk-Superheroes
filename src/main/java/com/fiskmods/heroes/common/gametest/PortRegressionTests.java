@@ -3273,6 +3273,65 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void controlledFlightDoubleJumpTracksServerInput(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "double-jump-flight-test"));
+        player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (data == null || hero == null) { helper.fail("Iron Man or player data missing"); return; }
+        var flying = com.fiskmods.heroes.common.data.var.Vars.FLYING;
+        player.setOnGround(false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(flying)) { helper.fail("Double jump without a flight suit must not activate flight"); return; }
+        PacketInput.clearServerState(player);
+        data.setHero(hero.getDefaultIteration());
+        player.getAbilities().flying = true;
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(flying)) { helper.fail("Creative flight must not also activate suit flight"); return; }
+        player.getAbilities().flying = false;
+        PacketInput.clearServerState(player);
+        player.setOnGround(true);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(flying)) { helper.fail("A single ground jump must not activate flight"); return; }
+        player.setOnGround(false);
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (!data.getData().get(flying) || com.fiskmods.heroes.common.hero.ability.SuitTravel.controlledFlightEntry(player) == null)
+        { helper.fail("A double jump must activate actual controlled flight"); return; }
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (!data.getData().get(flying)) { helper.fail("Holding jump must not repeat the toggle"); return; }
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        if (data.getData().get(flying)) { helper.fail("Another double jump must stop flight"); return; }
+        data.getData().set(flying, true);
+        PacketInput.applyServerInput(player, false, true, 0, 0, false);
+        com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(player);
+        if (data.getData().get(flying)) { helper.fail("Sneaking must stop controlled flight"); return; }
+        data.getData().set(flying, true); player.setOnGround(true);
+        com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.tick(player);
+        if (data.getData().get(flying)) { helper.fail("Landing must stop controlled flight"); return; }
+        PacketInput.clearServerState(player);
+        player.setOnGround(false);
+        PacketInput.applyServerInput(player, true, false, 0, 0, false);
+        PacketInput.applyServerInput(player, false, false, 0, 0, false);
+        helper.runAfterDelay(10, () -> {
+            PacketInput.applyServerInput(player, true, false, 0, 0, false);
+            if (data.getData().get(flying)) { helper.fail("A late second jump must not activate flight"); return; }
+            PacketInput.clearServerState(player);
+            com.fiskmods.heroes.common.data.PlayerInputTracker.clear(player);
+            helper.succeed();
+        });
+    }
+
     @GameTest(template = "test_empty")
     public static void dataVariablesRoundTripAndFirstSync(GameTestHelper helper)
     {

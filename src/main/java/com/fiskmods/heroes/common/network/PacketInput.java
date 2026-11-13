@@ -76,6 +76,7 @@ public class PacketInput extends SHPacket
         if (jump && !previousJump)
         {
             com.fiskmods.heroes.common.hero.ability.GlidingInputHandler.onJumpPressed(player);
+            com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.onJumpPressed(player, sneak);
             var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
             if (data != null && data.getHeroType() != null
                     && data.getHeroType().getPowerContainer().has(com.fiskmods.heroes.FiskHeroes.id("web_swinging"))
@@ -89,5 +90,6 @@ public class PacketInput extends SHPacket
     {
         SERVER_JUMP.remove(player.getUUID());
         com.fiskmods.heroes.common.hero.ability.GlidingInputHandler.clear(player);
+        com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.clear(player);
     }
 }

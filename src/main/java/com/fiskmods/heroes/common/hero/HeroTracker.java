@@ -129,6 +129,8 @@ public final class HeroTracker
 
     private static void onHeroChanged(Player player, SHPlayerData data, @Nullable HeroIteration previous, @Nullable HeroIteration current)
     {
+        if (!player.level().isClientSide)
+            com.fiskmods.heroes.common.hero.ability.ControlledFlightInputHandler.clear(player);
         if (player.level().isClientSide)
         {
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.clearClient(player);
