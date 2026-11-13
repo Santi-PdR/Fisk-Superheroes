@@ -33,6 +33,9 @@ public final class TextureResolver
     private static final Map<ResourceLocation, JsonObject> DEFINITIONS = new HashMap<>();
     private static final Map<ResourceLocation, Boolean> RESOURCE_EXISTS = new HashMap<>();
     private static final ExpressionCache EXPRESSIONS = new ExpressionCache("textures");
+    private static final boolean DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciPerformanceDiagnostics");
+    private static final Map<String, Object> FIRST_VALUES = new HashMap<>();
+    private static final java.util.Set<String> CHANGING_VALUES = new java.util.HashSet<>();
 
     private TextureResolver()
     {
@@ -43,6 +46,8 @@ public final class TextureResolver
         DEFINITIONS.clear();
         RESOURCE_EXISTS.clear();
         EXPRESSIONS.clear();
+        FIRST_VALUES.clear();
+        CHANGING_VALUES.clear();
     }
 
     /** Resolves the texture a resource name points to for the given entity. */
@@ -248,6 +253,15 @@ public final class TextureResolver
         if (function != null)
         {
             Object result = function.call(new JSEntity(entity));
+            if (DIAGNOSTICS && result instanceof Number && !CHANGING_VALUES.contains(key))
+            {
+                Object first = FIRST_VALUES.putIfAbsent(key, result);
+                if (first == null || !first.equals(result))
+                {
+                    FiskHeroes.LOGGER.info("Texture expression value: expression={}, value={}", key, result);
+                    if (first != null) CHANGING_VALUES.add(key);
+                }
+            }
             return result instanceof Number || result instanceof Boolean ? result : 0;
         }
 

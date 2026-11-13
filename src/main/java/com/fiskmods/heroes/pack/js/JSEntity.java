@@ -244,6 +244,12 @@ public class JSEntity
         return entity.tickCount;
     }
 
+    /** Original accessor name used by animated texture getters. */
+    public int ticksExisted()
+    {
+        return entity.tickCount;
+    }
+
     public boolean hasStatusEffect(String name)
     {
         if (!(entity instanceof LivingEntity living))

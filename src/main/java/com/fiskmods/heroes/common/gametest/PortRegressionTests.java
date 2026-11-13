@@ -33,6 +33,15 @@ public final class PortRegressionTests
         var player = helper.makeMockPlayer();
         var function = cache.get("entity.isSprinting()");
         if (function == null) { helper.fail("Expression failed to compile"); return; }
+        int oldTicks = player.tickCount;
+        var textureGetter = com.fiskmods.heroes.pack.js.JSExpressions.compile("(entity.ticksExisted() * 6 % 360) | 0");
+        player.tickCount = 17;
+        if (textureGetter == null || textureGetter.callInt(player) != 102)
+        { player.tickCount = oldTicks; helper.fail("Animated texture getter must expose ticksExisted"); return; }
+        player.tickCount = 18;
+        if (textureGetter.callInt(player) != 108)
+        { player.tickCount = oldTicks; helper.fail("Texture getter must use the current tick"); return; }
+        player.tickCount = oldTicks;
         player.setSprinting(false);
         if (function.callBoolean(player)) { helper.fail("Expected not sprinting"); return; }
         player.setSprinting(true);
