@@ -158,6 +158,12 @@ def main():
             xdo('key', 'F5')
             model_pattern = r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)'
             wait_for(client_log, model_pattern, 60, 'Iron Man model expressions are reused over 100 lookups', client)
+            route_pattern = r'Texture route cache: lookups=100, resolutions=([0-9]+)'
+            wait_for(client_log, route_pattern, 60, 'texture resource routes are reused over 100 lookups', client)
+            route_cache = re.search(route_pattern, client_log.read_text(errors='replace'))
+            if int(route_cache.group(1)) >= 80:
+                raise RuntimeError('Too many repeated texture route resolutions: ' + route_cache.group(1))
+            print('ROUTE_CACHE: 100 lookups, ' + route_cache.group(1) + ' resolutions', flush=True)
             model_cache = re.search(model_pattern, client_log.read_text(errors='replace'))
             if int(model_cache.group(1)) >= 30:
                 raise RuntimeError('Too many model expression compilations: ' + model_cache.group(1))

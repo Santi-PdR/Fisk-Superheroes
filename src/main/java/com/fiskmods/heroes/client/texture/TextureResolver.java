@@ -32,6 +32,8 @@ public final class TextureResolver
 {
     private static final Map<ResourceLocation, JsonObject> DEFINITIONS = new HashMap<>();
     private static final Map<ResourceLocation, Boolean> RESOURCE_EXISTS = new HashMap<>();
+    private static final TextureRouteCache ROUTES = new TextureRouteCache(TextureResolver::resourceExists,
+            id -> SHTextures.sprite(id.getNamespace(), id.getPath()));
     private static final ExpressionCache EXPRESSIONS = new ExpressionCache("textures");
     private static final boolean DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciPerformanceDiagnostics");
     private static final Map<String, Object> FIRST_VALUES = new HashMap<>();
@@ -45,6 +47,7 @@ public final class TextureResolver
     {
         DEFINITIONS.clear();
         RESOURCE_EXISTS.clear();
+        ROUTES.clear();
         EXPRESSIONS.clear();
         FIRST_VALUES.clear();
         CHANGING_VALUES.clear();
@@ -61,46 +64,10 @@ public final class TextureResolver
     @Nullable
     public static ResourceLocation resolve(String resource, Entity entity, int armorSlot)
     {
-        if (resource == null || resource.equals("null"))
-        {
-            return null;
-        }
-
-        ResourceLocation id = parse(resource);
-
-        if (id == null)
-        {
-            return null;
-        }
-
-        if (!id.getPath().endsWith(".tx.json"))
-        {
-            ResourceLocation definition = withPath(id, id.getPath() + ".tx.json");
-            if (resourceExists(texturePath(definition)))
-            {
-                id = definition;
-            }
-            else if (!resourceExists(texturePath(withPath(id, id.getPath() + ".png"))) && armorSlot >= 0)
-            {
-                // Some original model resources are prefixes whose concrete sprite depends on
-                // whether the vanilla armor layer is layer1 or the leggings layer2.
-                String suffix = armorSlot == 2 ? "_layer2" : "_layer1";
-                ResourceLocation variant = withPath(id, id.getPath() + suffix);
-                if (resourceExists(texturePath(withPath(variant, variant.getPath() + ".tx.json"))))
-                {
-                    id = withPath(variant, variant.getPath() + ".tx.json");
-                }
-                else if (resourceExists(texturePath(withPath(variant, variant.getPath() + ".png"))))
-                {
-                    id = variant;
-                }
-            }
-        }
-
-        if (!id.getPath().endsWith(".tx.json"))
-        {
-            return SHTextures.sprite(id.getNamespace(), id.getPath());
-        }
+        TextureRouteCache.Route route = ROUTES.resolve(resource, armorSlot);
+        if (route == null) return null;
+        if (!route.definition()) return route.id();
+        ResourceLocation id = route.id();
 
         JsonObject json = definition(id);
 
@@ -109,7 +76,7 @@ public final class TextureResolver
             return null;
         }
 
-        Map<String, String> values = new HashMap<>();
+        Map<String, String> values = json.has("getters") ? new HashMap<>() : java.util.Collections.emptyMap();
 
         if (json.has("getters"))
         {
@@ -174,21 +141,6 @@ public final class TextureResolver
     }
 
     /* --- Internals --- */
-
-    private static ResourceLocation parse(String value)
-    {
-        return ResourceLocation.tryParse(value.indexOf(':') < 0 ? FiskHeroes.MODID + ":" + value : value);
-    }
-
-    private static ResourceLocation withPath(ResourceLocation id, String path)
-    {
-        return new ResourceLocation(id.getNamespace(), path);
-    }
-
-    private static ResourceLocation texturePath(ResourceLocation id)
-    {
-        return new ResourceLocation(id.getNamespace(), "textures/heroes/" + id.getPath());
-    }
 
     private static boolean resourceExists(ResourceLocation id)
     {
@@ -288,9 +240,12 @@ public final class TextureResolver
                 return null;
             }
 
-            JsonObject json = com.google.gson.JsonParser.parseReader(resource.openAsReader()).getAsJsonObject();
-            DEFINITIONS.put(id, json);
-            return json;
+            try (var reader = resource.openAsReader())
+            {
+                JsonObject json = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject();
+                DEFINITIONS.put(id, json);
+                return json;
+            }
         }
         catch (Exception e)
         {

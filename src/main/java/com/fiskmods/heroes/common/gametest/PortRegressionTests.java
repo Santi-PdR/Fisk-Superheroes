@@ -20,6 +20,40 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void textureRoutesCachePerLayerAndInvalidate(GameTestHelper helper)
+    {
+        var available = new java.util.HashSet<net.minecraft.resources.ResourceLocation>();
+        var checks = new java.util.concurrent.atomic.AtomicInteger();
+        var cache = new com.fiskmods.heroes.client.texture.TextureRouteCache(id -> {
+            checks.incrementAndGet(); return available.contains(id);
+        }, id -> new net.minecraft.resources.ResourceLocation(id.getNamespace(), "textures/heroes/" + id.getPath() + ".png"));
+        available.add(new net.minecraft.resources.ResourceLocation("fiskheroes", "textures/heroes/suit_layer1.png"));
+        available.add(new net.minecraft.resources.ResourceLocation("fiskheroes", "textures/heroes/suit_layer2.tx.json"));
+        var noLayer = cache.resolve("suit", -1);
+        var layer1 = cache.resolve("suit", 0);
+        var layer2 = cache.resolve("suit", 2);
+        if (noLayer == null || layer1 == null || layer2 == null || noLayer.definition() || layer1.definition()
+                || !layer2.definition() || !noLayer.id().getPath().equals("textures/heroes/suit.png")
+                || !layer1.id().getPath().equals("textures/heroes/suit_layer1.png")
+                || !layer2.id().getPath().equals("suit_layer2.tx.json"))
+        { helper.fail("Texture routing must distinguish no layer, layer one and a layer-two definition"); return; }
+        int before = checks.get();
+        if (cache.resolve("suit", 1) != layer1 || cache.resolve("suit", 3) != layer1
+                || cache.resolve("suit", 2) != layer2 || checks.get() != before
+                || cache.resolve("bad id", 0) != null || cache.resolve(null, 0) != null)
+        { helper.fail("Repeated and invalid routes must resolve correctly without repeating resource lookups"); return; }
+        available.add(new net.minecraft.resources.ResourceLocation("fiskheroes", "textures/heroes/suit.tx.json"));
+        if (cache.resolve("suit", 0) != layer1)
+        { helper.fail("Routes must remain stable until resource reload"); return; }
+        cache.clear();
+        var reloaded = cache.resolve("suit", 0);
+        if (reloaded == null || !reloaded.definition() || !reloaded.id().getPath().equals("suit.tx.json")
+                || checks.get() <= before)
+        { helper.fail("Reload must discard cached routes and prefer the new definition"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void previousDataRetainsTickSemantics(GameTestHelper helper)
     {
         var data = new com.fiskmods.heroes.common.data.var.DataContainer();
