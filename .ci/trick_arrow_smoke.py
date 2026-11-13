@@ -190,6 +190,7 @@ def main():
             # both camera perspectives. Wait for the actual particle engine to create it.
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:killer_frost')
             # Wait for the suit packet and render before holding C; a server command can
             # complete before the client stops interpreting the key as Savitar's power.
@@ -201,6 +202,21 @@ def main():
                          30, 'Killer Frost charge reaches the server', server)
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=false',
                          45, 'Killer Frost emits cryogenic smoke in third person', client)
+                anchor_pattern = (r'Suit emitter anchor: type=CRYO_SMOKE, anchor=rightArm, side=([01]), '
+                                  r'yaw=([-+0-9.eE]+), dx=([-+0-9.eE]+), dy=([-+0-9.eE]+), dz=([-+0-9.eE]+)')
+                wait_for(client_log, anchor_pattern.replace('([01])', '(1)'), 45,
+                         'both third-person arm anchors transformed', client)
+                anchors = {int(side): tuple(map(float, (yaw, dx, dy, dz))) for side, yaw, dx, dy, dz
+                           in re.findall(anchor_pattern, client_log.read_text(errors='replace'))}
+                if set(anchors) != {0, 1}:
+                    raise RuntimeError(f'Missing mirrored cryogenic anchors: {anchors}')
+                right, left = anchors[0], anchors[1]
+                if not (abs(right[0]) < 5 and abs(left[0]) < 5
+                        and -.55 < right[1] < -.2 and .2 < left[1] < .55
+                        and .4 < right[2] < 1.4 and .4 < left[2] < 1.4
+                        and abs(right[3]) < .4 and abs(left[3]) < .4):
+                    raise RuntimeError(f'Cryogenic smoke origins do not follow the correct hands: {anchors}')
+                print(f'PASS: third-person smoke anchors track right and left hands: {anchors}', flush=True)
                 time.sleep(1.5)
                 subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-third.png'], check=True, timeout=30)
             finally:

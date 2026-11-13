@@ -48,6 +48,7 @@ final class ParticleEmitterRenderer
     private static final java.util.Set<String> FIRST_PERSON_CLOUD_DIAGNOSTICS = new java.util.HashSet<>();
     private static final boolean PARTICLE_DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciParticleDiagnostics");
     private static final java.util.Set<String> EMITTER_DIAGNOSTICS = new java.util.HashSet<>();
+    private static final java.util.Set<String> ANCHOR_DIAGNOSTICS = new java.util.HashSet<>();
 
     private ParticleEmitterRenderer() { }
 
@@ -59,10 +60,11 @@ final class ParticleEmitterRenderer
         LAST_TICK.clear();
         FIRST_PERSON_CLOUD_DIAGNOSTICS.clear();
         EMITTER_DIAGNOSTICS.clear();
+        ANCHOR_DIAGNOSTICS.clear();
         LocalParticleEmitter.clear();
     }
 
-    static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale)
+    static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale, PoseStack renderPose)
     {
         if (LAST_TICK.getOrDefault(player.getUUID(), Integer.MIN_VALUE) == player.tickCount) return;
         LAST_TICK.put(player.getUUID(), player.tickCount);
@@ -91,7 +93,7 @@ final class ParticleEmitterRenderer
                 // smoke is checked at the actual spawn point against its pack distance below.
                 if (!emitter.smokeType() && mc.player != null
                         && mc.player.distanceToSqr(player) > emitter.maxDistance * emitter.maxDistance) continue;
-                emit(player, model, suitScale, emitter, firstPerson);
+                emit(player, model, suitScale, emitter, firstPerson, renderPose);
             }
         }
     }
@@ -381,7 +383,8 @@ final class ParticleEmitterRenderer
         }
     }
 
-    private static void emit(Player player, PlayerModel<?> model, float scale, Emitter emitter, boolean firstPerson)
+    private static void emit(Player player, PlayerModel<?> model, float scale, Emitter emitter, boolean firstPerson,
+            PoseStack renderPose)
     {
         int amount = Math.max(0, emitter.amount(firstPerson));
         if (amount == 0) return;
@@ -397,21 +400,41 @@ final class ParticleEmitterRenderer
         for (int side = 0; side < sides; ++side)
         {
             Vec3 mirroredOffset = side == 0 ? new Vec3(-baseOffset.x, baseOffset.y, baseOffset.z) : baseOffset;
-            Vec3 sideOrigin = firstPerson
-                    ? com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(
-                            baseOffset, anchor != null, side != 0, scale, yaw)
-                    : anchor != null ? orient(anchorOffset(anchorForSide(model, emitter.anchor, side), mirroredOffset, scale), yaw)
-                    : orient(new Vec3(mirroredOffset.x * scale, mirroredOffset.y * scale, mirroredOffset.z * scale), yaw);
+            Vec3 origin;
+            if (firstPerson)
+            {
+                Vec3 offset = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(
+                        baseOffset, anchor != null, side != 0, scale, yaw);
+                origin = new Vec3(player.getX(), player.getEyeY(), player.getZ()).add(offset);
+            }
+            else if (renderPose != null)
+            {
+                // Capture the exact parent and model-part transforms used by the rendered suit,
+                // including its body yaw, gliding rotations, interpolated position and scale.
+                renderPose.pushPose();
+                if (anchor != null)
+                {
+                    anchorForSide(model, emitter.anchor, side).translateAndRotate(renderPose);
+                    renderPose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+                }
+                origin = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
+                        renderPose.last().pose(), Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(), mirroredOffset);
+                renderPose.popPose();
+                if (PARTICLE_DIAGNOSTICS && ANCHOR_DIAGNOSTICS.add(emitter.type + ":" + emitter.anchor + ":" + side))
+                    FiskHeroes.LOGGER.info("Suit emitter anchor: type={}, anchor={}, side={}, yaw={}, dx={}, dy={}, dz={}",
+                            emitter.type, emitter.anchor, side, player.yBodyRot,
+                            origin.x - player.getX(), origin.y - player.getY(), origin.z - player.getZ());
+            }
+            else return; // Third-person particles need the actual model render transform.
             Vec3 sideMotion = rgb ? baseMotion : orient(new Vec3(side == 0 ? -baseMotion.x : baseMotion.x,
                     baseMotion.y, baseMotion.z), yaw).scale(scale);
             Vec3 randOffset = emitter.randOffset(firstPerson);
             Vec3 randMotion = emitter.randMotion(firstPerson);
             for (int i = 0; i < amount; ++i)
             {
-                double x = player.getX() + sideOrigin.x + random(randOffset.x * scale);
-                double y = (firstPerson ? player.getEyeY() + sideOrigin.y : player.getY() + 1.5D * scale - sideOrigin.y)
-                        + random(randOffset.y * scale);
-                double z = player.getZ() + sideOrigin.z + random(randOffset.z * scale);
+                double x = origin.x + random(randOffset.x * scale);
+                double y = origin.y + random(randOffset.y * scale);
+                double z = origin.z + random(randOffset.z * scale);
                 double vx = rgb ? 0.0D : sideMotion.x + random(randMotion.x) * scale;
                 double vy = rgb ? 0.0D : sideMotion.y + random(randMotion.y) * scale;
                 double vz = rgb ? 0.0D : sideMotion.z + random(randMotion.z) * scale;

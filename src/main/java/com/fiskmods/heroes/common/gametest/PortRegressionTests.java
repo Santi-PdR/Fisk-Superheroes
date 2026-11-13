@@ -3295,6 +3295,22 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void particleRenderTransformTracksAnimatedAnchor(GameTestHelper helper)
+    {
+        // Vanilla render root at yaw zero: turn around Y, invert X/Y, then lift the
+        // model origin. The right-arm pivot is -5,2 pixels, with a raised arm.
+        var matrix = new org.joml.Matrix4f().translation(2, 3, 4)
+                .rotateY((float) Math.PI).scale(-1, -1, 1).translate(0, -1.5F, 0)
+                .translate(-5F / 16F, 2F / 16F, 0).rotateX(-(float) Math.PI / 2);
+        var point = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
+                matrix, new net.minecraft.world.phys.Vec3(10, 20, 30),
+                new net.minecraft.world.phys.Vec3(-1F / 16F, 9F / 16F, 0));
+        if (point.distanceToSqr(new net.minecraft.world.phys.Vec3(11.625, 24.375, 34.5625)) > 1.0E-10)
+        { helper.fail("Particle origin must follow the rendered arm rotation and camera-relative translation: " + point); return; }
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void controlledFlightDoubleJumpTracksServerInput(GameTestHelper helper)
     {

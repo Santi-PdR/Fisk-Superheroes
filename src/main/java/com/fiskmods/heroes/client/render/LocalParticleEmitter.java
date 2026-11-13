@@ -74,6 +74,6 @@ public final class LocalParticleEmitter
         model.prepareMobModel(player, swing, amount, 1.0F);
         model.setupAnim(player, swing, amount, player.tickCount,
                 Mth.wrapDegrees(player.getYHeadRot() - player.yBodyRot), player.getXRot());
-        ParticleEmitterRenderer.tick(player, model, suit, Vars.getScale(player));
+        ParticleEmitterRenderer.tick(player, model, suit, Vars.getScale(player), null);
     }
 }
