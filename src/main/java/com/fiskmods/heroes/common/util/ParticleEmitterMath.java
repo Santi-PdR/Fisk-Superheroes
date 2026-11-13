@@ -23,6 +23,13 @@ public final class ParticleEmitterMath
         return orient(local, yaw);
     }
 
+    /** Obsidian's first-person chain uses the eye and rotates with both pitch and yaw. */
+    public static Vec3 firstPersonChainOffset(Vec3 offset, float scale, float yaw, float pitch)
+    {
+        Vec3 local = new Vec3(offset.x, -offset.y, -offset.z).scale(scale / 16.0D);
+        return orient(local.xRot((float) Math.toRadians(-pitch)), yaw);
+    }
+
     public static Vec3 orient(Vec3 vector, float yaw)
     {
         double radians = Math.toRadians(-yaw);

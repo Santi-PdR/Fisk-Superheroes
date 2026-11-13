@@ -275,6 +275,41 @@ def main():
                 print(f'PASS: visible first-person cryogenic smoke ({visible} changed cyan pixels)', flush=True)
             finally:
                 xdo('keyup', 'c')
+            # Obsidian's chain must begin at the eye-relative first-person offset,
+            # then follow the rendered arm when changing to third person.
+            command('kill @e[tag=chain_target]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["chain_target"]}')
+            command('execute as Dev run suit fiskheroes:obsidian')
+            wait_for(client_log, r'Drawing suit fiskheroes:obsidian slot', 45,
+                     'Obsidian suit synchronized to the client', client)
+            xdo('keydown', 'v')
+            try:
+                wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:obsidian, key=TELEKINESIS',
+                         30, 'Obsidian telekinesis activates', server)
+                pattern = (r'Telekinesis chain origin: firstPerson=(true|false), yaw=([-+0-9.eE]+), '
+                           r'pitch=([-+0-9.eE]+), dx=([-+0-9.eE]+), dy=([-+0-9.eE]+), dz=([-+0-9.eE]+)')
+                wait_for(client_log, pattern.replace('(true|false)', 'true'), 45,
+                         'first-person telekinesis chain follows a grabbed target', client)
+                match = re.search(pattern.replace('(true|false)', '(true)'), client_log.read_text(errors='replace'))
+                _, yaw, pitch, dx, dy, dz = match.groups()
+                if (abs(float(yaw)) > 2 or abs(float(pitch)) > 2 or abs(float(dx) + .296875) > .05
+                        or abs(float(dy) - 1.37) > .15 or abs(float(dz) - .53125) > .05):
+                    raise RuntimeError('Incorrect eye-relative telekinesis origin: ' + match.group())
+                time.sleep(1)
+                subprocess.run(['scrot', '-o', 'ci-arrow-chain-first.png'], check=True, timeout=30)
+                xdo('key', 'F5')
+                wait_for(client_log, pattern.replace('(true|false)', 'false'), 45,
+                         'third-person telekinesis chain follows a grabbed target', client)
+                match = re.search(pattern.replace('(true|false)', '(false)'), client_log.read_text(errors='replace'))
+                _, yaw, pitch, dx, dy, dz = match.groups()
+                if not (-.8 < float(dx) < -.1 and .2 < float(dy) < 1.7 and abs(float(dz)) < .8):
+                    raise RuntimeError('Incorrect rendered-arm telekinesis origin: ' + match.group())
+                time.sleep(1)
+                subprocess.run(['scrot', '-o', 'ci-arrow-chain-third.png'], check=True, timeout=30)
+                print('PASS: telekinesis chain originates at the eye-relative hand and rendered arm', flush=True)
+            finally:
+                xdo('keyup', 'v')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

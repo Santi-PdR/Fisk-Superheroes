@@ -76,7 +76,7 @@ final class ParticleEmitterRenderer
 
         Minecraft mc = Minecraft.getInstance();
         emitCloud(player, suit);
-        emitTelekinesisChain(player, model, suit, suitScale);
+        emitTelekinesisChain(player, model, suit, suitScale, renderPose);
         boolean firstPerson = player == mc.player && mc.options.getCameraType().isFirstPerson();
         for (Map.Entry<String, JsonObject> entry : suit.getCustom().entrySet())
         {
@@ -300,7 +300,8 @@ final class ParticleEmitterRenderer
     }
 
     /** Recreates the original Obsidian shadow-smoke chain between the caster and grabbed target. */
-    private static void emitTelekinesisChain(Player player, PlayerModel<?> model, HeroModelData suit, float scale)
+    private static void emitTelekinesisChain(Player player, PlayerModel<?> model, HeroModelData suit, float scale,
+            PoseStack renderPose)
     {
         if (!player.level().isClientSide) return;
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
@@ -317,11 +318,33 @@ final class ParticleEmitterRenderer
         String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "rightArm";
         Vec3 offset = effect.has(firstPerson ? "firstPerson" : "offset")
                 ? vector(effect.get(firstPerson ? "firstPerson" : "offset")) : Vec3.ZERO;
-        ModelPart part = anchor(model, anchorName);
-        Vec3 local = anchorOffset(part, offset, scale);
-        Vec3 startOffset = orient(local, player.yBodyRot);
-        Vec3 start = new Vec3(player.getX() + startOffset.x,
-                player.getY() + 1.5D * scale - startOffset.y, player.getZ() + startOffset.z);
+        Vec3 start;
+        if (firstPerson)
+        {
+            Vec3 local = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonChainOffset(
+                    offset, scale, player.getYRot(), player.getXRot());
+            start = new Vec3(player.getX(), player.getEyeY(), player.getZ()).add(local);
+        }
+        else if (renderPose != null)
+        {
+            renderPose.pushPose();
+            ModelPart part = anchor(model, anchorName);
+            if (part != null)
+            {
+                part.translateAndRotate(renderPose);
+                renderPose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+            }
+            start = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
+                    renderPose.last().pose(), com.mojang.blaze3d.systems.RenderSystem.getInverseViewRotationMatrix(),
+                    Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(),
+                    new Vec3(-offset.x, offset.y, offset.z));
+            renderPose.popPose();
+        }
+        else return;
+        if (PARTICLE_DIAGNOSTICS && EMITTER_DIAGNOSTICS.add("chain:" + firstPerson))
+            FiskHeroes.LOGGER.info("Telekinesis chain origin: firstPerson={}, yaw={}, pitch={}, dx={}, dy={}, dz={}",
+                    firstPerson, player.getYRot(), player.getXRot(), start.x - player.getX(),
+                    start.y - player.getY(), start.z - player.getZ());
         Vec3 end = target.position().add(0.0D, target.getBbHeight() * 0.55D, 0.0D);
         Vec3 delta = end.subtract(start);
         Vec3 bend = new Vec3(0.0D, Math.min(1.5D, delta.length() * 0.12D), 0.0D);
@@ -510,20 +533,6 @@ final class ParticleEmitterRenderer
             case "leftleg" -> model.rightLeg;
             default -> anchor(model, name);
         };
-    }
-
-    private static Vec3 anchorOffset(ModelPart anchor, Vec3 offset, float scale)
-    {
-        PoseStack pose = new PoseStack();
-        pose.scale(-scale, scale, -scale);
-        if (anchor != null)
-        {
-            anchor.translateAndRotate(pose);
-            pose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
-        }
-        Vector3f point = new Vector3f((float) offset.x, (float) offset.y, (float) offset.z);
-        pose.last().pose().transformPosition(point);
-        return new Vec3(point.x, point.y, point.z);
     }
 
     private static Vec3 orient(Vec3 vector, float yaw)

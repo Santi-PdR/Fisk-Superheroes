@@ -5,12 +5,13 @@ import io
 from pathlib import Path
 from PIL import Image
 
-for perspective in ('third', 'first'):
-    path = Path(f'ci-arrow-killer-frost-smoke-{perspective}.png')
+for label, filename in (('THIRD', 'killer-frost-smoke-third'), ('FIRST', 'killer-frost-smoke-first'),
+                        ('CHAIN_FIRST', 'chain-first'), ('CHAIN_THIRD', 'chain-third')):
+    path = Path(f'ci-arrow-{filename}.png')
     if not path.exists():
         continue
     with Image.open(path) as image:
         image.thumbnail((640, 360))
         buffer = io.BytesIO()
         image.convert('RGB').save(buffer, format='JPEG', quality=70, optimize=True)
-    print(f'PARTICLE_PREVIEW_{perspective.upper()}=' + base64.b64encode(buffer.getvalue()).decode('ascii'))
+    print(f'PARTICLE_PREVIEW_{label}=' + base64.b64encode(buffer.getvalue()).decode('ascii'))

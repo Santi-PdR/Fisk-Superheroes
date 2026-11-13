@@ -3305,6 +3305,20 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void telekinesisChainFirstPersonTracksView(GameTestHelper helper)
+    {
+        var offset = new net.minecraft.world.phys.Vec3(-4.75, 4, -8.5);
+        var flat = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonChainOffset(offset, 1, 0, 0);
+        var pitched = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonChainOffset(offset, 1, 0, 90);
+        var turned = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonChainOffset(offset, 2, 90, 0);
+        if (flat.distanceToSqr(new net.minecraft.world.phys.Vec3(-0.296875, -0.25, 0.53125)) > 1.0E-10
+                || pitched.distanceToSqr(new net.minecraft.world.phys.Vec3(-0.296875, -0.53125, -0.25)) > 1.0E-10
+                || turned.distanceToSqr(new net.minecraft.world.phys.Vec3(-1.0625, -0.5, -0.59375)) > 1.0E-10)
+        { helper.fail("First-person telekinesis chain must use eye-relative pixels, pitch, yaw and suit scale"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void particleRenderTransformTracksAnimatedAnchor(GameTestHelper helper)
     {
         // Vanilla render root at yaw zero: turn around Y, invert X/Y, then lift the
