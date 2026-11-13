@@ -418,7 +418,8 @@ final class ParticleEmitterRenderer
                     renderPose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
                 }
                 origin = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
-                        renderPose.last().pose(), Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(), mirroredOffset);
+                        renderPose.last().pose(), com.mojang.blaze3d.systems.RenderSystem.getInverseViewRotationMatrix(),
+                        Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(), mirroredOffset);
                 renderPose.popPose();
                 if (PARTICLE_DIAGNOSTICS && ANCHOR_DIAGNOSTICS.add(emitter.type + ":" + emitter.anchor + ":" + side))
                     FiskHeroes.LOGGER.info("Suit emitter anchor: type={}, anchor={}, side={}, yaw={}, dx={}, dy={}, dz={}",

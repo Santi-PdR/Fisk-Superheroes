@@ -2,6 +2,7 @@ package com.fiskmods.heroes.common.util;
 
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Matrix3fc;
 import org.joml.Vector3f;
 
 /** Coordinate conventions used by the original pack-driven particle emitters. */
@@ -30,11 +31,12 @@ public final class ParticleEmitterMath
         return new Vec3(vector.x * cos + vector.z * sin, vector.y, vector.z * cos - vector.x * sin);
     }
 
-    /** Render-layer matrices are camera-relative; recover the world-space particle point. */
-    public static Vec3 worldFromRenderTransform(Matrix4f transform, Vec3 camera, Vec3 modelPoint)
+    /** Undo the current view rotation before translating a render-layer point into world space. */
+    public static Vec3 worldFromRenderTransform(Matrix4f transform, Matrix3fc inverseView, Vec3 camera, Vec3 modelPoint)
     {
         Vector3f point = new Vector3f((float) modelPoint.x, (float) modelPoint.y, (float) modelPoint.z);
         transform.transformPosition(point);
+        point.mul(inverseView);
         return camera.add(point.x, point.y, point.z);
     }
 

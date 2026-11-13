@@ -3303,11 +3303,20 @@ public final class PortRegressionTests
         var matrix = new org.joml.Matrix4f().translation(2, 3, 4)
                 .rotateY((float) Math.PI).scale(-1, -1, 1).translate(0, -1.5F, 0)
                 .translate(-5F / 16F, 2F / 16F, 0).rotateX(-(float) Math.PI / 2);
+        var camera = new net.minecraft.world.phys.Vec3(10, 20, 30);
+        var modelPoint = new net.minecraft.world.phys.Vec3(-1F / 16F, 9F / 16F, 0);
         var point = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
-                matrix, new net.minecraft.world.phys.Vec3(10, 20, 30),
-                new net.minecraft.world.phys.Vec3(-1F / 16F, 9F / 16F, 0));
-        if (point.distanceToSqr(new net.minecraft.world.phys.Vec3(11.625, 24.375, 34.5625)) > 1.0E-10)
+                matrix, new org.joml.Matrix3f(), camera, modelPoint);
+        var expected = new net.minecraft.world.phys.Vec3(11.625, 24.375, 34.5625);
+        if (point.distanceToSqr(expected) > 1.0E-10)
         { helper.fail("Particle origin must follow the rendered arm rotation and camera-relative translation: " + point); return; }
+        // Actual entity render matrices also include the camera's yaw, pitch and Forge roll.
+        var view = new org.joml.Matrix3f().rotateZ(0.2F).rotateX(0.4F).rotateY(1.7F);
+        var rotated = new org.joml.Matrix4f().set(view).mul(matrix);
+        var corrected = com.fiskmods.heroes.common.util.ParticleEmitterMath.worldFromRenderTransform(
+                rotated, new org.joml.Matrix3f(view).invert(), camera, modelPoint);
+        if (corrected.distanceToSqr(expected) > 1.0E-10)
+        { helper.fail("Camera view rotation must not displace the world-space particle: " + corrected); return; }
         helper.succeed();
     }
 
