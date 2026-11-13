@@ -2917,7 +2917,14 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
         var rule = level.getGameRules().getRule(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING);
-        boolean oldRule = rule.get(); boolean oldConfig = com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.get();
+        boolean oldRule = rule.get();
+        // Use a separate in-memory Forge config value. The file watcher may reload the
+        // real spec between set(false) and the impact, silently restoring its disk value.
+        var oldConfig = com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT;
+        var configBuilder = new net.minecraftforge.common.ForgeConfigSpec.Builder();
+        var testConfig = configBuilder.define("allowFireChargeArrowPlacement", true);
+        var testSpec = configBuilder.build();
+        testSpec.setConfig(com.electronwill.nightconfig.core.CommentedConfig.inMemory());
         var player = helper.makeMockPlayer(); player.setPos(base.getX() - 10, base.getY(), base.getZ());
         var mob = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
         if (mob == null) { helper.fail("Missing mob shooter"); return; }
@@ -2925,6 +2932,7 @@ public final class PortRegressionTests
         java.util.List<net.minecraft.core.BlockPos> cleanup = new java.util.ArrayList<>();
         try
         {
+            com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT = testConfig;
             rule.set(false, level.getServer());
             for (int i = 0; i < 5; ++i)
             {
@@ -2969,7 +2977,7 @@ public final class PortRegressionTests
         finally
         {
             rule.set(oldRule, level.getServer());
-            com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT.set(oldConfig);
+            com.fiskmods.heroes.common.config.SHConfig.ALLOW_FIRE_CHARGE_ARROW_PLACEMENT = oldConfig;
             for (var pos : cleanup) level.removeBlock(pos, false);
             mob.discard();
         }

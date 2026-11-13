@@ -281,7 +281,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 0')
             command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["chain_target"]}')
             command('execute as Dev run suit fiskheroes:obsidian')
-            wait_for(client_log, r'Drawing suit fiskheroes:obsidian slot', 45,
+            wait_for(client_log, r'First-person suit arm rendered: hero=fiskheroes:obsidian,', 45,
                      'Obsidian suit synchronized to the client', client)
             xdo('keydown', 'v')
             try:
