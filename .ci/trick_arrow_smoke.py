@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise potion and firework arrow impacts with a real client and dedicated server."""
 import os
+from PIL import Image
 import re
 import signal
 import subprocess
@@ -204,13 +205,33 @@ def main():
                 subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-third.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'c')
-            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(.5)
+            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(2)
+            subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-before.png'], check=True, timeout=30)
+            # Compare against the same camera and HUD before charging. A particle-engine
+            # creation log by itself does not prove any smoke is visible on screen.
+            geometry = subprocess.check_output(['xdotool', 'getwindowgeometry', '--shell', window], text=True)
+            values = dict(line.split('=', 1) for line in geometry.splitlines() if '=' in line)
+            wx, wy, width, height = (int(values[key]) for key in ('X', 'Y', 'WIDTH', 'HEIGHT'))
+            region = (wx + int(width * .51), wy + int(height * .64),
+                      wx + int(width * .99), wy + int(height * .98))
+            before = Image.open('ci-arrow-killer-frost-smoke-before.png').convert('RGB').crop(region)
             xdo('keydown', 'c')
             try:
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=true',
                          45, 'Killer Frost emits cryogenic smoke in first person', client)
-                time.sleep(1.5)
-                subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
+                visible = 0
+                for _ in range(3):
+                    time.sleep(1)
+                    subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-first.png'], check=True, timeout=30)
+                    after = Image.open('ci-arrow-killer-frost-smoke-first.png').convert('RGB').crop(region)
+                    visible = sum(1 for (r, g, b), (r0, g0, b0) in zip(after.getdata(), before.getdata())
+                                  if r > 175 and g > 225 and b > 225 and g - r >= 5
+                                  and abs(r-r0) + abs(g-g0) + abs(b-b0) > 35)
+                    if visible >= 200:
+                        break
+                if visible < 200:
+                    raise RuntimeError(f'First-person cryogenic smoke was not visibly present: {visible} changed cyan pixels')
+                print(f'PASS: visible first-person cryogenic smoke ({visible} changed cyan pixels)', flush=True)
             finally:
                 xdo('keyup', 'c')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
