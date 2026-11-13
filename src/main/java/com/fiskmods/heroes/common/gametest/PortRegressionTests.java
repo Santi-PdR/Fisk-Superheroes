@@ -22,6 +22,9 @@ public final class PortRegressionTests
     @GameTest(template = "test_empty")
     public static void expressionCacheCompilesOnceButKeepsDynamicResults(GameTestHelper helper)
     {
+        if (com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get("(entity.ticksExisted() * 6 % 360) | 0") != null
+                || com.fiskmods.heroes.common.data.DataRegistry.INSTANCE.get("speeding") != com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+        { helper.fail("Expressions must not crash or resolve as data IDs, while known relative IDs still work"); return; }
         var count = new java.util.concurrent.atomic.AtomicInteger();
         var cache = new com.fiskmods.heroes.pack.js.ExpressionCache(expression -> {
             count.incrementAndGet();

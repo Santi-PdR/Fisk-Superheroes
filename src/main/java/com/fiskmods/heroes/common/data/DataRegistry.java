@@ -49,7 +49,10 @@ public class DataRegistry implements Iterable<DataVar<?>>
 
         if (var == null && key.indexOf(':') == -1)
         {
-            var = byName.get(new ResourceLocation(FiskHeroes.MODID, key));
+            // A texture/property getter may be a JavaScript expression rather than an id.
+            // Invalid resource paths must fall through to the expression compiler, not crash.
+            ResourceLocation id = ResourceLocation.tryParse(FiskHeroes.MODID + ":" + key);
+            if (id != null) var = byName.get(id);
         }
 
         return var;

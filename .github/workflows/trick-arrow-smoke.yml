@@ -12,6 +12,10 @@ on:
       - 'src/main/java/com/fiskmods/heroes/common/entity/arrow/TrickArrowEntity.java'
       - 'src/main/java/com/fiskmods/heroes/common/item/ItemTrickArrow.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/TrickArrowRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/HeroModelData.java'
+      - 'src/main/java/com/fiskmods/heroes/client/texture/TextureResolver.java'
+      - 'src/main/java/com/fiskmods/heroes/pack/js/ExpressionCache.java'
+      - 'src/main/java/com/fiskmods/heroes/common/data/DataRegistry.java'
 concurrency:
   group: trick-arrow-${{ github.ref }}
   cancel-in-progress: true
