@@ -41,7 +41,7 @@ jobs:
       - name: Install headless dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1 python3-pil
       - name: Prepare server and client
         run: |
           chmod +x gradlew
@@ -67,6 +67,9 @@ jobs:
         if: always()
         run: |
           { cat ci-arrow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'ARROW_|Exception|Error|FATAL' "ci-arrow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-arrow-$f.log" 2>/dev/null || true; done; } > /tmp/arrow-log.txt
+          # Small diagnostic thumbnails travel with the existing log when artifact storage is
+          # unreachable; full-resolution captures remain in the uploaded artifact.
+          python3 .ci/particle_thumbnails.py >> /tmp/arrow-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           for i in 1 2 3 4 5; do

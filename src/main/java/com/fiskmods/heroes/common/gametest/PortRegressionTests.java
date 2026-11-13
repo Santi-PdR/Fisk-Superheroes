@@ -3273,6 +3273,28 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    @GameTest(template = "test_empty")
+    public static void firstPersonParticleOffsetsAndRangeMatchPackConventions(GameTestHelper helper)
+    {
+        var offset = new net.minecraft.world.phys.Vec3(8, 8, 2);
+        var first = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(offset, true, false, 1.0F, 0);
+        var mirror = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(offset, true, true, 1.0F, 0);
+        var turned = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(offset, true, false, 1.0F, 90);
+        var unanchored = com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(
+                new net.minecraft.world.phys.Vec3(0, 2, 0), false, false, 1.0F, 0);
+        if (first.distanceToSqr(new net.minecraft.world.phys.Vec3(-0.5, -0.5, -0.125)) > 1.0E-10
+                || mirror.distanceToSqr(new net.minecraft.world.phys.Vec3(0.5, -0.5, -0.125)) > 1.0E-10
+                || turned.distanceToSqr(new net.minecraft.world.phys.Vec3(0.125, -0.5, -0.5)) > 1.0E-10
+                || unanchored.distanceToSqr(new net.minecraft.world.phys.Vec3(0, -2, 0)) > 1.0E-10)
+        { helper.fail("First-person particles must use eye-relative pixel/block offsets, mirroring and yaw"); return; }
+        var origin = net.minecraft.world.phys.Vec3.ZERO;
+        if (!com.fiskmods.heroes.common.util.ParticleEmitterMath.inRange(new net.minecraft.world.phys.Vec3(100, 0, 0), origin, 256, 8)
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.inRange(new net.minecraft.world.phys.Vec3(129, 0, 0), origin, 256, 8)
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.inRange(new net.minecraft.world.phys.Vec3(65, 0, 0), origin, 64, 16))
+        { helper.fail("Custom smoke must honor the emitter and render-distance limits, not vanilla's 32-block cutoff"); return; }
+        helper.succeed();
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void controlledFlightDoubleJumpTracksServerInput(GameTestHelper helper)
     {

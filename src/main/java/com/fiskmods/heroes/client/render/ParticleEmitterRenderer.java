@@ -79,14 +79,18 @@ final class ParticleEmitterRenderer
         for (Map.Entry<String, JsonObject> entry : suit.getCustom().entrySet())
         {
             if (!entry.getKey().startsWith("fiskheroes:particles") || !passesConditionals(entry.getValue(), suit, player)) continue;
+            // The original hides these emitters for miniature local players in first person.
+            if (firstPerson && suitScale < 1.0F) continue;
             if (!entry.getValue().has("particleType")) continue;
             ResourceLocation id = ResourceLocation.tryParse(entry.getValue().get("particleType").getAsString());
             if (id == null) continue;
             for (Emitter emitter : EMITTERS.computeIfAbsent(id, ParticleEmitterRenderer::load))
             {
                 if (!emitter.condition(player, firstPerson)) continue;
-                double maxDistance = emitter.maxDistance;
-                if (mc.player != null && mc.player.distanceToSqr(player) > maxDistance * maxDistance) continue;
+                // Retain the existing coarse range guard for vanilla-backed particles. Custom
+                // smoke is checked at the actual spawn point against its pack distance below.
+                if (!emitter.smokeType() && mc.player != null
+                        && mc.player.distanceToSqr(player) > emitter.maxDistance * emitter.maxDistance) continue;
                 emit(player, model, suitScale, emitter, firstPerson);
             }
         }
@@ -393,7 +397,10 @@ final class ParticleEmitterRenderer
         for (int side = 0; side < sides; ++side)
         {
             Vec3 mirroredOffset = side == 0 ? new Vec3(-baseOffset.x, baseOffset.y, baseOffset.z) : baseOffset;
-            Vec3 sideOrigin = anchor != null ? orient(anchorOffset(anchorForSide(model, emitter.anchor, side), mirroredOffset, scale), yaw)
+            Vec3 sideOrigin = firstPerson
+                    ? com.fiskmods.heroes.common.util.ParticleEmitterMath.firstPersonOffset(
+                            baseOffset, anchor != null, side != 0, scale, yaw)
+                    : anchor != null ? orient(anchorOffset(anchorForSide(model, emitter.anchor, side), mirroredOffset, scale), yaw)
                     : orient(new Vec3(mirroredOffset.x * scale, mirroredOffset.y * scale, mirroredOffset.z * scale), yaw);
             Vec3 sideMotion = rgb ? baseMotion : orient(new Vec3(side == 0 ? -baseMotion.x : baseMotion.x,
                     baseMotion.y, baseMotion.z), yaw).scale(scale);
@@ -402,7 +409,8 @@ final class ParticleEmitterRenderer
             for (int i = 0; i < amount; ++i)
             {
                 double x = player.getX() + sideOrigin.x + random(randOffset.x * scale);
-                double y = player.getY() + 1.5D * scale - sideOrigin.y + random(randOffset.y * scale);
+                double y = (firstPerson ? player.getEyeY() + sideOrigin.y : player.getY() + 1.5D * scale - sideOrigin.y)
+                        + random(randOffset.y * scale);
                 double z = player.getZ() + sideOrigin.z + random(randOffset.z * scale);
                 double vx = rgb ? 0.0D : sideMotion.x + random(randMotion.x) * scale;
                 double vy = rgb ? 0.0D : sideMotion.y + random(randMotion.y) * scale;
@@ -423,7 +431,9 @@ final class ParticleEmitterRenderer
             double vx, double vy, double vz, Vec3 color, Vec3 colorRandom, float scale)
     {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.level == null || mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(x, y, z) > 1024.0D) return false;
+        if (mc.level == null || !com.fiskmods.heroes.common.util.ParticleEmitterMath.inRange(
+                new Vec3(x, y, z), mc.gameRenderer.getMainCamera().getPosition(), emitter.maxDistance,
+                mc.options.renderDistance().get())) return false;
         var setting = mc.options.particles().get();
         if (setting == net.minecraft.client.ParticleStatus.MINIMAL
                 || setting == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) return false;
