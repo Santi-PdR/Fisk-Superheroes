@@ -450,7 +450,13 @@ final class ParticleEmitterRenderer
             float gray = 0.9F + player.getRandom().nextFloat() * 0.1F;
             particle.setColor(gray, gray, gray);
         }
-        else particle.setColor(0.7F + player.getRandom().nextFloat() * 0.3F, 1F, 1F);
+        else
+        {
+            particle.setColor(0.7F + player.getRandom().nextFloat() * 0.3F, 1F, 1F);
+            // EntitySHSmokeFX adds this independent drift even when the emitter itself
+            // specifies almost no motion. It lets cryogenic puffs spread around the hand.
+            particle.setParticleSpeed(vx + random(0.05D), vy + random(0.05D), vz + random(0.05D));
+        }
         particle.scale(scale * (mysterio ? 2F : 1F));
         return true;
     }
