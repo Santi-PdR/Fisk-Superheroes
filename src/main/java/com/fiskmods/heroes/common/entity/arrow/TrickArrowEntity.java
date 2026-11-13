@@ -421,6 +421,9 @@ public class TrickArrowEntity extends Arrow
     @Override
     protected void onHitEntity(EntityHitResult result)
     {
+        if (!level().isClientSide && "fireball".equals(getArrowType()) && Boolean.getBoolean("fiskheroes.ciArrowDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Fireball arrow direct impact: target={}",
+                    net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE.getKey(result.getEntity().getType()));
         // The original boxing-glove arrow bounces off the target and loses its glove payload,
         // becoming a normal arrow. Give the vanilla hit handler temporary piercing so a successful
         // hit does not discard the projectile before we can apply that state transition.

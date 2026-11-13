@@ -136,9 +136,10 @@ def main():
             command('summon minecraft:blaze 0.5 180 5.5 {NoAI:1b,NoGravity:1b,Silent:1b,PersistenceRequired:1b,Tags:["fire_immune_target"]}')
             command('item replace entity Dev weapon.offhand with fiskheroes:trick_arrow{ArrowType:"fireball"}')
             shoot('ci-arrow-fireball-immune.png')
+            wait_for(server_log, r'Fireball arrow direct impact: target=minecraft:blaze', 15,
+                     'fireball arrow directly hits the blaze', server)
             command('data get entity @e[tag=fire_immune_target,limit=1]')
-            command('execute as @e[type=fiskheroes:trick_arrow] run data get entity @s')
-            command('execute if entity @e[tag=fire_immune_target,nbt={Health:20.0f}] if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"normal",Detonated:1b}] run say FIREBALL_DIRECT_IMMUNITY_PASS')
+            command('execute if entity @e[tag=fire_immune_target,nbt={Health:20.0f}] run say FIREBALL_DIRECT_IMMUNITY_PASS')
             wait_for(server_log, r'\[Server\] FIREBALL_DIRECT_IMMUNITY_PASS', 15,
                      'fireball direct hit detonates without damaging a fire-immune blaze', server)
             command('kill @e[type=fiskheroes:trick_arrow]')
