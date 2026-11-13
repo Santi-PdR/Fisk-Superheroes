@@ -421,12 +421,13 @@ final class ParticleEmitterRenderer
                         renderPose.last().pose(), com.mojang.blaze3d.systems.RenderSystem.getInverseViewRotationMatrix(),
                         Minecraft.getInstance().gameRenderer.getMainCamera().getPosition(), mirroredOffset);
                 renderPose.popPose();
-                float diagnosticYaw = Mth.wrapDegrees(player.yBodyRot);
-                int yawQuadrant = Math.round(diagnosticYaw / 90.0F);
-                if (PARTICLE_DIAGNOSTICS && Math.abs(diagnosticYaw - yawQuadrant * 90.0F) < 3.0F
+                var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                float viewYaw = Mth.wrapDegrees(camera.getYRot());
+                int yawQuadrant = Math.round(viewYaw / 90.0F);
+                if (PARTICLE_DIAGNOSTICS && Math.abs(viewYaw - yawQuadrant * 90.0F) < 3.0F
                         && ANCHOR_DIAGNOSTICS.add(emitter.type + ":" + emitter.anchor + ":" + side + ":" + yawQuadrant))
-                    FiskHeroes.LOGGER.info("Suit emitter anchor: type={}, anchor={}, side={}, yaw={}, dx={}, dy={}, dz={}",
-                            emitter.type, emitter.anchor, side, diagnosticYaw,
+                    FiskHeroes.LOGGER.info("Suit emitter anchor: type={}, anchor={}, side={}, yaw={}, viewYaw={}, viewPitch={}, dx={}, dy={}, dz={}",
+                            emitter.type, emitter.anchor, side, Mth.wrapDegrees(player.yBodyRot), viewYaw, camera.getXRot(),
                             origin.x - player.getX(), origin.y - player.getY(), origin.z - player.getZ());
             }
             else return; // Third-person particles need the actual model render transform.

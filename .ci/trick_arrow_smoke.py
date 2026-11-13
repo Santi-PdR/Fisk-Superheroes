@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Exercise potion and firework arrow impacts with a real client and dedicated server."""
 import os
+import math
 from PIL import Image
 import re
 import signal
@@ -203,35 +204,45 @@ def main():
                 wait_for(client_log, r'Suit emitter smoke rendered: type=CRYO_SMOKE, firstPerson=false',
                          45, 'Killer Frost emits cryogenic smoke in third person', client)
                 anchor_pattern = (r'Suit emitter anchor: type=CRYO_SMOKE, anchor=rightArm, side=([01]), '
-                                  r'yaw=([-+0-9.eE]+), dx=([-+0-9.eE]+), dy=([-+0-9.eE]+), dz=([-+0-9.eE]+)')
+                                  r'yaw=([-+0-9.eE]+), viewYaw=([-+0-9.eE]+), viewPitch=([-+0-9.eE]+), '
+                                  r'dx=([-+0-9.eE]+), dy=([-+0-9.eE]+), dz=([-+0-9.eE]+)')
                 wait_for(client_log, anchor_pattern.replace('([01])', '(1)'), 45,
                          'both third-person arm anchors transformed', client)
-                anchors = {int(side): tuple(map(float, (yaw, dx, dy, dz))) for side, yaw, dx, dy, dz
-                           in re.findall(anchor_pattern, client_log.read_text(errors='replace'))}
-                if set(anchors) != {0, 1}:
-                    raise RuntimeError(f'Missing mirrored cryogenic anchors: {anchors}')
-                right, left = anchors[0], anchors[1]
-                if not (abs(right[0]) < 5 and abs(left[0]) < 5
-                        and -.55 < right[1] < -.2 and .2 < left[1] < .55
-                        and .4 < right[2] < 1.4 and .4 < left[2] < 1.4
-                        and abs(right[3]) < .4 and abs(left[3]) < .4):
-                    raise RuntimeError(f'Cryogenic smoke origins do not follow the correct hands: {anchors}')
+
+                def read_anchors(view_yaw):
+                    results = {}
+                    for side, yaw, cam_yaw, pitch, dx, dy, dz in re.findall(anchor_pattern, client_log.read_text(errors='replace')):
+                        values = tuple(map(float, (yaw, cam_yaw, pitch, dx, dy, dz)))
+                        if abs(values[1] - view_yaw) < 3:
+                            results[int(side)] = values
+                    return results
+
+                def verify_anchors(anchors, expected_pitch):
+                    if set(anchors) != {0, 1}:
+                        raise RuntimeError(f'Missing mirrored cryogenic anchors: {anchors}')
+                    for side, (yaw, cam_yaw, pitch, dx, dy, dz) in anchors.items():
+                        # Normalize by body yaw, which can differ from camera yaw while idle.
+                        radians = math.radians(yaw)
+                        local_x = dx * math.cos(radians) + dz * math.sin(radians)
+                        local_z = -dx * math.sin(radians) + dz * math.cos(radians)
+                        if (abs(pitch - expected_pitch) > 3 or not .4 < dy < 1.4 or abs(local_z) > .3
+                                or not ((-.6 < local_x < -.2) if side == 0 else (.2 < local_x < .6))):
+                            raise RuntimeError(f'Cryogenic smoke origin does not follow its hand: {anchors}')
+
+                anchors = read_anchors(0)
+                verify_anchors(anchors, 0)
                 print(f'PASS: third-person smoke anchors track right and left hands: {anchors}', flush=True)
                 time.sleep(1.5)
                 subprocess.run(['scrot', 'ci-arrow-killer-frost-smoke-third.png'], check=True, timeout=30)
-                # Turn both the body and camera, including a downward camera pitch. Correct
-                # world positions must not rotate a second time with the view matrix.
+                # Turn and pitch the camera. The avatar's idle body yaw may lag its head,
+                # but world-space emission must still track each actual arm.
                 command('tp Dev 0.5 180 0.5 90 20')
-                turned_pattern = anchor_pattern.replace('yaw=([-+0-9.eE]+)', 'yaw=(8[7-9][0-9.eE+-]*|9[0-3][0-9.eE+-]*)')
+                turned_pattern = anchor_pattern.replace('viewYaw=([-+0-9.eE]+)', 'viewYaw=(8[7-9][0-9.eE+-]*|9[0-3][0-9.eE+-]*)')
                 wait_for(client_log, turned_pattern.replace('([01])', '(1)'), 45,
                          'third-person arm anchors transformed after camera turn', client)
-                turned = {int(side): tuple(map(float, (yaw, dx, dy, dz))) for side, yaw, dx, dy, dz
-                          in re.findall(turned_pattern, client_log.read_text(errors='replace'))}
-                if (set(turned) != {0, 1} or abs(turned[0][1]) > .4 or abs(turned[1][1]) > .4
-                        or not (-.55 < turned[0][3] < -.2 and .2 < turned[1][3] < .55)
-                        or not (.4 < turned[0][2] < 1.4 and .4 < turned[1][2] < 1.4)):
-                    raise RuntimeError(f'Cryogenic smoke anchors moved incorrectly after camera turn: {turned}')
-                print(f'PASS: third-person smoke follows rotated hands and pitched camera: {turned}', flush=True)
+                turned = read_anchors(90)
+                verify_anchors(turned, 20)
+                print(f'PASS: third-person smoke follows hands with a turned and pitched camera: {turned}', flush=True)
             finally:
                 xdo('keyup', 'c')
             command('tp Dev 0.5 180 0.5 0 0')
