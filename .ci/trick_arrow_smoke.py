@@ -190,6 +190,10 @@ def main():
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:air')
             command('execute as Dev run suit fiskheroes:killer_frost')
+            # Wait for the suit packet and render before holding C; a server command can
+            # complete before the client stops interpreting the key as Savitar's power.
+            wait_for(client_log, r'Drawing suit fiskheroes:killer_frost slot', 45,
+                     'Killer Frost suit synchronized to the client', client)
             xdo('keydown', 'c')
             try:
                 wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:killer_frost, key=CHARGE_ICE',
