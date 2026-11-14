@@ -467,6 +467,11 @@ class ModifierTeleportation extends Modifier
         Vec3 origin = entity.position().add(0.0D, entity.getBbHeight() * 0.5D, 0.0D);
         float width = entity.getBbWidth(), height = entity.getBbHeight();
         float scale = Vars.getScale(entity);
+        // The original frees a passenger or telekinetically held player at the
+        // moment of a successful teleport. Do not disturb either on a blocked blink.
+        if (entity.isPassenger()) entity.stopRiding();
+        TelekinesisState.releaseGrabbed(entity);
+        data.getData().set(Vars.GRABBED_BY, -1);
         entity.teleportTo(x, y, z);
         entity.fallDistance = 0.0F;
         var hero = data.getHero();

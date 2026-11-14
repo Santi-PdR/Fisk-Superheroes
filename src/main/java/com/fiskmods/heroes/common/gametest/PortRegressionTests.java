@@ -3090,6 +3090,61 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void teleportEscapesMountAndTelekinesis(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var victim = helper.makeMockPlayer();
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "teleport-grabber"));
+        var mount = net.minecraft.world.entity.EntityType.PIG.create(level);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(victim);
+        var ownerData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(owner);
+        if (mount == null || data == null || ownerData == null) { helper.fail("Missing teleport setup"); return; }
+        owner.setPos(base.getX() + 8, base.getY(), base.getZ());
+        level.addFreshEntity(owner);
+        mount.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        level.addFreshEntity(mount);
+        victim.setPos(mount.position()); victim.setYRot(0); victim.setXRot(0);
+        if (!victim.startRiding(mount, true)) { helper.fail("Could not mount for teleport test"); return; }
+        var tag = com.fiskmods.heroes.common.hero.modifier.TelekinesisState.GRABBED_BY_TAG;
+        victim.getPersistentData().putInt(tag, owner.getId());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRABBED_BY, owner.getId());
+        ownerData.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID, victim.getId());
+        ownerData.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRAB_DISTANCE, .5F);
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.TELEPORTATION, null);
+        entry.setProperty(com.fiskmods.heroes.common.hero.power.PowerProperty.RANGE, 8.0F);
+        try
+        {
+            entry.getModifier().onActivate(victim, entry, data);
+            if (victim.isPassenger() || victim.getZ() < base.getZ() + 8
+                    || victim.getPersistentData().contains(tag)
+                    || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRABBED_BY) != -1
+                    || ownerData.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID) != -1
+                    || ownerData.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRAB_DISTANCE) != 0.0F)
+            { helper.fail("Successful teleport must dismount and release the grab on both sides"); return; }
+            // A stale owner whose current grab is another entity must not lose that grab.
+            ownerData.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID, 123456);
+            victim.getPersistentData().putInt(tag, owner.getId());
+            com.fiskmods.heroes.common.hero.modifier.TelekinesisState.releaseGrabbed(victim);
+            if (victim.getPersistentData().contains(tag)
+                    || ownerData.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID) != 123456)
+            { helper.fail("A stale ownership mark must not clear the owner's different target"); return; }
+            victim.setPos(mount.position()); victim.startRiding(mount, true);
+            victim.getPersistentData().putInt(tag, owner.getId());
+            ownerData.getData().set(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID, victim.getId());
+            level.setBlockAndUpdate(base.offset(0, 0, 1), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            entry.getModifier().onActivate(victim, entry, data);
+            if (!victim.isPassenger() || !victim.getPersistentData().contains(tag)
+                    || ownerData.getData().get(com.fiskmods.heroes.common.data.var.Vars.GRAB_ID) != victim.getId())
+            { helper.fail("Blocked teleport must not dismount or release the grab"); return; }
+            helper.succeed();
+        }
+        finally { level.removeBlock(base.offset(0, 0, 1), false); victim.stopRiding(); mount.discard(); owner.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void teleportBurstPacketAndLatticePreserveEndpoints(GameTestHelper helper)
     {
         var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_monitor");

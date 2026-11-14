@@ -23,6 +23,18 @@ public final class TelekinesisState
         data.getData().set(Vars.GRAB_DISTANCE, 0.0F);
     }
 
+    /** Break a target's ownership when it escapes, without releasing a different target. */
+    public static void releaseGrabbed(Entity target)
+    {
+        var tag = target.getPersistentData();
+        if (!tag.contains(GRABBED_BY_TAG)) return;
+        Entity owner = target.level().getEntity(tag.getInt(GRABBED_BY_TAG));
+        SHPlayerData data = SHDataCapabilities.getPlayer(owner);
+        if (owner instanceof LivingEntity living && data != null && data.getData().get(Vars.GRAB_ID) == target.getId())
+            release(living, data);
+        tag.remove(GRABBED_BY_TAG); // Also discard stale ownership from unloaded or replaced entities.
+    }
+
     public static boolean canClaim(LivingEntity owner, Entity target)
     {
         var tag = target.getPersistentData();
