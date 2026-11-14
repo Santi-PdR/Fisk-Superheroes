@@ -1000,6 +1000,12 @@ public final class PortRegressionTests
                 || Math.abs(colors.channel(1, 0.25F) - (2 - 1.5 * Math.sqrt(0.5))) > 1.0E-6
                 || colors.channel(2, 0.5F) != 1 || Math.abs(colors.channel(0, 1) - 1) > 1.0E-6)
         { helper.fail("Cloud colors must animate start to end and back using the legacy sine crest"); return; }
+        var monitor = com.google.gson.JsonParser.parseString("{\"color\":{\"start\":\"0x00B8FF\",\"end\":\"0x004BB2\"}}").getAsJsonObject();
+        var monitorColors = com.fiskmods.heroes.common.util.CloudColors.sample(monitor, new java.util.Random(3));
+        if (monitorColors.channel(0, 0) != 0 || Math.abs(monitorColors.channel(1, 0) - 184.0F / 255) > 1.0E-6
+                || Math.abs(monitorColors.channel(1, 0.5F) - 75.0F / 255) > 1.0E-6
+                || Math.abs(monitorColors.channel(2, 0.5F) - 178.0F / 255) > 1.0E-6)
+        { helper.fail("Whole-color Monitor gradients must keep their exact start and end values"); return; }
         var cyclic = com.google.gson.JsonParser.parseString("{\"color\":{\"red\":\"green * 1\",\"green\":\"red * 1\",\"blue\":1}}").getAsJsonObject();
         if (!Float.isFinite(com.fiskmods.heroes.common.util.CloudColors.sample(cyclic, new java.util.Random()).channel(0, 0)))
         { helper.fail("Cyclic pack expressions must not recurse forever"); return; }

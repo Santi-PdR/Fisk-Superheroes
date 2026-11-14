@@ -130,13 +130,14 @@ final class ParticleEmitterRenderer
                 || mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(target.position()) > 1024.0D) return;
 
         Random pattern = new Random(253151369061L + (long) (target.tickCount / 6) * 7694536L);
+        Random colorsRandom = new Random();
         int count = Math.min(64, 1 + (int) (Math.sqrt(target.getBbWidth() * target.getBbHeight()) * 10.0D));
         for (int i = 0; i < count; ++i)
         {
             if (mc.options.particles().get() == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) continue;
             Vec3 rotation = randomUnit(pattern);
             Vec3 direction = randomUnit(pattern);
-            var colors = com.fiskmods.heroes.common.util.CloudColors.sample(cloud, pattern);
+            var colors = com.fiskmods.heroes.common.util.CloudColors.sample(cloud, colorsRandom);
             mc.particleEngine.add(new TelekinesisAuraParticle(mc.level, target, rotation, direction, colors));
         }
         if (PARTICLE_DIAGNOSTICS && EMITTER_DIAGNOSTICS.add("aura:" + id))
