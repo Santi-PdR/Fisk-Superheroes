@@ -583,6 +583,23 @@ public class HeroPackEngine
             }
         }
 
+        // Augment definitions are keyed by the hero's id and preserve their JSON order: each
+        // index is persisted in four bits on the suit core, matching the original format.
+        for (Map.Entry<String, String> e : files.entrySet())
+        {
+            String path = e.getKey();
+            if (!path.startsWith("data/augments/") || !path.endsWith(".json")) continue;
+            String id = path.substring("data/augments/".length(), path.length() - ".json".length());
+            try
+            {
+                Hero hero = Hero.REGISTRY.getHero(new ResourceLocation(domain, id));
+                if (hero != null) hero.setAugmentSet(com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(
+                        JsonParser.parseString(e.getValue()).getAsJsonObject()));
+                else FiskHeroes.LOGGER.warn("No hero found for augment definition {}", path);
+            }
+            catch (Exception ex) { FiskHeroes.LOGGER.warn("Could not read augment definition {}", path, ex); }
+        }
+
         return new LoadedPack(new PackSource(name, heroCount, powerCount));
     }
 

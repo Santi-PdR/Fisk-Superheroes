@@ -262,6 +262,103 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void augmentorEnforcesLevelsAndPreservesSuit(GameTestHelper helper)
+    {
+        Hero hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (hero == null || hero.getAugmentSet().size() != 5)
+        { helper.fail("Iron Man's original augment data did not load"); return; }
+        var set = hero.getAugmentSet();
+        if (set.get(0).attribute() != com.fiskmods.heroes.common.hero.HeroAttribute.DAMAGE_REDUCTION
+                || set.get(1).attribute() != com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE
+                || set.get(1).min() != 3 || set.get(1).max() != 5)
+        { helper.fail("Augment order or range does not match the pack"); return; }
+        BlockPos rel = new BlockPos(1, 1, 1);
+        helper.setBlock(rel, ModBlocks.SUIT_AUGMENTOR.get());
+        BlockPos pos = helper.absolutePos(rel);
+        var player = helper.makeMockPlayer();
+        player.setPos(pos.getX() + .5, pos.getY() + .5, pos.getZ() + .5);
+        var menu = new com.fiskmods.heroes.common.block.SuitAugmentorMenu(1, player.getInventory(), pos);
+        var core = ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[1]);
+        core.getOrCreateTag().putString("Keep", "yes");
+        menu.input.setItem(0, core);
+        menu.input.setItem(1, new ItemStack(ModItems.SUIT_UPGRADE.get(), 2));
+        if (menu.clickMenuButton(player, -1) || menu.clickMenuButton(player, 9)
+                || menu.clickMenuButton(player, 1) || menu.input.getItem(1).getCount() != 2)
+        { helper.fail("Invalid index or incorrect material must never consume an upgrade"); return; }
+        menu.input.setItem(1, new ItemStack(ModItems.SUIT_UPGRADE_VIBRANIUM.get(), 2));
+        if (!menu.clickMenuButton(player, 1) || set.level(ItemHeroArmor.getUpgrades(core), set.get(1)) != 1
+                || menu.input.getItem(1).getCount() != 1 || menu.clickMenuButton(player, 1))
+        { helper.fail("The first punch upgrade must consume exactly one tier IV item"); return; }
+        menu.input.setItem(1, new ItemStack(ModItems.SUIT_UPGRADE_DWARF_STAR.get(), 2));
+        if (!menu.clickMenuButton(player, 1) || menu.clickMenuButton(player, 1)
+                || menu.input.getItem(1).getCount() != 1 || !"yes".equals(core.getTag().getString("Keep")))
+        { helper.fail("The last upgrade must stop at max and preserve suit tags"); return; }
+        var copy = ItemStack.of(core.save(new net.minecraft.nbt.CompoundTag()));
+        if (ItemHeroArmor.getUpgrades(copy) != 0x20 || set.level(ItemHeroArmor.getUpgrades(copy), set.get(1)) != 2)
+        { helper.fail("Packed upgrades must round-trip in the original four-bit format"); return; }
+        player.setPos(pos.getX() + 100, pos.getY(), pos.getZ());
+        menu.input.setItem(1, new ItemStack(ModItems.SUIT_UPGRADE_GOLD_TITANIUM.get()));
+        if (menu.clickMenuButton(player, 0) || menu.input.getItem(1).isEmpty())
+        { helper.fail("Remote menu requests must be rejected"); return; }
+        menu.input.setItem(0, ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[0]));
+        if (menu.canUpgrade(0)) { helper.fail("A non-core suit piece must be rejected"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void augmentedAttributesApplyAndDoNotLeak(GameTestHelper helper)
+    {
+        Hero hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null || hero.getAugmentSet().size() != 5)
+        { helper.fail("Missing Iron Man or augment data"); return; }
+        var core = ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[1]);
+        // One damage-reduction level and two punch levels.
+        ItemHeroArmor.setUpgrades(core, 0x21);
+        player.getInventory().armor.set(2, core);
+        data.setHero(hero.getDefaultIteration());
+        var attrs = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
+        var punch = attrs.get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE);
+        var reduction = attrs.get(com.fiskmods.heroes.common.hero.HeroAttribute.DAMAGE_REDUCTION);
+        if (punch == null || Math.abs(punch.amount() - 10) > .001 || reduction == null
+                || Math.abs(reduction.amount() - (1 - 1 / 1.1)) > .001)
+        { helper.fail("Original augment formulas were not applied to equipped core"); return; }
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var damage = new net.minecraftforge.event.entity.living.LivingDamageEvent(player, player.damageSources().playerAttack(player), 11F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingDamage(damage);
+        if (Math.abs(damage.getAmount() - 10F) > .001)
+        { helper.fail("Damage reduction must apply after armor"); return; }
+        var bypass = new net.minecraftforge.event.entity.living.LivingDamageEvent(player, player.damageSources().fellOutOfWorld(), 11F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingDamage(bypass);
+        if (Math.abs(bypass.getAmount() - 11F) > .001)
+        { helper.fail("Armor-bypassing damage must not be reduced"); return; }
+        player.getInventory().armor.set(2, ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (Math.abs(player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.PUNCH_DAMAGE.get()) - 9.0) > .001
+                || player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.DAMAGE_REDUCTION.get()) != 0)
+        { helper.fail("Removing the core must remove its augment modifiers"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void augmentParsingRejectsInvalidRanges(GameTestHelper helper)
+    {
+        var set = com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
+                "{\"attributes\":{\"PUNCH_DAMAGE\":2,\"FALL_RESISTANCE\":[1,4]}}").getAsJsonObject());
+        if (set.size() != 2 || set.get(0).min() != 0 || set.get(0).max() != 2
+                || set.level(0xF0, set.get(1)) != 3)
+        { helper.fail("Scalar ranges or malformed stored levels were not handled safely"); return; }
+        try
+        {
+            com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
+                    "{\"attributes\":{\"PUNCH_DAMAGE\":[4,8]}}").getAsJsonObject());
+            helper.fail("Unsupported upgrade range should be rejected");
+        }
+        catch (IllegalArgumentException expected) { helper.succeed(); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void miniatureArmorRoundTrip(GameTestHelper helper)
     {
         Hero hero = FabricatorRecipes.getCraftableHeroes().stream().findFirst().orElse(null);

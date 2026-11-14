@@ -63,6 +63,7 @@ public final class ModBlocks
     public static final RegistryObject<Block> COBBLED_LUNAR_ROCK = register("cobbled_lunar_rock", 2.0F, 10.0F, false, 0);
     public static final RegistryObject<Block> ALLOY_SMELTERY = registerAlloySmeltery();
     public static final RegistryObject<Block> SUIT_ITERATOR = registerSuitIterator();
+    public static final RegistryObject<Block> SUIT_AUGMENTOR = registerSuitAugmentor();
     public static final RegistryObject<Block> SUIT_FABRICATOR = registerSuitFabricator("suit_fabricator", false);
     public static final RegistryObject<Block> COSMIC_SUIT_FABRICATOR = registerSuitFabricator("cosmic_suit_fabricator", true);
     /** Invisible, short-lived redstone source used by trick pulse arrows. */
@@ -71,7 +72,7 @@ public final class ModBlocks
                     .noLootTable().noOcclusion().noCollission()));
 
     public static final List<RegistryObject<Block>> ALL = List.of(
-            ALLOY_SMELTERY, SUIT_ITERATOR, SUIT_FABRICATOR, COSMIC_SUIT_FABRICATOR,
+            ALLOY_SMELTERY, SUIT_ITERATOR, SUIT_AUGMENTOR, SUIT_FABRICATOR, COSMIC_SUIT_FABRICATOR,
             TUTRIDIUM_STONE, TUTRIDIUM_BLOCK,
             CRYSTALLINE_TUTRITE_BLOCK, IRIDESCENT_GOLD_BLOCK, VIBRANIUM_BLOCK, TITANIUM_BLOCK,
             GOLD_TITANIUM_BLOCK, DWARF_STAR_BLOCK, OLIVINE_BLOCK, PACKED_OLIVINE, ETERNIUM_BLOCK, SUPERCHARGED_ETERNIUM, ETERNIUM_STONE,
@@ -174,6 +175,15 @@ public final class ModBlocks
                         .strength(5.0F, 10.0F).sound(SoundType.STONE).requiresCorrectToolForDrops()
                         .lightLevel(state -> state.getValue(AlloySmelteryBlock.LIT) ? 13 : 0)));
         ITEMS.register("alloy_smeltery", () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
+    }
+
+    private static RegistryObject<Block> registerSuitAugmentor()
+    {
+        RegistryObject<Block> block = REGISTRY.register("suit_augmentor", () ->
+                new SuitAugmentorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                        .strength(3.0F, 5.0F).sound(SoundType.METAL).requiresCorrectToolForDrops()));
+        ITEMS.register("suit_augmentor", () -> new BlockItem(block.get(), new Item.Properties()));
         return block;
     }
 

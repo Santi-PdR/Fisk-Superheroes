@@ -51,6 +51,11 @@ public class Hero implements Comparable<Hero>
     private boolean hidden;
     private boolean maskToggle = true;
 
+    private com.fiskmods.heroes.common.hero.augment.AugmentSet augmentSet = com.fiskmods.heroes.common.hero.augment.AugmentSet.EMPTY;
+
+    public com.fiskmods.heroes.common.hero.augment.AugmentSet getAugmentSet() { return augmentSet; }
+    public void setAugmentSet(com.fiskmods.heroes.common.hero.augment.AugmentSet set) { augmentSet = java.util.Objects.requireNonNull(set); }
+
     private final Map<HeroAttribute, List<AttributeMod>> attributes = new EnumMap<>(HeroAttribute.class);
     private volatile Map<HeroAttribute, List<AttributeMod>> attributeSnapshot;
     private final Map<String, Map<HeroAttribute, AttributeMod>> attributeProfiles = new LinkedHashMap<>();

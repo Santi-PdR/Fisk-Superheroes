@@ -41,7 +41,11 @@ public class ModItems
 
     /* --- Crafting materials --- */
     public static final RegistryObject<Item> SUIT_CORE = REGISTRY.register("suit_core", () -> new Item(new Item.Properties()));
-    public static final RegistryObject<Item> SUIT_UPGRADE = REGISTRY.register("suit_upgrade", () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_UPGRADE = REGISTRY.register("suit_upgrade", () -> new ItemSuitUpgrade(0, new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_UPGRADE_GOLD = REGISTRY.register("suit_upgrade_gold", () -> new ItemSuitUpgrade(1, new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_UPGRADE_GOLD_TITANIUM = REGISTRY.register("suit_upgrade_gold_titanium", () -> new ItemSuitUpgrade(2, new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_UPGRADE_VIBRANIUM = REGISTRY.register("suit_upgrade_vibranium", () -> new ItemSuitUpgrade(3, new Item.Properties()));
+    public static final RegistryObject<Item> SUIT_UPGRADE_DWARF_STAR = REGISTRY.register("suit_upgrade_dwarf_star", () -> new ItemSuitUpgrade(4, new Item.Properties()));
     public static final RegistryObject<Item> SUIT_DRIVE = REGISTRY.register("suit_drive", () -> new ItemSuitDrive(new Item.Properties()));
     public static final RegistryObject<Item> METAHUMAN_LOG = REGISTRY.register("metahuman_log", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> TUTRIDIUM_GEM = REGISTRY.register("tutridium_gem", () -> new Item(new Item.Properties()));
@@ -182,6 +186,10 @@ public class ModItems
                 {
                     output.accept(SUIT_CORE.get());
                     output.accept(SUIT_UPGRADE.get());
+                    output.accept(SUIT_UPGRADE_GOLD.get());
+                    output.accept(SUIT_UPGRADE_GOLD_TITANIUM.get());
+                    output.accept(SUIT_UPGRADE_VIBRANIUM.get());
+                    output.accept(SUIT_UPGRADE_DWARF_STAR.get());
                     output.accept(SUIT_DRIVE.get());
                     output.accept(METAHUMAN_LOG.get());
                     output.accept(TUTRIDIUM_GEM.get());

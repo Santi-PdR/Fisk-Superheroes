@@ -322,6 +322,14 @@ public class CommonEventHandler
     public static void onLivingDamage(net.minecraftforge.event.entity.living.LivingDamageEvent event)
     {
         if (event.getAmount() <= 0.0F || event.getEntity().level().isClientSide) return;
+        // Apply the extra suit reduction after vanilla armor; armor-bypassing damage must
+        // remain armor-bypassing. No unaugmented suit changes behavior here.
+        if (!event.getSource().is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR))
+        {
+            var reduction = event.getEntity().getAttribute(SHAttributes.DAMAGE_REDUCTION.get());
+            if (reduction != null && reduction.getValue() > 0.0D)
+                event.setAmount((float) (event.getAmount() * (1.0D - Math.min(1.0D, reduction.getValue()))));
+        }
         var data = SHDataCapabilities.getPlayer(event.getEntity());
         if (data != null) data.getData().set(com.fiskmods.heroes.common.data.var.Vars.TIME_SINCE_DAMAGED, (short) 0);
     }

@@ -156,7 +156,10 @@ public class SHAttributes
             Hero.AttributeMod mod = attribute == HeroAttribute.SPRINT_SPEED && !entity.isSprinting()
                     ? null : values.get(attribute);
             double amount = mod != null ? mod.amount() : 0.0D;
-            AttributeModifier.Operation operation = mod != null ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
+            // DAMAGE_REDUCTION represents a fraction and has a zero base in this port.
+            // A multiply-base modifier on zero would silently discard the augment.
+            AttributeModifier.Operation operation = mod != null && attribute != HeroAttribute.DAMAGE_REDUCTION
+                    ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
 
             if (Math.abs(amount) < 1.0E-5D)
             {
@@ -297,6 +300,7 @@ public class SHAttributes
             map.put(e.getKey(), combine(e.getValue()));
         }
 
+        boolean revokeAugments = false;
         ScriptFunction profileFunc = hero.getAttributeProfileFunc();
 
         if (profileFunc != null)
@@ -318,10 +322,36 @@ public class SHAttributes
                     // Original profiles are keyed by attribute: their own entry takes
                     // precedence over an inherited default, rather than adding to it.
                     map.putAll(profileMods);
+                    revokeAugments = hero.profileRevokesAugments(profile);
                 }
             }
         }
 
+        if (!revokeAugments && entity instanceof Player player)
+        {
+            int core = hero.getCorePieceOfSet();
+            if (core >= 0)
+            {
+                var stack = player.getInventory().armor.get(3 - core);
+                var worn = com.fiskmods.heroes.common.hero.ItemHeroArmor.getHero(stack);
+                if (com.fiskmods.heroes.common.hero.ItemHeroArmor.isCore(stack) && worn != null && worn.getHero() == hero)
+                {
+                    int packed = com.fiskmods.heroes.common.hero.ItemHeroArmor.getUpgrades(stack);
+                    var set = hero.getAugmentSet();
+                    for (var entry : set.entries())
+                    {
+                        int level = set.level(packed, entry);
+                        if (level == 0) continue;
+                        Hero.AttributeMod base = map.get(entry.attribute());
+                        int op = base != null ? base.operation()
+                                : com.fiskmods.heroes.common.hero.augment.AugmentSet.defaultOperation(entry.attribute());
+                        double value = base != null ? base.amount() : 0.0D;
+                        double result = com.fiskmods.heroes.common.hero.augment.AugmentSet.apply(entry.attribute(), value, op, level);
+                        map.put(entry.attribute(), new Hero.AttributeMod(result, op));
+                    }
+                }
+            }
+        }
         return map;
     }
 

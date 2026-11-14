@@ -28,6 +28,25 @@ public class ItemHeroArmor extends ArmorItem
     public static final String TAG_ITERATION = "Iteration";
     public static final String TAG_UNLOCKED = "NeedsUnlock";
     public static final String TAG_WEAPONS = "Equipment";
+    public static final String TAG_UPGRADES = "Upgrades";
+
+    public static int getUpgrades(ItemStack stack)
+    {
+        return stack.hasTag() && stack.getTag().contains(TAG_UPGRADES, Tag.TAG_INT)
+                ? stack.getTag().getInt(TAG_UPGRADES) & 0xFFFFFF : 0;
+    }
+
+    public static void setUpgrades(ItemStack stack, int packed)
+    {
+        stack.getOrCreateTag().putInt(TAG_UPGRADES, packed & 0xFFFFFF);
+    }
+
+    public static boolean isCore(ItemStack stack)
+    {
+        HeroIteration iteration = getHero(stack);
+        return iteration != null && stack.getItem() instanceof ItemHeroArmor armor
+                && armor.getSlot() == iteration.getHero().getCorePieceOfSet();
+    }
 
     private final int slot;
     private static volatile ArmorTextureResolver armorTextureResolver;

@@ -34,6 +34,7 @@ public final class ClientModEvents
             MenuScreens.register(ModMenus.QUIVER.get(), QuiverScreen::new);
             MenuScreens.register(ModMenus.ALLOY_SMELTERY.get(), com.fiskmods.heroes.client.gui.AlloySmelteryScreen::new);
             MenuScreens.register(ModMenus.SUIT_ITERATOR.get(), com.fiskmods.heroes.client.gui.SuitIteratorScreen::new);
+            MenuScreens.register(ModMenus.SUIT_AUGMENTOR.get(), com.fiskmods.heroes.client.gui.SuitAugmentorScreen::new);
             MenuScreens.register(ModMenus.SUIT_FABRICATOR.get(), com.fiskmods.heroes.client.gui.SuitFabricatorScreen::new);
             ItemProperties.register(ModItems.COMPOUND_BOW.get(), new net.minecraft.resources.ResourceLocation("pulling"),
                     (stack, level, entity, seed) -> entity != null && entity.isUsingItem() && entity.getUseItem() == stack ? 1.0F : 0.0F);
