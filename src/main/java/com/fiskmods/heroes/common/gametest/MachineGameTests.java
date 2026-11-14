@@ -452,6 +452,34 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void augmentedCoreSurvivesIteratorAndRing(GameTestHelper helper)
+    {
+        Hero captain = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        Hero flash = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (captain == null || flash == null || captain.findIteration("aou").isEmpty())
+        { helper.fail("Suit variants for augment persistence are missing"); return; }
+        var player = helper.makeMockPlayer();
+        var menu = new com.fiskmods.heroes.common.block.SuitIteratorMenu(1, player.getInventory(), BlockPos.ZERO);
+        var core = ItemHeroArmor.create(captain.getDefaultIteration(), ModItems.heroArmor[1]);
+        ItemHeroArmor.setUpgrades(core, 0x12345);
+        menu.armorInput.setItem(1, core);
+        menu.applyIteration("aou");
+        if (ItemHeroArmor.getHero(core) != captain.findIteration("aou").orElseThrow()
+                || ItemHeroArmor.getUpgrades(core) != 0x12345)
+        { helper.fail("Changing a compatible iteration must preserve all augment nibbles"); return; }
+        var flashCore = ItemHeroArmor.create(flash.getDefaultIteration(), ModItems.heroArmor[1]);
+        ItemHeroArmor.setUpgrades(flashCore, 0x123456);
+        var ring = new ItemStack(ModItems.FLASH_RING.get());
+        ItemFlashRing.setContainedArmor(ring, ItemStack.EMPTY, flashCore, ItemStack.EMPTY, ItemStack.EMPTY);
+        ring = ItemStack.of(ring.save(new net.minecraft.nbt.CompoundTag()));
+        var stored = ItemFlashRing.getContainedArmor(ring);
+        if (stored == null || ItemHeroArmor.getHero(stored[1]) != flash.getDefaultIteration()
+                || ItemHeroArmor.getUpgrades(stored[1]) != 0x123456)
+        { helper.fail("Ring serialization must preserve the upgraded suit core"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void augmentParsingRejectsInvalidRanges(GameTestHelper helper)
     {
         var set = com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
@@ -464,6 +492,13 @@ public final class MachineGameTests
             com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
                     "{\"attributes\":{\"PUNCH_DAMAGE\":[4,8]}}").getAsJsonObject());
             helper.fail("Unsupported upgrade range should be rejected");
+        }
+        catch (IllegalArgumentException expected) { }
+        try
+        {
+            com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
+                    "{\"attributes\":{\"PUNCH_DAMAGE\":3,\"punch_damage\":4}}").getAsJsonObject());
+            helper.fail("A duplicate attribute must not create conflicting packed indices");
         }
         catch (IllegalArgumentException expected) { helper.succeed(); }
     }

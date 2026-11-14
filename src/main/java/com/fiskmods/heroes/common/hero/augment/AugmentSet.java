@@ -34,10 +34,12 @@ public final class AugmentSet
     {
         if (!root.has("attributes") || !root.get("attributes").isJsonObject()) return EMPTY;
         List<Entry> entries = new ArrayList<>();
+        var seen = java.util.EnumSet.noneOf(HeroAttribute.class);
         for (var item : root.getAsJsonObject("attributes").entrySet())
         {
             HeroAttribute attribute = HeroAttribute.byName(item.getKey());
             if (attribute == null) throw new IllegalArgumentException("Unknown augment attribute " + item.getKey());
+            if (!seen.add(attribute)) throw new IllegalArgumentException("Duplicate augment attribute " + item.getKey());
             if (entries.size() >= MAX_ENTRIES) throw new IllegalArgumentException("At most six augment attributes are supported");
             JsonElement value = item.getValue();
             int min, max;
