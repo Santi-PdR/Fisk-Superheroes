@@ -1,334 +1,370 @@
 PASS: dedicated server ready
-FAIL: Timed out: client joined dedicated server
-Traceback (most recent call last):
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/dedicated_flight_smoke.py", line 379, in <module>
-    main()
-    ~~~~^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/dedicated_flight_smoke.py", line 48, in main
-    wait_for(SERVER_LOG, r'Dev\[/.*logged in with entity id', 360, 'client joined dedicated server', client)
-    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/dedicated_flight_smoke.py", line 26, in wait_for
-    raise RuntimeError(f'Timed out: {label}')
-RuntimeError: Timed out: client joined dedicated server
+PASS: client joined dedicated server
+PASS: ordinary long fall without a suit
+PASS: Iron Man double jump activates controlled flight
+PASS: Iron Man hovers in survival
+PASS: a second double jump stops controlled flight
+PASS: Vision suit equipped on dedicated server
+PASS: flight activation reached dedicated server
+PASS: server measured hover delta
+PASS: dedicated survival hover, delta=0.00 blocks
+PASS: dedicated survival flight ascends
+PASS: dedicated survival flight steers forward
+PASS: dedicated client flight smoke completed
+PASS: Doctor Octopus suit equipped
+PASS: deploy tentacles through real client
+PASS: send tentacle jab through real client
+PASS: dedicated server jab animates the client tentacle
+PASS: grab opens the actual animated claw model
+PASS: dedicated tentacle jab is blocked by wall
+PASS: charge tentacle strike through real client
+PASS: charging animates the original claw blade model
+PASS: visible tentacle geometry in 110x120+470+290: 0.1132
+PASS: visible tentacle geometry in 110x120+700+290: 0.0983
+PASS: retracting cancels held strike on server
+PASS: dedicated tentacle jab hits exposed target
+PASS: dedicated client tentacle smoke completed
+PASS: Obsidian suit equipped
+PASS: activate shadowform through real client
+PASS: shadowform lifts player from ground without jumping
+PASS: Obsidian shadowform ascends in survival
+PASS: shadowform naturally expires
+PASS: post-flight descent remains connected
+PASS: dedicated passive flight smoke completed
+PASS: Spider-Man equipped for web test
+PASS: enable web swinging through real client
+PASS: long-range empty-hand web attaches to block once while held
+PASS: web launch impulse moves the real client
+PASS: second use releases web
+PASS: long-range web attaches to a living entity
+PASS: web follows the moving entity anchor
+PASS: entity web releases cleanly
+PASS: dedicated long-range web interactions completed
+PASS: Spider-Man equipped on dedicated server
+PASS: Spider-Man climbs a wall in survival
+PASS: Spider-Man stays attached while idle
+PASS: moving away releases the wall
+PASS: dedicated wall crawl smoke completed
+PASS: long fall after wall landing stays connected
 ==== server tail ====
-    "1.19-recommended": "41.1.0",
-    "1.19.1-latest": "42.0.9",
-    "1.19.2-recommended": "43.5.0",
-    "1.19.2-latest": "43.5.2",
-    "1.19.3-latest": "44.1.23",
-    "1.19.3-recommended": "44.1.0",
-    "1.19.4-recommended": "45.4.0",
-    "1.19.4-latest": "45.4.5",
-    "1.20-latest": "46.0.14",
-    "1.20.1-recommended": "47.4.28",
-    "1.20.1-latest": "47.4.29",
-    "1.20.2-latest": "48.1.0",
-    "1.20.2-recommended": "48.1.0",
-    "1.20.3-latest": "49.0.2",
-    "1.20.4-latest": "49.2.13",
-    "1.20.4-recommended": "49.2.13",
-    "1.20.6-latest": "50.2.15",
-    "1.20.6-recommended": "50.2.14",
-    "1.21-latest": "51.0.33",
-    "1.21.1-latest": "52.1.21",
-    "1.21.1-recommended": "52.1.20",
-    "1.21.3-latest": "53.1.16",
-    "1.21.3-recommended": "53.1.16",
-    "1.21.4-latest": "54.1.22",
-    "1.21.4-recommended": "54.1.22",
-    "1.21.5-latest": "55.1.18",
-    "1.21.5-recommended": "55.1.18",
-    "1.21.6-latest": "56.0.9",
-    "1.21.7-latest": "57.0.3",
-    "1.21.8-latest": "58.1.26",
-    "1.21.8-recommended": "58.1.26",
-    "1.21.9-latest": "59.0.5",
-    "1.21.10-latest": "60.1.18",
-    "1.21.10-recommended": "60.1.18",
-    "1.21.11-latest": "61.2.5",
-    "1.21.11-recommended": "61.2.4",
-    "26.1-latest": "62.0.9",
-    "26.1.1-latest": "63.0.2",
-    "26.1.2-latest": "64.1.6",
-    "26.1.2-recommended": "64.1.5",
-    "26.2-latest": "65.1.6",
-    "26.2-recommended": "65.1.5",
-    "26.3-latest": "66.1.8",
-    "26.3-recommended": "66.1.8"
-  }
-}
-[01:02:01] [Forge Version Check/INFO] [ne.mi.fm.VersionChecker/]: [forge] Found status: OUTDATED Current: 47.4.10 Target: 47.4.28
-[01:02:02] [main/INFO] [Fisk's Superheroes/]: Loaded 1 hero pack(s): 67 heroes, 97 powers, 250 sounds
-[01:02:02] [main/INFO] [Fisk's Superheroes/]: Fisk's Superheroes loaded: 67 heroes, 97 powers, 232 data variables
-[01:02:02] [main/WARN] [ne.mi.fm.DeferredWorkQueue/LOADING]: Mod 'fiskheroes' took 5.435 s to run a deferred task.
-[01:02:02] [main/DEBUG] [ne.mi.fm.DeferredWorkQueue/LOADING]: Synchronous work queue completed in 5.436 s
-[01:02:02] [main/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Freezing registries
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: FROZEN -> ACTIVE
-[01:02:02] [main/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: FROZEN -> ACTIVE
-[01:02:03] [main/DEBUG] [ne.mi.re.GameData/REGISTRIES]: All registries frozen
-[01:02:03] [main/INFO] [mojang/YggdrasilAuthenticationService]: Environment: authHost='https://authserver.mojang.com', accountsHost='https://api.mojang.com', sessionHost='https://sessionserver.mojang.com', servicesHost='https://api.minecraftservices.com', name='PROD'
-[01:02:04] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar%23181!/assets/.mcassetsroot' uses unexpected schema
-[01:02:04] [main/WARN] [minecraft/VanillaPackResourcesBuilder]: Assets URL 'union:/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar%23181!/data/.mcassetsroot' uses unexpected schema
-[01:02:04] [main/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[01:02:04] [main/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:forge for mod file /
-[01:02:04] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[01:02:04] [main/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/server/commands/SummonCommand
-[01:02:10] [Worker-Main-1/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
-[01:02:10] [main/INFO] [minecraft/RecipeManager]: Loaded 7 recipes
-[01:02:11] [main/INFO] [minecraft/AdvancementList]: Loaded 1271 advancements
-[01:02:11] [main/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
-[01:02:11] [main/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
-[01:02:11] [Server thread/INFO] [minecraft/DedicatedServer]: Starting minecraft server version 1.20.1
-[01:02:11] [Server thread/INFO] [minecraft/DedicatedServer]: Loading properties
-[01:02:11] [Server thread/INFO] [minecraft/DedicatedServer]: Default game type: SURVIVAL
-[01:02:11] [Server thread/INFO] [minecraft/MinecraftServer]: Generating keypair
-[01:02:11] [Server thread/INFO] [minecraft/DedicatedServer]: Starting Minecraft server on *:25565
-[01:02:11] [Server thread/DEBUG] [ne.mi.ne.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.NativeLibraryLoader/]: -Dio.netty.native.workdir: /tmp (io.netty.tmpdir)
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.NativeLibraryLoader/]: -Dio.netty.native.deleteLibAfterLoading: true
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.NativeLibraryLoader/]: -Dio.netty.native.tryPatchShadedId: true
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.NativeLibraryLoader/]: -Dio.netty.native.detectNativeLibraryDuplicates: true
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.NativeLibraryLoader/]: Successfully loaded the library /tmp/libnetty_transport_native_epoll_x86_641807646725658865249.so
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv4Stack: false
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: -Djava.net.preferIPv6Addresses: true
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.NetUtilInitializations/]: Loopback interface: lo (lo, 0:0:0:0:0:0:0:1%lo)
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.NetUtil/]: /proc/sys/net/core/somaxconn: 4096
-[01:02:11] [Server thread/INFO] [minecraft/ServerConnectionListener]: Using epoll channel type
-[01:02:11] [Server thread/DEBUG] [io.ne.ch.MultithreadEventLoopGroup/]: -Dio.netty.eventLoopThreads: 8
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.initialSize: 1024
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.InternalThreadLocalMap/]: -Dio.netty.threadLocalMap.stringBuilder.maxSize: 4096
-[01:02:11] [Server thread/DEBUG] [io.ne.ut.in.PlatformDependent/]: org.jctools-core.MpscChunkedArrayQueue: available
-[01:02:11] [Server thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.processId: 3780 (auto-detected)
-[01:02:11] [Server thread/DEBUG] [io.ne.ch.DefaultChannelId/]: -Dio.netty.machineId: e4:fa:de:ff:fe:2f:d0:1b (auto-detected)
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numHeapArenas: 8
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.numDirectArenas: 8
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.pageSize: 8192
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxOrder: 9
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.chunkSize: 4194304
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.smallCacheSize: 256
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.normalCacheSize: 64
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedBufferCapacity: 32768
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimInterval: 8192
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.cacheTrimIntervalMillis: 0
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.useCacheForAllThreads: false
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.PooledByteBufAllocator/]: -Dio.netty.allocator.maxCachedByteBuffersPerChunk: 1023
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.allocator.type: pooled
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.threadLocalDirectBufferSize: 0
-[01:02:11] [Server thread/DEBUG] [io.ne.bu.ByteBufUtil/]: -Dio.netty.maxThreadLocalCharBufferSize: 16384
-[01:02:11] [Server thread/WARN] [minecraft/DedicatedServer]: **** SERVER IS RUNNING IN OFFLINE/INSECURE MODE!
-[01:02:11] [Server thread/WARN] [minecraft/DedicatedServer]: The server will make no attempt to authenticate usernames. Beware.
-[01:02:11] [Server thread/WARN] [minecraft/DedicatedServer]: While this makes the game possible to play without internet access, it also opens up the ability for hackers to connect with any username they choose.
-[01:02:11] [Server thread/WARN] [minecraft/DedicatedServer]: To change this, set "online-mode" to "true" in the server.properties file.
-[01:02:11] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Loading configs type SERVER
-[01:02:11] [Server thread/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for ./world/serverconfig/forge-server.toml
-[01:02:11] [Server thread/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file ./world/serverconfig/forge-server.toml
-[01:02:11] [Server thread/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file ./world/serverconfig/forge-server.toml for changes
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file ./world/serverconfig/forge-server.toml is not correct. Correcting
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server was corrected from null to its default, SimpleCommentedConfig:{}. 
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.fullBoundingBoxLadders was corrected from null to its default, false. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.fullBoundingBoxLadders does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBaseSummonChance was corrected from null to its default, 0.1. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.zombieBaseSummonChance does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.zombieBabyChance was corrected from null to its default, 0.05. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.zombieBabyChance does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.permissionHandler was corrected from null to its default, forge:default_handler. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.permissionHandler does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.advertiseDedicatedServerToLan was corrected from null to its default, true. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.advertiseDedicatedServerToLan does not match the spec. This may create a backup.
-[01:02:11] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.useItemWithDurationZero was corrected from null to its default, false. 
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.useItemWithDurationZero does not match the spec. This may create a backup.
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server does not match the spec. This may create a backup.
-[01:02:11] [Thread-1/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file forge-server.toml changed, sending notifies
-[01:02:11] [Thread-1/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Loaded forge config file forge-server.toml
-[01:02:11] [Thread-1/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file forge-server.toml changed, sending notifies
-[01:02:11] [Thread-1/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[01:02:11] [Thread-1/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Config file forge-server.toml changed, sending notifies
-[01:02:11] [Thread-1/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[01:02:11] [Server thread/INFO] [minecraft/DedicatedServer]: Preparing level "world"
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PhantomSpawner
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/PatrolSpawner
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/npc/CatSpawner
-[01:02:11] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/ai/village/VillageSiege
-[01:02:12] [Worker-Main-3/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/levelgen/structure/templatesystem/StructureTemplate
-[01:02:13] [Server thread/INFO] [minecraft/MinecraftServer]: Preparing start region for dimension minecraft:overworld
-[01:02:13] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[01:02:13] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 0%
-[01:02:14] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 2%
-[01:02:14] [Worker-Main-2/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x36397bd551c22324
-[01:02:14] [Worker-Main-2/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 13%
-[01:02:15] [Worker-Main-3/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 35%
-[01:02:15] [Worker-Main-1/INFO] [minecraft/LoggerChunkProgressListener]: Preparing spawn area: 70%
-[01:02:15] [Server thread/INFO] [minecraft/LoggerChunkProgressListener]: Time elapsed: 2829 ms
-[01:02:15] [Server thread/INFO] [minecraft/DedicatedServer]: Done (3.997s)! For help, type "help"
-[01:02:15] [Server thread/DEBUG] [ne.mi.ne.DualStackUtils/]: Detected IPv6 address: "0:0:0:0:0:0:0:0"
-[01:02:15] [Server thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 1658
-[01:02:15] [Server thread/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[01:02:15] [Server thread/INFO] [ne.mi.se.pe.PermissionAPI/]: Successfully initialized permission handler forge:default_handler
-[01:02:15] [Server thread/INFO] [Fisk's Superheroes/]: Fisk's Superheroes ready: 67 heroes registered
-[01:02:16] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkAccessible: true
-[01:02:16] [Server thread/DEBUG] [io.ne.bu.AbstractByteBuf/]: -Dio.netty.buffer.checkBounds: true
-[01:02:16] [Server thread/DEBUG] [io.ne.ut.ResourceLeakDetectorFactory/]: Loaded default ResourceLeakDetector: io.netty.util.ResourceLeakDetector@28b421f3
-[01:02:16] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/level/NaturalSpawner
-[01:07:16] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
-[01:07:16] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block_entity_type' to 'fml:handshake' sequence 11
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 11
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 11 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:display_contexts' to 'fml:handshake' sequence 12
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 12
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 12 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block' to 'fml:handshake' sequence 13
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 13
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 13 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:entity_data_serializers' to 'fml:handshake' sequence 14
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 14
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 14 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:mob_effect' to 'fml:handshake' sequence 15
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 15
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 15 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:24] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:stat_type' to 'fml:handshake' sequence 16
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 16
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 16 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:24] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:menu' to 'fml:handshake' sequence 17
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[01:15:25] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
+[01:15:25] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[01:15:25] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:50204] logged in with entity id 1 at (2.5, -60.0, 6.5)
+[01:15:25] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@1e994637 into net.minecraft.network.Connection@3a3b8d58
+[01:15:26] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[01:15:26] [Server thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x1a1b10c1d02467e9
+[01:15:26] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[01:15:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[01:15:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
+[01:15:37] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Creative Mode]
+[01:15:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 260.000000, 0.500000]
+[01:15:40] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,320.0,-6.0
+[01:15:40] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,320.0,-6.0
+[01:15:40] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -2.0,320.0,-6.0
+[01:15:42] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 289 block(s)]
+[01:15:45] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 9 block(s)]
+[01:15:47] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 260.000000, 0.500000]
+[01:15:47] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,309.0,0.0
+[01:15:47] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,309.0,0.0
+[01:15:50] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Survival Mode]
+[01:15:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Applied effect Resistance to Dev]
+[01:15:55] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Created new objective [flight_test]]
+[01:16:13] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #fallstart to 32000]
+[01:16:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] ORDINARY_LONG_FALL_OK
+[01:16:19] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Iron Man.]
+[01:16:22] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 220.000000, 0.500000]
+[01:16:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,280.0,-9.707834778485092
+[01:16:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,280.0,-9.707834778485092
+[01:16:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,280.0,-9.707834778485092
+[01:16:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,280.0,-9.707834778485092
+[01:16:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,280.0,-9.707834778485092
+[01:16:23] [Server thread/INFO] [Fisk's Superheroes/]: Controlled flight input: player=Dev, active=true
+[01:16:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #irondelta to 19541]
+[01:16:39] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #irondelta to 0]
+[01:16:42] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] IRON_FLIGHT_HOVER_OK
+[01:16:43] [Server thread/INFO] [Fisk's Superheroes/]: Controlled flight input: player=Dev, active=false
+[01:16:47] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Vision.]
+[01:16:50] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 220.000000, 0.500000]
+[01:16:50] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,269.0,0.0
+[01:16:50] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,269.0,0.0
+[01:16:50] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,269.0,0.0
+[01:16:50] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,269.0,0.0
+[01:16:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=2
+[01:16:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:vision, index=2, matching=[INTANGIBILITY]
+[01:16:51] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:vision, key=INTANGIBILITY, modifier=fiskheroes:intangibility
+[01:17:14] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 20154]
+[01:17:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 0]
+[01:17:31] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 20553]
+[01:17:34] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 399]
+[01:17:37] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] DEDICATED_FLIGHT_UP_OK
+[01:17:48] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 448]
+[01:17:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #delta to 398]
+[01:17:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] DEDICATED_FLIGHT_FORWARD_OK
+[01:17:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Creative Mode]
+[01:17:59] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:17:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,-25.53575169029392,-3.988742556946148
+[01:17:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,-25.53575169029392,-3.988742556946148
+[01:17:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,-25.53575169029392,-3.988742556946148
+[01:17:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,-25.53575169029392,-3.988742556946148
+[01:18:01] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 45 block(s)]
+[01:18:07] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Doctor Octopus.]
+[01:18:10] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
+[01:18:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 181, 2]
+[01:18:15] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:18:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=5
+[01:18:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=5, matching=[TENTACLES]
+[01:18:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLES, modifier=fiskheroes:tentacles
+[01:18:18] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[01:18:18] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=1, matching=[TENTACLE_JAB]
+[01:18:18] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_JAB, modifier=fiskheroes:tentacles
+[01:18:19] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=2
+[01:18:19] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=2, matching=[TENTACLE_GRAB]
+[01:18:19] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_GRAB, modifier=fiskheroes:tentacles
+[01:18:22] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] TENTACLE_BLOCKED_OK
+[01:18:24] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 181, 2]
+[01:18:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=3
+[01:18:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=3, matching=[TENTACLE_STRIKE]
+[01:18:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_STRIKE, modifier=fiskheroes:tentacles
+[01:18:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=5
+[01:18:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=5, matching=[TENTACLES]
+[01:18:28] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLES, modifier=fiskheroes:tentacles
+[01:18:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] TENTACLE_CANCEL_OK
+[01:18:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=5
+[01:18:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=5, matching=[TENTACLES]
+[01:18:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLES, modifier=fiskheroes:tentacles
+[01:18:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[01:18:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:doctor_octopus, index=1, matching=[TENTACLE_JAB]
+[01:18:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:doctor_octopus, key=TENTACLE_JAB, modifier=fiskheroes:tentacles
+[01:18:43] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] TENTACLE_HIT_OK
+[01:18:49] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Applied effect Resistance to Dev]
+[01:18:52] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Obsidian.]
+[01:18:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Survival Mode]
+[01:18:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[01:18:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:obsidian, index=1, matching=[SHADOWFORM]
+[01:18:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:obsidian, key=SHADOWFORM, modifier=fiskheroes:shadowform
+[01:18:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] SHADOWFORM_TAKEOFF_OK
+[01:18:59] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 45 block(s)]
+[01:19:10] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] PASSIVE_FLIGHT_UP_OK
+[01:19:25] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] PASSIVE_FLIGHT_RECOVERY_OK
+[01:19:28] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Creative Mode]
+[01:19:30] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:19:30] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:30] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:30] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:30] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:30] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 85 block(s)]
+[01:19:38] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Killed Iron Golem]
+[01:19:41] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 181, 12]
+[01:19:44] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Spider-Man.]
+[01:19:46] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:19:46] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,229.0,0.0
+[01:19:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=3
+[01:19:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:spider_man, index=3, matching=[func_WEB_SWINGING]
+[01:19:47] [Server thread/INFO] [Fisk's Superheroes/]: Ability callback executed: hero=fiskheroes:spider_man, key=func_WEB_SWINGING
+[01:19:54] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
+[01:19:54] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[01:19:57] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_BLOCK_ATTACH_OK
+[01:20:03] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_LAUNCH_OK
+[01:20:06] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_RELEASE_OK
+[01:20:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 0.500000]
+[01:20:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Summoned new Iron Golem]
+[01:20:15] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_ENTITY_ATTACH_OK
+[01:20:21] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Iron Golem to 1.500000, 180.000000, 7.500000]
+[01:20:27] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_ENTITY_MOVES_OK
+[01:20:31] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WEB_ENTITY_RELEASE_OK
+[01:20:32] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=3
+[01:20:32] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:spider_man, index=3, matching=[func_WEB_SWINGING]
+[01:20:32] [Server thread/INFO] [Fisk's Superheroes/]: Ability callback executed: hero=fiskheroes:spider_man, key=func_WEB_SWINGING
+[01:20:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Killed Iron Golem]
+[01:20:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Changed the block at 0, 181, 12]
+[01:20:41] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 20.500000]
+[01:20:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,19.27135265000833
+[01:20:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,19.27135265000833
+[01:20:41] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,19.27135265000833
+[01:20:43] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 60 block(s)]
+[01:20:49] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 155 block(s)]
+[01:20:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Equipped Spider-Man.]
+[01:20:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Teleported Dev to 0.500000, 180.000000, 21.650000]
+[01:20:54] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,240.0,1.1499999999999986
+[01:20:54] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,240.0,1.1499999999999986
+[01:20:54] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,240.0,1.1499999999999986
+[01:20:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set own game mode to Survival Mode]
+[01:20:59] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Applied effect Resistance to Dev]
+[01:21:03] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=0.7949999868869781
+[01:21:11] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #crawldelta to 19419]
+[01:21:14] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #crawldelta to 1419]
+[01:21:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WALL_CLIMB_UP_OK
+[01:21:30] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #crawldelta to 19419]
+[01:21:33] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #crawldelta to 0]
+[01:21:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WALL_CLIMB_REST_OK
+[01:21:52] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] WALL_CLIMB_RELEASE_OK
+[01:21:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Successfully filled 50 block(s)]
+[01:22:14] [Server thread/INFO] [minecraft/MinecraftServer]: [Dev: Set [flight_test] for #ledge to 22900]
+[01:22:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] POST_WALL_LONG_FALL_OK
 ==== client tail ====
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
-
-
-Failure details:
-Timed out trying to setup the Game Window.
-
-If you click yes, we will try and open https://links.minecraftforge.net/early-display-errors in your default browser
-y/n: 
-
-
-Failed to initialize graphics window with current settings.
+[01:18:15] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=true
+[01:18:16] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=5
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=false
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_enable as fiskheroes:suit.ock.enable
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:doctor_octopus slot fiskheroes:helmet from fiskheroes:textures/heroes/doctor_octopus_layer1.png
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:doctor_octopus slot fiskheroes:chestplate from fiskheroes:textures/heroes/doctor_octopus_layer1.png
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:doctor_octopus slot fiskheroes:leggings from fiskheroes:textures/heroes/doctor_octopus_pants.png
+[01:18:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:doctor_octopus slot fiskheroes:boots from fiskheroes:textures/heroes/doctor_octopus_boots.png
+[01:18:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[01:18:18] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[01:18:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[01:18:18] [Render thread/INFO] [Fisk's Superheroes/]: Tentacle action pose rendered: player=Dev, action=1, arm=0
+[01:18:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=true
+[01:18:19] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=2
+[01:18:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=2, pressed=false
+[01:18:19] [Render thread/INFO] [Fisk's Superheroes/]: Tentacle action pose rendered: player=Dev, action=2, arm=2
+[01:18:19] [Render thread/INFO] [Fisk's Superheroes/]: Octopus claw grab pose applied
+[01:18:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] TENTACLE_BLOCKED_OK
+[01:18:24] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 181, 2
+[01:18:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
+[01:18:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
+[01:18:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_strike as fiskheroes:suit.ock.strike
+[01:18:25] [Render thread/INFO] [Fisk's Superheroes/]: Tentacle action pose rendered: player=Dev, action=3, arm=1
+[01:18:25] [Render thread/INFO] [Fisk's Superheroes/]: Octopus claw strike pose applied
+[01:18:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_strike_charged as fiskheroes:suit.ock.strike.blade
+[01:18:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=true
+[01:18:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=5
+[01:18:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=false
+[01:18:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_disable as fiskheroes:suit.ock.disable
+[01:18:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
+[01:18:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] TENTACLE_CANCEL_OK
+[01:18:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=true
+[01:18:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=5
+[01:18:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=5, pressed=false
+[01:18:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_enable as fiskheroes:suit.ock.enable
+[01:18:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[01:18:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[01:18:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[01:18:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:ock_jab as fiskheroes:suit.ock.jab
+[01:18:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Health on Iron Golem after scale factor of 1.00 is 92
+[01:18:43] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] TENTACLE_HIT_OK
+[01:18:47] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] No blocks were filled
+[01:18:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Applied effect Resistance to Dev
+[01:18:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Obsidian.
+[01:18:52] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:obsidian, texture=fiskheroes:textures/heroes/obsidian_layer1.png, poseAligned=true
+[01:18:52] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:obsidian, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=117, height=10], Rect[x=4, y=157, width=117, height=10], Rect[x=4, y=168, width=117, height=10]]
+[01:18:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set own game mode to Survival Mode
+[01:18:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[01:18:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[01:18:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[01:18:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_enable as fiskheroes:modifier.shadowform.enable
+[01:18:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_loop as fiskheroes:modifier.shadowform.loop
+[01:18:56] [Render thread/INFO] [Fisk's Superheroes/]: First-person particle cloud emitted: fiskheroes:shadow_smoke
+[01:18:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] SHADOWFORM_TAKEOFF_OK
+[01:18:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 45 block(s)
+[01:19:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 16711
+[01:19:07] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 19383
+[01:19:10] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] PASSIVE_FLIGHT_UP_OK
+[01:19:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shadowform_disable as fiskheroes:modifier.shadowform.disable
+[01:19:25] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] PASSIVE_FLIGHT_RECOVERY_OK
+[01:19:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set own game mode to Creative Mode
+[01:19:30] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[01:19:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 85 block(s)
+[01:19:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] No blocks were filled
+[01:19:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Killed Iron Golem
+[01:19:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 181, 12
+[01:19:44] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Spider-Man.
+[01:19:44] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:spider_man, texture=fiskheroes:textures/heroes/spider_man_layer1.png, poseAligned=true
+[01:19:44] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:spider_man, screen=427x240, titleY=113, rows=[Rect[x=4, y=124, width=154, height=10], Rect[x=4, y=135, width=154, height=10], Rect[x=4, y=146, width=154, height=10], Rect[x=4, y=157, width=154, height=10], Rect[x=4, y=168, width=154, height=10]]
+[01:19:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[01:19:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
+[01:19:47] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
+[01:19:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
+[01:19:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[2] on Dev after scale factor of 100.00 is 50
+[01:19:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:web_shoot as fiskheroes:modifier.web.shoot
+[01:19:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_BLOCK_ATTACH_OK
+[01:20:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[2] on Dev after scale factor of 100.00 is 134
+[01:20:03] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_LAUNCH_OK
+[01:20:06] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_RELEASE_OK
+[01:20:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 0.500000
+[01:20:12] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Summoned new Iron Golem
+[01:20:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:web_shoot as fiskheroes:modifier.web.shoot
+[01:20:15] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_ENTITY_ATTACH_OK
+[01:20:18] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] ForgeData.FiskHeroesWebSwingAnchor.X on Dev after scale factor of 100.00 is 50
+[01:20:21] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Iron Golem to 1.500000, 180.000000, 7.500000
+[01:20:24] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] ForgeData.FiskHeroesWebSwingAnchor.X on Dev after scale factor of 100.00 is 150
+[01:20:27] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_ENTITY_MOVES_OK
+[01:20:31] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WEB_ENTITY_RELEASE_OK
+[01:20:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
+[01:20:32] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
+[01:20:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
+[01:20:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Killed Iron Golem
+[01:20:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Changed the block at 0, 181, 12
+[01:20:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 20.500000
+[01:20:43] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 60 block(s)
+[01:20:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] No blocks were filled
+[01:20:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 155 block(s)
+[01:20:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Equipped Spider-Man.
+[01:20:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Teleported Dev to 0.500000, 180.000000, 21.650000
+[01:20:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set own game mode to Survival Mode
+[01:20:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Applied effect Resistance to Dev
+[01:21:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 18000
+[01:21:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=client vertical=0.7949999868869781
+[01:21:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 19419
+[01:21:11] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #crawldelta to 19419
+[01:21:14] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #crawldelta to 1419
+[01:21:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WALL_CLIMB_UP_OK
+[01:21:27] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 19419
+[01:21:30] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #crawldelta to 19419
+[01:21:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #crawldelta to 0
+[01:21:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WALL_CLIMB_REST_OK
+[01:21:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 18000
+[01:21:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] WALL_CLIMB_RELEASE_OK
+[01:21:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Successfully filled 50 block(s)
+[01:21:57] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is 18000
+[01:22:00] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 3 advancements
+[01:22:12] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Pos[1] on Dev after scale factor of 100.00 is -4900
+[01:22:14] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Set [flight_test] for #ledge to 22900
+[01:22:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] POST_WALL_LONG_FALL_OK
