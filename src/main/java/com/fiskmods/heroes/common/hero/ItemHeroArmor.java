@@ -287,6 +287,25 @@ public class ItemHeroArmor extends ArmorItem
             {
                 tooltip.add(Component.translatable(hero.getVersionKey()).withStyle(ChatFormatting.DARK_GRAY));
             }
+
+            if (isCore(stack))
+            {
+                var augments = hero.getHero().getAugmentSet();
+                int packed = getUpgrades(stack);
+                if (packed != 0 && augments.entries().stream().anyMatch(entry -> augments.level(packed, entry) > 0))
+                {
+                    tooltip.add(Component.translatable(augments.isMaxed(packed)
+                            ? "tooltip.suit.augmented.max" : "tooltip.suit.augmented").withStyle(ChatFormatting.GOLD));
+                    for (var entry : augments.entries())
+                    {
+                        int added = augments.level(packed, entry);
+                        if (added > 0)
+                            tooltip.add(Component.translatable("tooltip.fiskheroes.augment_level",
+                                    Component.translatable(entry.attribute().getDisplayNameKey()),
+                                    entry.min() + added, entry.max()).withStyle(ChatFormatting.GRAY));
+                    }
+                }
+            }
         }
     }
 

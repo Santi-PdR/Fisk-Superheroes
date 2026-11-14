@@ -31,11 +31,20 @@ public enum HeroAttribute
 
     /** Whether the attribute is combined additively before profile modifiers are applied. */
     private final boolean additive;
+    private final String displayNameKey;
 
     HeroAttribute(boolean additive)
     {
         this.additive = additive;
+        String[] words = name().toLowerCase(Locale.ROOT).split("_");
+        StringBuilder key = new StringBuilder("attribute.name.armor.").append(words[0]);
+        for (int i = 1; i < words.length; ++i)
+            key.append(Character.toUpperCase(words[i].charAt(0))).append(words[i].substring(1));
+        displayNameKey = key.toString();
     }
+
+    /** Legacy pack translation key, also used by the augmentor and item tooltip. */
+    public String getDisplayNameKey() { return displayNameKey; }
 
     public boolean isAdditive()
     {

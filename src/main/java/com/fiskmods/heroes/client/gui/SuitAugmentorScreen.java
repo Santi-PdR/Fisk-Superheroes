@@ -38,11 +38,7 @@ public final class SuitAugmentorScreen extends AbstractContainerScreen<SuitAugme
 
     private static Component attributeName(HeroAttribute attribute)
     {
-        String[] words = attribute.getName().split("_");
-        StringBuilder name = new StringBuilder(words[0]);
-        for (int i = 1; i < words.length; i++)
-            name.append(Character.toUpperCase(words[i].charAt(0))).append(words[i].substring(1));
-        return Component.translatable("attribute.name.armor." + name);
+        return Component.translatable(attribute.getDisplayNameKey());
     }
 
     @Override protected void renderLabels(GuiGraphics graphics, int mouseX, int mouseY)
@@ -101,9 +97,12 @@ public final class SuitAugmentorScreen extends AbstractContainerScreen<SuitAugme
             if (mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 16)
             {
                 int level = entry.min() + set.level(packed, entry);
+                Component status = level >= entry.max() ? Component.translatable("gui.suit_augmentor.max")
+                        : menu.canUpgrade(entry.index()) ? Component.translatable("gui.fiskheroes.augment_ready")
+                        : Component.translatable("gui.fiskheroes.augment_need",
+                                Component.translatable("item.suit_upgrade_" + level + ".name"));
                 graphics.renderTooltip(font, java.util.List.of(attributeName(entry.attribute()),
-                        Component.translatable("gui.fiskheroes.augment_level", level, entry.max()),
-                        Component.translatable(menu.canUpgrade(entry.index()) ? "gui.fiskheroes.augment_ready" : "gui.fiskheroes.augment_hint")),
+                        Component.translatable("gui.fiskheroes.augment_level", level, entry.max()), status),
                         java.util.Optional.empty(), mouseX, mouseY);
                 break;
             }

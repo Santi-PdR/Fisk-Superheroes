@@ -342,6 +342,74 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void upgradeRecipesRequireThePreviousTier(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 3, 3);
+        Item[] upgrades = { ModItems.SUIT_UPGRADE.get(), ModItems.SUIT_UPGRADE_GOLD.get(),
+                ModItems.SUIT_UPGRADE_GOLD_TITANIUM.get(), ModItems.SUIT_UPGRADE_VIBRANIUM.get(),
+                ModItems.SUIT_UPGRADE_DWARF_STAR.get() };
+        Item[] materials = { Items.IRON_INGOT, Items.GOLD_INGOT, ModItems.GOLD_TITANIUM_INGOT.get(),
+                ModItems.VIBRANIUM_INGOT.get(), ModItems.DWARF_STAR_ALLOY.get() };
+        String[] ids = { "suit_upgrade", "suit_upgrade_gold", "suit_upgrade_gold_titanium",
+                "suit_upgrade_vibranium", "suit_upgrade_dwarf_star" };
+        for (int tier = 0; tier < ids.length; ++tier)
+        {
+            var recipe = helper.getLevel().getRecipeManager().byKey(FiskHeroes.id(ids[tier])).orElse(null);
+            if (!(recipe instanceof net.minecraft.world.item.crafting.CraftingRecipe crafting))
+            { helper.fail("Missing upgrade recipe " + ids[tier]); return; }
+            for (int slot = 0; slot < 9; ++slot) grid.setItem(slot, ItemStack.EMPTY);
+            for (int slot : new int[] {0, 1, 2, 6, 7, 8}) grid.setItem(slot, new ItemStack(materials[tier]));
+            grid.setItem(4, new ItemStack(ModItems.TUTRIDIUM_GEM.get()));
+            if (tier > 0)
+            {
+                grid.setItem(3, new ItemStack(upgrades[tier - 1]));
+                grid.setItem(5, new ItemStack(upgrades[tier - 1]));
+            }
+            if (!crafting.matches(grid, helper.getLevel())
+                    || !crafting.assemble(grid, helper.getLevel().registryAccess()).is(upgrades[tier]))
+            { helper.fail("Upgrade recipe failed for tier " + tier); return; }
+            if (tier > 0)
+            {
+                grid.setItem(5, new ItemStack(upgrades[tier]));
+                if (crafting.matches(grid, helper.getLevel()))
+                { helper.fail("Upgrade recipe accepted the wrong previous tier"); return; }
+            }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void naniteInactiveProfileRevokesSuitAugments(GameTestHelper helper)
+    {
+        Hero hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null || hero.getAugmentSet().size() != 5)
+        { helper.fail("Missing Mk50 or augment definition"); return; }
+        var core = ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[1]);
+        ItemHeroArmor.setUpgrades(core, 0x11);
+        player.getInventory().armor.set(2, core);
+        data.setHero(hero.getDefaultIteration());
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(player);
+        var punch = com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE;
+        var reduction = com.fiskmods.heroes.common.hero.HeroAttribute.DAMAGE_REDUCTION;
+        js.setData("fiskheroes:dyn/nanites", false);
+        var inactive = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
+        if (inactive.containsKey(punch) || inactive.containsKey(reduction))
+        { helper.fail("Inactive nanites must revoke both damage and punch augments"); return; }
+        js.setData("fiskheroes:dyn/nanites", true);
+        var active = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
+        if (Math.abs(active.get(punch).amount() - 9.5) > .001 || !active.containsKey(reduction))
+        { helper.fail("Reactivating nanites must restore augment effects"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BLADE, true);
+        var blade = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
+        if (Math.abs(blade.get(punch).amount() - 11.5) > .001)
+        { helper.fail("An inherited blade profile must apply augments to its override"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void augmentParsingRejectsInvalidRanges(GameTestHelper helper)
     {
         var set = com.fiskmods.heroes.common.hero.augment.AugmentSet.parse(com.google.gson.JsonParser.parseString(
