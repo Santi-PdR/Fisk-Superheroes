@@ -62,6 +62,7 @@ final class ParticleEmitterRenderer
         EMITTER_DIAGNOSTICS.clear();
         ANCHOR_DIAGNOSTICS.clear();
         LocalParticleEmitter.clear();
+        TelekinesisChainParticle.clearDiagnostics();
     }
 
     static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale, PoseStack renderPose)
@@ -352,8 +353,8 @@ final class ParticleEmitterRenderer
         boolean firstPerson = player == Minecraft.getInstance().player
                 && Minecraft.getInstance().options.getCameraType().isFirstPerson();
         String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "rightArm";
-        Vec3 offset = effect.has(firstPerson ? "firstPerson" : "offset")
-                ? vector(effect.get(firstPerson ? "firstPerson" : "offset")) : Vec3.ZERO;
+        String offsetKey = firstPerson && effect.has("firstPerson") ? "firstPerson" : "offset";
+        Vec3 offset = effect.has(offsetKey) ? vector(effect.get(offsetKey)) : Vec3.ZERO;
         Vec3 start;
         if (firstPerson)
         {
@@ -381,29 +382,24 @@ final class ParticleEmitterRenderer
             FiskHeroes.LOGGER.info("Telekinesis chain origin: firstPerson={}, yaw={}, pitch={}, dx={}, dy={}, dz={}",
                     firstPerson, player.getYRot(), player.getXRot(), start.x - player.getX(),
                     start.y - player.getY(), start.z - player.getZ());
-        Vec3 end = target.position().add(0.0D, target.getBbHeight() * 0.55D, 0.0D);
-        Vec3 delta = end.subtract(start);
-        Vec3 bend = new Vec3(0.0D, Math.min(1.5D, delta.length() * 0.12D), 0.0D);
-        Vec3 control1 = start.add(delta.scale(0.33D)).add(bend);
-        Vec3 control2 = start.add(delta.scale(0.66D)).add(bend);
-
+        Vec3 end = target.position().add(0.0D, target.getBbHeight() * 0.5D, 0.0D);
         ResourceLocation cloudId = effect.has("particles") && effect.get("particles").isJsonPrimitive()
                 ? ResourceLocation.tryParse(effect.get("particles").getAsString()) : null;
         JsonObject cloud = cloudId != null ? CLOUDS.computeIfAbsent(cloudId, ParticleEmitterRenderer::loadCloud) : null;
+        Minecraft mc = Minecraft.getInstance();
+        if (cloud == null || mc.level == null || mc.options.particles().get() == net.minecraft.client.ParticleStatus.MINIMAL) return;
+        // Original samples every 0.15 blocks from the caster's eye to the target.
+        double length = player.getEyePosition().distanceTo(end);
+        int count = com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainCount(length);
         Random random = new Random();
-        // Maintain a reasonably continuous chain at varying distances while bounding cost.
-        int count = Mth.clamp((int) Math.ceil(delta.length() * 2.0D), 5, 24);
-        for (int i = 1; i <= count; ++i)
+        for (int i = 0; i < count; ++i)
         {
-            double t = (double) i / (count + 1);
-            double inv = 1.0D - t;
-            Vec3 point = start.scale(inv * inv * inv)
-                    .add(control1.scale(3.0D * inv * inv * t))
-                    .add(control2.scale(3.0D * inv * t * t))
-                    .add(end.scale(t * t * t));
-            float[] color = cloud != null ? cloudColor(cloud, random) : null;
-            if (color != null) spawnCloudSmoke(point, new Vec3(0.0D, 0.005D, 0.0D), color, firstPerson);
-            else player.level().addParticle(ParticleTypes.SMOKE, point.x, point.y, point.z, 0.0D, 0.005D, 0.0D);
+            if (mc.options.particles().get() == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) continue;
+            double progress = length > 1.0E-6D ? Math.min(1.0D, i * 0.15D / length) : 0.0D;
+            Vec3 point = com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainPoint(
+                    start, player.getEyePosition(), player.getViewVector(1.0F), end, progress);
+            if (point.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition()) > 1024.0D) continue;
+            mc.particleEngine.add(new TelekinesisChainParticle(mc.level, player, target, start, progress, cloudColor(cloud, random)));
         }
     }
 

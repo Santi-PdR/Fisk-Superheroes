@@ -3327,6 +3327,25 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void telekinesisChainCurveTracksViewAndTarget(GameTestHelper helper)
+    {
+        var start = net.minecraft.world.phys.Vec3.ZERO;
+        var look = new net.minecraft.world.phys.Vec3(0, 0, 1);
+        var target = new net.minecraft.world.phys.Vec3(2, 0, 4);
+        var mid = com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainPoint(start, start, look, target, 0.5);
+        var moved = com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainPoint(start, start, look,
+                new net.minecraft.world.phys.Vec3(4, 0, 4), 0.5);
+        if (mid.distanceToSqr(new net.minecraft.world.phys.Vec3(0.5, 0, 1 + Math.sqrt(20) / 2)) > 1.0E-10
+                || moved.distanceToSqr(new net.minecraft.world.phys.Vec3(1, 0, 1 + Math.sqrt(32) / 2)) > 1.0E-10
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainPoint(start, start, look, target, 1).distanceToSqr(target) > 1.0E-10
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainCount(3.0) != 21
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainCount(1000.0) != 256
+                || com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainCount(Double.NaN) != 0)
+        { helper.fail("Telekinesis chain must follow the quadratic view curve and moving target at legacy density"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void particleRenderTransformTracksAnimatedAnchor(GameTestHelper helper)
     {
         // Vanilla render root at yaw zero: turn around Y, invert X/Y, then lift the

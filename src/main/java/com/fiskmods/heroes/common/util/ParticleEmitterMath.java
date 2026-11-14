@@ -38,6 +38,22 @@ public final class ParticleEmitterMath
         return new Vec3(vector.x * cos + vector.z * sin, vector.y, vector.z * cos - vector.x * sin);
     }
 
+    /** Quadratic chain curve: the control point lies on the caster's current view ray. */
+    public static Vec3 telekinesisChainPoint(Vec3 start, Vec3 eye, Vec3 look, Vec3 target, double progress)
+    {
+        Vec3 control = eye.add(look.scale(start.distanceTo(target)));
+        double t = Math.max(0.0D, Math.min(1.0D, progress));
+        double inverse = 1.0D - t;
+        return start.scale(inverse * inverse).add(control.scale(2.0D * inverse * t)).add(target.scale(t * t));
+    }
+
+    /** Legacy spacing is 0.15 blocks; cap pathological external-pack distances. */
+    public static int telekinesisChainCount(double length)
+    {
+        if (!Double.isFinite(length) || length < 0.0D) return 0;
+        return (int) Math.min(256.0D, Math.floor(length / 0.15D) + 1.0D);
+    }
+
     /** Undo the current view rotation before translating a render-layer point into world space. */
     public static Vec3 worldFromRenderTransform(Matrix4f transform, Matrix3fc inverseView, Vec3 camera, Vec3 modelPoint)
     {

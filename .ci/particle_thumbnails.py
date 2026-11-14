@@ -6,7 +6,7 @@ from pathlib import Path
 from PIL import Image
 
 for label, filename in (('THIRD', 'killer-frost-smoke-third'), ('FIRST', 'killer-frost-smoke-first'),
-                        ('CHAIN_FIRST', 'chain-first'), ('CHAIN_THIRD', 'chain-third'),
+                        ('CHAIN_FIRST', 'chain-first'), ('CHAIN_THIRD', 'chain-third'), ('CHAIN_MOVED', 'chain-moved'),
                         ('MONITOR', 'monitor-aura')):
     path = Path(f'ci-arrow-{filename}.png')
     if not path.exists():

@@ -302,6 +302,17 @@ def main():
                     raise RuntimeError('Incorrect eye-relative telekinesis origin: ' + match.group())
                 time.sleep(1)
                 subprocess.run(['scrot', '-o', 'ci-arrow-chain-first.png'], check=True, timeout=30)
+                command('tp @e[tag=chain_target,limit=1] 2.5 180 7.5')
+                moving = (r'Telekinesis chain particle tracks moving target: targetDelta=([-+0-9.eE]+), '
+                          r'pointDelta=([-+0-9.eE]+), progress=([-+0-9.eE]+)')
+                wait_for(client_log, moving, 30, 'existing chain particles follow a moving target', client)
+                motion = re.search(moving, client_log.read_text(errors='replace'))
+                target_delta, point_delta, progress = map(float, motion.groups())
+                if target_delta < 1 or point_delta < .1 or not .4 <= progress <= .6:
+                    raise RuntimeError('Chain particle did not track the moved target: ' + motion.group())
+                subprocess.run(['scrot', '-o', 'ci-arrow-chain-moved.png'], check=True, timeout=30)
+                print(f'PASS: existing chain particles track target displacement {target_delta:.2f} '
+                      f'with curve displacement {point_delta:.2f}', flush=True)
                 xdo('key', 'F5')
                 wait_for(client_log, pattern.replace('(true|false)', 'false'), 45,
                          'third-person telekinesis chain follows a grabbed target', client)
