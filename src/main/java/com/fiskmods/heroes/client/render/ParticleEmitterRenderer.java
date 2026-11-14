@@ -39,8 +39,6 @@ import java.util.UUID;
 /** Client side execution of the original data driven suit particle emitters. */
 final class ParticleEmitterRenderer
 {
-    private static final java.util.regex.Pattern CLOUD_CHANNEL_EXPRESSION =
-            java.util.regex.Pattern.compile("(red|green|blue)\\s*([+*/-])\\s*([0-9.]+)");
     private static final Map<ResourceLocation, List<Emitter>> EMITTERS = new HashMap<>();
     private static final Map<ResourceLocation, JsonObject> CLOUDS = new HashMap<>();
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
@@ -63,6 +61,7 @@ final class ParticleEmitterRenderer
         ANCHOR_DIAGNOSTICS.clear();
         LocalParticleEmitter.clear();
         TelekinesisChainParticle.clearDiagnostics();
+        CloudSmokeParticle.clearDiagnostics();
     }
 
     static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale, PoseStack renderPose)
@@ -130,12 +129,6 @@ final class ParticleEmitterRenderer
         if (cloud == null || mc.level == null || mc.options.particles().get() == net.minecraft.client.ParticleStatus.MINIMAL
                 || mc.gameRenderer.getMainCamera().getPosition().distanceToSqr(target.position()) > 1024.0D) return;
 
-        JsonObject colors = cloud.has("color") && cloud.get("color").isJsonObject()
-                ? cloud.getAsJsonObject("color") : new JsonObject();
-        Integer start = colors.has("start") && colors.get("start").isJsonPrimitive()
-                ? com.fiskmods.heroes.common.util.CloudColorMath.hexColor(colors.get("start").getAsString()) : null;
-        Integer end = colors.has("end") && colors.get("end").isJsonPrimitive()
-                ? com.fiskmods.heroes.common.util.CloudColorMath.hexColor(colors.get("end").getAsString()) : null;
         Random pattern = new Random(253151369061L + (long) (target.tickCount / 6) * 7694536L);
         int count = Math.min(64, 1 + (int) (Math.sqrt(target.getBbWidth() * target.getBbHeight()) * 10.0D));
         for (int i = 0; i < count; ++i)
@@ -143,8 +136,8 @@ final class ParticleEmitterRenderer
             if (mc.options.particles().get() == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0) continue;
             Vec3 rotation = randomUnit(pattern);
             Vec3 direction = randomUnit(pattern);
-            float[] fallback = start == null || end == null ? cloudColor(cloud, pattern) : null;
-            mc.particleEngine.add(new TelekinesisAuraParticle(mc.level, target, rotation, direction, start, end, fallback));
+            var colors = com.fiskmods.heroes.common.util.CloudColors.sample(cloud, pattern);
+            mc.particleEngine.add(new TelekinesisAuraParticle(mc.level, target, rotation, direction, colors));
         }
         if (PARTICLE_DIAGNOSTICS && EMITTER_DIAGNOSTICS.add("aura:" + id))
             FiskHeroes.LOGGER.info("Telekinesis aura emitted around target: type={}, target={}, count={}, distance={}",
@@ -178,14 +171,14 @@ final class ParticleEmitterRenderer
             Vec3 point = new Vec3(player.getX() + randomOffset(random, spread),
                     player.getY() + player.getBbHeight() * 0.5D + randomOffset(random, spread),
                     player.getZ() + randomOffset(random, spread));
-            if (spawnCloudSmoke(point, velocity, cloudColor(definition, random), firstPerson)
+            if (spawnCloudSmoke(point, velocity, com.fiskmods.heroes.common.util.CloudColors.sample(definition, random), firstPerson, id)
                     && firstPerson && FIRST_PERSON_CLOUD_DIAGNOSTICS.add(id.toString()))
                 FiskHeroes.LOGGER.info("First-person particle cloud emitted: {}", id);
         }
     }
 
     /** Use the animated smoke sprite rather than a solid dust square, retaining pack color. */
-    private static boolean spawnCloudSmoke(Vec3 point, Vec3 velocity, float[] color, boolean firstPerson)
+    private static boolean spawnCloudSmoke(Vec3 point, Vec3 velocity, com.fiskmods.heroes.common.util.CloudColors colors, boolean firstPerson, ResourceLocation cloudId)
     {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;
@@ -197,11 +190,7 @@ final class ParticleEmitterRenderer
         if (setting == net.minecraft.client.ParticleStatus.MINIMAL
                 || setting == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0)
             return false;
-        var particle = mc.particleEngine.createParticle(ParticleTypes.SMOKE, point.x, point.y, point.z,
-                velocity.x, velocity.y, velocity.z);
-        if (particle == null) return false;
-        particle.setColor(color[0], color[1], color[2]);
-        if (firstPerson) particle.scale(0.6F);
+        mc.particleEngine.add(new CloudSmokeParticle(mc.level, point, velocity, colors, firstPerson, cloudId));
         return true;
     }
 
@@ -221,114 +210,6 @@ final class ParticleEmitterRenderer
             FiskHeroes.LOGGER.warn("Could not load particle cloud {}: {}", path, e.toString());
             return null;
         }
-    }
-
-    /** Samples the pack's base/rand/start/end RGB values using its shared-channel rules. */
-    private static float[] cloudColor(JsonObject definition, Random random)
-    {
-        float[] randoms = { random.nextFloat(), random.nextFloat(), random.nextFloat() };
-        JsonObject channels = definition.has("color") && definition.get("color").isJsonObject()
-                ? definition.getAsJsonObject("color") : new JsonObject();
-        // Some clouds (for example the Monitor) use whole-color hex endpoints
-        // instead of per-channel objects.
-        if (channels.has("start") && channels.has("end")
-                && channels.get("start").isJsonPrimitive() && channels.get("end").isJsonPrimitive()
-                && channels.get("start").getAsJsonPrimitive().isString()
-                && channels.get("end").getAsJsonPrimitive().isString())
-        {
-            float[] color = com.fiskmods.heroes.common.util.CloudColorMath.hexGradient(
-                    channels.get("start").getAsString(), channels.get("end").getAsString());
-            if (color != null) return color;
-        }
-        JsonElement[] specs = new JsonElement[3];
-        int[] links = { 0, 1, 2 };
-        String[] names = { "red", "green", "blue" };
-        for (var entry : channels.entrySet())
-        {
-            String[] shared = entry.getKey().split(",");
-            int first = channelIndex(shared[0].trim());
-            if (first < 0) continue;
-            for (String name : shared)
-            {
-                int channel = channelIndex(name.trim());
-                if (channel >= 0)
-                {
-                    specs[channel] = entry.getValue();
-                    links[channel] = first;
-                }
-            }
-        }
-        float[] result = new float[3];
-        for (int i = 0; i < result.length; ++i)
-        {
-            result[i] = Mth.clamp(sampleCloudChannel(specs[i], i, links[i], specs, links, randoms), 0.0F, 1.0F);
-        }
-        return result;
-    }
-
-    private static float sampleCloudChannel(JsonElement spec, int channel, int link,
-            JsonElement[] specs, int[] links, float[] randoms)
-    {
-        if (spec == null || spec.isJsonNull()) return 0.5F;
-        if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isNumber()) return spec.getAsFloat();
-        if (spec.isJsonPrimitive() && spec.getAsJsonPrimitive().isString())
-        {
-            java.util.regex.Matcher matcher = CLOUD_CHANNEL_EXPRESSION.matcher(spec.getAsString());
-            if (!matcher.matches()) return 0.5F;
-            int source = channelIndex(matcher.group(1));
-            float value = source >= 0 && source != channel
-                    ? sampleCloudChannel(specs[source], source, links[source], specs, links, randoms)
-                    : channelBase(spec, link, randoms);
-            float operand = Float.parseFloat(matcher.group(3));
-            return switch (matcher.group(2))
-            {
-                case "+" -> value + operand;
-                case "-" -> value - operand;
-                case "*" -> value * operand;
-                case "/" -> operand == 0.0F ? value : value / operand;
-                default -> value;
-            };
-        }
-        if (!spec.isJsonObject()) return 0.5F;
-        JsonObject object = spec.getAsJsonObject();
-        if (object.has("start") || object.has("end"))
-        {
-            float start = sampleCloudEndpoint(object.get("start"), link, randoms);
-            float end = sampleCloudEndpoint(object.get("end"), link, randoms);
-            return start + (end - start) * 0.5F;
-        }
-        return sampleCloudEndpoint(spec, link, randoms);
-    }
-
-    private static float channelBase(JsonElement spec, int link, float[] randoms)
-    {
-        if (spec != null && spec.isJsonObject()) return sampleCloudEndpoint(spec, link, randoms);
-        return 0.5F;
-    }
-
-    private static float sampleCloudEndpoint(JsonElement endpoint, int link, float[] randoms)
-    {
-        if (endpoint == null || endpoint.isJsonNull()) return 0.5F;
-        if (endpoint.isJsonPrimitive() && endpoint.getAsJsonPrimitive().isNumber()) return endpoint.getAsFloat();
-        if (endpoint.isJsonObject())
-        {
-            JsonObject values = endpoint.getAsJsonObject();
-            float base = values.has("base") ? values.get("base").getAsFloat() : 0.0F;
-            float range = values.has("rand") ? values.get("rand").getAsFloat() : 0.0F;
-            return base + range * randoms[Math.max(0, Math.min(2, link))];
-        }
-        return 0.5F;
-    }
-
-    private static int channelIndex(String name)
-    {
-        return switch (name)
-        {
-            case "red" -> 0;
-            case "green" -> 1;
-            case "blue" -> 2;
-            default -> -1;
-        };
     }
 
     private static double randomOffset(Random random, double spread)
@@ -399,7 +280,7 @@ final class ParticleEmitterRenderer
             Vec3 point = com.fiskmods.heroes.common.util.ParticleEmitterMath.telekinesisChainPoint(
                     start, player.getEyePosition(), player.getViewVector(1.0F), end, progress);
             if (point.distanceToSqr(mc.gameRenderer.getMainCamera().getPosition()) > 1024.0D) continue;
-            mc.particleEngine.add(new TelekinesisChainParticle(mc.level, player, target, start, progress, cloudColor(cloud, random)));
+            mc.particleEngine.add(new TelekinesisChainParticle(mc.level, player, target, start, progress, com.fiskmods.heroes.common.util.CloudColors.sample(cloud, random)));
         }
     }
 

@@ -26,6 +26,7 @@ final class TelekinesisChainParticle extends TextureSheetParticle
         for (int i = 0; i < SPRITES.length; ++i) SPRITES[i] = new ResourceLocation("minecraft", "generic_" + i);
     }
 
+    private final com.fiskmods.heroes.common.util.CloudColors colors;
     private final Player caster;
     private final Entity target;
     private final Vec3 start;
@@ -33,7 +34,7 @@ final class TelekinesisChainParticle extends TextureSheetParticle
     private final Vec3 initialTarget;
     private final Vec3 initialPoint;
 
-    TelekinesisChainParticle(ClientLevel level, Player caster, Entity target, Vec3 start, double progress, float[] color)
+    TelekinesisChainParticle(ClientLevel level, Player caster, Entity target, Vec3 start, double progress, com.fiskmods.heroes.common.util.CloudColors colors)
     {
         super(level, start.x, start.y, start.z);
         this.caster = caster;
@@ -45,7 +46,7 @@ final class TelekinesisChainParticle extends TextureSheetParticle
         this.lifetime = ((int) (14.0D / (this.random.nextFloat() * 0.5D + 0.5D)) + 2) / 2;
         this.quadSize = (2.0F + random.nextFloat() * 4.0F) * 0.035F;
         this.hasPhysics = false;
-        setColor(color[0], color[1], color[2]);
+        this.colors = colors;
         setPos(initialPoint.x, initialPoint.y, initialPoint.z);
         xo = x; yo = y; zo = z;
         updateAppearance();
@@ -83,6 +84,9 @@ final class TelekinesisChainParticle extends TextureSheetParticle
 
     private void updateAppearance()
     {
+        float progress = (float) age / lifetime;
+        float factor = com.fiskmods.heroes.common.util.CloudColors.crest(progress);
+        setColor(colors.atFactor(0, factor), colors.atFactor(1, factor), colors.atFactor(2, factor));
         alpha = age < 2 ? 0.0F : Mth.clamp(1.2F - 0.6F * age / lifetime, 0.0F, 1.0F);
         int frame = Mth.clamp(10 - age, 0, 7);
         var atlas = (TextureAtlas) Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES);

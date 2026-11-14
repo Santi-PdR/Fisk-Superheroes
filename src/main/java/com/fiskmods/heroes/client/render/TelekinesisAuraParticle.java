@@ -22,28 +22,21 @@ final class TelekinesisAuraParticle extends TextureSheetParticle
     private final Entity target;
     private Vec3 rotation;
     private final Vec3 direction;
-    private final float[] start;
-    private final float[] end;
+    private final com.fiskmods.heroes.common.util.CloudColors colors;
 
     TelekinesisAuraParticle(ClientLevel level, Entity target, Vec3 rotation, Vec3 direction,
-            Integer startColor, Integer endColor, float[] fallback)
+            com.fiskmods.heroes.common.util.CloudColors colors)
     {
         super(level, target.getX(), target.getY() + target.getBbHeight() * 0.5D, target.getZ());
         this.target = target;
         this.rotation = rotation;
         this.direction = direction;
-        this.start = startColor != null ? rgb(startColor) : fallback;
-        this.end = endColor != null ? rgb(endColor) : fallback;
+        this.colors = colors;
         this.lifetime = (int) (6.0D / (this.random.nextFloat() * 0.4D + 0.6D));
         this.quadSize *= 0.8F + this.random.nextFloat() * 0.2F;
         this.hasPhysics = false;
         updateAppearance();
         updatePosition(false);
-    }
-
-    private static float[] rgb(int color)
-    {
-        return new float[] {(color >> 16 & 255) / 255.0F, (color >> 8 & 255) / 255.0F, (color & 255) / 255.0F};
     }
 
     @Override
@@ -69,8 +62,8 @@ final class TelekinesisAuraParticle extends TextureSheetParticle
     private void updateAppearance()
     {
         float progress = (float) age / lifetime;
-        float fade = 1.0F - Math.abs(2.0F * progress - 1.0F);
-        setColor(Mth.lerp(fade, start[0], end[0]), Mth.lerp(fade, start[1], end[1]), Mth.lerp(fade, start[2], end[2]));
+        float factor = com.fiskmods.heroes.common.util.CloudColors.crest(progress);
+        setColor(colors.atFactor(0, factor), colors.atFactor(1, factor), colors.atFactor(2, factor));
         alpha = 0.8F - progress * 0.6F;
         int frame = Mth.clamp(7 - age * 8 / lifetime, 0, 7);
         var atlas = (TextureAtlas) Minecraft.getInstance().getTextureManager().getTexture(TextureAtlas.LOCATION_PARTICLES);

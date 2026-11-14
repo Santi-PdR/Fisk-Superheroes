@@ -985,6 +985,28 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void cloudColorEndpointsFollowLegacyCrest(GameTestHelper helper)
+    {
+        var shadow = com.google.gson.JsonParser.parseString("{\"color\":{\"red,green\":{\"base\":0.1,\"rand\":0.1},\"blue\":\"red * 1.2\"}}").getAsJsonObject();
+        var shadowColors = com.fiskmods.heroes.common.util.CloudColors.sample(shadow, new java.util.Random(3));
+        float red = shadowColors.channel(0, 0.4F);
+        if (Math.abs(shadowColors.channel(1, 0.4F) - red) > 1.0E-6F
+                || Math.abs(shadowColors.channel(2, 0.4F) - red * 1.2F) > 1.0E-6F)
+        { helper.fail("Cloud channel links and expressions must share the same random sample"); return; }
+        var breach = com.google.gson.JsonParser.parseString("{\"color\":{\"red\":{\"start\":1,\"end\":0},\"green\":{\"start\":2,\"end\":0.5},\"blue\":1}}").getAsJsonObject();
+        var colors = com.fiskmods.heroes.common.util.CloudColors.sample(breach, new java.util.Random(3));
+        if (Math.abs(colors.channel(0, 0) - 1) > 1.0E-6 || Math.abs(colors.channel(0, 0.5F)) > 1.0E-6
+                || Math.abs(colors.channel(0, 0.25F) - (1 - Math.sqrt(0.5))) > 1.0E-6
+                || Math.abs(colors.channel(1, 0.25F) - (2 - 1.5 * Math.sqrt(0.5))) > 1.0E-6
+                || colors.channel(2, 0.5F) != 1 || Math.abs(colors.channel(0, 1) - 1) > 1.0E-6)
+        { helper.fail("Cloud colors must animate start to end and back using the legacy sine crest"); return; }
+        var cyclic = com.google.gson.JsonParser.parseString("{\"color\":{\"red\":\"green * 1\",\"green\":\"red * 1\",\"blue\":1}}").getAsJsonObject();
+        if (!Float.isFinite(com.fiskmods.heroes.common.util.CloudColors.sample(cyclic, new java.util.Random()).channel(0, 0)))
+        { helper.fail("Cyclic pack expressions must not recurse forever"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void glidingPoseOpensAndFoldsOnDive(GameTestHelper helper)
     {
         float folded = com.fiskmods.heroes.common.util.GlidingPoseMath.spread(0.0F, 0.0D, 0.0D);

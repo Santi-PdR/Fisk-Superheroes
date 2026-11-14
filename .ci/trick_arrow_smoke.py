@@ -369,6 +369,25 @@ def main():
                 print(f'PASS: visible blue telekinesis aura around target ({visible} changed pixels)', flush=True)
             finally:
                 xdo('keyup', 'v')
+            # Teleport emits a breach-colored cloud. Check that actual particles
+            # animate between the two sampled endpoints, not a frozen midpoint.
+            command('kill @e[tag=monitor_target]')
+            command('fill -2 180 6 2 184 6 minecraft:stone')
+            command('tp Dev 0.5 180 0.5 0 0')
+            xdo('key', 'F5'); time.sleep(1)
+            xdo('keydown', 'b'); time.sleep(.35); xdo('keyup', 'b')
+            time.sleep(.25)
+            subprocess.run(['scrot', '-o', 'ci-arrow-breach-cloud.png'], check=True, timeout=30)
+            wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT',
+                     30, 'Monitor teleport activates', server)
+            gradient = (r'Breach cloud animated color: startR=([-+0-9.eE]+), startG=([-+0-9.eE]+), '
+                        r'startB=([-+0-9.eE]+), midR=([-+0-9.eE]+), midG=([-+0-9.eE]+), midB=([-+0-9.eE]+)')
+            wait_for(client_log, gradient, 45, 'breach cloud particles animate their configured colors', client)
+            colors = tuple(map(float, re.search(gradient, client_log.read_text(errors='replace')).groups()))
+            if not (colors[:3] == (1.0, 1.0, 1.0) and 0 <= colors[3] <= .2
+                    and .2 <= colors[4] <= .7 and colors[5] == 1.0):
+                raise RuntimeError(f'Incorrect animated breach color endpoints: {colors}')
+            print(f'PASS: breach cloud transitions from white to sampled blue: {colors}', flush=True)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
