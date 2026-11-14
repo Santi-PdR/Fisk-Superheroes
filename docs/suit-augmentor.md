@@ -32,8 +32,8 @@ S B S
 ```
 
 `D` is dwarf-star alloy, `T` a Tutridium gem, `G` gold-titanium ingots, `A` an anvil,
-`S` stone, and `B` a gold-titanium block. Recipes are available in survival, although they
-are not automatically unlocked in the recipe book yet.
+`S` stone, and `B` a gold-titanium block. The recipes unlock in the recipe book as you obtain
+the relevant materials and the previous tier of upgrade.
 
 The core retains its upgrades when it is removed or changed between compatible suit iterations.
 They only apply while the core belongs to the active hero, and a profile that revokes augments

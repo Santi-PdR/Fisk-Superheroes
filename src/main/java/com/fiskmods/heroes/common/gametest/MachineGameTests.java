@@ -452,6 +452,21 @@ public final class MachineGameTests
     }
 
     @GameTest(template = "test_empty")
+    public static void augmentRecipesHaveRecipeBookAdvancements(GameTestHelper helper)
+    {
+        for (String recipe : new String[] { "suit_augmentor", "suit_upgrade", "suit_upgrade_gold",
+                "suit_upgrade_gold_titanium", "suit_upgrade_vibranium", "suit_upgrade_dwarf_star" })
+        {
+            var advancement = helper.getLevel().getServer().getAdvancements().getAdvancement(
+                    FiskHeroes.id("recipes/misc/" + recipe));
+            if (advancement == null || !advancement.getCriteria().containsKey("has_material")
+                    || !advancement.getCriteria().containsKey("has_recipe"))
+            { helper.fail("Missing recipe-book unlock advancement for " + recipe); return; }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void augmentedCoreSurvivesIteratorAndRing(GameTestHelper helper)
     {
         Hero captain = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
