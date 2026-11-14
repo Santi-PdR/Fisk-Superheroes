@@ -67,6 +67,9 @@ public final class FirstPersonSuitArms
             if (effect.getKey().startsWith("fiskheroes:arm_overlay"))
                 ArmOverlaySuitRenderer.render(effect.getKey(), effect.getValue(), pose, buffers, packedLight,
                         player, playerRenderer.getModel(), data, 1, opacity, right);
+            else if (effect.getKey().equals("fiskheroes:flames"))
+                SuitFlamesRenderer.renderFirstPerson(effect.getValue(), pose, buffers, player,
+                        playerRenderer.getModel(), data, right, Minecraft.getInstance().getFrameTime());
         }
         if (DIAGNOSTICS.add(iteration.getRegistryName().toString()))
             FiskHeroes.LOGGER.info("First-person suit arm rendered: hero={}, texture={}, poseAligned={}", iteration.getRegistryName(), texture,

@@ -3145,6 +3145,28 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void animatedBoosterTexturesUseActualSheetFrames(GameTestHelper helper)
+    {
+        var implicit = com.fiskmods.heroes.common.util.AnimatedSpriteFrames.parse(new com.google.gson.JsonObject(), 16, 512);
+        if (implicit.columns() != 1 || implicit.rows() != 32 || implicit.frameCount() != 32
+                || implicit.frameAt(0) != 0 || implicit.frameAt(1) != 1 || implicit.frameAt(32) != 0
+                || Math.abs(implicit.v0(1) - 1.0F / 32) > 1.0E-6F || Math.abs(implicit.v1(1) - 2.0F / 32) > 1.0E-6F)
+        { helper.fail("An empty animation section must animate all 32 square frames, not sample the whole fire sheet"); return; }
+        var metadata = com.google.gson.JsonParser.parseString("{\"width\":16,\"height\":16,\"frametime\":2,\"frames\":[3,{\"index\":0,\"time\":3},1]}").getAsJsonObject();
+        var explicit = com.fiskmods.heroes.common.util.AnimatedSpriteFrames.parse(metadata, 32, 32);
+        if (explicit.columns() != 2 || explicit.rows() != 2 || explicit.totalTicks() != 7
+                || explicit.frameAt(0) != 3 || explicit.frameAt(1) != 3 || explicit.frameAt(2) != 0
+                || explicit.frameAt(4) != 0 || explicit.frameAt(5) != 1 || explicit.frameAt(7) != 3
+                || explicit.frameAt(-1) != 1 || explicit.u0(3) != .5F || explicit.v0(3) != .5F)
+        { helper.fail("Explicit sprite indices, frame durations, wrap and grid UVs must be honored"); return; }
+        var bad = com.fiskmods.heroes.common.util.AnimatedSpriteFrames.parse(
+                com.google.gson.JsonParser.parseString("{\"frames\":[99]}").getAsJsonObject(), 16, 32);
+        if (bad.frameCount() != 1 || bad.u1(0) != 1 || bad.v1(0) != 1)
+        { helper.fail("Invalid animation frames must fall back to a safe static texture"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void teleportBurstPacketAndLatticePreserveEndpoints(GameTestHelper helper)
     {
         var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_monitor");

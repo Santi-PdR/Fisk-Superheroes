@@ -419,6 +419,29 @@ def main():
                     or first_bursts['destination'][3] != 50 or first_bursts['destination'][2] - first_bursts['origin'][2] < 3):
                 raise RuntimeError(f'First-person teleport must emit two 50-particle bursts: {first_bursts}')
             print(f'PASS: first-person teleport uses two 50-particle bursts: {first_bursts}', flush=True)
+            # Firestorm's three-piece suit has no helmet. Its flames still require a
+            # complete set, must render on the first-person arm and on the full model,
+            # and each fire sheet layer must animate its own square sprite frames.
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('execute as Dev run suit fiskheroes:firestorm')
+            wait_for(client_log, r'Suit flames rendered: hero=fiskheroes:firestorm, wearer=Dev, view=first-right',
+                     60, 'three-piece Firestorm suit renders first-person flames', client)
+            for layer, first in ((0, 16), (1, 0)):
+                pattern = (rf'Booster sprite animation: texture=fiskheroes:textures/icons/fire_layer_{layer}\.png, '
+                           rf'columns=1, rows=32, frames=32, first={first}, second={first + 1}')
+                wait_for(client_log, pattern, 30, f'fire layer {layer} animates 32 separate frames', client)
+            subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-first.png'], check=True, timeout=30)
+            xdo('key', 'F5')
+            wait_for(client_log, r'Suit flames rendered: hero=fiskheroes:firestorm, wearer=Dev, view=third',
+                     45, 'Firestorm renders third-person flames', client)
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-third.png'], check=True, timeout=30)
+            command('item replace entity Dev armor.feet with minecraft:air')
+            wait_for(client_log, r'Suit flames suppressed: hero=fiskheroes:firestorm, wearer=Dev, reason=incomplete_suit',
+                     45, 'Firestorm flames stop for an incomplete suit', client)
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-incomplete.png'], check=True, timeout=30)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

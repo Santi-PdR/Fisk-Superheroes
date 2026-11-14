@@ -1,102 +1,91 @@
 package com.fiskmods.heroes.client.render;
 
-import com.google.gson.JsonArray;
+import com.fiskmods.heroes.FiskHeroes;
+import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.hero.ItemHeroArmor;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.mojang.blaze3d.vertex.PoseStack;
-
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.item.ItemStack;
 
-/** Ports the animated hand and head plumes configured by the original Firestorm renderer. */
+/** Animated hand and head plumes configured by Firestorm's suit renderer. */
 final class SuitFlamesRenderer
 {
+    private static final java.util.Set<String> DIAGNOSTICS = new java.util.HashSet<>();
     private static final String ICON = "fiskheroes:fire_layer_%s";
-    private static final String MASK_TIMER = "1 - entity.getInterpolatedData('fiskheroes:mask_open_timer2')";
+    private static final JsonPrimitive MASK_TIMER = new JsonPrimitive("1 - entity.getInterpolatedData('fiskheroes:mask_open_timer2')");
 
-    private SuitFlamesRenderer()
-    {
-    }
+    private SuitFlamesRenderer() { }
 
     static void render(JsonObject effect, PoseStack poseStack, MultiBufferSource buffer, int packedLight,
             AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
             int slot, float partialTick)
     {
-        if (slot != 1 || !HeroSuitLayer.appliesToSlot(effect, slot)
-                || !HeroSuitLayer.passesConditionals(effect, model, player)) return;
-        if (effect.has("requiresFullSuit") && effect.get("requiresFullSuit").getAsBoolean()
-                && !hasFullSuit(player, model)) return;
-
-        float scaleRatio = effect.has("scaleRatio") ? effect.get("scaleRatio").getAsFloat() : 1.0F;
-        float headTimer = model.evaluateRenderData(new com.google.gson.JsonPrimitive(MASK_TIMER), player, 1.0F);
+        if (!eligible(effect, player, model, slot)) return;
+        diagnostic(player, model, "third");
+        float ratio = effect.has("scaleRatio") ? effect.get("scaleRatio").getAsFloat() : 1.0F;
+        float headTimer = model.evaluateRenderData(MASK_TIMER, player, 1.0F);
         float opacity = effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F;
-
-        // external/flames.js:createHands(renderer, fire, true)
-        renderPlume(poseStack, buffer, packedLight, player, playerModel, model, slot, partialTick,
-                "rightArm", ICON, 1.0F, opacity * 0.7F, true,
-                scaled(new float[] { 1.2F, 10.0F, 0.15F }, scaleRatio),
-                new float[] { -12.0F, 5.0F, 173.0F }, new float[] { 4.75F, 2.0F }, scaleRatio);
-        renderPlume(poseStack, buffer, packedLight, player, playerModel, model, slot, partialTick,
-                "rightArm", ICON, 1.0F, opacity * 0.7F, true,
-                scaled(new float[] { 1.2F, 10.0F, -0.15F }, scaleRatio),
-                new float[] { 12.0F, -5.0F, 173.0F }, new float[] { 4.75F, 2.0F }, scaleRatio);
-        renderPlume(poseStack, buffer, packedLight, player, playerModel, model, slot, partialTick,
-                "rightArm", ICON, 1.0F, opacity * 0.7F, true,
-                scaled(new float[] { -1.0F, 8.4F, 0.0F }, scaleRatio),
-                new float[] { 0.0F, 0.0F, 83.0F }, new float[] { 4.0F, 1.5F }, scaleRatio);
-
-        // The base flame remains while masked; the tapered top retracts with the mask animation.
-        renderPlume(poseStack, buffer, packedLight, player, playerModel, model, slot, partialTick,
-                "head", ICON, 1.0F, opacity * 0.4F, false,
-                scaled(new float[] { 0.0F, 1.0F, 0.0F }, scaleRatio),
-                new float[] { 0.0F, 0.0F, 180.0F }, new float[] { 8.0F + 2.0F * headTimer, 1.75F }, scaleRatio);
-        renderPlume(poseStack, buffer, packedLight, player, playerModel, model, slot, partialTick,
-                "head", ICON, headTimer, opacity * 0.3F, false,
-                scaled(new float[] { 0.0F, -5.0F, 0.0F }, scaleRatio),
-                new float[] { -25.0F, 0.0F, 180.0F }, new float[] { 7.5F, 1.75F }, scaleRatio);
+        // Direct primitive arguments avoid constructing five temporary JSON trees per rendered player per frame.
+        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
+                1.2F*ratio, 10*ratio, .15F*ratio, -12, 5, 173, 4.75F*ratio, 2*ratio);
+        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
+                1.2F*ratio, 10*ratio, -.15F*ratio, 12, -5, 173, 4.75F*ratio, 2*ratio);
+        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
+                -ratio, 8.4F*ratio, 0, 0, 0, 83, 4*ratio, 1.5F*ratio);
+        plume(poseStack, buffer, player, playerModel, partialTick, "head", 1, opacity * .4F, false,
+                0, ratio, 0, 0, 0, 180, (8 + 2*headTimer)*ratio, 1.75F*ratio);
+        plume(poseStack, buffer, player, playerModel, partialTick, "head", headTimer, opacity * .3F, false,
+                0, -5*ratio, 0, -25, 0, 180, 7.5F*ratio, 1.75F*ratio);
     }
 
-    private static void renderPlume(PoseStack poseStack, MultiBufferSource buffer, int packedLight,
-            AbstractClientPlayer player, PlayerModel<AbstractClientPlayer> playerModel, HeroModelData model,
-            int slot, float partialTick, String anchor, String icon, float progress, float opacity,
-            boolean mirror, float[] offset, float[] rotation, float[] size, float ratio)
+    static void renderFirstPerson(JsonObject effect, PoseStack pose, MultiBufferSource buffer,
+            AbstractClientPlayer player, PlayerModel<?> playerModel, HeroModelData model, boolean right, float partialTick)
     {
-        JsonObject plume = new JsonObject();
-        plume.addProperty("icon", icon);
-        plume.addProperty("data", progress);
-        plume.addProperty("anchor", anchor);
-        plume.addProperty("opacity", opacity);
-        plume.addProperty("mirror", mirror);
-        plume.add("offset", vector(offset));
-        plume.add("rotation", vector(rotation));
-        plume.add("scale", vector(scaled(size, ratio)));
-        BoosterFlameRenderer.render(plume, poseStack, buffer, player, playerModel, model, slot, partialTick);
+        if (!eligible(effect, player, model, 1)) return;
+        float ratio = effect.has("scaleRatio") ? effect.get("scaleRatio").getAsFloat() : 1.0F;
+        float opacity = effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F;
+        String anchor = right ? "rightArm" : "leftArm";
+        float side = right ? 1 : -1;
+        diagnostic(player, model, right ? "first-right" : "first-left");
+        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
+                side*1.2F*ratio, 10*ratio, .15F*ratio, -12, 5, 173, 4.75F*ratio, 2*ratio);
+        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
+                side*1.2F*ratio, 10*ratio, -.15F*ratio, 12, -5, 173, 4.75F*ratio, 2*ratio);
+        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
+                -side*ratio, 8.4F*ratio, 0, 0, 0, 83, 4*ratio, 1.5F*ratio);
     }
 
-    private static boolean hasFullSuit(AbstractClientPlayer player, HeroModelData model)
+    private static boolean eligible(JsonObject effect, AbstractClientPlayer player, HeroModelData model, int slot)
     {
-        for (int slot = 0; slot < 4; ++slot)
-        {
-            ItemStack piece = player.getInventory().armor.get(3 - slot);
-            com.fiskmods.heroes.common.hero.HeroIteration iteration =
-                    com.fiskmods.heroes.common.hero.ItemHeroArmor.getHero(piece);
-            if (iteration == null || iteration.getArmorType(slot) == null
-                    || !iteration.getHero().getRegistryName().equals(model.getHero())) return false;
-        }
-        return true;
+        if (slot != 1 || !HeroSuitLayer.appliesToSlot(effect, slot)
+                || !HeroSuitLayer.passesConditionals(effect, model, player)) return false;
+        if (!effect.has("requiresFullSuit") || !effect.get("requiresFullSuit").getAsBoolean()) return true;
+        // Many suits deliberately have no helmet: only their defined pieces are required.
+        var iteration = ItemHeroArmor.getHero(player.getInventory().armor.get(2));
+        boolean complete = iteration != null && iteration.getHero().getRegistryName().equals(model.getHero())
+                && HeroTracker.hasCompleteSuit(player, iteration);
+        if (!complete && Boolean.getBoolean("fiskheroes.ciParticleDiagnostics")
+                && DIAGNOSTICS.add(player.getUUID() + "|" + model.getHero() + "|incomplete"))
+            FiskHeroes.LOGGER.info("Suit flames suppressed: hero={}, wearer={}, reason=incomplete_suit", model.getHero(), player.getName().getString());
+        return complete;
     }
 
-    private static float[] scaled(float[] values, float ratio)
+    private static void diagnostic(AbstractClientPlayer player, HeroModelData model, String view)
     {
-        for (int i = 0; i < values.length; ++i) values[i] *= ratio;
-        return values;
+        if (Boolean.getBoolean("fiskheroes.ciParticleDiagnostics") && DIAGNOSTICS.add(player.getUUID() + "|" + model.getHero() + "|" + view))
+            FiskHeroes.LOGGER.info("Suit flames rendered: hero={}, wearer={}, view={}", model.getHero(), player.getName().getString(), view);
     }
 
-    private static JsonArray vector(float[] values)
+    static void clear() { DIAGNOSTICS.clear(); }
+
+    private static void plume(PoseStack pose, MultiBufferSource buffer, AbstractClientPlayer player,
+            PlayerModel<?> model, float partialTick, String anchor, float progress, float opacity, boolean mirror,
+            float ox, float oy, float oz, float rx, float ry, float rz, float width, float length)
     {
-        JsonArray result = new JsonArray();
-        for (float value : values) result.add(value);
-        return result;
+        BoosterFlameRenderer.renderPlume(pose, buffer, player, model, partialTick, ICON, anchor, progress, opacity,
+                mirror, ox, oy, oz, rx, ry, rz, width, length);
     }
 }
