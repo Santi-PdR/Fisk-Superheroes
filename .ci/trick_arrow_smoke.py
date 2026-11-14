@@ -527,6 +527,23 @@ def main():
                 subprocess.run(['scrot', '-o', 'ci-arrow-mk50-third.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'c')
+            # Controlled flight must render Iron Man's mirrored animated repulsor plumes.
+            command('execute as Dev run suit fiskheroes:iron_man')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('gamemode survival Dev')
+            command('effect give Dev minecraft:resistance 60 255 true')
+            command('say IRON_BOOSTERS_READY')
+            wait_for(server_log, r'\[Server\] IRON_BOOSTERS_READY', 30, 'Iron Man booster scene ready', server)
+            subprocess.run(['scrot', '-o', 'ci-arrow-booster-before.png'], check=True, timeout=30)
+            for _ in range(2):
+                xdo('keydown', 'space'); time.sleep(.08); xdo('keyup', 'space'); time.sleep(.07)
+            wait_for(server_log, r'Controlled flight input: player=Dev, active=true', 30, 'Iron Man activates controlled flight', server)
+            wait_for(client_log, r'Booster plume rendered: hero=fiskheroes:iron_man, anchor=rightLeg, slot=3',
+                     45, 'Iron Man boots render mirrored booster plumes', client)
+            wait_for(client_log, r'Booster sprite animation: texture=fiskheroes:textures/icons/repulsor_layer_0\.png, columns=1, rows=32, frames=32',
+                     30, 'Iron Man repulsor animation uses 32 frames', client)
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-booster-flight.png'], check=True, timeout=30)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

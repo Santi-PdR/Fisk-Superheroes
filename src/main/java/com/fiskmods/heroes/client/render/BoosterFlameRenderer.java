@@ -30,6 +30,7 @@ final class BoosterFlameRenderer
 {
     private static final Map<ResourceLocation, AnimatedSpriteFrames> ANIMATIONS = new HashMap<>();
     private static final Map<String, ResourceLocation[]> ICONS = new HashMap<>();
+    private static final java.util.Set<String> DIAGNOSTICS = new java.util.HashSet<>();
 
     private BoosterFlameRenderer() { }
 
@@ -37,6 +38,7 @@ final class BoosterFlameRenderer
     {
         ANIMATIONS.clear();
         ICONS.clear();
+        DIAGNOSTICS.clear();
     }
 
     static void render(JsonObject effect, PoseStack pose, MultiBufferSource buffers, Player player,
@@ -48,6 +50,13 @@ final class BoosterFlameRenderer
 
         float progress = suit.evaluateRenderData(effect.get("data"), player, 0.0F);
         if (!(progress > 0.0F)) return;
+        if (Boolean.getBoolean("fiskheroes.ciParticleDiagnostics"))
+        {
+            String anchor = effect.has("anchor") ? effect.get("anchor").getAsString() : "body";
+            if (DIAGNOSTICS.add(suit.getHero() + "|" + anchor))
+                FiskHeroes.LOGGER.info("Booster plume rendered: hero={}, anchor={}, slot={}, progress={}",
+                        suit.getHero(), anchor, slot, progress);
+        }
         JsonArray size = effect.has("scale") && effect.get("scale").isJsonArray() ? effect.getAsJsonArray("scale") : null;
         JsonArray offset = effect.has("offset") && effect.get("offset").isJsonArray() ? effect.getAsJsonArray("offset") : null;
         JsonArray rotation = effect.has("rotation") && effect.get("rotation").isJsonArray() ? effect.getAsJsonArray("rotation") : null;
