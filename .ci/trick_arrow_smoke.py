@@ -401,6 +401,11 @@ def main():
             # legacy renderer uses a sparser 5 by 10 lattice for the local player.
             xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(1)
             command('tp Dev 0.5 180 0.5 0 0')
+            # The server may be behind the client under load; a fixed sleep can send
+            # the ability input before the reset teleport has actually executed.
+            command('say TELEPORT_FP_RESET_READY')
+            wait_for(server_log, r'\[Server\] TELEPORT_FP_RESET_READY', 30,
+                     'first-person teleport reset completed on server', server)
             xdo('keydown', 'b'); time.sleep(.25)
             subprocess.run(['scrot', '-o', 'ci-arrow-breach-first.png'], check=True, timeout=30)
             xdo('keyup', 'b')
