@@ -2901,6 +2901,52 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void fireBlastUsesFireProjectileDamageForDirectAndSplashHits(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var shooter = helper.makeMockPlayer();
+        shooter.setPos(base.getX() - 20, base.getY(), base.getZ());
+        var direct = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var splash = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (direct == null || splash == null) { helper.fail("Fire blast targets missing"); return; }
+        direct.setNoAi(true); direct.setNoGravity(true);
+        direct.setPos(base.getX() + 4, base.getY(), base.getZ() + .5);
+        splash.setNoAi(true); splash.setNoGravity(true);
+        splash.setPos(base.getX() + 4, base.getY(), base.getZ() + 2.2);
+        level.addFreshEntity(direct); level.addFreshEntity(splash);
+        var profile = com.google.gson.JsonParser.parseString("{\"types\":{\"FIRE\":1.0}}");
+        var blast = new com.fiskmods.heroes.common.entity.projectile.FireBlastEntity(shooter, profile, 6.0F, 2.5F);
+        blast.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5);
+        blast.setDeltaMovement(4, 0, 0);
+        var directRecord = new DirectArrowDamageRecorder(direct);
+        var splashRecord = new DirectArrowDamageRecorder(splash);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(directRecord);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(splashRecord);
+        try
+        {
+            float directHealth = direct.getHealth(), splashHealth = splash.getHealth();
+            level.addFreshEntity(blast); blast.tick();
+            var a = directRecord.source;
+            var b = splashRecord.source;
+            if (direct.getHealth() >= directHealth || splash.getHealth() >= splashHealth || a == null || b == null
+                    || a.getDirectEntity() != blast || b.getDirectEntity() != blast
+                    || a.getEntity() != shooter || b.getEntity() != shooter
+                    || !a.is(net.minecraft.world.damagesource.DamageTypes.FIREBALL)
+                    || !b.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
+                    || a.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR))
+            { helper.fail("Direct and splash fire blast must use blockable fire projectile damage"); return; }
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(directRecord);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(splashRecord);
+            blast.discard(); direct.discard(); splash.discard();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void fireballSplashUsesFireDamageAndHitsNonlivingTargets(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
@@ -5186,6 +5232,32 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void transformedSuitProtectionUpdatesImmediatelyOnHit(GameTestHelper helper)
+    {
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        if (data == null || hero == null) { helper.fail("Mk50 combat fixture missing"); return; }
+        target.getAbilities().invulnerable = false;
+        data.setHero(hero.getDefaultIteration());
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(target);
+        js.setData("fiskheroes:dyn/nanites", false);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(target);
+        js.setData("fiskheroes:dyn/nanites", true); // No attribute tick between transform and hit.
+        target.setHealth(20.0F);
+        var hit = target.damageSources().playerAttack(attacker);
+        if (!target.hurt(hit, 10.0F) || Math.abs(target.getHealth() - 19.6F) > .01F)
+        { helper.fail("An immediate hit must use active Mk50 tier 8, not a stale attribute"); return; }
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        js.setData("fiskheroes:dyn/nanites", false);
+        if (!target.hurt(hit, 10.0F) || Math.abs(target.getHealth() - 10.0F) > .01F)
+        { helper.fail("An immediate hit after deactivation must have no tier protection"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void suitProtectionCombinesWithVanillaArmorOnce(GameTestHelper helper)
     {
         var target = helper.makeMockPlayer();
@@ -5254,6 +5326,18 @@ public final class PortRegressionTests
                 || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire()) - (1 - reduction / 4)) > .001
                 || Math.abs(com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().lava(), 10) - 10) > .001)
         { helper.fail("Fire weakness must halve protection, not double the raw hit"); return; }
+        // Original extended sources count as fire at a FIRE fraction >= 0.5, even
+        // when the underlying 1.20 damage source is indirect magic or an arrow.
+        for (double fraction : new double[] {0.25D, 0.5D, 1.0D})
+        {
+            float[] actual = {0};
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                    java.util.Map.of("FIRE", fraction, "ENERGY", 1.0D),
+                    () -> actual[0] = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, magic));
+            double expected = 1 - reduction * (fraction >= .5D ? .5D : 1.0D);
+            if (Math.abs(actual[0] - expected) > .001)
+            { helper.fail("Mixed fire profile did not use the original 50 percent threshold: " + fraction); return; }
+        }
         for (var item : com.fiskmods.heroes.common.item.ModItems.heroArmor)
             if (item.getMaterial().getDefenseForType(item.getType()) != 0)
             { helper.fail("Suit armor must not also add vanilla armor points"); return; }

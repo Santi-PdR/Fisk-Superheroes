@@ -17,7 +17,9 @@ Most armor-bypassing damage, including fall, drowning, suffocation and the void,
 protection. As in the original, burning, lava and direct magic receive half protection, and
 indirect magic receives full protection even though it bypasses vanilla armor. Other powers and
 fall resistance may independently cancel or change damage. Martian fire weakness halves the
-remaining suit protection against fire, after these source-specific rules; nearby fire, lava or a
+remaining suit protection against fire, after these source-specific rules. A typed hit counts as
+fire when its `FIRE` fraction is at least 0.5, matching the original extended damage source.
+Nearby fire, lava or a
 burning entity also causes nausea, slowness and weakness. Area scans run every five ticks, while
 a burning wearer is checked immediately.
 

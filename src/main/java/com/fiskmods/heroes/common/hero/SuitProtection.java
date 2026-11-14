@@ -45,7 +45,7 @@ public final class SuitProtection
         var value = SHAttributes.collect(entity, data.getHeroType()).get(HeroAttribute.DAMAGE_REDUCTION);
         double reduction = value != null ? Math.max(0.0D, Math.min(1.0D, value.amount())) : 0.0D;
         reduction *= sourceScale;
-        if (source.is(DamageTypeTags.IS_FIRE))
+        if (isFireDamage(source))
         {
             for (var entry : data.getHeroType().getPowerContainer().getEntries())
             {
@@ -57,5 +57,20 @@ public final class SuitProtection
             }
         }
         return (float) (1.0D - reduction);
+    }
+
+    /** Legacy extended damage reports fire at a FIRE fraction of at least one half. */
+    private static boolean isFireDamage(DamageSource source)
+    {
+        var profile = com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile();
+        if (profile == null && source.getEntity() instanceof net.minecraft.world.entity.player.Player attacker
+                && source.getDirectEntity() == attacker
+                && (source.is(DamageTypes.PLAYER_ATTACK) || source.is(DamageTypes.MOB_ATTACK)))
+        {
+            var attackerData = SHDataCapabilities.getPlayer(attacker);
+            if (attackerData != null && attackerData.getHeroType() != null)
+                profile = attackerData.getHeroType().getMeleeDamageProfile(attacker);
+        }
+        return profile != null ? profile.getOrDefault("FIRE", 0.0D) >= 0.5D : source.is(DamageTypeTags.IS_FIRE);
     }
 }

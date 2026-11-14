@@ -76,7 +76,7 @@ public final class FireBlastEntity extends ThrowableProjectile
             if (hit.getEntity() instanceof LivingEntity target && getOwner() instanceof LivingEntity shooter)
             {
                 DamageGroups.applyProfileDamage(target, shooter,
-                        shooter.damageSources().indirectMagic(this, shooter), damage, profile());
+                        fireballSource(shooter), damage, profile());
             }
             explode(serverLevel, position, hit.getEntity());
         }
@@ -104,7 +104,7 @@ public final class FireBlastEntity extends ThrowableProjectile
                 if (getOwner() instanceof LivingEntity shooter)
                 {
                     DamageGroups.applyProfileDamage(target, shooter,
-                            shooter.damageSources().indirectMagic(this, shooter), scaledDamage, profile());
+                            fireballSource(shooter), scaledDamage, profile());
                 }
             }
         }
@@ -115,6 +115,14 @@ public final class FireBlastEntity extends ThrowableProjectile
                 position.x, position.y, position.z, 10, 0.2D, 0.2D, 0.2D, 0.02D);
         level.playSound(null, position.x, position.y, position.z, SoundEvents.GENERIC_EXPLODE,
                 SoundSource.PLAYERS, 1.5F, 0.9F);
+    }
+
+    /** The original fire blast is a fire projectile, not armor-bypassing indirect magic. */
+    private net.minecraft.world.damagesource.DamageSource fireballSource(LivingEntity shooter)
+    {
+        var type = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.FIREBALL);
+        return new net.minecraft.world.damagesource.DamageSource(type, this, shooter);
     }
 
     private JsonElement profile()
