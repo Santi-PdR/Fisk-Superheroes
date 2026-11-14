@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -262,6 +262,42 @@ def main():
             command('execute as Partner run suit fiskheroes:the_flash')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default',
                      90, 'remote wearer without a livery restores the default', observer)
+            # A long teleport must reach each endpoint's observers independently,
+            # including a destination observer who is not tracking the caster.
+            command('forceload add -16 -16 16 96')
+            command('fill -4 179 74 4 179 83 minecraft:stone')
+            command('fill -2 180 80 2 183 80 minecraft:stone')
+            command('execute as Partner run suit fiskheroes:the_monitor')
+            command('item replace entity Partner weapon.mainhand with minecraft:air')
+            command('tp Dev 3 180 2 0 0')
+            command('tp Partner 0 180 2 0 0')
+            time.sleep(3)
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
+            origin_start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'keydown', 'b'], check=True, timeout=30)
+            time.sleep(.3)
+            subprocess.run(['xdotool', 'keyup', 'b'], check=True, timeout=30)
+            origin = r'Teleport burst emitted: endpoint=origin, firstPerson=false, center=.*count=200, cloud=fiskheroes:breach'
+            wait_for_new(observer_log, origin, origin_start, 45, 'origin observer receives remote teleport burst', observer)
+            time.sleep(2)
+            observed = observer_log.read_text(errors='replace')[origin_start:]
+            if len(re.findall(origin, observed)) != 1 or 'Teleport burst emitted: endpoint=destination' in observed:
+                raise RuntimeError('Origin-only observer must receive exactly one origin burst, not the remote destination')
+            command('tp Dev 3 180 78 180 0')
+            command('tp Partner 0 180 2 0 0')
+            time.sleep(3)
+            dest_start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'keydown', 'b'], check=True, timeout=30)
+            time.sleep(.3)
+            subprocess.run(['xdotool', 'keyup', 'b'], check=True, timeout=30)
+            dest = r'Teleport burst emitted: endpoint=destination, firstPerson=false, center=.*count=200, cloud=fiskheroes:breach'
+            wait_for_new(observer_log, dest, dest_start, 45, 'destination observer receives untracked remote teleport burst', observer)
+            time.sleep(2)
+            observed = observer_log.read_text(errors='replace')[dest_start:]
+            if len(re.findall(dest, observed)) != 1 or 'Teleport burst emitted: endpoint=origin' in observed:
+                raise RuntimeError('Destination-only observer must receive exactly one destination burst, not the remote origin')
+            print('PASS: separated endpoint observers receive one burst each without needing to track the caster', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
