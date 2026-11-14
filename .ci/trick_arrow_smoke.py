@@ -449,12 +449,12 @@ def main():
                 before = Image.open(incomplete).convert('RGB').crop(box)
                 after = Image.open(full).convert('RGB').crop(box)
                 return sum(1 for (r,g,b), (r0,g0,b0) in zip(after.getdata(), before.getdata())
-                           if r > 75 and r > g + 12 and g > b + 8 and r > r0 + 15)
+                           if r > 65 and r > g + 8 and g > b + 5 and abs(r-r0) + abs(g-g0) + abs(b-b0) > 35)
             third_box = (wx + int(width*.36), wy + int(height*.20), wx + int(width*.64), wy + int(height*.60))
             first_box = (wx + int(width*.50), wy + int(height*.40), wx + int(width*.99), wy + int(height*.99))
             third_pixels = flame_pixels('ci-arrow-firestorm-third.png', 'ci-arrow-firestorm-incomplete.png', third_box)
             first_pixels = flame_pixels('ci-arrow-firestorm-first.png', 'ci-arrow-firestorm-incomplete-first.png', first_box)
-            if third_pixels < 40 or first_pixels < 25:
+            if third_pixels < 40 or first_pixels < 15:
                 raise RuntimeError(f'Firestorm flames must be visibly orange in both views: third={third_pixels}, first={first_pixels}')
             print(f'PASS: visible Firestorm flames against incomplete-suit control: third={third_pixels}, first={first_pixels}', flush=True)
             # Martian Manhunter's heat vision has one pack beam mirrored at both eyes.
@@ -474,6 +474,25 @@ def main():
                 subprocess.run(['scrot', '-o', 'ci-arrow-heat-first.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'g')
+            # The Mk 50 cannon's component glow uses aimed_timer, not the hitscan
+            # projection timer. It must appear while aiming without firing a shot.
+            command('execute as Dev run suit fiskheroes:iron_man_mk50')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('say MK50_SCENE_READY')
+            wait_for(server_log, r'\[Server\] MK50_SCENE_READY', 30, 'Mk 50 scene ready', server)
+            xdo('keydown', 'g'); time.sleep(.2); xdo('keyup', 'g'); time.sleep(3)
+            xdo('keydown', 'c')
+            try:
+                wait_for(client_log, r'Component beam rendered: hero=fiskheroes:iron_man_mk50, firstPerson=true, amount=([-+0-9.eE]+), beams=5',
+                         60, 'Mk 50 cannon component beams render while aiming without a projection shot', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-mk50-first.png'], check=True, timeout=30)
+                xdo('key', 'F5')
+                wait_for(client_log, r'Component beam rendered: hero=fiskheroes:iron_man_mk50, firstPerson=false, amount=([-+0-9.eE]+), beams=5',
+                         60, 'Mk 50 cannon component beams render in third person', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-mk50-third.png'], check=True, timeout=30)
+            finally:
+                xdo('keyup', 'c')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

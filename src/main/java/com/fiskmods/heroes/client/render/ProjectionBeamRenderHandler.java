@@ -26,6 +26,7 @@ import net.minecraftforge.fml.common.Mod;
 public final class ProjectionBeamRenderHandler
 {
     private static final java.util.Set<net.minecraft.resources.ResourceLocation> LOGGED_CHARGED_BEAMS = new java.util.HashSet<>();
+    private static final java.util.Set<String> LOGGED_COMPONENT_BEAMS = new java.util.HashSet<>();
 
     private ProjectionBeamRenderHandler()
     {
@@ -57,15 +58,6 @@ public final class ProjectionBeamRenderHandler
                 continue;
             }
 
-            float chargedActivity = Mth.clamp(data.getData().get(Vars.BEAM_SHOOTING_TIMER), 0.0F, 1.0F);
-            float activity = Math.max(chargedActivity,
-                    Mth.clamp(data.getData().get(Vars.ENERGY_PROJECTION_TIMER), 0.0F, 1.0F));
-            double length = data.getData().get(Vars.HEAT_VISION_LENGTH);
-            if (activity <= 0.0F || length <= 0.0D)
-            {
-                continue;
-            }
-
             HeroIteration iteration = data.getHero();
             HeroModelData model = HeroModelRegistry.get(iteration);
             if (model == null)
@@ -73,9 +65,19 @@ public final class ProjectionBeamRenderHandler
                 continue;
             }
 
-            if (renderModelBeam(event.getPoseStack(), buffers, camera, player, model, event.getPartialTick()))
+            if (player instanceof net.minecraft.client.player.AbstractClientPlayer clientPlayer
+                    && renderModelBeam(event.getPoseStack(), buffers, camera, clientPlayer, model, event.getPartialTick()))
             {
                 rendered = true;
+            }
+
+            float chargedActivity = Mth.clamp(data.getData().get(Vars.BEAM_SHOOTING_TIMER), 0.0F, 1.0F);
+            float activity = Math.max(chargedActivity,
+                    Mth.clamp(data.getData().get(Vars.ENERGY_PROJECTION_TIMER), 0.0F, 1.0F));
+            double length = data.getData().get(Vars.HEAT_VISION_LENGTH);
+            if (activity <= 0.0F || length <= 0.0D)
+            {
+                continue;
             }
 
             // A suit such as Mysterio has both effects: use the charged beam's head anchor
@@ -116,10 +118,12 @@ public final class ProjectionBeamRenderHandler
 
     /** Draws component beams such as the articulated glow inside Iron Man's Mk 50 cannon. */
     private static boolean renderModelBeam(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
-            Vec3 camera, Player player, HeroModelData model, float partialTick)
+            Vec3 camera, net.minecraft.client.player.AbstractClientPlayer player, HeroModelData model, float partialTick)
     {
         JsonObject effect = model.getCustom().get("fiskheroes:beam");
-        if (effect == null || !effect.has("componentBeams") || !effect.get("componentBeams").isJsonArray())
+        if (effect == null || !HeroSuitLayer.appliesToSlot(effect, 1)
+                || !HeroSuitLayer.passesConditionals(effect, model, player)
+                || !effect.has("componentBeams") || !effect.get("componentBeams").isJsonArray())
         {
             return false;
         }
@@ -130,7 +134,13 @@ public final class ProjectionBeamRenderHandler
             return false;
         }
 
-        Vec3 direction = player.getLookAngle().normalize();
+        boolean firstPerson = player == Minecraft.getInstance().player
+                && Minecraft.getInstance().options.getCameraType().isFirstPerson();
+        if (Boolean.getBoolean("fiskheroes.ciParticleDiagnostics")
+                && LOGGED_COMPONENT_BEAMS.add(model.getHero() + "|" + firstPerson))
+            FiskHeroes.LOGGER.info("Component beam rendered: hero={}, firstPerson={}, amount={}, beams={}",
+                    model.getHero(), firstPerson, amount, effect.getAsJsonArray("componentBeams").size());
+        Vec3 direction = player.getViewVector(partialTick).normalize();
         Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
         if (right.lengthSqr() < 1.0E-6D)
         {
@@ -165,10 +175,12 @@ public final class ProjectionBeamRenderHandler
             if (beam == null || !component.has("direction") || !component.get("direction").isJsonArray()) continue;
 
             double x = 0.0D, y = 0.0D, z = 0.0D;
-            if (beam.has("offset") && beam.get("offset").isJsonArray()
-                    && beam.getAsJsonArray("offset").size() >= 3)
+            String offsetKey = firstPerson && beam.has("firstPerson") && beam.get("firstPerson").isJsonArray()
+                    ? "firstPerson" : "offset";
+            if (beam.has(offsetKey) && beam.get(offsetKey).isJsonArray()
+                    && beam.getAsJsonArray(offsetKey).size() >= 3)
             {
-                var offset = beam.getAsJsonArray("offset");
+                var offset = beam.getAsJsonArray(offsetKey);
                 x = offset.get(0).getAsDouble();
                 y = offset.get(1).getAsDouble();
                 z = offset.get(2).getAsDouble();
