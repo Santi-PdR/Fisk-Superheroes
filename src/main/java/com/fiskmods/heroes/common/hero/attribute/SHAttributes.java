@@ -151,34 +151,39 @@ public class SHAttributes
                 continue;
             }
 
-            UUID id = uuid(entity, attribute, data);
-            AttributeModifier existing = instance.getModifier(id);
             Hero.AttributeMod mod = attribute == HeroAttribute.SPRINT_SPEED && !entity.isSprinting()
                     ? null : values.get(attribute);
-            double amount = mod != null ? mod.amount() : 0.0D;
-            // DAMAGE_REDUCTION represents a fraction and has a zero base in this port.
-            // A multiply-base modifier on zero would silently discard the augment.
-            AttributeModifier.Operation operation = mod != null && attribute != HeroAttribute.DAMAGE_REDUCTION
-                    ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
-
-            if (Math.abs(amount) < 1.0E-5D)
-            {
-                if (existing != null)
-                {
-                    instance.removeModifier(existing);
-                }
-            }
-            else if (existing == null || Math.abs(existing.getAmount() - amount) > 1.0E-5D || existing.getOperation() != operation)
-            {
-                if (existing != null)
-                {
-                    instance.removeModifier(existing);
-                }
-
-                instance.addTransientModifier(new AttributeModifier(id, "fiskheroes:" + attribute.getName(), amount, operation));
-            }
+            updateHeroModifier(instance, uuid(entity, attribute, data), attribute, mod);
         }
         updateSpeedsterModifier(entity, data);
+    }
+
+    private static void updateHeroModifier(AttributeInstance instance, UUID id, HeroAttribute attribute, Hero.AttributeMod mod)
+    {
+        AttributeModifier existing = instance.getModifier(id);
+        double amount = mod != null ? mod.amount() : 0.0D;
+        // DAMAGE_REDUCTION is an absolute fraction with zero base in the port.
+        AttributeModifier.Operation operation = mod != null && attribute != HeroAttribute.DAMAGE_REDUCTION
+                ? operation(mod.operation()) : AttributeModifier.Operation.ADDITION;
+        if (Math.abs(amount) < 1.0E-5D)
+        {
+            if (existing != null) instance.removeModifier(existing);
+        }
+        else if (existing == null || Math.abs(existing.getAmount() - amount) > 1.0E-5D || existing.getOperation() != operation)
+        {
+            if (existing != null) instance.removeModifier(existing);
+            instance.addTransientModifier(new AttributeModifier(id, "fiskheroes:" + attribute.getName(), amount, operation));
+        }
+    }
+
+    /** Refresh just protection before a hit; retain other mods' attribute modifiers. */
+    public static double protectionValue(LivingEntity entity, Hero hero, SHPlayerData data)
+    {
+        Hero.AttributeMod mod = collect(entity, hero).get(HeroAttribute.DAMAGE_REDUCTION);
+        AttributeInstance instance = entity.getAttribute(DAMAGE_REDUCTION.get());
+        if (instance == null) return mod != null ? mod.amount() : 0.0D;
+        updateHeroModifier(instance, uuid(entity, HeroAttribute.DAMAGE_REDUCTION, data), HeroAttribute.DAMAGE_REDUCTION, mod);
+        return instance.getValue();
     }
 
     /** Original speed-level curve, expressed as a vanilla movement-speed attribute bonus. */

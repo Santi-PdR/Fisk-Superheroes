@@ -11,7 +11,8 @@ no tier protection, while giant Ant-Man uses a higher tier. A damage-reduction a
 active suit core improves the tier's reduction; profiles that revoke augments disable the upgrade,
 not the underlying tier. The armor bar in the survival HUD shows this reduction. Vanilla armor
 points from other items and enchantments still work; superhero pieces themselves contribute no
-vanilla armor points, avoiding a second reduction from the same suit.
+vanilla armor points, avoiding a second reduction from the same suit. Other mods' modifiers on
+the synced `fiskheroes:damage_reduction` attribute remain effective.
 
 Most armor-bypassing damage, including fall, drowning, suffocation and the void, bypasses suit
 protection. As in the original, burning, lava and direct magic receive half protection, and

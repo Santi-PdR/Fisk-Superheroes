@@ -42,8 +42,7 @@ public final class SuitProtection
         else if (!source.is(DamageTypes.INDIRECT_MAGIC) && source.is(DamageTypeTags.BYPASSES_ARMOR))
             return 1.0F;
 
-        var value = SHAttributes.collect(entity, data.getHeroType()).get(HeroAttribute.DAMAGE_REDUCTION);
-        double reduction = value != null ? Math.max(0.0D, Math.min(1.0D, value.amount())) : 0.0D;
+        double reduction = Math.max(0.0D, Math.min(1.0D, SHAttributes.protectionValue(entity, data.getHeroType(), data)));
         reduction *= sourceScale;
         if (isFireDamage(source))
         {

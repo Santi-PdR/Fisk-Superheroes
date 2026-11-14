@@ -2849,9 +2849,9 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
         var shooter = helper.makeMockPlayer(); shooter.setPos(base.getX() - 20, base.getY(), base.getZ());
-        for (int i = 0; i < 5; ++i)
+        for (int i = 0; i < 7; ++i)
         {
-            var target = i == 3 ? net.minecraft.world.entity.EntityType.BLAZE.create(level)
+            var target = i == 3 || i == 6 ? net.minecraft.world.entity.EntityType.BLAZE.create(level)
                     : net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
             if (target == null) { helper.fail("Missing direct-hit target"); return; }
             target.setNoAi(true); target.setNoGravity(true);
@@ -2867,7 +2867,7 @@ public final class PortRegressionTests
             {
                 var trick = new com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity(
                         com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level);
-                trick.setArrowType(i == 1 ? "normal" : "fireball");
+                trick.setArrowType(i == 1 ? "normal" : i >= 5 ? "blaze" : "fireball");
                 if (i != 4) trick.setOwner(shooter);
                 arrow = trick;
             }
@@ -2881,14 +2881,16 @@ public final class PortRegressionTests
                 level.addFreshEntity(arrow); arrow.tick();
                 var source = recorder.source;
                 boolean valid;
-                if (i == 3)
+                if (i == 3 || i == 6)
                     valid = target.getHealth() == health && !target.isOnFire();
                 else
                     valid = target.getHealth() < health && source != null && source.getDirectEntity() == arrow
                             && source.getEntity() == (i == 4 ? null : shooter)
                             && source.is(i == 0 || i == 4 ? net.minecraft.world.damagesource.DamageTypes.FIREBALL
+                                    : i == 5 ? com.fiskmods.heroes.common.entity.arrow.ArrowDamageSources.BLAZE_ARROW
                                     : net.minecraft.world.damagesource.DamageTypes.ARROW)
-                            && ((i == 0 || i == 4) == source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE));
+                            && ((i == 0 || i == 4 || i == 5) == source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE))
+                            && source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE);
                 if (!valid) { helper.fail("Incorrect direct arrow damage source or fire immunity in case " + i); return; }
             }
             finally
@@ -5319,6 +5321,13 @@ public final class PortRegressionTests
                 || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, onFire) - .526) > .001
                 || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, voidDamage) != 1)
         { helper.fail("Protection did not respect damage-source exceptions"); return; }
+        var extra = player.getAttribute(com.fiskmods.heroes.common.hero.attribute.SHAttributes.DAMAGE_REDUCTION.get());
+        var externalId = java.util.UUID.fromString("5c78acfd-2c36-44ed-a63f-470c4a0ecf32");
+        extra.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(externalId,
+                "other mod protection", .02D, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
+        if (Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, melee) - .032F) > .001F)
+        { helper.fail("Suit protection must retain other mods' damage-reduction attributes"); return; }
+        extra.removeModifier(externalId);
         data.setHero(martian.getDefaultIteration());
         double reduction = com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(martian.getTier());
         float fire = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().lava());
