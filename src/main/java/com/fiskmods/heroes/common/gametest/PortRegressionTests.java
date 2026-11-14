@@ -3114,7 +3114,8 @@ public final class PortRegressionTests
         double pitch = Math.PI / 10, yaw = Math.PI / 10;
         var expected = new net.minecraft.world.phys.Vec3(-.9 * Math.sin(pitch) * Math.sin(yaw),
                 1.35 * Math.cos(pitch), -.9 * Math.sin(pitch) * Math.cos(yaw));
-        if (first.distanceToSqr(expected) > 1.0E-10)
+        // Minecraft's Mth trigonometry uses a float lookup table rather than Math.sin/cos.
+        if (first.distanceToSqr(expected) > 1.0E-7)
         { helper.fail("Teleport lattice must match the original angular and dimension scaling: " + first); return; }
         helper.succeed();
     }

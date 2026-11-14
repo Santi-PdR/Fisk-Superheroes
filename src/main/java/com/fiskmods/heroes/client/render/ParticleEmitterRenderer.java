@@ -98,7 +98,7 @@ final class ParticleEmitterRenderer
         }
     }
 
-    /** Executes the original particle_cloud and teleportation cloud directives. */
+    /** Executes particle-cloud and telekinesis-aura directives. */
     private static void emitCloud(Player player, HeroModelData suit)
     {
         JsonObject effect = suit.getCustom().get("fiskheroes:particle_cloud");

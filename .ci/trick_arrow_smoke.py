@@ -369,8 +369,7 @@ def main():
                 print(f'PASS: visible blue telekinesis aura around target ({visible} changed pixels)', flush=True)
             finally:
                 xdo('keyup', 'v')
-            # Teleport emits a breach-colored cloud. Check that actual particles
-            # animate between the two sampled endpoints, not a frozen midpoint.
+            # Check both radial endpoints and their animated colors in third person.
             command('kill @e[tag=monitor_target]')
             command('fill -2 180 6 2 184 6 minecraft:stone')
             command('tp Dev 0.5 180 0.5 0 0')
@@ -398,6 +397,23 @@ def main():
                     and .2 <= colors[4] <= .7 and colors[5] == 1.0):
                 raise RuntimeError(f'Incorrect animated breach color endpoints: {colors}')
             print(f'PASS: breach cloud transitions from white to sampled blue: {colors}', flush=True)
+            # Switch through front-facing third person to first person and repeat. The
+            # legacy renderer uses a sparser 5 by 10 lattice for the local player.
+            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(1)
+            command('tp Dev 0.5 180 0.5 0 0')
+            xdo('keydown', 'b'); time.sleep(.25)
+            subprocess.run(['scrot', '-o', 'ci-arrow-breach-first.png'], check=True, timeout=30)
+            xdo('keyup', 'b')
+            first_burst = (r'Teleport burst emitted: endpoint=(origin|destination), firstPerson=true, '
+                           r'center=\(([-+0-9.eE]+), ([-+0-9.eE]+), ([-+0-9.eE]+)\), count=([0-9]+), cloud=fiskheroes:breach')
+            wait_for(client_log, first_burst.replace('(origin|destination)', 'destination'), 30,
+                     'first-person teleport burst reaches destination', client)
+            first_bursts = {endpoint: (float(x), float(y), float(z), int(count)) for endpoint, x, y, z, count
+                            in re.findall(first_burst, client_log.read_text(errors='replace'))}
+            if (set(first_bursts) != {'origin', 'destination'} or first_bursts['origin'][3] != 50
+                    or first_bursts['destination'][3] != 50 or first_bursts['destination'][2] - first_bursts['origin'][2] < 3):
+                raise RuntimeError(f'First-person teleport must emit two 50-particle bursts: {first_bursts}')
+            print(f'PASS: first-person teleport uses two 50-particle bursts: {first_bursts}', flush=True)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):
