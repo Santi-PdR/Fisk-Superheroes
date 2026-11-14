@@ -56,7 +56,7 @@ final class ComponentBeamRenderer
     private static void draw(PoseStack pose, MultiBufferSource buffers, AbstractClientPlayer player, PlayerModel<?> model,
             Layout layout, String anchorName, boolean mirror, boolean first, float amount, float opacity, float partialTick)
     {
-        ModelPart part = HeroSuitAnchor.get(model, anchorName);
+        ModelPart part = BoosterFlameRenderer.HeroSuitAnchor.get(model, anchorName);
         if (part == null) return;
         pose.pushPose();
         part.translateAndRotate(pose);

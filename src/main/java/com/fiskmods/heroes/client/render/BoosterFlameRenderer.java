@@ -264,9 +264,9 @@ final class BoosterFlameRenderer
         };
     }
 
-    private static final class HeroSuitAnchor
+    static final class HeroSuitAnchor
     {
-        private static ModelPart get(PlayerModel<?> model, String name)
+        static ModelPart get(PlayerModel<?> model, String name)
         {
             return switch (name.toLowerCase(java.util.Locale.ROOT))
             {
