@@ -2,6 +2,7 @@ package com.fiskmods.heroes.client.render;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.util.AnimatedSpriteFrames;
+import com.fiskmods.heroes.common.util.LegacyFlameGeometry;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -64,52 +65,43 @@ final class BoosterFlameRenderer
                 effect.has("anchor") ? effect.get("anchor").getAsString() : "body", progress,
                 effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F,
                 effect.has("mirror") && effect.get("mirror").getAsBoolean(),
-                number(offset, 0, 0), number(offset, 1, 0), number(offset, 2, 0),
-                number(rotation, 0, 0), number(rotation, 1, 0), number(rotation, 2, 0),
-                number(size, 0, 2), number(size, 1, 4));
+                value(offset, 0, 0, suit, player), value(offset, 1, 0, suit, player), value(offset, 2, 0, suit, player),
+                value(rotation, 0, 0, suit, player), value(rotation, 1, 0, suit, player), value(rotation, 2, 0, suit, player),
+                value(size, 0, 2, suit, player), value(size, 1, 4, suit, player),
+                suit.evaluateRenderData(effect.get("flutter"), player, 1.0F),
+                suit.evaluateRenderData(effect.get("speedScale"), player, 1.0F));
     }
 
     /** Shared primitive-based path avoids constructing temporary JSON and vector arrays per plume/frame. */
     static void renderPlume(PoseStack pose, MultiBufferSource buffers, Player player, PlayerModel<?> model,
             float partialTick, String iconTemplate, String anchorName, float progress, float opacity,
-            boolean mirror, float ox, float oy, float oz, float rx, float ry, float rz, float sizeX, float sizeY)
+            boolean mirror, float ox, float oy, float oz, float rx, float ry, float rz, float sizeX, float sizeY,
+            float flutterFactor, float speedScale)
     {
         if (!(progress > 0.0F)) return;
         ModelPart anchor = HeroSuitAnchor.get(model, anchorName);
         if (anchor == null) return;
-        progress = Mth.clamp(progress, 0.0F, 1.0F);
-        float eased = progress * progress * (3.0F - 2.0F * progress);
-        double velocity = Math.min(8.0D, player.getDeltaMovement().length());
+        float eased = LegacyFlameGeometry.curve(progress);
+        double dx = player.getX() - player.xo, dy = player.getY() - player.yo, dz = player.getZ() - player.zo;
+        double velocity = Math.min(8.0D, Math.sqrt(dx * dx + dy * dy + dz * dz)) * Math.max(0.0F, speedScale);
         float flutter = (float) Math.sin((player.tickCount + partialTick) * 3.0F) / 15.0F;
         float multiplier = eased * ((float) velocity * 2.0F + sizeY) - flutter / 3.0F;
-        float width = Math.max(0.0F, (1.0F + flutter) * sizeX);
-        // The legacy fire mesh scales every axis by its width, including height.
+        float width = Math.max(0.0F, (1.0F + flutter * flutterFactor) * sizeX);
         float length = width * multiplier;
-        if (length <= 0.0F) return;
+        if (Math.abs(length) <= 0.0001F) return;
         float alpha = Mth.clamp(opacity * Math.max(0.6F, 1.0F - (float) velocity / 5.0F), 0.0F, 1.0F);
         int tick = player.tickCount + (partialTick >= 0.5F ? 1 : 0);
         ResourceLocation[] icons = ICONS.computeIfAbsent(iconTemplate,
                 template -> new ResourceLocation[] { icon(template, 0), icon(template, 1) });
-        ResourceLocation layer0 = icons[0], layer1 = icons[1];
-        drawAt(anchor, pose, buffers, layer0, width, length, alpha, tick, partialTick, ox, oy, oz, rx, ry, rz, false);
+        drawAt(anchor, pose, buffers, icons, width, length, alpha, tick, ox, oy, oz, rx, ry, rz);
         if (mirror)
         {
             ModelPart opposite = HeroSuitAnchor.get(model, opposite(anchorName));
             if (opposite == anchor)
-            {
-                drawAt(anchor, pose, buffers, layer0, width, length, alpha, tick, partialTick, -ox, oy, oz, rx, -ry, -rz, true);
-                if (layer1 != null) drawAt(anchor, pose, buffers, layer1, width * 0.88F, length, alpha * 0.8F,
-                        tick, partialTick, -ox, oy, oz, rx, -ry, -rz, false);
-            }
+                drawAt(anchor, pose, buffers, icons, width, length, alpha, tick, -ox, oy, oz, rx, -ry, -rz);
             else if (opposite != null)
-            {
-                drawAt(opposite, pose, buffers, layer0, width, length, alpha, tick, partialTick, -ox, oy, oz, rx, ry, rz, false);
-                if (layer1 != null) drawAt(opposite, pose, buffers, layer1, width * 0.88F, length, alpha * 0.8F,
-                        tick, partialTick, -ox, oy, oz, rx, ry, rz, true);
-            }
+                drawAt(opposite, pose, buffers, icons, width, length, alpha, tick, -ox, oy, oz, rx, ry, rz);
         }
-        if (layer1 != null) drawAt(anchor, pose, buffers, layer1, width * 0.88F, length, alpha * 0.8F,
-                tick, partialTick, ox, oy, oz, rx, ry, rz, true);
     }
 
     /** Legacy suit fire is a wrapping mesh in block units, not a tiny booster billboard. */
@@ -155,27 +147,43 @@ final class BoosterFlameRenderer
                     u0, u1, v0, v1, alpha);
     }
 
-    private static void drawAt(ModelPart anchor, PoseStack pose, MultiBufferSource buffers, ResourceLocation texture,
-            float width, float length, float alpha, int tick, float partialTick,
-            float ox, float oy, float oz, float rx, float ry, float rz, boolean crossPlane)
+    private static void drawAt(ModelPart anchor, PoseStack pose, MultiBufferSource buffers, ResourceLocation[] textures,
+            float width, float length, float alpha, int tick,
+            float ox, float oy, float oz, float rx, float ry, float rz)
     {
-        if (texture == null || width <= 0.0F || length <= 0.0F) return;
-        AnimatedSpriteFrames animation = animation(texture);
-        int frame = animation.frameAt(tick);
-        float u0 = animation.u0(frame), u1 = animation.u1(frame);
-        float v0 = animation.v0(frame), v1 = animation.v1(frame);
+        if (width <= 0.0F || Math.abs(length) <= 0.0001F) return;
         pose.pushPose();
         anchor.translateAndRotate(pose);
         pose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
         pose.translate(-ox, oy, oz);
-        pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(rz));
-        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(ry));
+        // Match the original's X, then Y, then Z transforms.
         pose.mulPose(com.mojang.math.Axis.XP.rotationDegrees(rx));
-        if (crossPlane) pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(90.0F + (tick + partialTick) * 9.0F));
-        VertexConsumer vertex = buffers.getBuffer(RenderType.entityTranslucent(texture));
-        float half = width * 0.5F;
-        quad(vertex, pose, -half, 0.0F, 0.0F, half, 0.0F, 0.0F,
-                half * 0.25F, length, 0.0F, -half * 0.25F, length, 0.0F, u0, u1, v0, v1, alpha);
+        pose.mulPose(com.mojang.math.Axis.YP.rotationDegrees(ry));
+        pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(rz));
+        for (int layer = 0; layer < 2; ++layer)
+        {
+            ResourceLocation texture = textures[layer];
+            if (texture == null) continue;
+            AnimatedSpriteFrames animation = animation(texture);
+            int frame = animation.frameAt(tick);
+            float u0 = animation.u0(frame), u1 = animation.u1(frame);
+            float v0 = animation.v0(frame), v1 = animation.v1(frame);
+            VertexConsumer vertex = buffers.getBuffer(RenderType.entityTranslucentEmissive(texture));
+            var matrix = pose.last();
+            int a = Math.round(alpha * 255.0F);
+            for (int quad = layer * 4; quad < layer * 4 + 4; ++quad)
+                for (int i = 0; i < 4; ++i)
+                {
+                    float x = LegacyFlameGeometry.component(quad, i, 0) * width;
+                    float y = LegacyFlameGeometry.component(quad, i, 1) * length;
+                    float z = LegacyFlameGeometry.component(quad, i, 2) * width;
+                    float u = Mth.lerp(LegacyFlameGeometry.component(quad, i, 3), u0, u1);
+                    float v = Mth.lerp(LegacyFlameGeometry.component(quad, i, 4), v0, v1);
+                    vertex.vertex(matrix.pose(), x, y, z).color(255, 255, 255, a).uv(u, v)
+                            .overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT)
+                            .normal(matrix.normal(), 0, 0, 1).endVertex();
+                }
+        }
         pose.popPose();
     }
 
@@ -256,9 +264,9 @@ final class BoosterFlameRenderer
         return true;
     }
 
-    private static float number(JsonArray array, int index, float fallback)
+    private static float value(JsonArray array, int index, float fallback, HeroModelData model, Player player)
     {
-        return array != null && index < array.size() && array.get(index).isJsonPrimitive() ? array.get(index).getAsFloat() : fallback;
+        return array != null && index < array.size() ? model.evaluateRenderData(array.get(index), player, fallback) : fallback;
     }
 
     private static String opposite(String part)

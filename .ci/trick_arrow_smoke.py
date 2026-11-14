@@ -544,8 +544,22 @@ def main():
                      45, 'Iron Man boots render mirrored booster plumes', client)
             wait_for(client_log, r'Booster sprite animation: texture=fiskheroes:textures/icons/repulsor_layer_0\.png, columns=1, rows=32, frames=32',
                      30, 'Iron Man repulsor animation uses 32 frames', client)
-            time.sleep(1)
-            subprocess.run(['scrot', '-o', 'ci-arrow-booster-flight.png'], check=True, timeout=30)
+            # Render calls alone do not prove that a plume survives depth testing.
+            # Compare the boot region with the same HUD-free non-flying view.
+            box = (wx + int(width*.44), wy + int(height*.80), wx + int(width*.56), wy + int(height*.97))
+            before = Image.open('ci-arrow-booster-before.png').convert('RGB').crop(box)
+            visible = 0
+            for _ in range(12):
+                time.sleep(.4)
+                subprocess.run(['scrot', '-o', 'ci-arrow-booster-flight.png'], check=True, timeout=30)
+                after = Image.open('ci-arrow-booster-flight.png').convert('RGB').crop(box)
+                visible = sum(1 for (r,g,b), (r0,g0,b0) in zip(after.getdata(), before.getdata())
+                              if r > 170 and g > 120 and b > 50 and r > g + 8 and g > b + 8
+                              and abs(r-r0) + abs(g-g0) + abs(b-b0) > 40)
+                if visible >= 20: break
+            if visible < 20:
+                raise RuntimeError(f'Iron Man booster plumes not visibly rendered under the boots: {visible} warm pixels')
+            print(f'PASS: visible Iron Man repulsor plumes under the boots ({visible} changed warm pixels)', flush=True)
             for _ in range(2):
                 xdo('keydown', 'space'); time.sleep(.08); xdo('keyup', 'space'); time.sleep(.07)
             wait_for(server_log, r'Controlled flight input: player=Dev, active=false', 30, 'Iron Man stops controlled flight', server)

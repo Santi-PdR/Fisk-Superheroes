@@ -18,3 +18,14 @@ for label, filename in (('THIRD', 'killer-frost-smoke-third'), ('FIRST', 'killer
         buffer = io.BytesIO()
         image.convert('RGB').save(buffer, format='JPEG', quality=70, optimize=True)
     print(f'PARTICLE_PREVIEW_{label}=' + base64.b64encode(buffer.getvalue()).decode('ascii'))
+
+# Enlarged crop makes the small thrusters inspectable when artifact storage is unavailable.
+path = Path('ci-arrow-booster-flight.png')
+if path.exists():
+    with Image.open(path) as image:
+        w, h = image.size
+        crop = image.crop((int(w*.40), int(h*.40), int(w*.60), int(h*.80)))
+        crop.thumbnail((640, 640))
+        buffer = io.BytesIO()
+        crop.convert('RGB').save(buffer, format='JPEG', quality=92)
+    print('PARTICLE_PREVIEW_BOOSTER_ZOOM=' + base64.b64encode(buffer.getvalue()).decode('ascii'))

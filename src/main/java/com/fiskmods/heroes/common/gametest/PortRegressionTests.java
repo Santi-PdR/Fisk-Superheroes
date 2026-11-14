@@ -3145,6 +3145,70 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void legacyBoosterMeshAndCurves(GameTestHelper helper)
+    {
+        if (com.fiskmods.heroes.common.util.LegacyFlameGeometry.quadCount() != 8
+                || Math.abs(com.fiskmods.heroes.common.util.LegacyFlameGeometry.curve(.25F) - .1464466F) > .00001F
+                || Math.abs(com.fiskmods.heroes.common.util.LegacyFlameGeometry.curve(.75F) - .8535534F) > .00001F)
+        { helper.fail("Original flame requires eight quads and its cosine easing curve"); return; }
+        for (int q = 0; q < 8; q++)
+        {
+            if (com.fiskmods.heroes.common.util.LegacyFlameGeometry.layer(q) != q / 4)
+            { helper.fail("Flame must use four faces per sprite layer"); return; }
+            for (int v = 0; v < 4; v++)
+            {
+                float x = com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(q, v, 0);
+                float y = com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(q, v, 1);
+                float z = com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(q, v, 2);
+                float u = com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(q, v, 3);
+                float t = com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(q, v, 4);
+                if (Math.abs(x) > .5F || Math.abs(z) > .5F || (y != 0 && y != 1)
+                        || (u != 0 && u != 1) || t != 1 - y)
+                { helper.fail("Invalid flame bounds or texture coordinates"); return; }
+            }
+        }
+        // Outer layer zero faces must reach the near and far side of the flame.
+        if (com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(2, 1, 2) != .5F
+                || com.fiskmods.heroes.common.util.LegacyFlameGeometry.component(3, 1, 2) != -.5F)
+        { helper.fail("Missing outer fire planes"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void ironManBoosterExpressionsMatchFlightPose(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Missing player data"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_TIMER, 1F);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER, 7F / 12F);
+        data.getData().updatePrevious();
+        player.setSprinting(true);
+        try (var stream = PortRegressionTests.class.getResourceAsStream("/assets/fiskheroes/models/heroes/iron_man.json"))
+        {
+            if (stream == null) { helper.fail("Missing Iron Man renderer"); return; }
+            var root = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+            var custom = root.getAsJsonObject("custom");
+            var boots = custom.getAsJsonObject("fiskheroes:booster|boots");
+            var right = custom.getAsJsonObject("fiskheroes:booster|right_hand");
+            var left = custom.getAsJsonObject("fiskheroes:booster|left_hand");
+            var expressions = new String[] {boots.getAsJsonArray("scale").get(0).getAsString(),
+                    boots.getAsJsonArray("scale").get(1).getAsString(), right.getAsJsonArray("rotation").get(2).getAsString(),
+                    left.getAsJsonArray("rotation").get(2).getAsString(), boots.get("speedScale").getAsString()};
+            double[] expected = {6.5, -.9, -12.8333333, 12.8333333, 7.0 / 24.0};
+            for (int i = 0; i < expressions.length; i++)
+            {
+                var fn = com.fiskmods.heroes.pack.js.JSExpressions.compile(expressions[i]);
+                Object result = fn == null ? null : fn.call(new com.fiskmods.heroes.pack.js.JSEntity(player));
+                if (!(result instanceof Number number) || Math.abs(number.doubleValue() - expected[i]) > .001)
+                { helper.fail("Booster pose expression " + i + " gave " + result); return; }
+            }
+            helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Could not verify booster model: " + e); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void ironManFlightUsesPackBoosterTimers(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
