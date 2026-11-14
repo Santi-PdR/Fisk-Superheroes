@@ -7,7 +7,6 @@ import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.HeroIteration;
 import com.google.gson.JsonObject;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -26,7 +25,6 @@ import net.minecraftforge.fml.common.Mod;
 public final class ProjectionBeamRenderHandler
 {
     private static final java.util.Set<net.minecraft.resources.ResourceLocation> LOGGED_CHARGED_BEAMS = new java.util.HashSet<>();
-    private static final java.util.Set<String> LOGGED_COMPONENT_BEAMS = new java.util.HashSet<>();
 
     private ProjectionBeamRenderHandler()
     {
@@ -63,12 +61,6 @@ public final class ProjectionBeamRenderHandler
             if (model == null)
             {
                 continue;
-            }
-
-            if (player instanceof net.minecraft.client.player.AbstractClientPlayer clientPlayer
-                    && renderModelBeam(event.getPoseStack(), buffers, camera, clientPlayer, model, event.getPartialTick()))
-            {
-                rendered = true;
             }
 
             float chargedActivity = Mth.clamp(data.getData().get(Vars.BEAM_SHOOTING_TIMER), 0.0F, 1.0F);
@@ -116,98 +108,6 @@ public final class ProjectionBeamRenderHandler
         }
     }
 
-    /** Draws component beams such as the articulated glow inside Iron Man's Mk 50 cannon. */
-    private static boolean renderModelBeam(PoseStack poseStack, MultiBufferSource.BufferSource buffers,
-            Vec3 camera, net.minecraft.client.player.AbstractClientPlayer player, HeroModelData model, float partialTick)
-    {
-        JsonObject effect = model.getCustom().get("fiskheroes:beam");
-        if (effect == null || !HeroSuitLayer.appliesToSlot(effect, 1)
-                || !HeroSuitLayer.passesConditionals(effect, model, player)
-                || !effect.has("componentBeams") || !effect.get("componentBeams").isJsonArray())
-        {
-            return false;
-        }
-
-        float amount = Mth.clamp(model.evaluateRenderData(effect.get("length"), player, 0.0F), 0.0F, 1.0F);
-        if (amount <= 0.001F)
-        {
-            return false;
-        }
-
-        boolean firstPerson = player == Minecraft.getInstance().player
-                && Minecraft.getInstance().options.getCameraType().isFirstPerson();
-        if (Boolean.getBoolean("fiskheroes.ciParticleDiagnostics")
-                && LOGGED_COMPONENT_BEAMS.add(model.getHero() + "|" + firstPerson))
-            FiskHeroes.LOGGER.info("Component beam rendered: hero={}, firstPerson={}, amount={}, beams={}",
-                    model.getHero(), firstPerson, amount, effect.getAsJsonArray("componentBeams").size());
-        Vec3 direction = player.getViewVector(partialTick).normalize();
-        Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
-        if (right.lengthSqr() < 1.0E-6D)
-        {
-            right = new Vec3(1.0D, 0.0D, 0.0D);
-        }
-        else
-        {
-            right = right.normalize();
-        }
-        Vec3 up = right.cross(direction).normalize();
-        Vec3 origin = player.getPosition(partialTick).add(0.0D, player.getBbHeight() * 0.62D, 0.0D)
-                .add(right.scale(0.32D));
-        if (effect.has("offset") && effect.get("offset").isJsonArray()
-                && effect.getAsJsonArray("offset").size() >= 3)
-        {
-            var offset = effect.getAsJsonArray("offset");
-            origin = origin.add(right.scale(-offset.get(0).getAsDouble() / 16.0D))
-                    .add(up.scale(offset.get(1).getAsDouble() / 16.0D))
-                    .add(direction.scale(-offset.get(2).getAsDouble() / 16.0D));
-        }
-
-        int color = parseColor(effect);
-        int alpha = Mth.clamp(Math.round(amount * 230.0F), 0, 230);
-        VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
-        Vec3 startBase = origin.subtract(camera);
-        for (var element : effect.getAsJsonArray("componentBeams"))
-        {
-            if (!element.isJsonObject()) continue;
-            JsonObject component = element.getAsJsonObject();
-            JsonObject beam = component.has("beam") && component.get("beam").isJsonObject()
-                    ? component.getAsJsonObject("beam") : null;
-            if (beam == null || !component.has("direction") || !component.get("direction").isJsonArray()) continue;
-
-            double x = 0.0D, y = 0.0D, z = 0.0D;
-            String offsetKey = firstPerson && beam.has("firstPerson") && beam.get("firstPerson").isJsonArray()
-                    ? "firstPerson" : "offset";
-            if (beam.has(offsetKey) && beam.get(offsetKey).isJsonArray()
-                    && beam.getAsJsonArray(offsetKey).size() >= 3)
-            {
-                var offset = beam.getAsJsonArray(offsetKey);
-                x = offset.get(0).getAsDouble();
-                y = offset.get(1).getAsDouble();
-                z = offset.get(2).getAsDouble();
-            }
-            var vector = component.getAsJsonArray("direction");
-            if (vector.size() < 3) continue;
-            Vec3 start = startBase.add(right.scale(x / 16.0D)).add(up.scale(y / 16.0D))
-                    .add(direction.scale(-z / 16.0D));
-            Vec3 end = start.add(right.scale(vector.get(0).getAsDouble() * amount / 16.0D))
-                    .add(up.scale(vector.get(1).getAsDouble() * amount / 16.0D))
-                    .add(direction.scale(-vector.get(2).getAsDouble() * amount / 16.0D));
-            double width = 0.0125D;
-            if (beam.has("size") && beam.get("size").isJsonArray() && !beam.getAsJsonArray("size").isEmpty())
-            {
-                width = Math.max(0.006D, beam.getAsJsonArray("size").get(0).getAsDouble() / 32.0D);
-            }
-
-            Vec3 side = end.subtract(start).cross(up);
-            if (side.lengthSqr() < 1.0E-6D) side = right;
-            else side = side.normalize();
-            poseStack.pushPose();
-            drawRibbon(consumer, poseStack.last(), start, end, side.scale(width), color, alpha);
-            poseStack.popPose();
-        }
-        return true;
-    }
-
     private static int parseColor(JsonObject effect)
     {
         if (effect.has("color"))
@@ -224,23 +124,4 @@ public final class ProjectionBeamRenderHandler
         return 0xFF9A24;
     }
 
-    private static void drawRibbon(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start,
-            Vec3 end, Vec3 side, int color, int alpha)
-    {
-        int red = color >> 16 & 255;
-        int green = color >> 8 & 255;
-        int blue = color & 255;
-        vertex(consumer, pose, start.subtract(side), red, green, blue, alpha);
-        vertex(consumer, pose, end.subtract(side), red, green, blue, alpha);
-        vertex(consumer, pose, end.add(side), red, green, blue, alpha);
-        vertex(consumer, pose, start.add(side), red, green, blue, alpha);
-    }
-
-    private static void vertex(VertexConsumer consumer, PoseStack.Pose pose, Vec3 position,
-            int red, int green, int blue, int alpha)
-    {
-        consumer.vertex(pose.pose(), (float) position.x, (float) position.y, (float) position.z)
-                .color(red, green, blue, alpha)
-                .endVertex();
-    }
-}
+ }

@@ -67,6 +67,9 @@ public final class FirstPersonSuitArms
             if (effect.getKey().startsWith("fiskheroes:arm_overlay"))
                 ArmOverlaySuitRenderer.render(effect.getKey(), effect.getValue(), pose, buffers, packedLight,
                         player, playerRenderer.getModel(), data, 1, opacity, right);
+            else if (effect.getKey().equals("fiskheroes:beam"))
+                ComponentBeamRenderer.render(effect.getValue(), pose, buffers, player, playerRenderer.getModel(),
+                        data, 1, opacity, right, Minecraft.getInstance().getFrameTime());
             else if (effect.getKey().equals("fiskheroes:flames"))
                 SuitFlamesRenderer.renderFirstPerson(effect.getValue(), pose, buffers, player,
                         playerRenderer.getModel(), data, right, Minecraft.getInstance().getFrameTime());

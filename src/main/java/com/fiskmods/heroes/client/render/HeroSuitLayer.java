@@ -176,6 +176,9 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
                 else if (entry.getKey().startsWith("fiskheroes:arm_overlay"))
                     ArmOverlaySuitRenderer.render(entry.getKey(), entry.getValue(), poseStack, buffer, packedLight,
                             player, playerModel, pieceModel, slot, opacity);
+                else if (entry.getKey().equals("fiskheroes:beam"))
+                    ComponentBeamRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel,
+                            pieceModel, slot, opacity, null, partialTicks);
                 else if (entry.getKey().startsWith("fiskheroes:booster"))
                     BoosterFlameRenderer.render(entry.getValue(), poseStack, buffer, player, playerModel, pieceModel, slot, partialTicks);
                 else if (entry.getKey().equals("fiskheroes:wingsuit"))

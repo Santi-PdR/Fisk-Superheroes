@@ -482,10 +482,12 @@ def main():
             command('say MK50_SCENE_READY')
             wait_for(server_log, r'\[Server\] MK50_SCENE_READY', 30, 'Mk 50 scene ready', server)
             xdo('keydown', 'g'); time.sleep(.2); xdo('keyup', 'g'); time.sleep(3)
+            subprocess.run(['scrot', '-o', 'ci-arrow-mk50-first-before.png'], check=True, timeout=30)
             xdo('keydown', 'c')
             try:
                 wait_for(client_log, r'Component beam rendered: hero=fiskheroes:iron_man_mk50, firstPerson=true, amount=([-+0-9.eE]+), beams=5',
                          60, 'Mk 50 cannon component beams render while aiming without a projection shot', client)
+                time.sleep(2)
                 subprocess.run(['scrot', '-o', 'ci-arrow-mk50-first.png'], check=True, timeout=30)
                 xdo('key', 'F5')
                 wait_for(client_log, r'Component beam rendered: hero=fiskheroes:iron_man_mk50, firstPerson=false, amount=([-+0-9.eE]+), beams=5',
