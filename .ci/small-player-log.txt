@@ -1,341 +1,343 @@
 PASS: dedicated server ready
 PASS: client joined
 PASS: atom shrinks on server: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING,
-PASS: atom enters tunnel standing at scaled eye height on server: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.694159788768005, height=0.1125, eye=0.10125
-PASS: atom has a stable first-person camera inside tunnel: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.773439721336093, cameraY=180.1012500077486, eye=0.10125
-PASS: growth stops before ceiling collision: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-PASS: atom exits and restores normal size standing: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.426073232652904, height=1.8, eye=1.62
-PASS: atom restores normal first-person camera outside: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
+PASS: atom enters tunnel standing at scaled eye height on server: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.910011504489105, height=0.1125, eye=0.10125
+PASS: atom has a stable first-person camera inside tunnel: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.557581306384697, cameraY=180.1012500077486, eye=0.10125
+PASS: growth stops before ceiling collision: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+PASS: atom exits and restores normal size standing: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.64193230022095, height=1.8, eye=1.62
+PASS: atom restores normal first-person camera outside: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.28950950544541, cameraY=181.61997628211975, eye=1.62
 PASS: ant_man shrinks on server: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING,
-PASS: ant_man enters tunnel standing at scaled eye height on server: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=2.1842496592612073, height=0.1125, eye=0.10125
-PASS: ant_man has a stable first-person camera inside tunnel: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.262479782250013, cameraY=180.1012500077486, eye=0.10125
-PASS: ant_man exits and restores normal size standing: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=14.915059752956996, height=1.8, eye=1.62
-PASS: ant_man restores normal first-person camera outside: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=15.994355094996537, cameraY=181.61852204799652, eye=1.62
+PASS: ant_man enters tunnel standing at scaled eye height on server: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.3417234347836535, height=0.1125, eye=0.10125
+PASS: ant_man has a stable first-person camera inside tunnel: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.989298432956816, cameraY=180.1012500077486, eye=0.10125
+PASS: ant_man exits and restores normal size standing: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.857791369469208, height=1.8, eye=1.62
+PASS: ant_man restores normal first-person camera outside: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
 PASS: normal player still crawls: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING,
 PASS: normal client sees crawling pose: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING,
 PASS: scaled and vanilla tunnel poses verified
 ==== server diagnostics ====
-[02:27:59] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_scaled_pose_collision with Javascript path coremods/scaled_pose_collision.js
-[02:27:59] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/scaled_pose_collision.js
-[02:28:01] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/scaled_pose_collision.js
+[02:41:14] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_scaled_pose_collision with Javascript path coremods/scaled_pose_collision.js
+[02:41:14] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/scaled_pose_collision.js
+[02:41:15] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/scaled_pose_collision.js
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[02:28:56] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:28:57] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:28:58] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:28:59] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:00] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:01] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:02] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:03] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:04] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:05] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:06] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:07] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=174.193473889991, z=0.5, height=1.8, eye=1.62
-[02:29:08] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=141.08072405071138, z=0.5, height=1.8, eye=1.62
-[02:29:09] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=92.91483968615466, z=0.5, height=1.8, eye=1.62
-[02:29:10] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=34.69935880076803, z=0.5, height=1.8, eye=1.62
-[02:29:11] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=-30.225315446432273, z=0.5, height=1.8, eye=1.62
-[02:29:12] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:13] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:14] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:15] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:16] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.06250012, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.35357162, eye=0.31821448
-[02:29:17] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:18] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:19] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.694159788768005, height=0.1125, eye=0.10125
-[02:29:20] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:21] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:22] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:25] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:26] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.792044250591549, height=0.8357142, eye=0.75214285
-[02:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.10889186634025, height=0.8357142, eye=0.75214285
-[02:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.426073232652904, height=1.8, eye=1.62
-[02:29:29] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.743254600815977, height=1.8, eye=1.62
-[02:29:30] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:31] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:32] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:33] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:34] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:35] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=2.1842496592612073, height=0.1125, eye=0.10125
-[02:29:38] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.873405102684555, height=0.1125, eye=0.10125
-[02:29:39] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:40] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:41] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
-[02:29:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=6.3229527145172035, height=0.8357142, eye=0.75214285
-[02:29:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=10.59787861907471, height=0.8357142, eye=0.75214285
-[02:29:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=14.915059752956996, height=1.8, eye=1.62
-[02:29:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=19.232241121118793, height=1.8, eye=1.62
-[02:29:46] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
+[02:41:59] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:00] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:01] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:02] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:03] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:04] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:05] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:06] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:07] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:08] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:09] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:10] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=182.373499504155, z=0.5, height=1.8, eye=1.62
+[02:42:11] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=159.9166651918337, z=0.5, height=1.8, eye=1.62
+[02:42:12] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=116.11637978249112, z=0.5, height=1.8, eye=1.62
+[02:42:13] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=61.91569095550921, z=0.5, height=1.8, eye=1.62
+[02:42:14] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=-0.32867506523836454, z=0.5, height=1.8, eye=1.62
+[02:42:15] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:16] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:17] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:18] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:19] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:20] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:21] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:22] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.910011504489105, height=0.1125, eye=0.10125
+[02:42:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:24] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:25] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:26] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:28] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:29] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.007903318159595, height=0.8357142, eye=0.75214285
+[02:42:30] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.324750933908296, height=0.8357142, eye=0.75214285
+[02:42:31] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.64193230022095, height=1.8, eye=1.62
+[02:42:32] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.959113668384024, height=1.8, eye=1.62
+[02:42:33] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:34] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:35] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:37] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:38] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:39] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:40] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.3417234347836535, height=0.1125, eye=0.10125
+[02:42:41] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
+[02:42:45] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.22352813065253, height=0.8357142, eye=0.75214285
+[02:42:46] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.540610001857749, height=0.8357142, eye=0.75214285
+[02:42:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.857791369469208, height=1.8, eye=1.62
+[02:42:48] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.74474133563078, height=1.8, eye=1.62
+[02:42:49] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, height=1.8, eye=1.62
+[02:42:50] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
 ==== server tail ====
-[02:29:15] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035725 width=0.19821437 eye=0.5351788
-[02:29:15] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642869 width=0.11785722 eye=0.31821448
-[02:29:16] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.06250012, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.35357162, eye=0.31821448
-[02:29:16] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.06250012 width=0.037500072 eye=0.101250194
-[02:29:16] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.0625 width=0.0375 eye=0.10125
-[02:29:17] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:18] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:19] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.694159788768005, height=0.1125, eye=0.10125
-[02:29:20] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:21] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:22] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[02:29:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:atom, index=1, matching=[SIZE_MANIPULATION]
-[02:29:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:atom, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
-[02:29:22] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642857 width=0.11785714 eye=0.31821427
-[02:29:22] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035713 width=0.19821429 eye=0.53517854
-[02:29:22] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.4642857 width=0.27857143 eye=0.75214285
-[02:29:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:25] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:26] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.792044250591549, height=0.8357142, eye=0.75214285
-[02:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.10889186634025, height=0.8357142, eye=0.75214285
-[02:29:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.59821427 width=0.35892856 eye=0.9691071
-[02:29:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321428 width=0.4392857 eye=1.1860714
-[02:29:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607134 width=0.51964283 eye=1.4030355
-[02:29:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.9999999 width=0.59999996 eye=1.6199998
-[02:29:27] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[02:29:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.426073232652904, height=1.8, eye=1.62
-[02:29:29] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.743254600815977, height=1.8, eye=1.62
-[02:29:29] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:29:29] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.42546472284312
-[02:29:29] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.42546472284312
-[02:29:29] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.42546472284312
-[02:29:29] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.42546472284312
-[02:29:30] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:30] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
-[02:29:31] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:31] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Ant-Man.
-[02:29:32] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:33] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:34] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[02:29:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
-[02:29:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607146 width=0.5196429 eye=1.4030358
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321429 width=0.43928578 eye=1.1860715
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.5982144 width=0.35892865 eye=0.96910733
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.46428582 width=0.27857152 eye=0.752143
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035725 width=0.19821437 eye=0.5351788
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642869 width=0.11785722 eye=0.31821448
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.06250012 width=0.037500072 eye=0.101250194
-[02:29:34] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.0625 width=0.0375 eye=0.10125
-[02:29:35] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=2.1842496592612073, height=0.1125, eye=0.10125
-[02:29:38] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.873405102684555, height=0.1125, eye=0.10125
-[02:29:39] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:40] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:40] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
-[02:29:40] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
-[02:29:40] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
-[02:29:40] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642857 width=0.11785714 eye=0.31821427
-[02:29:40] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035713 width=0.19821429 eye=0.53517854
-[02:29:40] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.4642857 width=0.27857143 eye=0.75214285
-[02:29:41] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
-[02:29:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=6.3229527145172035, height=0.8357142, eye=0.75214285
-[02:29:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=10.59787861907471, height=0.8357142, eye=0.75214285
-[02:29:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.59821427 width=0.35892856 eye=0.9691071
-[02:29:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321428 width=0.4392857 eye=1.1860714
-[02:29:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607134 width=0.51964283 eye=1.4030355
-[02:29:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.9999999 width=0.59999996 eye=1.6199998
-[02:29:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[02:29:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=14.915059752956996, height=1.8, eye=1.62
-[02:29:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=19.232241121118793, height=1.8, eye=1.62
-[02:29:46] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:46] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
-[02:29:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:47] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 5.500000
-[02:29:47] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-15.714959770796163
-[02:29:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.5982144 width=0.35892865 eye=0.96910733
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.46428582 width=0.27857152 eye=0.752143
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035725 width=0.19821437 eye=0.5351788
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642869 width=0.11785722 eye=0.31821448
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.06250012 width=0.037500072 eye=0.101250194
+[02:42:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.0625 width=0.0375 eye=0.10125
+[02:42:20] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:21] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:22] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.910011504489105, height=0.1125, eye=0.10125
+[02:42:23] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:24] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:25] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[02:42:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:atom, index=1, matching=[SIZE_MANIPULATION]
+[02:42:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:atom, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
+[02:42:25] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642857 width=0.11785714 eye=0.31821427
+[02:42:25] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035713 width=0.19821429 eye=0.53517854
+[02:42:25] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.4642857 width=0.27857143 eye=0.75214285
+[02:42:26] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:27] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:28] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:29] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.007903318159595, height=0.8357142, eye=0.75214285
+[02:42:30] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.324750933908296, height=0.8357142, eye=0.75214285
+[02:42:30] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.59821427 width=0.35892856 eye=0.9691071
+[02:42:30] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321428 width=0.4392857 eye=1.1860714
+[02:42:30] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607134 width=0.51964283 eye=1.4030355
+[02:42:30] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.9999999 width=0.59999996 eye=1.6199998
+[02:42:30] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[02:42:31] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.64193230022095, height=1.8, eye=1.62
+[02:42:32] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.959113668384024, height=1.8, eye=1.62
+[02:42:32] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:42:32] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.714959770796163
+[02:42:32] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.714959770796163
+[02:42:32] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.714959770796163
+[02:42:32] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-20.714959770796163
+[02:42:33] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:33] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[02:42:34] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:34] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Ant-Man.
+[02:42:35] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:36] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:37] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[02:42:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
+[02:42:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607146 width=0.5196429 eye=1.4030358
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321429 width=0.43928578 eye=1.1860715
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.5982144 width=0.35892865 eye=0.96910733
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.46428582 width=0.27857152 eye=0.752143
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035725 width=0.19821437 eye=0.5351788
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642869 width=0.11785722 eye=0.31821448
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.06250012 width=0.037500072 eye=0.101250194
+[02:42:37] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.0625 width=0.0375 eye=0.10125
+[02:42:38] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:39] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:40] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.3417234347836535, height=0.1125, eye=0.10125
+[02:42:41] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:42] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[02:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:ant_man, index=1, matching=[SIZE_MANIPULATION]
+[02:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:ant_man, key=SIZE_MANIPULATION, modifier=fiskheroes:size_manipulation
+[02:42:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.19642857 width=0.11785714 eye=0.31821427
+[02:42:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.33035713 width=0.19821429 eye=0.53517854
+[02:42:43] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.4642857 width=0.27857143 eye=0.75214285
+[02:42:44] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
+[02:42:45] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.22352813065253, height=0.8357142, eye=0.75214285
+[02:42:46] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.540610001857749, height=0.8357142, eye=0.75214285
+[02:42:46] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.59821427 width=0.35892856 eye=0.9691071
+[02:42:46] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.7321428 width=0.4392857 eye=1.1860714
+[02:42:46] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.86607134 width=0.51964283 eye=1.4030355
+[02:42:46] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=0.9999999 width=0.59999996 eye=1.6199998
+[02:42:46] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[02:42:47] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=16.857791369469208, height=1.8, eye=1.62
+[02:42:48] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.74474133563078, height=1.8, eye=1.62
+[02:42:48] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[02:42:49] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, height=1.8, eye=1.62
+[02:42:49] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 5.500000
+[02:42:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,-15.283241634819962
+[02:42:50] [Server thread/INFO] [Fisk's Superheroes/]: Size pose: side=server, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
 ==== client diagnostics ====
-[02:28:31] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_scaled_pose_collision with Javascript path coremods/scaled_pose_collision.js
-[02:28:31] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/scaled_pose_collision.js
-[02:28:32] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/scaled_pose_collision.js
+[02:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_scaled_pose_collision with Javascript path coremods/scaled_pose_collision.js
+[02:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/scaled_pose_collision.js
+[02:41:41] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/scaled_pose_collision.js
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[02:29:00] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:01] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, cameraY=-58.38000011444092, eye=1.62
-[02:29:02] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:02] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, cameraY=-58.38000011444092, eye=1.62
-[02:29:03] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:03] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, cameraY=-58.38000011444092, eye=1.62
-[02:29:04] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:04] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, cameraY=-58.38000011444092, eye=1.62
-[02:29:05] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, height=1.8, eye=1.62
-[02:29:05] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-2.5, y=-60.0, z=5.5, cameraY=-58.38000011444092, eye=1.62
-[02:29:06] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=184.9215999984741, z=0.5, height=1.8, eye=1.62
-[02:29:06] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=184.9215999984741, z=0.5, cameraY=186.59648001968384, eye=1.62
-[02:29:07] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=169.09054135074084, z=0.5, height=1.8, eye=1.62
-[02:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=132.4620562820577, z=0.5, height=1.8, eye=1.62
-[02:29:08] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=132.4620562820577, z=0.5, cameraY=136.15738914960673, eye=1.62
-[02:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=81.94903813813804, z=0.5, height=1.8, eye=1.62
-[02:29:09] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=81.94903813813804, z=0.5, cameraY=85.17965475162532, eye=1.62
-[02:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=22.16659142092413, z=0.5, height=1.8, eye=1.62
-[02:29:10] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=22.16659142092413, z=0.5, cameraY=26.88033050391242, eye=1.62
-[02:29:11] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:11] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:12] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:13] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:13] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:14] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:14] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:15] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:16] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1518383473158, eye=0.10125
-[02:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:17] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012500524521, eye=0.10125
-[02:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5980000033676625, height=0.1125, eye=0.10125
-[02:29:18] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5980000033676625, cameraY=180.1012500077486, eye=0.10125
-[02:29:19] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.773439721336093, height=0.1125, eye=0.10125
-[02:29:19] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.773439721336093, cameraY=180.1012500077486, eye=0.10125
-[02:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:20] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
-[02:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:21] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
-[02:29:22] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
-[02:29:22] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
-[02:29:23] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:23] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75205665826797, eye=0.75214285
-[02:29:24] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:24] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75214278697968, eye=0.75214285
-[02:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75214278697968, eye=0.75214285
-[02:29:26] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, height=0.8357142, eye=0.75214285
-[02:29:26] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, cameraY=180.75214278697968, eye=0.75214285
-[02:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, height=0.8357142, eye=0.75214285
-[02:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, cameraY=180.75214278697968, eye=0.75214285
-[02:29:28] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, height=1.8, eye=1.62
-[02:29:28] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
-[02:29:29] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:29] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:30] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:30] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:34] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.46428582, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.0767859, eye=0.96910733
-[02:29:34] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.46428582, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.33360731601715, eye=0.752143
-[02:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012560427189, eye=0.10125
-[02:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012500077486, eye=0.10125
-[02:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.262479782250013, height=0.1125, eye=0.10125
-[02:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.262479782250013, cameraY=180.1012500077486, eye=0.10125
-[02:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:39] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:39] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:40] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:40] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:41] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
-[02:29:41] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.7307854294777, eye=0.75214285
-[02:29:42] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.362042806597828, height=0.8357142, eye=0.75214285
-[02:29:42] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.362042806597828, cameraY=180.75214278697968, eye=0.75214285
-[02:29:43] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=11.677173738201851, height=0.8357142, eye=0.75214285
-[02:29:43] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=11.677173738201851, cameraY=180.75214278697968, eye=0.75214285
-[02:29:44] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=15.994355094996537, height=1.8, eye=1.62
-[02:29:44] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=15.994355094996537, cameraY=181.61852204799652, eye=1.62
-[02:29:45] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.311536463159563, height=1.8, eye=1.62
-[02:29:45] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.311536463159563, cameraY=181.61999988555908, eye=1.62
-[02:29:46] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:46] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, cameraY=181.61999988555908, eye=1.62
-[02:29:47] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
-[02:29:47] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.91850036382675, eye=0.4
-[02:29:48] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
-[02:29:48] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.40000054240227, eye=0.4
+[02:42:01] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-60.0, eye=1.62
+[02:42:02] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:02] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000273704529, eye=1.62
+[02:42:03] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:03] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:04] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:04] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:05] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:05] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:06] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:06] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:07] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:07] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:08] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:08] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:09] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, height=1.8, eye=1.62
+[02:42:09] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=-3.5, y=-60.0, z=10.5, cameraY=-58.38000011444092, eye=1.62
+[02:42:10] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.93665494615303, z=0.5, height=1.8, eye=1.62
+[02:42:10] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.93665494615303, z=0.5, cameraY=183.15899911832827, eye=1.62
+[02:42:11] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=154.703366231184, z=0.5, height=1.8, eye=1.62
+[02:42:11] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=154.703366231184, z=0.5, cameraY=157.6061943352677, eye=1.62
+[02:42:12] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=111.13026674235961, z=0.5, height=1.8, eye=1.62
+[02:42:12] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=111.13026674235961, z=0.5, cameraY=114.84393411587581, eye=1.62
+[02:42:13] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=55.98096684609363, z=0.5, height=1.8, eye=1.62
+[02:42:13] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=55.98096684609363, z=0.5, cameraY=60.271237636069316, eye=1.62
+[02:42:14] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=-6.896699733118367, z=0.5, height=1.8, eye=1.62
+[02:42:14] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=-6.896699733118367, z=0.5, cameraY=-2.058623781507632, eye=1.62
+[02:42:15] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:15] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=none, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:16] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:16] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:17] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:17] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:18] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:18] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:19] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:19] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:20] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:20] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.10134880244732, eye=0.10125
+[02:42:21] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:21] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012500077486, eye=0.10125
+[02:42:22] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.557581306384697, height=0.1125, eye=0.10125
+[02:42:22] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.557581306384697, cameraY=180.1012500077486, eye=0.10125
+[02:42:23] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:23] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
+[02:42:24] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:24] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
+[02:42:25] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
+[02:42:25] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
+[02:42:26] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:26] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75180542469025, eye=0.75214285
+[02:42:27] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:27] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75214278697968, eye=0.75214285
+[02:42:28] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:28] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75214278697968, eye=0.75214285
+[02:42:29] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.65520109476571, height=0.8357142, eye=0.75214285
+[02:42:29] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.65520109476571, cameraY=180.75214278697968, eye=0.75214285
+[02:42:30] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.972328137583501, height=0.8357142, eye=0.75214285
+[02:42:30] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.972328137583501, cameraY=180.75214278697968, eye=0.75214285
+[02:42:31] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.28950950544541, height=1.8, eye=1.62
+[02:42:31] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.28950950544541, cameraY=181.61997628211975, eye=1.62
+[02:42:32] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.176459471606982, height=1.8, eye=1.62
+[02:42:32] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.176459471606982, cameraY=181.61999988555908, eye=1.62
+[02:42:33] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:33] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:35] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:35] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:36] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:36] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:37] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.7321429, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.5589286, eye=1.4030358
+[02:42:37] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.7321429, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.6048127412796, eye=1.1860715
+[02:42:38] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:38] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.10127443820238, eye=0.10125
+[02:42:39] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.7495080147891644, height=0.1125, eye=0.10125
+[02:42:39] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.7495080147891644, cameraY=180.1012500077486, eye=0.10125
+[02:42:40] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.989298432956816, height=0.1125, eye=0.10125
+[02:42:40] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.989298432956816, cameraY=180.1012500077486, eye=0.10125
+[02:42:41] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:41] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:42] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:42] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:43] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:43] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:44] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
+[02:42:44] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75205200910568, eye=0.75214285
+[02:42:45] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, height=0.8357142, eye=0.75214285
+[02:42:45] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, cameraY=180.75214278697968, eye=0.75214285
+[02:42:46] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, height=0.8357142, eye=0.75214285
+[02:42:46] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, cameraY=180.75214278697968, eye=0.75214285
+[02:42:47] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, height=1.8, eye=1.62
+[02:42:47] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
+[02:42:48] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.780119014723006, height=1.8, eye=1.62
+[02:42:48] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.780119014723006, cameraY=181.61999988555908, eye=1.62
+[02:42:49] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, height=1.8, eye=1.62
+[02:42:49] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, cameraY=181.61999988555908, eye=1.62
+[02:42:50] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
+[02:42:50] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.40457499027252, eye=0.4
 ==== client tail ====
-[02:29:24] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75214278697968, eye=0.75214285
-[02:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
-[02:29:25] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75214278697968, eye=0.75214285
-[02:29:26] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, height=0.8357142, eye=0.75214285
-[02:29:26] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, cameraY=180.75214278697968, eye=0.75214285
-[02:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, height=0.8357142, eye=0.75214285
-[02:29:27] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, cameraY=180.75214278697968, eye=0.75214285
-[02:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.59821427 width=0.35892856 eye=0.9691071
-[02:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321428 width=0.4392857 eye=1.1860714
-[02:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607134 width=0.51964283 eye=1.4030355
-[02:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.9999999 width=0.59999996 eye=1.6199998
-[02:29:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[02:29:28] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, height=1.8, eye=1.62
-[02:29:28] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
-[02:29:29] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:29] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:30] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:30] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:ant_man, texture=fiskheroes:textures/heroes/ant_man_layer1.png, poseAligned=true
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:ant_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:31] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:32] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
-[02:29:33] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:29:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_shrink as fiskheroes:suit.pym.shrink
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607146 width=0.5196429 eye=1.4030358
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321429 width=0.43928578 eye=1.1860715
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.5982144 width=0.35892865 eye=0.96910733
-[02:29:34] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.46428582, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.0767859, eye=0.96910733
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.46428582 width=0.27857152 eye=0.752143
-[02:29:34] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.46428582, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.33360731601715, eye=0.752143
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.33035725 width=0.19821437 eye=0.5351788
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.19642869 width=0.11785722 eye=0.31821448
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.06250012 width=0.037500072 eye=0.101250194
-[02:29:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.0625 width=0.0375 eye=0.10125
-[02:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:35] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012560427189, eye=0.10125
-[02:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
-[02:29:36] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.1012500077486, eye=0.10125
-[02:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.262479782250013, height=0.1125, eye=0.10125
-[02:29:37] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=3.262479782250013, cameraY=180.1012500077486, eye=0.10125
-[02:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:38] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:39] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:39] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:40] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.1125, eye=0.10125
-[02:29:40] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.1012500077486, eye=0.10125
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:29:40] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_grow as fiskheroes:suit.pym.grow
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.19642857 width=0.11785714 eye=0.31821427
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.33035713 width=0.19821429 eye=0.53517854
-[02:29:40] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.4642857 width=0.27857143 eye=0.75214285
-[02:29:41] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
-[02:29:41] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.7307854294777, eye=0.75214285
-[02:29:42] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.362042806597828, height=0.8357142, eye=0.75214285
-[02:29:42] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=7.362042806597828, cameraY=180.75214278697968, eye=0.75214285
-[02:29:43] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=11.677173738201851, height=0.8357142, eye=0.75214285
-[02:29:43] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=11.677173738201851, cameraY=180.75214278697968, eye=0.75214285
-[02:29:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.59821427 width=0.35892856 eye=0.9691071
-[02:29:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321428 width=0.4392857 eye=1.1860714
-[02:29:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607134 width=0.51964283 eye=1.4030355
-[02:29:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.9999999 width=0.59999996 eye=1.6199998
-[02:29:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[02:29:44] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=15.994355094996537, height=1.8, eye=1.62
-[02:29:44] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=15.994355094996537, cameraY=181.61852204799652, eye=1.62
-[02:29:45] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.311536463159563, height=1.8, eye=1.62
-[02:29:45] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.311536463159563, cameraY=181.61999988555908, eye=1.62
-[02:29:46] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, height=1.8, eye=1.62
-[02:29:46] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.214959770796163, cameraY=181.61999988555908, eye=1.62
-[02:29:47] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
-[02:29:47] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.91850036382675, eye=0.4
-[02:29:48] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
-[02:29:48] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.40000054240227, eye=0.4
+[02:42:26] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75180542469025, eye=0.75214285
+[02:42:27] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:27] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75214278697968, eye=0.75214285
+[02:42:28] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, height=0.8357142, eye=0.75214285
+[02:42:28] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.8927213125156985, cameraY=180.75214278697968, eye=0.75214285
+[02:42:29] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.65520109476571, height=0.8357142, eye=0.75214285
+[02:42:29] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.65520109476571, cameraY=180.75214278697968, eye=0.75214285
+[02:42:30] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.972328137583501, height=0.8357142, eye=0.75214285
+[02:42:30] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=12.972328137583501, cameraY=180.75214278697968, eye=0.75214285
+[02:42:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.59821427 width=0.35892856 eye=0.9691071
+[02:42:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321428 width=0.4392857 eye=1.1860714
+[02:42:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607134 width=0.51964283 eye=1.4030355
+[02:42:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.9999999 width=0.59999996 eye=1.6199998
+[02:42:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[02:42:31] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.28950950544541, height=1.8, eye=1.62
+[02:42:31] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.28950950544541, cameraY=181.61997628211975, eye=1.62
+[02:42:32] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.176459471606982, height=1.8, eye=1.62
+[02:42:32] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=21.176459471606982, cameraY=181.61999988555908, eye=1.62
+[02:42:33] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:33] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:atom, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:ant_man, texture=fiskheroes:textures/heroes/ant_man_layer1.png, poseAligned=true
+[02:42:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:ant_man, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
+[02:42:35] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:35] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:36] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.8, eye=1.62
+[02:42:36] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.61999988555908, eye=1.62
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[02:42:37] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_shrink as fiskheroes:suit.pym.shrink
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607146 width=0.5196429 eye=1.4030358
+[02:42:37] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.7321429, pose=STANDING, x=0.5, y=180.0, z=0.5, height=1.5589286, eye=1.4030358
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321429 width=0.43928578 eye=1.1860715
+[02:42:37] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.7321429, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=181.6048127412796, eye=1.1860715
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.5982144 width=0.35892865 eye=0.96910733
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.46428582 width=0.27857152 eye=0.752143
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.33035725 width=0.19821437 eye=0.5351788
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.19642869 width=0.11785722 eye=0.31821448
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.06250012 width=0.037500072 eye=0.101250194
+[02:42:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.0625 width=0.0375 eye=0.10125
+[02:42:38] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, height=0.1125, eye=0.10125
+[02:42:38] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.5, cameraY=180.10127443820238, eye=0.10125
+[02:42:39] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.7495080147891644, height=0.1125, eye=0.10125
+[02:42:39] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=0.7495080147891644, cameraY=180.1012500077486, eye=0.10125
+[02:42:40] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.989298432956816, height=0.1125, eye=0.10125
+[02:42:40] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=4.989298432956816, cameraY=180.1012500077486, eye=0.10125
+[02:42:41] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:41] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:42] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:42] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:43] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.1125, eye=0.10125
+[02:42:43] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.0625, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.1012500077486, eye=0.10125
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[02:42:43] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:pym_grow as fiskheroes:suit.pym.grow
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.19642857 width=0.11785714 eye=0.31821427
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.33035713 width=0.19821429 eye=0.53517854
+[02:42:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.4642857 width=0.27857143 eye=0.75214285
+[02:42:44] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, height=0.8357142, eye=0.75214285
+[02:42:44] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=5.676862244947652, cameraY=180.75205200910568, eye=0.75214285
+[02:42:45] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, height=0.8357142, eye=0.75214285
+[02:42:45] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=8.871022033715656, cameraY=180.75214278697968, eye=0.75214285
+[02:42:46] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, height=0.8357142, eye=0.75214285
+[02:42:46] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=0.4642857, pose=STANDING, x=0.5, y=180.0, z=13.188187206620356, cameraY=180.75214278697968, eye=0.75214285
+[02:42:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.59821427 width=0.35892856 eye=0.9691071
+[02:42:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.7321428 width=0.4392857 eye=1.1860714
+[02:42:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.86607134 width=0.51964283 eye=1.4030355
+[02:42:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=0.9999999 width=0.59999996 eye=1.6199998
+[02:42:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[02:42:47] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, height=1.8, eye=1.62
+[02:42:47] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=17.50536857469367, cameraY=181.619988322258, eye=1.62
+[02:42:48] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.780119014723006, height=1.8, eye=1.62
+[02:42:48] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:ant_man, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.780119014723006, cameraY=181.61999988555908, eye=1.62
+[02:42:49] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, height=1.8, eye=1.62
+[02:42:49] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=STANDING, x=0.5, y=180.0, z=20.783241634819962, cameraY=181.61999988555908, eye=1.62
+[02:42:50] [Render thread/INFO] [Fisk's Superheroes/]: Size pose: side=client, hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, height=0.6, eye=0.4
+[02:42:50] [Render thread/INFO] [Fisk's Superheroes/]: Size camera: hero=fiskheroes:the_flash, scale=1.0, pose=SWIMMING, x=0.5, y=180.0, z=5.5, cameraY=180.40457499027252, eye=0.4
