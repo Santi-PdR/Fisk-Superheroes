@@ -368,7 +368,7 @@ public class Hero implements Comparable<Hero>
             if (value instanceof Number number && Double.isFinite(number.doubleValue()))
             {
                 int result = number.intValue();
-                if (result >= 0 && result <= 10) return result;
+                if (number.doubleValue() == result && result >= 0 && result <= 10) return result;
             }
             // A failing or malformed pack callback must not corrupt the hero's base tier.
         }

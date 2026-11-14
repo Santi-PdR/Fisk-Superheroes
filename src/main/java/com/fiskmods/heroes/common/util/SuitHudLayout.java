@@ -28,8 +28,15 @@ public final class SuitHudLayout
     /** Row widths are the desired text/background widths, in GUI-scaled pixels. */
     public static Layout calculate(int screenWidth, int screenHeight, List<Integer> desiredWidths)
     {
+        return calculate(screenWidth, screenHeight, desiredWidths, BOTTOM_RESERVE);
+    }
+
+    /** Additional bottom space accommodates health rows and the suit/vanilla armor meters. */
+    public static Layout calculate(int screenWidth, int screenHeight, List<Integer> desiredWidths, int bottomReserve)
+    {
         int width = Math.max(1, screenWidth - 2 * MARGIN);
-        int reserve = Math.min(BOTTOM_RESERVE, Math.max(0, screenHeight - HEADER_HEIGHT - ROW_HEIGHT - 2 * MARGIN));
+        int reserve = Math.min(Math.max(BOTTOM_RESERVE, bottomReserve),
+                Math.max(0, screenHeight - HEADER_HEIGHT - ROW_HEIGHT - 2 * MARGIN));
         int bottom = Math.max(MARGIN + HEADER_HEIGHT + ROW_HEIGHT, screenHeight - reserve);
         int maxRows = Math.max(1, (bottom - MARGIN - HEADER_HEIGHT) / ROW_HEIGHT);
         int count = desiredWidths.size();

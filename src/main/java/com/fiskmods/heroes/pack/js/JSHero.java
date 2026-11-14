@@ -65,6 +65,7 @@ public class JSHero
         }
         else
         {
+            hero.setTierOverride(-1);
             hero.setTierOverrideFunction(JSContext.wrap(value));
         }
     }

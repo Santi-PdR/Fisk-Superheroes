@@ -30,6 +30,13 @@ public class SHClientSetup
     public static final ResourceLocation HERO_INDEX = new ResourceLocation(FiskHeroes.MODID, "hero_index");
 
     @SubscribeEvent
+    public static void registerGuiOverlays(net.minecraftforge.client.event.RegisterGuiOverlaysEvent event)
+    {
+        event.registerAbove(net.minecraftforge.client.gui.overlay.VanillaGuiOverlay.ARMOR_LEVEL.id(),
+                "suit_protection", com.fiskmods.heroes.client.hud.SuitProtectionHud::render);
+    }
+
+    @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event)
     {
         SHKeyBinds.register(event);

@@ -55,8 +55,11 @@ public final class SuitHud
         List<Row> rows = List.copyOf(unique.values());
         List<Integer> widths = new ArrayList<>(rows.size());
         for (Row row : rows) widths.add(Math.max(90, mc.font.width(row.key()) + mc.font.width(row.label()) + 10));
+        int bottomReserve = mc.gui instanceof net.minecraftforge.client.gui.overlay.ForgeGui gui
+                && mc.gameMode != null && !mc.options.hideGui && gui.shouldDrawSurvivalElements()
+                ? gui.leftHeight + 10 : 60;
         return new View(iteration, rows, SuitHudLayout.calculate(mc.getWindow().getGuiScaledWidth(),
-                mc.getWindow().getGuiScaledHeight(), widths));
+                mc.getWindow().getGuiScaledHeight(), widths, bottomReserve));
     }
 
     public static void render(GuiGraphics graphics, float partialTick)

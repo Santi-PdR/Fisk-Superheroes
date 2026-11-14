@@ -37,11 +37,11 @@ the relevant materials and the previous tier of upgrade.
 
 The core retains its upgrades when it is removed or changed between compatible suit iterations.
 They only apply while the core belongs to the active hero, and a profile that revokes augments
-(such as inactive Mk50 nanites) temporarily disables them. Existing suits without upgrades keep
-their previous behavior.
+(such as inactive Mk50 nanites) temporarily disables them. Suit tier protection is present even without upgrades; damage-reduction upgrades improve
+that tier's protection rather than providing a separate second armor layer.
 
 The core's integer `Upgrades` tag uses the original six four-bit level slots, in the order of
 attributes in the hero's augment JSON. The modern port uses separate item IDs for the five
 upgrade types instead of 1.7.10 item metadata. The interface uses the original artwork but does
-not yet reproduce its animated button effects. Damage-reduction upgrades act on the port's
-existing armor protection, so the complete tier-protection system is not yet identical to 1.7.10.
+not yet reproduce its animated button effects. See [suit-protection.md](suit-protection.md)
+for the damage rules and current limitations.

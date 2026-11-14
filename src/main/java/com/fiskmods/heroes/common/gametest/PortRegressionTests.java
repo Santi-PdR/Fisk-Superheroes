@@ -4079,7 +4079,7 @@ public final class PortRegressionTests
         target.invulnerableTime = 0;
         types.addProperty("CACTUS", 0.5F);
         if (!com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(target, attacker, source, 8.0F, profile)
-                || Math.abs(target.getHealth() - 16.0F) > 0.01F || attacker.getHealth() != 20.0F)
+                || Math.abs(target.getHealth() - (20.0F - 4.0F * com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(target, source))) > 0.01F || attacker.getHealth() != 20.0F)
         { helper.fail("Mixed projectile damage must retain its partial cactus immunity without retaliation"); return; }
         var batman = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:batman_dceu");
         if (batman == null) { helper.fail("Batman is missing"); return; }
@@ -4092,7 +4092,7 @@ public final class PortRegressionTests
         if (target.getHealth() != 20.0F)
         { helper.fail("Batman's bullet immunity must block a bullet-typed projectile"); return; }
         target.invulnerableTime = 0;
-        if (!target.hurt(source, 8.0F) || Math.abs(target.getHealth() - 12.0F) > 0.01F)
+        if (!target.hurt(source, 8.0F) || Math.abs(target.getHealth() - (20.0F - 8.0F * com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(target, source))) > 0.01F)
         { helper.fail("Bullet immunity must not block an ordinary arrow"); return; }
         if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile() != null)
             helper.fail("Typed damage profile leaked beyond its scope");
@@ -4130,7 +4130,7 @@ public final class PortRegressionTests
         attacker.setHealth(20.0F);
         attackerData.setHero(hero.getDefaultIteration());
         if (!target.hurt(target.damageSources().playerAttack(attacker), 8.0F)
-                || Math.abs(target.getHealth() - 13.6F) > 0.01F || attacker.getHealth() != 20.0F)
+                || Math.abs(target.getHealth() - (20.0F - 6.4F * com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(target, target.damageSources().playerAttack(attacker)))) > 0.01F || attacker.getHealth() != 20.0F)
         { helper.fail("Nested thorns must not recurse or erase the original 20 percent cactus attack profile"); return; }
         if (com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile() != null)
             helper.fail("Nested melee profile leaked beyond the hit");
@@ -5141,6 +5141,51 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void martianFireWeaknessRespondsToNearbyFire(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:martian_manhunter");
+        if (data == null || hero == null) { helper.fail("Martian fire weakness fixture missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var entry = hero.getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("fire_weakness"));
+        if (entry == null) { helper.fail("Fire weakness modifier missing"); return; }
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        player.tickCount = 0;
+        entry.getModifier().tick(player, entry, data);
+        if (player.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS))
+        { helper.fail("No fire should not inflict fire weakness"); return; }
+        var lava = base.offset(2, 0, 0);
+        helper.getLevel().setBlockAndUpdate(lava, net.minecraft.world.level.block.Blocks.LAVA.defaultBlockState());
+        entry.getModifier().tick(player, entry, data);
+        var nausea = player.getEffect(net.minecraft.world.effect.MobEffects.CONFUSION);
+        var slow = player.getEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN);
+        var weak = player.getEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
+        helper.getLevel().removeBlock(lava, false);
+        if (nausea == null || nausea.getAmplifier() != 0 || slow == null || slow.getAmplifier() != 3
+                || weak == null || weak.getAmplifier() != 2)
+        { helper.fail("Nearby lava should apply original nausea, slowness IV and weakness III"); return; }
+        player.removeAllEffects();
+        var cow = net.minecraft.world.entity.EntityType.COW.create(helper.getLevel());
+        if (cow == null) { helper.fail("Burning entity fixture missing"); return; }
+        cow.setPos(player.getX() + 2, player.getY(), player.getZ());
+        cow.setSecondsOnFire(5);
+        helper.getLevel().addFreshEntity(cow);
+        entry.getModifier().tick(player, entry, data);
+        cow.discard();
+        if (!player.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS))
+        { helper.fail("Nearby burning entities should trigger fire weakness"); return; }
+        player.removeAllEffects();
+        player.setSecondsOnFire(5);
+        player.tickCount = 1;
+        entry.getModifier().tick(player, entry, data);
+        if (!player.hasEffect(net.minecraft.world.effect.MobEffects.WEAKNESS))
+        { helper.fail("Burning wearer should trigger fire weakness immediately"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void suitProtectionMatchesOriginalRules(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
@@ -5168,9 +5213,10 @@ public final class PortRegressionTests
         { helper.fail("Protection did not respect damage-source exceptions"); return; }
         data.setHero(martian.getDefaultIteration());
         double reduction = com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(martian.getTier());
-        float fire = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire());
+        float fire = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().lava());
         if (Math.abs(fire - (1 - reduction / 2)) > .001
-                || Math.abs(com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().onFire(), 10) - 10) > .001)
+                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire()) != 1.0F
+                || Math.abs(com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().lava(), 10) - 10) > .001)
         { helper.fail("Fire weakness must halve protection, not double the raw hit"); return; }
         for (var item : com.fiskmods.heroes.common.item.ModItems.heroArmor)
             if (item.getMaterial().getDefenseForType(item.getType()) != 0)
@@ -5209,6 +5255,25 @@ public final class PortRegressionTests
         js.setData("fiskheroes:dyn/steeled", true);
         if (steel.getProtectionTier(player) != 7 || iron.getProtectionTier(player) != 7)
         { helper.fail("Steel transformation or unmodified Iron Man tier is incorrect"); return; }
+        var mk85 = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk85");
+        var shazam = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:shazam_dceu");
+        if (mk85 == null || shazam == null) { helper.fail("Additional tier callback heroes missing"); return; }
+        data.setHero(mk85.getDefaultIteration());
+        js.setData("fiskheroes:dyn/nanites", false);
+        if (mk85.getProtectionTier(player) != 0) { helper.fail("Inactive Mk85 must use tier 0"); return; }
+        js.setData("fiskheroes:dyn/nanites", true);
+        if (mk85.getProtectionTier(player) != 8) { helper.fail("Active Mk85 must use tier 8"); return; }
+        data.setHero(shazam.getDefaultIteration());
+        if (shazam.getProtectionTier(player) != 9) { helper.fail("Shazam must normally use tier 9"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                com.fiskmods.heroes.common.hero.modifier.ModEffects.ETERNIUM.get(), 100));
+        if (shazam.getProtectionTier(player) != 6) { helper.fail("Eternium must lower Shazam's tier"); return; }
+        var custom = new com.fiskmods.heroes.common.hero.Hero(com.fiskmods.heroes.FiskHeroes.id("tier_test"));
+        custom.setTier(4);
+        custom.setTierOverrideFunction(args -> 3.5D);
+        if (custom.getProtectionTier(player) != 4) { helper.fail("Non-integral callback result must fall back to base tier"); return; }
+        custom.setTierOverrideFunction(args -> 11);
+        if (custom.getProtectionTier(player) != 4) { helper.fail("Out-of-range callback result must fall back to base tier"); return; }
         helper.succeed();
     }
 
@@ -5392,6 +5457,10 @@ public final class PortRegressionTests
                 }
             }
         }
+        var tallHealth = com.fiskmods.heroes.common.util.SuitHudLayout.calculate(320, 240, java.util.List.of(90, 90), 100);
+        for (var row : tallHealth.rows())
+            if (row.y() + row.height() > 140)
+            { helper.fail("HUD must reserve space for additional armor or health rows"); return; }
         helper.succeed();
     }
 

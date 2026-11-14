@@ -219,6 +219,12 @@ def main():
                      'equip Spider-Man', process)
             command('gamemode survival')
             time.sleep(4)  # Wait for the player to land and the suit attributes to sync.
+            meter = wait_for(r'Suit protection HUD: hero=fiskheroes:spider_man, fill=(\d+), armor=false, x=(-?\d+), y=(-?\d+)',
+                             45, 'tier protection meter in the survival HUD', process)
+            if not 1 <= int(meter.group(1)) <= 79:
+                raise RuntimeError(f'Unexpected protection meter fill: {meter.group(1)}')
+            subprocess.run(['scrot', 'ci-protection-hud.jpg'], check=True, timeout=30)
+            print('PASS: suit protection meter in survival HUD, fill=', meter.group(1), flush=True)
             xdo('keydown', 'space')
             time.sleep(0.3)
             xdo('keyup', 'space')
