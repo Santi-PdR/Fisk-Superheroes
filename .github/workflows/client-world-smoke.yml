@@ -33,7 +33,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
           python3 -m venv "$RUNNER_TEMP/nbt-venv"
-          "$RUNNER_TEMP/nbt-venv/bin/pip" install nbtlib
+          "$RUNNER_TEMP/nbt-venv/bin/pip" install nbtlib pillow
       - name: Generate a world for Quick Play
         run: |
           chmod +x gradlew
@@ -61,7 +61,7 @@ jobs:
       - name: Exercise Flash and Vision in a real client world
         run: |
           set -o pipefail
-          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/client_world_smoke.py 2>&1 | tee ci-world-test.log
+          xvfb-run -a -s '-screen 0 1280x720x24' "$RUNNER_TEMP/nbt-venv/bin/python" .ci/client_world_smoke.py 2>&1 | tee ci-world-test.log
       - name: Upload world screenshot for visual inspection
         if: always()
         uses: actions/upload-artifact@v4
@@ -69,7 +69,7 @@ jobs:
           name: client-world-screenshot
           path: |
             ci-world-screenshot.jpg
-            ci-protection-hud.jpg
+            ci-protection-hud.png
             ci-antman-screenshot.jpg
             ci-batman-cape-screenshot.jpg
             ci-crossbones-screenshot.jpg

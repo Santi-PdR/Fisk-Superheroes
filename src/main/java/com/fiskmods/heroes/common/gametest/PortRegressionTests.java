@@ -5186,6 +5186,36 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void suitProtectionCombinesWithVanillaArmorOnce(GameTestHelper helper)
+    {
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (data == null || hero == null) { helper.fail("Protection combat fixture missing"); return; }
+        target.getAbilities().invulnerable = false;
+        target.getInventory().armor.set(2, com.fiskmods.heroes.common.hero.ItemHeroArmor.create(
+                hero.getDefaultIteration(), com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(target, false);
+        if (data.getHeroType() != hero) { helper.fail("Partial suit should activate when the policy permits it"); return; }
+        com.fiskmods.heroes.common.hero.HeroTracker.update(target, true);
+        if (data.getHeroType() != null) { helper.fail("Full-suit policy must deactivate a partial suit"); return; }
+        com.fiskmods.heroes.common.hero.HeroTracker.update(target, false);
+        target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR).setBaseValue(10.0D);
+        var hit = target.damageSources().playerAttack(attacker);
+        float afterSuit = 10.0F * com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(target, hit);
+        float expected = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(afterSuit, 10.0F, 0.0F);
+        target.setHealth(20.0F);
+        if (!target.hurt(hit, 10.0F) || Math.abs(target.getHealth() - (20.0F - expected)) > .01F)
+        { helper.fail("Real hit must apply suit protection once before other vanilla armor"); return; }
+        target.invulnerableTime = 0;
+        target.setHealth(20.0F);
+        if (!target.hurt(target.damageSources().inWall(), 8.0F) || Math.abs(target.getHealth() - 12.0F) > .01F)
+        { helper.fail("Suffocation must bypass suit and vanilla armor"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void suitProtectionMatchesOriginalRules(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
@@ -5203,19 +5233,25 @@ public final class PortRegressionTests
         var drown = player.damageSources().drown();
         var wall = player.damageSources().inWall();
         var magic = player.damageSources().indirectMagic(player, player);
+        var directMagic = player.damageSources().magic();
+        var lava = player.damageSources().lava();
+        var onFire = player.damageSources().onFire();
         var voidDamage = player.damageSources().fellOutOfWorld();
         if (Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, melee) - .052) > .001
-                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, fall) - .526) > .001
-                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, drown) - .526) > .001
-                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, wall) - .526) > .001
+                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, fall) != 1.0F
+                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, drown) != 1.0F
+                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, wall) != 1.0F
                 || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, magic) - .052) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, directMagic) - .526) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, lava) - .526) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, onFire) - .526) > .001
                 || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, voidDamage) != 1)
         { helper.fail("Protection did not respect damage-source exceptions"); return; }
         data.setHero(martian.getDefaultIteration());
         double reduction = com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(martian.getTier());
         float fire = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().lava());
-        if (Math.abs(fire - (1 - reduction / 2)) > .001
-                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire()) != 1.0F
+        if (Math.abs(fire - (1 - reduction / 4)) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire()) - (1 - reduction / 4)) > .001
                 || Math.abs(com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().lava(), 10) - 10) > .001)
         { helper.fail("Fire weakness must halve protection, not double the raw hit"); return; }
         for (var item : com.fiskmods.heroes.common.item.ModItems.heroArmor)

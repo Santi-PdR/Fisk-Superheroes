@@ -40,7 +40,7 @@ public final class SuitProtectionHud
 
         String key = data.getHeroType().getRegistryName() + ":" + width + "x" + height + ":" + vanillaArmor;
         if (DIAGNOSTICS.add(key))
-            FiskHeroes.LOGGER.info("Suit protection HUD: hero={}, fill={}, armor={}, x={}, y={}",
-                    data.getHeroType().getRegistryName(), filled, vanillaArmor, x, y);
+            FiskHeroes.LOGGER.info("Suit protection HUD: hero={}, fill={}, armor={}, x={}, y={}, screen={}x{}",
+                    data.getHeroType().getRegistryName(), filled, vanillaArmor, x, y, width, height);
     }
 }

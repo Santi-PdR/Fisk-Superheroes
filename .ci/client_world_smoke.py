@@ -219,12 +219,28 @@ def main():
                      'equip Spider-Man', process)
             command('gamemode survival')
             time.sleep(4)  # Wait for the player to land and the suit attributes to sync.
-            meter = wait_for(r'Suit protection HUD: hero=fiskheroes:spider_man, fill=(\d+), armor=false, x=(-?\d+), y=(-?\d+)',
+            meter = wait_for(r'Suit protection HUD: hero=fiskheroes:spider_man, fill=(\d+), armor=false, x=(-?\d+), y=(-?\d+), screen=(\d+)x(\d+)',
                              45, 'tier protection meter in the survival HUD', process)
             if not 1 <= int(meter.group(1)) <= 79:
                 raise RuntimeError(f'Unexpected protection meter fill: {meter.group(1)}')
-            subprocess.run(['scrot', 'ci-protection-hud.jpg'], check=True, timeout=30)
-            print('PASS: suit protection meter in survival HUD, fill=', meter.group(1), flush=True)
+            time.sleep(10)  # Let chat notifications fade before examining HUD pixels.
+            subprocess.run(['scrot', 'ci-protection-hud.png'], check=True, timeout=30)
+            # Confirm the actual pixels, not merely that the render callback logged. The
+            # original meter has a solid light-gray interior against a dark-gray frame.
+            from PIL import Image
+            geometry = subprocess.check_output(['xdotool', 'getwindowgeometry', '--shell', window], text=True, timeout=30)
+            values = dict(line.split('=', 1) for line in geometry.splitlines() if '=' in line)
+            gx, gy = int(values['X']), int(values['Y'])
+            sx = int(values['WIDTH']) / int(meter.group(4))
+            sy = int(values['HEIGHT']) / int(meter.group(5))
+            px = int(gx + (int(meter.group(2)) + 8) * sx)
+            py = int(gy + (int(meter.group(3)) + 3) * sy)
+            image = Image.open('ci-protection-hud.png').convert('RGB')
+            sample = [image.getpixel((px + int(i * sx), py)) for i in range(30)]
+            matching = sum(1 for r, g, b in sample if 165 <= r <= 200 and 165 <= g <= 200 and 175 <= b <= 210)
+            if matching < 20:
+                raise RuntimeError(f'Protection meter pixels missing at {(px, py)}: {matching}/30 match, samples={sample}')
+            print('PASS: suit protection meter rendered pixels, fill=', meter.group(1), 'matching=', matching, flush=True)
             xdo('keydown', 'space')
             time.sleep(0.3)
             xdo('keyup', 'space')

@@ -13,16 +13,16 @@ not the underlying tier. The armor bar in the survival HUD shows this reduction.
 points from other items and enchantments still work; superhero pieces themselves contribute no
 vanilla armor points, avoiding a second reduction from the same suit.
 
-Most armor-bypassing damage, including the void, bypasses suit protection as well. As in the
-original, fall, drowning and suffocation receive half the protection, and indirect magic receives
-full protection. Other powers and fall resistance may independently cancel or change damage.
-Martian fire weakness halves the remaining suit protection against blockable fire damage (such
-as lava); armor-bypassing damage such as burning remains unprotected. Nearby fire, lava or a
+Most armor-bypassing damage, including fall, drowning, suffocation and the void, bypasses suit
+protection. As in the original, burning, lava and direct magic receive half protection, and
+indirect magic receives full protection even though it bypasses vanilla armor. Other powers and
+fall resistance may independently cancel or change damage. Martian fire weakness halves the
+remaining suit protection against fire, after these source-specific rules; nearby fire, lava or a
 burning entity also causes nausea, slowness and weakness. Area scans run every five ticks, while
 a burning wearer is checked immediately.
 
 The `requireFullSuit` policy still controls whether a partial suit activates its hero's powers and
-protection; when disabled, an active partial suit receives the hero's full tier protection, as the
-original tracker did. Suit durability scaling is not implemented: ported suit pieces are currently
+protection; when disabled, an active partial suit receives the hero's full tier protection. This
+port policy is more permissive than the original tracker, which required the suit's full armor signature. Suit durability scaling is not implemented: ported suit pieces are currently
 unbreakable. The HUD currently shows the base protection rather than a source-specific value; it
 does not yet reproduce the original metal-skin heat coloring.

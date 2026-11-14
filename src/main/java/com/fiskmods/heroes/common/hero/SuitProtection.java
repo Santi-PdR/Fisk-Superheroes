@@ -33,10 +33,11 @@ public final class SuitProtection
         var data = SHDataCapabilities.getPlayer(entity);
         if (data == null || data.getHeroType() == null) return 1.0F;
 
-        // Drowning, falling and suffocation received half protection in 1.7.10.
-        // Indirect magic was explicitly protected despite bypassing vanilla armor.
+        // MCP 1.7.10 mappings identify the original exceptions as onFire, lava
+        // and magic: each receives half protection even if armor-bypassing.
+        // Indirect magic receives full protection; other bypassing sources receive none.
         float sourceScale = 1.0F;
-        if (source.is(DamageTypes.DROWN) || source.is(DamageTypes.FALL) || source.is(DamageTypes.IN_WALL))
+        if (source.is(DamageTypes.ON_FIRE) || source.is(DamageTypes.LAVA) || source.is(DamageTypes.MAGIC))
             sourceScale = 0.5F;
         else if (!source.is(DamageTypes.INDIRECT_MAGIC) && source.is(DamageTypeTags.BYPASSES_ARMOR))
             return 1.0F;
