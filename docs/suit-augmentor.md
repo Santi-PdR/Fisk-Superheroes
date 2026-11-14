@@ -12,8 +12,28 @@ The available attributes and their starting and maximum levels come from the her
 There are five upgrade items: iron (I), gold (II), gold-titanium (III), vibranium (IV), and
 dwarf-star alloy (V). A level *n* attribute requires the corresponding item to reach *n + 1*.
 Each higher-tier item is crafted from six of its metal, two of the previous upgrade, and one
-Tutridium gem. The iron item uses six iron and one gem, without previous upgrades. The crafting
-recipe book shows the patterns.
+Tutridium gem. The iron item uses six iron and one gem, without previous upgrades:
+
+```text
+I I I    I I I
+  T      U T U
+I I I    I I I
+```
+
+The left pattern is the iron upgrade; the right pattern is for tiers II–V. `I` is the appropriate
+metal ingot, `T` a Tutridium gem, and `U` the previous tier of upgrade.
+
+The machine itself uses this pattern:
+
+```text
+D T D
+G A G
+S B S
+```
+
+`D` is dwarf-star alloy, `T` a Tutridium gem, `G` gold-titanium ingots, `A` an anvil,
+`S` stone, and `B` a gold-titanium block. Recipes are available in survival, although they
+are not automatically unlocked in the recipe book yet.
 
 The core retains its upgrades when it is removed or changed between compatible suit iterations.
 They only apply while the core belongs to the active hero, and a profile that revokes augments
