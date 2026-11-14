@@ -61,7 +61,7 @@ final class ParticleEmitterRenderer
         ANCHOR_DIAGNOSTICS.clear();
         LocalParticleEmitter.clear();
         TelekinesisChainParticle.clearDiagnostics();
-        CloudSmokeParticle.clearDiagnostics();
+        TeleportBurstParticle.clearDiagnostics();
     }
 
     static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale, PoseStack renderPose)
@@ -104,12 +104,7 @@ final class ParticleEmitterRenderer
         JsonObject effect = suit.getCustom().get("fiskheroes:particle_cloud");
         if (effect != null && passesConditionals(effect, suit, player)) emitCloud(player, effect);
 
-        effect = suit.getCustom().get("fiskheroes:teleportation");
         SHPlayerData data = SHDataCapabilities.getPlayer(player);
-        if (effect != null && data != null && data.getData().get(Vars.TELEPORT_TIMER) > 0.0F)
-        {
-            emitCloud(player, effect);
-        }
 
         // The original telekinesis aura surrounds the grabbed entity, not the caster.
         effect = suit.getCustom().get("fiskheroes:telekinesis");
@@ -172,14 +167,14 @@ final class ParticleEmitterRenderer
             Vec3 point = new Vec3(player.getX() + randomOffset(random, spread),
                     player.getY() + player.getBbHeight() * 0.5D + randomOffset(random, spread),
                     player.getZ() + randomOffset(random, spread));
-            if (spawnCloudSmoke(point, velocity, com.fiskmods.heroes.common.util.CloudColors.sample(definition, random), firstPerson, id)
+            if (spawnCloudSmoke(point, velocity, com.fiskmods.heroes.common.util.CloudColors.sample(definition, random), firstPerson)
                     && firstPerson && FIRST_PERSON_CLOUD_DIAGNOSTICS.add(id.toString()))
                 FiskHeroes.LOGGER.info("First-person particle cloud emitted: {}", id);
         }
     }
 
     /** Use the animated smoke sprite rather than a solid dust square, retaining pack color. */
-    private static boolean spawnCloudSmoke(Vec3 point, Vec3 velocity, com.fiskmods.heroes.common.util.CloudColors colors, boolean firstPerson, ResourceLocation cloudId)
+    private static boolean spawnCloudSmoke(Vec3 point, Vec3 velocity, com.fiskmods.heroes.common.util.CloudColors colors, boolean firstPerson)
     {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return false;
@@ -191,8 +186,13 @@ final class ParticleEmitterRenderer
         if (setting == net.minecraft.client.ParticleStatus.MINIMAL
                 || setting == net.minecraft.client.ParticleStatus.DECREASED && mc.level.random.nextInt(3) == 0)
             return false;
-        mc.particleEngine.add(new CloudSmokeParticle(mc.level, point, velocity, colors, firstPerson, cloudId));
+        mc.particleEngine.add(new CloudSmokeParticle(mc.level, point, velocity, colors, firstPerson));
         return true;
+    }
+
+    static JsonObject cloud(ResourceLocation id)
+    {
+        return CLOUDS.computeIfAbsent(id, ParticleEmitterRenderer::loadCloud);
     }
 
     private static JsonObject loadCloud(ResourceLocation id)

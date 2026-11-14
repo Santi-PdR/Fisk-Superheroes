@@ -464,8 +464,24 @@ class ModifierTeleportation extends Modifier
         }
 
         if (entity.distanceToSqr(x, y, z) < 1.0E-8D) return;
+        Vec3 origin = entity.position().add(0.0D, entity.getBbHeight() * 0.5D, 0.0D);
+        float width = entity.getBbWidth(), height = entity.getBbHeight();
+        float scale = Vars.getScale(entity);
         entity.teleportTo(x, y, z);
         entity.fallDistance = 0.0F;
+        var hero = data.getHero();
+        if (hero != null)
+        {
+            Vec3 destination = entity.position().add(0.0D, entity.getBbHeight() * 0.5D, 0.0D);
+            // Send each endpoint to its own observers. This still works if the caster is
+            // outside an observer's entity-tracking range after a long teleport.
+            com.fiskmods.heroes.common.network.SHNetwork.sendToNearby(
+                    new com.fiskmods.heroes.common.network.PacketTeleportBurst(entity.getId(), hero, origin, width, height, scale, false),
+                    level, origin.x, origin.y, origin.z, 48.0D);
+            com.fiskmods.heroes.common.network.SHNetwork.sendToNearby(
+                    new com.fiskmods.heroes.common.network.PacketTeleportBurst(entity.getId(), hero, destination, width, height, scale, true),
+                    level, destination.x, destination.y, destination.z, 48.0D);
+        }
         JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
         if (sounds != null && sounds.isJsonObject() && sounds.getAsJsonObject().has("TELEPORT"))
             AbilityData.playSound(entity, entry, "TELEPORT");

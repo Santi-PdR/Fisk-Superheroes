@@ -3090,6 +3090,36 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void teleportBurstPacketAndLatticePreserveEndpoints(GameTestHelper helper)
+    {
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_monitor");
+        if (hero == null) { helper.fail("The Monitor is missing"); return; }
+        var center = new net.minecraft.world.phys.Vec3(12.25, -3.5, 720.75);
+        var packet = new com.fiskmods.heroes.common.network.PacketTeleportBurst(123, hero.getDefaultIteration(), center, .6F, 1.8F, 1.1F, true);
+        var buffer = new FriendlyByteBuf(Unpooled.buffer());
+        try
+        {
+            packet.encode(buffer);
+            var decoded = new com.fiskmods.heroes.common.network.PacketTeleportBurst(buffer);
+            if (decoded.entityId() != 123 || !decoded.hero().equals(hero.getRegistryName()) || !decoded.iteration().isEmpty()
+                    || decoded.center().distanceToSqr(center) > 1.0E-12 || decoded.width() != .6F
+                    || decoded.height() != 1.8F || decoded.scale() != 1.1F || !decoded.destination())
+            { helper.fail("Teleport visual packet must preserve hero, position, dimensions, scale and endpoint"); return; }
+        }
+        finally { buffer.release(); }
+        if (com.fiskmods.heroes.common.util.TeleportBurstMath.count(true) != 50
+                || com.fiskmods.heroes.common.util.TeleportBurstMath.count(false) != 200)
+        { helper.fail("Teleport lattice must use the original first/third-person density"); return; }
+        var first = com.fiskmods.heroes.common.util.TeleportBurstMath.offset(0, 0, false, .6F, 1.8F);
+        double pitch = Math.PI / 10, yaw = Math.PI / 10;
+        var expected = new net.minecraft.world.phys.Vec3(-.9 * Math.sin(pitch) * Math.sin(yaw),
+                1.35 * Math.cos(pitch), -.9 * Math.sin(pitch) * Math.cos(yaw));
+        if (first.distanceToSqr(expected) > 1.0E-10)
+        { helper.fail("Teleport lattice must match the original angular and dimension scaling: " + first); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void telekinesisReleaseAndStaleOwnershipAreRecoverable(GameTestHelper helper)
     {
         var level = helper.getLevel();

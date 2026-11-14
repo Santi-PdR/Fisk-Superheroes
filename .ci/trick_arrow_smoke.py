@@ -375,12 +375,22 @@ def main():
             command('fill -2 180 6 2 184 6 minecraft:stone')
             command('tp Dev 0.5 180 0.5 0 0')
             xdo('key', 'F5'); time.sleep(1)
-            xdo('keydown', 'b'); time.sleep(.35); xdo('keyup', 'b')
-            time.sleep(.25)
+            xdo('keydown', 'b'); time.sleep(.25)
             subprocess.run(['scrot', '-o', 'ci-arrow-breach-cloud.png'], check=True, timeout=30)
+            xdo('keyup', 'b')
             wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT',
                      30, 'Monitor teleport activates', server)
-            gradient = (r'Breach cloud animated color: startR=([-+0-9.eE]+), startG=([-+0-9.eE]+), '
+            burst = (r'Teleport burst emitted: endpoint=(origin|destination), firstPerson=false, '
+                     r'center=\(([-+0-9.eE]+), ([-+0-9.eE]+), ([-+0-9.eE]+)\), count=([0-9]+), cloud=fiskheroes:breach')
+            wait_for(client_log, burst.replace('(origin|destination)', 'destination'), 30,
+                     'teleport burst reaches the destination', client)
+            bursts = {endpoint: (float(x), float(y), float(z), int(count)) for endpoint, x, y, z, count
+                      in re.findall(burst, client_log.read_text(errors='replace'))}
+            if (set(bursts) != {'origin', 'destination'} or bursts['origin'][3] != 200
+                    or bursts['destination'][3] != 200 or bursts['destination'][2] - bursts['origin'][2] < 3):
+                raise RuntimeError(f'Teleport must emit separate 200-particle endpoint bursts: {bursts}')
+            print(f'PASS: teleport emitted radial bursts at both endpoints: {bursts}', flush=True)
+            gradient = (r'Breach burst animated color: startR=([-+0-9.eE]+), startG=([-+0-9.eE]+), '
                         r'startB=([-+0-9.eE]+), midR=([-+0-9.eE]+), midG=([-+0-9.eE]+), midB=([-+0-9.eE]+)')
             wait_for(client_log, gradient, 45, 'breach cloud particles animate their configured colors', client)
             colors = tuple(map(float, re.search(gradient, client_log.read_text(errors='replace')).groups()))

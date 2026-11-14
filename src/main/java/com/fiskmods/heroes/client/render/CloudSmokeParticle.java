@@ -15,15 +15,12 @@ final class CloudSmokeParticle extends TextureSheetParticle
 {
     private static final ResourceLocation[] SPRITES = new ResourceLocation[8];
     static { for (int i = 0; i < 8; ++i) SPRITES[i] = new ResourceLocation("minecraft", "generic_" + i); }
-    private static boolean reportedGradient;
     private final CloudColors colors;
-    private final ResourceLocation cloudId;
 
-    CloudSmokeParticle(ClientLevel level, Vec3 point, Vec3 motion, CloudColors colors, boolean firstPerson, ResourceLocation cloudId)
+    CloudSmokeParticle(ClientLevel level, Vec3 point, Vec3 motion, CloudColors colors, boolean firstPerson)
     {
         super(level, point.x, point.y, point.z);
         this.colors = colors;
-        this.cloudId = cloudId;
         xd = motion.x + (random.nextDouble() * 2 - 1) * 0.05D;
         yd = motion.y + (random.nextDouble() * 2 - 1) * 0.05D;
         zd = motion.z + (random.nextDouble() * 2 - 1) * 0.05D;
@@ -33,8 +30,6 @@ final class CloudSmokeParticle extends TextureSheetParticle
         updateAppearance();
     }
 
-    static void clearDiagnostics() { reportedGradient = false; }
-
     @Override public void tick()
     {
         xo = x; yo = y; zo = z;
@@ -43,14 +38,6 @@ final class CloudSmokeParticle extends TextureSheetParticle
         xd *= 0.9D; yd *= 0.9D; zd *= 0.9D;
         if (onGround) { xd *= 0.7D; zd *= 0.7D; }
         updateAppearance();
-        if (Boolean.getBoolean("fiskheroes.ciParticleDiagnostics") && !reportedGradient
-                && cloudId.toString().equals("fiskheroes:breach") && age == lifetime / 2)
-        {
-            reportedGradient = true;
-            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Breach cloud animated color: startR={}, startG={}, startB={}, midR={}, midG={}, midB={}",
-                    colors.channel(0, 0), colors.channel(1, 0), colors.channel(2, 0),
-                    colors.channel(0, 0.5F), colors.channel(1, 0.5F), colors.channel(2, 0.5F));
-        }
     }
 
     private void updateAppearance()

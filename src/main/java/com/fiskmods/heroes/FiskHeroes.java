@@ -132,6 +132,8 @@ public class FiskHeroes
                     com.fiskmods.heroes.common.network.PacketFabricatorAction::new, NetworkDirection.PLAY_TO_SERVER);
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketChangeSpeed.class,
                     com.fiskmods.heroes.common.network.PacketChangeSpeed::new, NetworkDirection.PLAY_TO_SERVER);
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketTeleportBurst.class,
+                    com.fiskmods.heroes.common.network.PacketTeleportBurst::new, NetworkDirection.PLAY_TO_CLIENT);
 
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketAimedSuitShot.class,
                     com.fiskmods.heroes.common.network.PacketAimedSuitShot::new, NetworkDirection.PLAY_TO_SERVER);
