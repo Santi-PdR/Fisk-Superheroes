@@ -20,12 +20,6 @@ public enum SuperheroArmorMaterial implements ArmorMaterial
 {
     INSTANCE;
 
-    private static final Map<ArmorItem.Type, Integer> DEFENSE = Map.of(
-            ArmorItem.Type.HELMET, 2,
-            ArmorItem.Type.CHESTPLATE, 4,
-            ArmorItem.Type.LEGGINGS, 3,
-            ArmorItem.Type.BOOTS, 1);
-
     private static final Map<ArmorItem.Type, Integer> DURABILITY = Map.of(
             ArmorItem.Type.HELMET, 0,
             ArmorItem.Type.CHESTPLATE, 0,
@@ -41,7 +35,9 @@ public enum SuperheroArmorMaterial implements ArmorMaterial
     @Override
     public int getDefenseForType(ArmorItem.Type type)
     {
-        return DEFENSE.getOrDefault(type, 0);
+        // Suit protection is tier-based and applied once by SuitProtection. Vanilla armor
+        // points here would apply a second, damage-dependent reduction to the same piece.
+        return 0;
     }
 
     @Override

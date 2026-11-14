@@ -5141,6 +5141,78 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void suitProtectionMatchesOriginalRules(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var martian = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:martian_manhunter");
+        if (data == null || hero == null || martian == null) { helper.fail("Protection fixtures missing"); return; }
+        if (Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(1, 75, 1.3) - .75) > .0001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(7, 75, 1.3) - .948) > .0001
+                || com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(0, 75, 1.3) != 0)
+        { helper.fail("Original tier curve or rounding is incorrect"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var melee = player.damageSources().playerAttack(player);
+        var fall = player.damageSources().fall();
+        var drown = player.damageSources().drown();
+        var wall = player.damageSources().inWall();
+        var magic = player.damageSources().indirectMagic(player, player);
+        var voidDamage = player.damageSources().fellOutOfWorld();
+        if (Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, melee) - .052) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, fall) - .526) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, drown) - .526) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, wall) - .526) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, magic) - .052) > .001
+                || com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, voidDamage) != 1)
+        { helper.fail("Protection did not respect damage-source exceptions"); return; }
+        data.setHero(martian.getDefaultIteration());
+        double reduction = com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(martian.getTier());
+        float fire = com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(player, player.damageSources().onFire());
+        if (Math.abs(fire - (1 - reduction / 2)) > .001
+                || Math.abs(com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, player.damageSources().onFire(), 10) - 10) > .001)
+        { helper.fail("Fire weakness must halve protection, not double the raw hit"); return; }
+        for (var item : com.fiskmods.heroes.common.item.ModItems.heroArmor)
+            if (item.getMaterial().getDefenseForType(item.getType()) != 0)
+            { helper.fail("Suit armor must not also add vanilla armor points"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heroProtectionTierFollowsPackCallbacks(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var mk50 = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        var antman = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:ant_man");
+        var steel = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:citizen_steel");
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (data == null || mk50 == null || antman == null || steel == null || iron == null)
+        { helper.fail("Tier callback test heroes are missing"); return; }
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(player);
+        data.setHero(mk50.getDefaultIteration());
+        js.setData("fiskheroes:dyn/nanites", false);
+        if (mk50.getProtectionTier(player) != 0) { helper.fail("Inactive Mk50 must have no tier protection"); return; }
+        js.setData("fiskheroes:dyn/nanites", true);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING, false);
+        if (mk50.getProtectionTier(player) != 8) { helper.fail("Active Mk50 must use tier 8"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING, true);
+        if (mk50.getProtectionTier(player) != 7) { helper.fail("Blocking Mk50 must use tier 7"); return; }
+        data.setHero(antman.getDefaultIteration());
+        js.setData("fiskheroes:dyn/giant_mode", false);
+        if (antman.getProtectionTier(player) != 4) { helper.fail("Ant-Man normal tier must be 4"); return; }
+        js.setData("fiskheroes:dyn/giant_mode", true);
+        if (antman.getProtectionTier(player) != 6) { helper.fail("Ant-Man giant tier must be 6"); return; }
+        data.setHero(steel.getDefaultIteration());
+        js.setData("fiskheroes:dyn/steeled", false);
+        if (steel.getProtectionTier(player) != 5) { helper.fail("Citizen Steel normal tier must be 5"); return; }
+        js.setData("fiskheroes:dyn/steeled", true);
+        if (steel.getProtectionTier(player) != 7 || iron.getProtectionTier(player) != 7)
+        { helper.fail("Steel transformation or unmodified Iron Man tier is incorrect"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void crossbonesPunchChargesAndConsumesOnMelee(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

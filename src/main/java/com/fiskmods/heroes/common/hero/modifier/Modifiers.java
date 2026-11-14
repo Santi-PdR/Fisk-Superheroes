@@ -138,8 +138,8 @@ public final class Modifiers
         FIRE_IMMUNITY = registry.register(new ModifierImmunity(new ResourceLocation(FiskHeroes.MODID, "fire_immunity"), DamageGroup.FIRE));
         FIRE_RESISTANCE = registry.register(new ModifierResistance(new ResourceLocation(FiskHeroes.MODID, "fire_resistance"), DamageGroup.FIRE)
                 .addProperty(PowerProperty.FACTOR, 0.5F));
-        FIRE_WEAKNESS = registry.register(new ModifierWeakness(new ResourceLocation(FiskHeroes.MODID, "fire_weakness"), DamageGroup.FIRE)
-                .addProperty(PowerProperty.FACTOR, 2.0F));
+        // Fire weakness halves suit protection, rather than doubling incoming damage.
+        FIRE_WEAKNESS = registry.register(new Modifier(new ResourceLocation(FiskHeroes.MODID, "fire_weakness")));
         COLD_RESISTANCE = registry.register(new ModifierResistance(new ResourceLocation(FiskHeroes.MODID, "cold_resistance"), DamageGroup.COLD)
                 .addProperty(PowerProperty.FACTOR, 0.5F));
         COLD_WEAKNESS = registry.register(new ModifierWeakness(new ResourceLocation(FiskHeroes.MODID, "cold_weakness"), DamageGroup.COLD)

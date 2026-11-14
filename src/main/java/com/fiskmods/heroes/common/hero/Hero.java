@@ -48,6 +48,7 @@ public class Hero implements Comparable<Hero>
 
     private double defaultScale = 1.0;
     private int tierOverride = -1;
+    private ScriptFunction tierOverrideFunction;
     private boolean hidden;
     private boolean maskToggle = true;
 
@@ -347,10 +348,31 @@ public class Hero implements Comparable<Hero>
         tierOverride = tier;
     }
 
-    /** Tier used when sorting suit pieces, or {@code -1} when the hero's own tier applies. */
+    /** Numeric fallback, or {@code -1} when the hero's own tier applies. */
     public int getTierOverride()
     {
         return tierOverride;
+    }
+
+    public void setTierOverrideFunction(@Nullable ScriptFunction function)
+    {
+        tierOverrideFunction = function;
+    }
+
+    /** Entity-dependent tier used by protection. Zero explicitly disables tier protection. */
+    public int getProtectionTier(@Nullable Entity entity)
+    {
+        if (entity != null && tierOverrideFunction != null)
+        {
+            Object value = tierOverrideFunction.call(entity);
+            if (value instanceof Number number && Double.isFinite(number.doubleValue()))
+            {
+                int result = number.intValue();
+                if (result >= 0 && result <= 10) return result;
+            }
+            // A failing or malformed pack callback must not corrupt the hero's base tier.
+        }
+        return tierOverride >= 0 && tierOverride <= 10 ? tierOverride : tier;
     }
 
     public String getVersionKey()

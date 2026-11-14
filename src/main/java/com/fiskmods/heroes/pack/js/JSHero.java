@@ -55,10 +55,18 @@ public class JSHero
         hero.setTier(tier);
     }
 
-    /** Overrides the tier used for suit piece ordering; {@code -1} clears the override. */
-    public void setTierOverride(int tier)
+    /** Original packs supply a function of the entity; numeric overrides remain supported. */
+    public void setTierOverride(Object value)
     {
-        hero.setTierOverride(tier);
+        if (value instanceof Number number)
+        {
+            hero.setTierOverride(number.intValue());
+            hero.setTierOverrideFunction(null);
+        }
+        else
+        {
+            hero.setTierOverrideFunction(JSContext.wrap(value));
+        }
     }
 
     public void setDefaultScale(double scale)

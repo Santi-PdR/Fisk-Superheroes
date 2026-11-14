@@ -17,6 +17,8 @@ public class SHConfig
     public static ForgeConfigSpec.BooleanValue SUIT_PIECES_TAKE_DAMAGE;
     public static ForgeConfigSpec.BooleanValue FORCE_SLOW_LANDING;
     public static ForgeConfigSpec.BooleanValue ALLOW_VANITY_SUITS;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_REDUCTION_BASELINE;
+    public static ForgeConfigSpec.DoubleValue DAMAGE_REDUCTION_FACTOR;
 
     /* Powers */
     public static ForgeConfigSpec.BooleanValue ALLOW_FLIGHT;
@@ -51,6 +53,10 @@ public class SHConfig
                 .define("forceSlowLanding", false);
         ALLOW_VANITY_SUITS = builder.comment("Whether vanity iterations of suits can be equipped")
                 .define("allowVanitySuits", true);
+        DAMAGE_REDUCTION_BASELINE = builder.comment("Tier 1 suit damage reduction, in percent (original default: 75)")
+                .defineInRange("damageReductionBaseline", 75.0D, 0.0D, 100.0D);
+        DAMAGE_REDUCTION_FACTOR = builder.comment("Tier protection scaling factor (original default: 1.3)")
+                .defineInRange("damageReductionFactor", 1.3D, 1.0D, 10.0D);
         builder.pop();
 
         builder.comment("Power options").push("powers");

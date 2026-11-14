@@ -322,21 +322,21 @@ public final class MachineGameTests
         var punch = attrs.get(com.fiskmods.heroes.common.hero.HeroAttribute.PUNCH_DAMAGE);
         var reduction = attrs.get(com.fiskmods.heroes.common.hero.HeroAttribute.DAMAGE_REDUCTION);
         if (punch == null || Math.abs(punch.amount() - 10) > .001 || reduction == null
-                || Math.abs(reduction.amount() - (1 - 1 / 1.1)) > .001)
+                || Math.abs(reduction.amount() - (1 - (1 - .948) / 1.1)) > .001)
         { helper.fail("Original augment formulas were not applied to equipped core"); return; }
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
-        var damage = new net.minecraftforge.event.entity.living.LivingDamageEvent(player, player.damageSources().playerAttack(player), 11F);
-        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingDamage(damage);
-        if (Math.abs(damage.getAmount() - 10F) > .001)
-        { helper.fail("Damage reduction must apply after armor"); return; }
-        var bypass = new net.minecraftforge.event.entity.living.LivingDamageEvent(player, player.damageSources().fellOutOfWorld(), 11F);
-        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingDamage(bypass);
+        var damage = new net.minecraftforge.event.entity.living.LivingHurtEvent(player, player.damageSources().playerAttack(player), 11F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingHurt(damage);
+        if (Math.abs(damage.getAmount() - .52F) > .001)
+        { helper.fail("Tier and augment must combine before vanilla armor"); return; }
+        var bypass = new net.minecraftforge.event.entity.living.LivingHurtEvent(player, player.damageSources().fellOutOfWorld(), 11F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingHurt(bypass);
         if (Math.abs(bypass.getAmount() - 11F) > .001)
-        { helper.fail("Armor-bypassing damage must not be reduced"); return; }
+        { helper.fail("Void damage must bypass suit protection"); return; }
         player.getInventory().armor.set(2, ItemStack.EMPTY);
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         if (Math.abs(player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.PUNCH_DAMAGE.get()) - 9.0) > .001
-                || player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.DAMAGE_REDUCTION.get()) != 0)
+                || Math.abs(player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.DAMAGE_REDUCTION.get()) - .948) > .001)
         { helper.fail("Removing the core must remove its augment modifiers"); return; }
         helper.succeed();
     }
@@ -438,7 +438,7 @@ public final class MachineGameTests
         var reduction = com.fiskmods.heroes.common.hero.HeroAttribute.DAMAGE_REDUCTION;
         js.setData("fiskheroes:dyn/nanites", false);
         var inactive = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);
-        if (inactive.containsKey(punch) || inactive.containsKey(reduction))
+        if (inactive.containsKey(punch) || inactive.get(reduction).amount() != 0)
         { helper.fail("Inactive nanites must revoke both damage and punch augments"); return; }
         js.setData("fiskheroes:dyn/nanites", true);
         var active = com.fiskmods.heroes.common.hero.attribute.SHAttributes.collect(player, hero);

@@ -327,6 +327,11 @@ public class SHAttributes
             }
         }
 
+        // Every original profile contains a tier-derived damage-reduction entry, even
+        // non-inheriting profiles. The augment changes this value, not a zero baseline.
+        map.put(HeroAttribute.DAMAGE_REDUCTION, new Hero.AttributeMod(
+                com.fiskmods.heroes.common.hero.SuitProtection.tierReduction(hero.getProtectionTier(entity)), 1));
+
         if (!revokeAugments && entity instanceof Player player)
         {
             int core = hero.getCorePieceOfSet();
