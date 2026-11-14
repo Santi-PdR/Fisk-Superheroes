@@ -534,6 +534,8 @@ def main():
             command('effect give Dev minecraft:resistance 60 255 true')
             command('say IRON_BOOSTERS_READY')
             wait_for(server_log, r'\[Server\] IRON_BOOSTERS_READY', 30, 'Iron Man booster scene ready', server)
+            # Hide the HUD and chat: they cover the boots in the default camera.
+            xdo('key', 'F1'); time.sleep(.5)
             subprocess.run(['scrot', '-o', 'ci-arrow-booster-before.png'], check=True, timeout=30)
             for _ in range(2):
                 xdo('keydown', 'space'); time.sleep(.08); xdo('keyup', 'space'); time.sleep(.07)
@@ -544,6 +546,11 @@ def main():
                      30, 'Iron Man repulsor animation uses 32 frames', client)
             time.sleep(1)
             subprocess.run(['scrot', '-o', 'ci-arrow-booster-flight.png'], check=True, timeout=30)
+            for _ in range(2):
+                xdo('keydown', 'space'); time.sleep(.08); xdo('keyup', 'space'); time.sleep(.07)
+            wait_for(server_log, r'Controlled flight input: player=Dev, active=false', 30, 'Iron Man stops controlled flight', server)
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-booster-stopped.png'], check=True, timeout=30)
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

@@ -68,8 +68,6 @@ public class ModifierControlledFlight extends Modifier
             // Motion is applied inside LivingEntity.travel on the local player. Server-side
             // velocity packets every tick would override that prediction and create drift.
             player.fallDistance = 0.0F;
-            if (boosting)
-                data.getData().set(Vars.FLIGHT_SUPER_BOOST_TIMER, data.getData().get(Vars.FLIGHT_SUPER_BOOST_TIMER) + 1.0F);
         }
     }
 

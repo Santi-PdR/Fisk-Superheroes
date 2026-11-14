@@ -3167,8 +3167,9 @@ public final class PortRegressionTests
                 || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_R_TIMER) - 1) > .001F
                 || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_L_TIMER) - 1) > .001F
                 || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_TIMER) - 1) > .001F
-                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER) - 1) > .001F)
-        { helper.fail("Flight and independent hand/boot timers must reach one, not an unbounded counter"); return; }
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER) - 1) > .001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST_TIMER) != 0)
+        { helper.fail("Flight/booster timers must be normalized; unrelated pack super-boost data must be untouched"); return; }
         vars.set(com.fiskmods.heroes.common.data.var.Vars.FLYING, false);
         player.setSprinting(false);
         for (int i = 0; i < 12; i++) com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
