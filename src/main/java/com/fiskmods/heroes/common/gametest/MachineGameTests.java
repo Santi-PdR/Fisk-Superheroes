@@ -344,7 +344,8 @@ public final class MachineGameTests
     @GameTest(template = "test_empty")
     public static void upgradeRecipesRequireThePreviousTier(GameTestHelper helper)
     {
-        var player = helper.makeMockPlayer();
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "augment-recipe-test"));
         var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 3, 3);
         Item[] upgrades = { ModItems.SUIT_UPGRADE.get(), ModItems.SUIT_UPGRADE_GOLD.get(),
                 ModItems.SUIT_UPGRADE_GOLD_TITANIUM.get(), ModItems.SUIT_UPGRADE_VIBRANIUM.get(),
@@ -376,6 +377,47 @@ public final class MachineGameTests
                 { helper.fail("Upgrade recipe accepted the wrong previous tier"); return; }
             }
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void augmentDefinitionsAndGameplayAreConnected(GameTestHelper helper)
+    {
+        long loaded = Hero.REGISTRY.getHeroes().stream()
+                .filter(hero -> hero.getRegistryName().getNamespace().equals("fiskheroes"))
+                .filter(hero -> hero.getAugmentSet().size() > 0).count();
+        if (loaded < 67) { helper.fail("Expected 67 built-in augment definitions, got " + loaded); return; }
+        Hero hero = Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:green_arrow");
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null || hero.getAugmentSet().size() != 6)
+        { helper.fail("Missing Green Arrow augments"); return; }
+        var core = ItemHeroArmor.create(hero.getDefaultIteration(), ModItems.heroArmor[1]);
+        player.getInventory().armor.set(2, core);
+        data.setHero(hero.getDefaultIteration());
+        float before = com.fiskmods.heroes.common.item.ItemCompoundBow.getDrawDuration(player);
+        // Two levels each on jump, fall resistance, bow draw and sprint (indices 2..5).
+        ItemHeroArmor.setUpgrades(core, 0x222200);
+        float after = com.fiskmods.heroes.common.item.ItemCompoundBow.getDrawDuration(player);
+        if (Math.abs(before - 12) > .001 || Math.abs(after - 9) > .001)
+        { helper.fail("Bow drawback augment must shorten the actual draw time"); return; }
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var fall = new net.minecraftforge.event.entity.living.LivingFallEvent(player, 20F, 1F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onLivingFall(fall);
+        if (Math.abs(fall.getDistance() - 13F) > .001)
+        { helper.fail("Fall resistance augment must change the actual fall distance"); return; }
+        player.setDeltaMovement(0, 0, 0);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.onJump(player);
+        if (Math.abs(player.getDeltaMovement().y - .3D) > .001)
+        { helper.fail("Jump augment must change the actual jump impulse"); return; }
+        player.setSprinting(true);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var speed = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        player.setSprinting(false);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        var walking = player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (speed <= walking * 1.3D)
+        { helper.fail("Sprint augment must affect only sprinting movement"); return; }
         helper.succeed();
     }
 

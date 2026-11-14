@@ -57,8 +57,14 @@ public final class SuitAugmentorScreen extends AbstractContainerScreen<SuitAugme
             int i = entry.index(), icon = icon(entry.attribute());
             int x = leftPos + 11 + i / 3 * 79, y = topPos + 20 + i % 3 * 14;
             graphics.blit(TEXTURE, x, y, 176 + icon % 6 * 12, 36 + icon / 6 * 12, 12, 12);
-            String name = font.plainSubstrByWidth(attributeName(entry.attribute()).getString(), 60);
-            graphics.drawString(font, name, x + 14, y + 2, 0xFFFFFF, false);
+            String label = attributeName(entry.attribute()).getString();
+            String name = font.width(label) <= 80 ? label : font.plainSubstrByWidth(label, 73) + "…";
+            // Slightly smaller text preserves complete attribute names in the original two-column panel.
+            graphics.pose().pushPose();
+            graphics.pose().translate(x + 14, y + 3, 0);
+            graphics.pose().scale(.75F, .75F, 1F);
+            graphics.drawString(font, name, 0, 0, 0xFFFFFF, false);
+            graphics.pose().popPose();
             int bx = leftPos + 12 + i * 21, by = topPos + 72;
             boolean eligible = menu.canUpgrade(i);
             graphics.blit(TEXTURE, bx, by, eligible ? 212 : 196, 16, 16, 16);
