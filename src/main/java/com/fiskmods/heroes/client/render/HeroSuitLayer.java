@@ -81,6 +81,7 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
         PlayerModel<AbstractClientPlayer> playerModel = getParentModel();
         float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
         ParticleEmitterRenderer.tick(player, playerModel, model, scale, poseStack);
+        BeamConstellationRenderer.capture(player, playerModel, model, poseStack);
 
         poseStack.pushPose();
 

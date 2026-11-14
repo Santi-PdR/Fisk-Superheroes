@@ -467,6 +467,8 @@ def main():
             try:
                 wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:martian_manhunter_comics, heat=true, firstPerson=false, beams=2',
                          60, 'Martian heat vision renders from both eyes in third person', client)
+                wait_for(client_log, r'Beam animated anchors captured: hero=fiskheroes:martian_manhunter_comics, heat=true, beams=2',
+                         30, 'third-person heat beams follow the animated head', client)
                 subprocess.run(['scrot', '-o', 'ci-arrow-heat-third.png'], check=True, timeout=30)
                 xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5')
                 wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:martian_manhunter_comics, heat=true, firstPerson=true, beams=2',
@@ -474,6 +476,26 @@ def main():
                 subprocess.run(['scrot', '-o', 'ci-arrow-heat-first.png'], check=True, timeout=30)
             finally:
                 xdo('keyup', 'g')
+            # Mysterio's projection has a beam at each animated hand.
+            xdo('key', 'F5'); time.sleep(1)
+            command('execute as Dev run suit fiskheroes:mysterio')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('say MYSTERIO_BEAM_READY')
+            wait_for(server_log, r'\[Server\] MYSTERIO_BEAM_READY', 30, 'Mysterio beam scene ready', server)
+            xdo('keydown', 'v')
+            try:
+                wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:mysterio, heat=false, firstPerson=false, beams=2',
+                         60, 'Mysterio projects two third-person beams', client)
+                wait_for(client_log, r'Beam animated anchors captured: hero=fiskheroes:mysterio, heat=false, beams=2',
+                         30, 'Mysterio projection follows both animated arms', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-mysterio-beam-third.png'], check=True, timeout=30)
+                xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5')
+                wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:mysterio, heat=false, firstPerson=true, beams=2',
+                         60, 'Mysterio projects two first-person beams', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-mysterio-beam-first.png'], check=True, timeout=30)
+            finally:
+                xdo('keyup', 'v')
             # The Mk 50 cannon's component glow uses aimed_timer, not the hitscan
             # projection timer. It must appear while aiming without firing a shot.
             command('execute as Dev run suit fiskheroes:iron_man_mk50')
@@ -489,6 +511,16 @@ def main():
                          60, 'Mk 50 cannon component beams render while aiming without a projection shot', client)
                 time.sleep(2)
                 subprocess.run(['scrot', '-o', 'ci-arrow-mk50-first.png'], check=True, timeout=30)
+                # Inspect pixels, not just the diagnostic: the earlier world-space
+                # approximation logged successfully but was hidden away from the arm.
+                box = (wx + int(width*.55), wy + int(height*.25), wx + int(width*.99), wy + int(height*.86))
+                before = Image.open('ci-arrow-mk50-first-before.png').convert('RGB').crop(box)
+                after = Image.open('ci-arrow-mk50-first.png').convert('RGB').crop(box)
+                cyan = sum(1 for (r,g,b), (r0,g0,b0) in zip(after.getdata(), before.getdata())
+                           if g > 110 and b > 140 and g > r + 20 and b > r + 20
+                           and abs(r-r0) + abs(g-g0) + abs(b-b0) > 40)
+                if cyan < 100: raise RuntimeError(f'Mk 50 component glow not visible on animated arm: {cyan} pixels')
+                print(f'PASS: visible Mk 50 first-person cannon glow ({cyan} changed cyan pixels)', flush=True)
                 xdo('key', 'F5')
                 wait_for(client_log, r'Component beam rendered: hero=fiskheroes:iron_man_mk50, firstPerson=false, amount=([-+0-9.eE]+), beams=5',
                          60, 'Mk 50 cannon component beams render in third person', client)
