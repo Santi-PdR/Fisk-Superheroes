@@ -102,6 +102,7 @@ public class HeroModelRegistry extends SimplePreparableReloadListener<Map<Resour
         TabulaModelCache.clear();
         BoosterFlameRenderer.clear();
         SuitFlamesRenderer.clear();
+        BeamConstellationRenderer.clear();
         ParticleEmitterRenderer.clear();
         com.fiskmods.heroes.client.texture.TextureResolver.clear();
         com.fiskmods.heroes.client.texture.SHTextures.clear();

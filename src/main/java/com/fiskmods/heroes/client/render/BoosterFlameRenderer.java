@@ -72,9 +72,11 @@ final class BoosterFlameRenderer
         float eased = progress * progress * (3.0F - 2.0F * progress);
         double velocity = Math.min(8.0D, player.getDeltaMovement().length());
         float flutter = (float) Math.sin((player.tickCount + partialTick) * 3.0F) / 15.0F;
-        float length = eased * ((float) velocity * 2.0F + sizeY) - flutter / 3.0F;
-        if (length <= 0.0F) return;
+        float multiplier = eased * ((float) velocity * 2.0F + sizeY) - flutter / 3.0F;
         float width = Math.max(0.0F, (1.0F + flutter) * sizeX);
+        // The legacy fire mesh scales every axis by its width, including height.
+        float length = width * multiplier;
+        if (length <= 0.0F) return;
         float alpha = Mth.clamp(opacity * Math.max(0.6F, 1.0F - (float) velocity / 5.0F), 0.0F, 1.0F);
         int tick = player.tickCount + (partialTick >= 0.5F ? 1 : 0);
         ResourceLocation[] icons = ICONS.computeIfAbsent(iconTemplate,
@@ -99,6 +101,49 @@ final class BoosterFlameRenderer
         }
         if (layer1 != null) drawAt(anchor, pose, buffers, layer1, width * 0.88F, length, alpha * 0.8F,
                 tick, partialTick, ox, oy, oz, rx, ry, rz, true);
+    }
+
+    /** Legacy suit fire is a wrapping mesh in block units, not a tiny booster billboard. */
+    static void renderSuitFire(PoseStack pose, MultiBufferSource buffers, Player player, PlayerModel<?> model,
+            float partialTick, String anchorName, float offsetY, float width, float height, float opacity)
+    {
+        ModelPart anchor = HeroSuitAnchor.get(model, anchorName);
+        if (anchor == null || width <= 0 || height <= 0 || opacity <= 0) return;
+        ResourceLocation[] icons = ICONS.computeIfAbsent("fiskheroes:fire_layer_%s",
+                template -> new ResourceLocation[] { icon(template, 0), icon(template, 1) });
+        int tick = player.tickCount + (partialTick >= .5F ? 1 : 0);
+        pose.pushPose();
+        anchor.translateAndRotate(pose);
+        pose.scale(1.0F / 16.0F, 1.0F / 16.0F, 1.0F / 16.0F);
+        pose.translate(0, offsetY, 0);
+        for (int layer = 0; layer < 2; ++layer)
+        {
+            ResourceLocation texture = icons[layer];
+            AnimatedSpriteFrames animation = animation(texture);
+            int frame = animation.frameAt(tick);
+            VertexConsumer vertex = buffers.getBuffer(RenderType.entityTranslucentEmissive(texture));
+            float u0 = animation.u0(frame), u1 = animation.u1(frame);
+            float v0 = animation.v0(frame), v1 = animation.v1(frame);
+            float a = width * .2F, b = width * .3F, edge = width * .5F;
+            // Four offset, slanted planes per layer wrap around the model instead of
+            // disappearing inside its opaque head or arm. Negative Y rises in model space.
+            fireQuad(vertex, pose, a, edge, -b, edge, -edge, height, u0, u1, v0, v1, opacity, false);
+            fireQuad(vertex, pose, -a, -edge, b, -edge, edge, height, u0, u1, v0, v1, opacity, false);
+            fireQuad(vertex, pose, a, edge, -b, edge, -edge, height, u0, u1, v0, v1, opacity, true);
+            fireQuad(vertex, pose, -a, -edge, b, -edge, edge, height, u0, u1, v0, v1, opacity, true);
+        }
+        pose.popPose();
+    }
+
+    private static void fireQuad(VertexConsumer vertex, PoseStack pose, float lower, float start, float upper,
+            float end, float otherEnd, float height, float u0, float u1, float v0, float v1, float alpha, boolean swap)
+    {
+        if (!swap)
+            quad(vertex, pose, lower, 0, start, lower, 0, otherEnd, upper, -height, otherEnd, upper, -height, end,
+                    u0, u1, v0, v1, alpha);
+        else
+            quad(vertex, pose, start, 0, lower, otherEnd, 0, lower, otherEnd, -height, upper, end, -height, upper,
+                    u0, u1, v0, v1, alpha);
     }
 
     private static void drawAt(ModelPart anchor, PoseStack pose, MultiBufferSource buffers, ResourceLocation texture,
@@ -131,10 +176,10 @@ final class BoosterFlameRenderer
     {
         var matrix = pose.last();
         int a = Math.round(255.0F * alpha);
-        vertex.vertex(matrix.pose(), x0, y0, z0).color(255, 255, 255, a).uv(u0, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
-        vertex.vertex(matrix.pose(), x1, y1, z1).color(255, 255, 255, a).uv(u1, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
-        vertex.vertex(matrix.pose(), x2, y2, z2).color(255, 255, 255, a).uv(u1, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
-        vertex.vertex(matrix.pose(), x3, y3, z3).color(255, 255, 255, a).uv(u0, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
+        vertex.vertex(matrix.pose(), x0, y0, z0).color(255, 255, 255, a).uv(u0, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
+        vertex.vertex(matrix.pose(), x1, y1, z1).color(255, 255, 255, a).uv(u1, v1).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
+        vertex.vertex(matrix.pose(), x2, y2, z2).color(255, 255, 255, a).uv(u1, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
+        vertex.vertex(matrix.pose(), x3, y3, z3).color(255, 255, 255, a).uv(u0, v0).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(LightTexture.FULL_BRIGHT).normal(matrix.normal(), 0, 0, 1).endVertex();
     }
 
     private static ResourceLocation icon(String template, int layer)

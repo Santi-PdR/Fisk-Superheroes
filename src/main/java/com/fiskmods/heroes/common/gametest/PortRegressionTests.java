@@ -3145,6 +3145,44 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void beamConstellationsPreserveAllMirroredOrigins(GameTestHelper helper)
+    {
+        try
+        {
+            var models = new String[] { "martian_manhunter_comics", "iron_man_mk85", "mysterio" };
+            var properties = new String[] { "fiskheroes:heat_vision", "fiskheroes:charged_beam", "fiskheroes:energy_projection" };
+            var expected = new int[] { 2, 6, 2 };
+            for (int i = 0; i < models.length; ++i)
+            {
+                try (var stream = PortRegressionTests.class.getResourceAsStream("/assets/fiskheroes/models/heroes/" + models[i] + ".json"))
+                {
+                    if (stream == null) { helper.fail("Missing beam model " + models[i]); return; }
+                    var json = com.google.gson.JsonParser.parseReader(new java.io.InputStreamReader(stream, java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
+                    var effect = json.getAsJsonObject("custom").getAsJsonObject(properties[i]);
+                    var beams = com.fiskmods.heroes.common.util.BeamLayout.parse(effect, i == 0).beams();
+                    if (beams.size() != expected[i]) { helper.fail("Incorrect beam count for " + models[i]); return; }
+                    int mirrored = beams.size() / 2;
+                    for (int j = 0; j < mirrored; ++j)
+                    {
+                        var a = beams.get(j); var b = beams.get(j + mirrored);
+                        if (Math.abs(a.offset().x + b.offset().x) > 1.0E-6
+                                || Math.abs(a.firstPerson().x + b.firstPerson().x) > 1.0E-6
+                                || a.offset().y != b.offset().y || a.offset().z != b.offset().z
+                                || a.width() != b.width() || a.height() != b.height())
+                        { helper.fail("Mirrored beam offsets must retain size and negate x for " + models[i]); return; }
+                    }
+                    if (i == 2 && (!beams.get(0).anchor().equals("rightArm") || !beams.get(1).anchor().equals("leftArm")))
+                    { helper.fail("Mysterio's mirrored energy projection must use both arms"); return; }
+                }
+            }
+            if (com.fiskmods.heroes.common.util.BeamLayout.parse(null, true).beams().size() != 2)
+            { helper.fail("Default heat vision must originate at both eyes"); return; }
+            helper.succeed();
+        }
+        catch (Exception exception) { helper.fail("Cannot read beam models: " + exception); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void animatedBoosterTexturesUseActualSheetFrames(GameTestHelper helper)
     {
         var implicit = com.fiskmods.heroes.common.util.AnimatedSpriteFrames.parse(new com.google.gson.JsonObject(), 16, 512);

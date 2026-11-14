@@ -431,6 +431,7 @@ def main():
                 pattern = (rf'Booster sprite animation: texture=fiskheroes:textures/icons/fire_layer_{layer}\.png, '
                            rf'columns=1, rows=32, frames=32, first={first}, second={first + 1}')
                 wait_for(client_log, pattern, 30, f'fire layer {layer} animates 32 separate frames', client)
+            time.sleep(1)
             subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-first.png'], check=True, timeout=30)
             xdo('key', 'F5')
             wait_for(client_log, r'Suit flames rendered: hero=fiskheroes:firestorm, wearer=Dev, view=third',
@@ -442,6 +443,37 @@ def main():
                      45, 'Firestorm flames stop for an incomplete suit', client)
             time.sleep(1)
             subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-incomplete.png'], check=True, timeout=30)
+            xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5'); time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-arrow-firestorm-incomplete-first.png'], check=True, timeout=30)
+            def flame_pixels(full, incomplete, box):
+                before = Image.open(incomplete).convert('RGB').crop(box)
+                after = Image.open(full).convert('RGB').crop(box)
+                return sum(1 for (r,g,b), (r0,g0,b0) in zip(after.getdata(), before.getdata())
+                           if r > 75 and r > g + 12 and g > b + 8 and r > r0 + 15)
+            third_box = (wx + int(width*.36), wy + int(height*.20), wx + int(width*.64), wy + int(height*.60))
+            first_box = (wx + int(width*.50), wy + int(height*.40), wx + int(width*.99), wy + int(height*.99))
+            third_pixels = flame_pixels('ci-arrow-firestorm-third.png', 'ci-arrow-firestorm-incomplete.png', third_box)
+            first_pixels = flame_pixels('ci-arrow-firestorm-first.png', 'ci-arrow-firestorm-incomplete-first.png', first_box)
+            if third_pixels < 40 or first_pixels < 25:
+                raise RuntimeError(f'Firestorm flames must be visibly orange in both views: third={third_pixels}, first={first_pixels}')
+            print(f'PASS: visible Firestorm flames against incomplete-suit control: third={third_pixels}, first={first_pixels}', flush=True)
+            # Martian Manhunter's heat vision has one pack beam mirrored at both eyes.
+            xdo('key', 'F5'); time.sleep(1)
+            command('execute as Dev run suit fiskheroes:martian_manhunter_comics')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('say HEAT_VISION_SCENE_READY')
+            wait_for(server_log, r'\[Server\] HEAT_VISION_SCENE_READY', 30, 'heat-vision scene ready', server)
+            xdo('keydown', 'g')
+            try:
+                wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:martian_manhunter_comics, heat=true, firstPerson=false, beams=2',
+                         60, 'Martian heat vision renders from both eyes in third person', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-heat-third.png'], check=True, timeout=30)
+                xdo('key', 'F5'); time.sleep(.5); xdo('key', 'F5')
+                wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:martian_manhunter_comics, heat=true, firstPerson=true, beams=2',
+                         60, 'Martian heat vision renders both first-person beams', client)
+                subprocess.run(['scrot', '-o', 'ci-arrow-heat-first.png'], check=True, timeout=30)
+            finally:
+                xdo('keyup', 'g')
             print('PASS: real client fired fireball and ordinary arrow controls against dedicated server', flush=True)
         finally:
             for process in reversed(processes):

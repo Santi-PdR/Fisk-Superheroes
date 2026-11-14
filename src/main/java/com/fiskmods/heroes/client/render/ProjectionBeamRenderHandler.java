@@ -97,36 +97,13 @@ public final class ProjectionBeamRenderHandler
                 continue;
             }
 
-            int color = parseColor(effect);
-            float width = beamWidth(effect);
-            Vec3 direction = player.getLookAngle().normalize();
-            Vec3 worldUp = new Vec3(0.0D, 1.0D, 0.0D);
-            Vec3 right = direction.cross(worldUp);
-            if (right.lengthSqr() < 1.0E-6D)
-            {
-                right = new Vec3(1.0D, 0.0D, 0.0D);
-            }
-            else
-            {
-                right = right.normalize();
-            }
-            Vec3 up = right.cross(direction).normalize();
-
-            Vec3 origin = origin(player, event.getPartialTick(), effect, direction, right, up);
-            Vec3 start = origin.subtract(camera);
-            Vec3 end = start.add(direction.scale(length));
-            int alpha = Mth.clamp(Math.round(activity * 230.0F), 0, 230);
-
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();
-            VertexConsumer consumer = buffers.getBuffer(RenderType.lightning());
-            drawRibbon(consumer, poseStack.last(), start, end, right.scale(width), color, alpha);
-            drawRibbon(consumer, poseStack.last(), start, end, up.scale(width * 0.55D), color, alpha);
+            BeamConstellationRenderer.render(poseStack, buffers, camera, player, effect,
+                    length, activity, event.getPartialTick(), false, parseColor(effect));
             if (chargedActivity > 0.0F && effect == model.getCustom().get("fiskheroes:charged_beam")
                     && LOGGED_CHARGED_BEAMS.add(iteration.getRegistryName()))
-            {
                 FiskHeroes.LOGGER.info("Charged beam render path: hero={}, length={}", iteration.getRegistryName(), length);
-            }
             poseStack.popPose();
             rendered = true;
         }
@@ -233,56 +210,6 @@ public final class ProjectionBeamRenderHandler
             }
         }
         return 0xFF9A24;
-    }
-
-    private static float beamWidth(JsonObject effect)
-    {
-        if (effect.has("beams") && effect.get("beams").isJsonArray()
-                && !effect.getAsJsonArray("beams").isEmpty())
-        {
-            JsonObject beam = effect.getAsJsonArray("beams").get(0).getAsJsonObject();
-            if (beam.has("size") && beam.get("size").isJsonArray()
-                    && !beam.getAsJsonArray("size").isEmpty())
-            {
-                return Mth.clamp(beam.getAsJsonArray("size").get(0).getAsFloat() / 32.0F, 0.02F, 0.18F);
-            }
-        }
-        return 0.055F;
-    }
-
-    private static Vec3 origin(Player player, float partialTick, JsonObject effect, Vec3 direction,
-            Vec3 right, Vec3 up)
-    {
-        Vec3 origin = player.getEyePosition(partialTick);
-        String anchor = effect.has("anchor") ? effect.get("anchor").getAsString() : "head";
-        if ("body".equals(anchor))
-        {
-            origin = player.getPosition(partialTick).add(0.0D, player.getBbHeight() * 0.5D, 0.0D);
-        }
-        else if ("rightArm".equals(anchor) || "leftArm".equals(anchor))
-        {
-            double sign = "rightArm".equals(anchor) ? 1.0D : -1.0D;
-            origin = player.getPosition(partialTick).add(0.0D, player.getBbHeight() * 0.62D, 0.0D)
-                    .add(right.scale(sign * 0.32D));
-        }
-
-        if (effect.has("beams") && effect.get("beams").isJsonArray()
-                && !effect.getAsJsonArray("beams").isEmpty())
-        {
-            JsonObject beam = effect.getAsJsonArray("beams").get(0).getAsJsonObject();
-            boolean firstPerson = player == Minecraft.getInstance().player
-                    && Minecraft.getInstance().options.getCameraType().isFirstPerson();
-            String offsetKey = firstPerson && beam.has("firstPerson") ? "firstPerson" : "offset";
-            if (beam.has(offsetKey) && beam.get(offsetKey).isJsonArray()
-                    && beam.getAsJsonArray(offsetKey).size() >= 3)
-            {
-                var offset = beam.getAsJsonArray(offsetKey);
-                origin = origin.add(right.scale(offset.get(0).getAsDouble() / 16.0D))
-                        .add(up.scale(offset.get(1).getAsDouble() / 16.0D))
-                        .add(direction.scale(-offset.get(2).getAsDouble() / 16.0D));
-            }
-        }
-        return origin.add(direction.scale(0.08D));
     }
 
     private static void drawRibbon(VertexConsumer consumer, PoseStack.Pose pose, Vec3 start,

@@ -14,7 +14,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 final class SuitFlamesRenderer
 {
     private static final java.util.Set<String> DIAGNOSTICS = new java.util.HashSet<>();
-    private static final String ICON = "fiskheroes:fire_layer_%s";
     private static final JsonPrimitive MASK_TIMER = new JsonPrimitive("1 - entity.getInterpolatedData('fiskheroes:mask_open_timer2')");
 
     private SuitFlamesRenderer() { }
@@ -28,17 +27,18 @@ final class SuitFlamesRenderer
         float ratio = effect.has("scaleRatio") ? effect.get("scaleRatio").getAsFloat() : 1.0F;
         float headTimer = model.evaluateRenderData(MASK_TIMER, player, 1.0F);
         float opacity = effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F;
-        // Direct primitive arguments avoid constructing five temporary JSON trees per rendered player per frame.
-        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
-                1.2F*ratio, 10*ratio, .15F*ratio, -12, 5, 173, 4.75F*ratio, 2*ratio);
-        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
-                1.2F*ratio, 10*ratio, -.15F*ratio, 12, -5, 173, 4.75F*ratio, 2*ratio);
-        plume(poseStack, buffer, player, playerModel, partialTick, "rightArm", 1, opacity * .7F, true,
-                -ratio, 8.4F*ratio, 0, 0, 0, 83, 4*ratio, 1.5F*ratio);
-        plume(poseStack, buffer, player, playerModel, partialTick, "head", 1, opacity * .4F, false,
-                0, ratio, 0, 0, 0, 180, (8 + 2*headTimer)*ratio, 1.75F*ratio);
-        plume(poseStack, buffer, player, playerModel, partialTick, "head", headTimer, opacity * .3F, false,
-                0, -5*ratio, 0, -25, 0, 180, 7.5F*ratio, 1.75F*ratio);
+        // HeroEffectFlames uses the original fire mesh, measured in blocks, on each arm.
+        if (ratio > 0)
+        {
+            fire(poseStack, buffer, player, playerModel, partialTick, "rightArm", 10.4F, .325F / ratio, 1.9F * ratio, opacity);
+            fire(poseStack, buffer, player, playerModel, partialTick, "leftArm", 10.4F, .325F / ratio, 1.9F * ratio, opacity);
+        }
+        if (headTimer > 0)
+        {
+            fire(poseStack, buffer, player, playerModel, partialTick, "head", 1.6F, .6F, 2 * headTimer, .3F);
+            fire(poseStack, buffer, player, playerModel, partialTick, "head", 0, .65F, 1.1F * headTimer, .3F);
+            fire(poseStack, buffer, player, playerModel, partialTick, "body", 3.2F, .5F, 1.8F * headTimer, .3F);
+        }
     }
 
     static void renderFirstPerson(JsonObject effect, PoseStack pose, MultiBufferSource buffer,
@@ -46,16 +46,11 @@ final class SuitFlamesRenderer
     {
         if (!eligible(effect, player, model, 1)) return;
         float ratio = effect.has("scaleRatio") ? effect.get("scaleRatio").getAsFloat() : 1.0F;
+        if (ratio <= 0) return;
         float opacity = effect.has("opacity") ? effect.get("opacity").getAsFloat() : 1.0F;
-        String anchor = right ? "rightArm" : "leftArm";
-        float side = right ? 1 : -1;
         diagnostic(player, model, right ? "first-right" : "first-left");
-        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
-                side*1.2F*ratio, 10*ratio, .15F*ratio, -12, 5, 173, 4.75F*ratio, 2*ratio);
-        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
-                side*1.2F*ratio, 10*ratio, -.15F*ratio, 12, -5, 173, 4.75F*ratio, 2*ratio);
-        plume(pose, buffer, player, playerModel, partialTick, anchor, 1, opacity * .7F, false,
-                -side*ratio, 8.4F*ratio, 0, 0, 0, 83, 4*ratio, 1.5F*ratio);
+        fire(pose, buffer, player, playerModel, partialTick, right ? "rightArm" : "leftArm",
+                10.4F, .325F / ratio, 1.9F * ratio, opacity);
     }
 
     private static boolean eligible(JsonObject effect, AbstractClientPlayer player, HeroModelData model, int slot)
@@ -81,11 +76,11 @@ final class SuitFlamesRenderer
 
     static void clear() { DIAGNOSTICS.clear(); }
 
-    private static void plume(PoseStack pose, MultiBufferSource buffer, AbstractClientPlayer player,
-            PlayerModel<?> model, float partialTick, String anchor, float progress, float opacity, boolean mirror,
-            float ox, float oy, float oz, float rx, float ry, float rz, float width, float length)
+    private static void fire(PoseStack pose, MultiBufferSource buffer, AbstractClientPlayer player,
+            PlayerModel<?> model, float partialTick, String anchor, float offsetY, float widthBlocks,
+            float heightFactor, float opacity)
     {
-        BoosterFlameRenderer.renderPlume(pose, buffer, player, model, partialTick, ICON, anchor, progress, opacity,
-                mirror, ox, oy, oz, rx, ry, rz, width, length);
+        BoosterFlameRenderer.renderSuitFire(pose, buffer, player, model, partialTick, anchor, offsetY,
+                widthBlocks * 16, widthBlocks * heightFactor * 16, opacity);
     }
 }
