@@ -291,7 +291,6 @@ public class ClientEventHandler
 
         // Interpolate the values the HUD animates
         interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
-        interpolate(data, Vars.BOOSTER_TIMER, data.getData().get(Vars.FLYING) ? 1.0F : 0.0F);
     }
 
     /** Sends only transitions, including very short presses received between client ticks. */

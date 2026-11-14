@@ -181,6 +181,10 @@ public final class HeroTracker
         {
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLYING, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_R_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_L_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_TIMER, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER, 0.0F);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_SUPER_BOOST_TIMER, 0.0F);
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("controlled_flight"), false);
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("propelled_flight"), false);

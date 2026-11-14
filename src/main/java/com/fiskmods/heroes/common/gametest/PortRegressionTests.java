@@ -3145,6 +3145,43 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void ironManFlightUsesPackBoosterTimers(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "fisk-booster-test"));
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null) { helper.fail("Missing Iron Man or player data"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; i++) player.setItemSlot(slots[i],
+                com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.FLYING, true);
+        player.setSprinting(true);
+        for (int i = 0; i < 12; i++) com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_TIMER) - 1) > .001F
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_R_TIMER) - 1) > .001F
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_L_TIMER) - 1) > .001F
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_TIMER) - 1) > .001F
+                || Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER) - 1) > .001F)
+        { helper.fail("Flight and independent hand/boot timers must reach one, not an unbounded counter"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.FLYING, false);
+        player.setSprinting(false);
+        for (int i = 0; i < 12; i++) com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_TIMER) > .001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_R_TIMER) > .001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.BOOSTER_L_TIMER) > .001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_TIMER) > .001F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.FLIGHT_BOOST_TIMER) > .001F)
+        { helper.fail("Flight and pack booster timers must fade out after flight ends"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void beamConstellationsPreserveAllMirroredOrigins(GameTestHelper helper)
     {
         try

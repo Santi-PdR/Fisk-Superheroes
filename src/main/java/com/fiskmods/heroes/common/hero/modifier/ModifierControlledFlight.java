@@ -58,24 +58,18 @@ public class ModifierControlledFlight extends Modifier
         }
 
         boolean flying = data.getData().get(Vars.FLYING);
-        float timer = data.getData().get(Vars.BOOSTER_TIMER);
-
+        boolean boosting = flying && entry.getBoolean(entity, PowerProperty.CAN_BOOST) && player.isSprinting();
+        // The controlled-flight modifier owns these normalized animation timers.
+        // dyn/booster_* are separate pack-script timers and must not be overwritten here.
+        data.getData().set(Vars.FLIGHT_TIMER, Mth.approach(data.getData().get(Vars.FLIGHT_TIMER), flying ? 1.0F : 0.0F, 0.1F));
+        data.getData().set(Vars.FLIGHT_BOOST_TIMER, Mth.approach(data.getData().get(Vars.FLIGHT_BOOST_TIMER), boosting ? 1.0F : 0.0F, 0.125F));
         if (flying)
         {
             // Motion is applied inside LivingEntity.travel on the local player. Server-side
             // velocity packets every tick would override that prediction and create drift.
             player.fallDistance = 0.0F;
-            boolean boosting = entry.getBoolean(entity, PowerProperty.CAN_BOOST) && player.isSprinting();
-            data.getData().set(Vars.BOOSTER_TIMER, Math.min(20.0F, timer + 1.0F));
-
             if (boosting)
-            {
                 data.getData().set(Vars.FLIGHT_SUPER_BOOST_TIMER, data.getData().get(Vars.FLIGHT_SUPER_BOOST_TIMER) + 1.0F);
-            }
-        }
-        else if (timer > 0)
-        {
-            data.getData().set(Vars.BOOSTER_TIMER, 0.0F);
         }
     }
 
