@@ -20,12 +20,15 @@ indirect magic receives full protection even though it bypasses vanilla armor. O
 fall resistance may independently cancel or change damage. Martian fire weakness halves the
 remaining suit protection against fire, after these source-specific rules. A typed hit counts as
 fire when its `FIRE` fraction is at least 0.5, matching the original extended damage source.
-Nearby fire, lava or a
-burning entity also causes nausea, slowness and weakness. Area scans run every five ticks, while
-a burning wearer is checked immediately.
+Nearby fire, lava or a burning entity also causes nausea, slowness and weakness. Area scans run
+every five ticks, while a burning wearer is checked immediately; custom radii are capped at 16
+blocks to bound the scan.
 
 The `requireFullSuit` policy still controls whether a partial suit activates its hero's powers and
 protection; when disabled, an active partial suit receives the hero's full tier protection. This
-port policy is more permissive than the original tracker, which required the suit's full armor signature. Suit durability scaling is not implemented: ported suit pieces are currently
-unbreakable. The HUD currently shows the base protection rather than a source-specific value; it
-does not yet reproduce the original metal-skin heat coloring.
+port policy is more permissive than the original tracker, which required the suit's full armor
+signature. The original's separate 1%-per-piece `ISpecialArmor` absorption is not emulated;
+suit pieces without an active hero therefore provide no passive protection in this port.
+Suit durability scaling is not implemented: ported suit pieces are currently unbreakable. The HUD
+currently shows the base protection rather than a source-specific value; it does not yet reproduce
+the original metal-skin heat coloring.
