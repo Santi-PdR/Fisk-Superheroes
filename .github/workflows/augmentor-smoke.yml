@@ -1,0 +1,72 @@
+name: Suit Augmentor GUI Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/augmentor_smoke.py'
+      - '.github/workflows/augmentor-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/common/block/SuitAugmentor*.java'
+      - 'src/main/java/com/fiskmods/heroes/client/gui/SuitAugmentorScreen.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/augment/**'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/attribute/SHAttributes.java'
+      - 'src/main/java/com/fiskmods/heroes/pack/HeroPackEngine.java'
+      - 'src/main/resources/assets/fiskheroes/data/augments/**'
+concurrency:
+  group: augmentor-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  gui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1 python3-pil
+      - name: Prepare server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-augmentor-server run-augmentor-client/config
+          printf 'earlyWindowControl = false\n' > run-augmentor-client/config/fml.toml
+          printf 'guiScale:2\n' > run-augmentor-client/options.txt
+          echo 'eula=true' > run-augmentor-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-augmentor-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Exercise augmentor GUI
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/augmentor_smoke.py 2>&1 | tee ci-augmentor-test.log
+      - name: Upload captures and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: augmentor-diagnostics
+          path: |
+            ci-augmentor-*.png
+            ci-augmentor-*.log
+          if-no-files-found: ignore
+      - name: Publish diagnostic summary
+        if: always()
+        run: |
+          { cat ci-augmentor-test.log 2>/dev/null || true; for f in server client; do echo "==== $f tail ===="; tail -80 "ci-augmentor-$f.log" 2>/dev/null || true; done; } > /tmp/augmentor-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          for i in 1 2 3 4 5; do
+            git fetch origin "$GITHUB_REF_NAME"
+            git reset --hard FETCH_HEAD
+            cp /tmp/augmentor-log.txt .ci/augmentor-log.txt
+            git add -f .ci/augmentor-log.txt
+            git diff --cached --quiet && break
+            git commit -m 'ci: suit augmentor diagnostics [skip ci]' --no-verify
+            git push origin "HEAD:$GITHUB_REF_NAME" && break
+            sleep 5
+          done
