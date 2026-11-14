@@ -34,7 +34,10 @@ jobs:
       - name: Prepare isolated dedicated server and client
         run: |
           chmod +x gradlew
-          mkdir -p run-dedicated run-dedicated-client
+          mkdir -p run-dedicated run-dedicated-client/config
+          # Forge's early display can stall while creating a second window under Xvfb.
+          # The actual game window is still exercised by the test below.
+          printf 'earlyWindowControl = false\n' > run-dedicated-client/config/fml.toml
           echo 'eula=true' > run-dedicated/eula.txt
           # The offline Dev identity is granted operator permissions only in this CI server.
           python3 -c 'import hashlib,uuid,json; u=uuid.UUID(bytes=hashlib.md5(b"OfflinePlayer:Dev").digest(),version=3); open("run-dedicated/ops.json","w").write(json.dumps([{"uuid":str(u),"name":"Dev","level":4,"bypassesPlayerLimit":False}]))'
