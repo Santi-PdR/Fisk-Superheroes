@@ -262,16 +262,7 @@ public final class ItemColdGun extends ItemGun
         // Vanilla removes two frozen ticks per tick outside powder snow. Add those back
         // during contact, plus one gradual exposure tick, so sustained fire accumulates.
         // The original has a separate body-temperature system; this remains an approximation.
-        float exposure = 1.0F;
-        var data = SHDataCapabilities.getPlayer(hit);
-        if (data != null && data.getHeroType() != null)
-        {
-            var resistance = data.getHeroType().getPowerContainer().getEntry(FiskHeroes.id("damage_resistance"));
-            if (resistance != null && resistance.isEnabled() && resistance.isModifierEnabled(hit, data)
-                    && "COLD".equalsIgnoreCase(resistance.get(com.fiskmods.heroes.common.hero.power.PowerProperty.DAMAGE_TYPE)))
-                exposure = net.minecraft.util.Mth.clamp(1.0F - resistance.getFloat(hit,
-                        com.fiskmods.heroes.common.hero.power.PowerProperty.FACTOR), 0.0F, 1.0F);
-        }
+        float exposure = com.fiskmods.heroes.common.util.ColdExposure.susceptibility(hit);
         if (exposure <= 0.0F) return;
         final String remainderKey = "FiskColdBeamRemainder";
         float amount = 2.0F + exposure + hit.getPersistentData().getFloat(remainderKey);

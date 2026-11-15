@@ -38,32 +38,57 @@ final class FreezeBurst
         level.sendParticles(ParticleTypes.CLOUD, center.x, center.y, center.z,
                 (int) (12 * blockRadius), 0.2D * blockRadius, 0.2D * blockRadius, 0.2D * blockRadius, 0.05D);
         level.playSound(null, center.x, center.y, center.z, SoundEvents.GLASS_BREAK, SoundSource.PLAYERS, 1.0F, 0.8F);
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class,
-                new AABB(center, center).inflate(entityRadius), e -> (affectsOwner || e != owner) && e.isAlive()))
+        // The original samples the whole target hitbox (not just its center), so
+        // partial cover attenuates damage, temperature change and knockback alike.
+        for (Entity target : level.getEntities(projectile, new AABB(center, center).inflate(entityRadius),
+                e -> (affectsOwner || e != owner) && e.isAlive()))
         {
-            double distance = target.getBoundingBox().getCenter().distanceTo(center);
-            boolean exposed = visible(level, projectile, center, target.getBoundingBox().getCenter());
-            if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Freeze burst target: name={}, position={}, distance={}, exposed={}",
-                    target.getName().getString(), target.position(), distance, exposed);
-            if (distance > entityRadius || !exposed) continue;
-            float strength = (float) (1.0D - distance / entityRadius);
-            if (owner instanceof LivingEntity shooter && damage > 0.0F)
+            double distance = target.position().distanceTo(center);
+            if (distance >= entityRadius) continue;
+            Vec3 direction = target.getEyePosition().subtract(center);
+            if (direction.lengthSqr() < 1.0E-8D) continue;
+            double exposure = net.minecraft.world.level.Explosion.getSeenPercent(center, target);
+            double strength = (1.0D - distance / entityRadius) * exposure;
+            if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Freeze burst target: name={}, position={}, distance={}, exposure={}, strength={}",
+                    target.getName().getString(), target.position(), distance, exposure, strength);
+            if (strength <= 0.0D) continue;
+            if (damage > 0.0F && !(target instanceof net.minecraft.world.entity.decoration.HangingEntity))
             {
-                // Original freeze explosions are attributed to their owner, but are not
-                // magic or armor-bypassing. Their COLD/EXPLOSION fractions come from
-                // the active Fisk profile rather than vanilla magic tags.
+                // Like the original, ownerless bursts still inflict damage, but
+                // their block changes remain fail-closed without a player identity.
                 var type = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                                 com.fiskmods.heroes.FiskHeroes.id("freeze_explosion")));
-                var source = new net.minecraft.world.damagesource.DamageSource(type, shooter, shooter);
-                Runnable hit = () -> target.hurt(source, damage * strength);
+                Entity shooter = owner instanceof LivingEntity ? owner : null;
+                var source = shooter == null ? new net.minecraft.world.damagesource.DamageSource(type)
+                        : new net.minecraft.world.damagesource.DamageSource(type, shooter, shooter);
+                Runnable hit = () -> target.hurt(source, damage * (float) strength);
                 if (profile != null && profile.has("types")) DamageGroups.withDamageProfile(profile, hit);
                 else DamageGroups.withDamageProfile(Map.of("COLD", 0.5D, "EXPLOSION", 0.6D), hit);
             }
-            target.clearFire();
-            target.setTicksFrozen(Math.min(target.getTicksFrozen() + 140, target.getTicksRequiredToFreeze() + 40));
-            target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 2));
+            if (target instanceof LivingEntity living && damage > 0.0F)
+            {
+                // Original cooling is damage/2 times exposure, further reduced by
+                // COLD resistance. Vanilla frozen ticks are only an approximation.
+                double cold = strength * damage / 9.0D
+                        * com.fiskmods.heroes.common.util.ColdExposure.susceptibility(living);
+                if (cold > 0.0D)
+                {
+                    int frozen = Math.max(1, (int) Math.min(180.0D, Math.round(140.0D * cold)));
+                    living.clearFire();
+                    living.setTicksFrozen(Math.min(living.getTicksFrozen() + frozen, living.getTicksRequiredToFreeze() + 40));
+                    int duration = Math.max(1, (int) Math.min(100.0D, Math.round(100.0D * cold)));
+                    living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 2));
+                }
+            }
+            // 1.7.10 also dampens explosion velocity through Blast Protection.
+            double knockback = target instanceof LivingEntity living
+                    ? net.minecraft.world.item.enchantment.ProtectionEnchantment.getExplosionKnockbackAfterDampener(living, strength)
+                    : strength;
+            Vec3 impulse = direction.normalize().scale(knockback);
+            target.push(impulse.x, impulse.y, impulse.z);
+            target.hurtMarked = true; // send the server-authoritative impulse to players
         }
         if (SHConfig.ALLOW_GRIEFING.get()) freezeNearby(level, projectile, owner, center, blockRadius);
     }

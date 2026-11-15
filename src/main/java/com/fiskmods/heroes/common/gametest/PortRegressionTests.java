@@ -6819,6 +6819,95 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    // Exercise the actual shared burst synchronously, without relying on projectile
+    // travel or ticking entities to preserve the exact visibility/velocity samples.
+    private static void testFreezeBurst(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity projectile,
+            net.minecraft.world.entity.Entity owner, Vec3 center, double radius, float damage, boolean affectsOwner) throws Exception
+    {
+        Class<?> type = Class.forName("com.fiskmods.heroes.common.entity.projectile.FreezeBurst");
+        var method = type.getDeclaredMethod("detonate", net.minecraft.server.level.ServerLevel.class,
+                net.minecraft.world.entity.Entity.class, net.minecraft.world.entity.Entity.class, Vec3.class,
+                double.class, float.class, com.google.gson.JsonObject.class, boolean.class, boolean.class);
+        method.setAccessible(true);
+        method.invoke(null, level, projectile, owner, center, radius, damage, null, affectsOwner, false);
+    }
+
+    @GameTest(template = "test_empty")
+    public static void freezeBurstUsesPartialExposureAndPushes(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 200, 1));
+        Vec3 center = new Vec3(base.getX() + .5D, base.getY() + .3D, base.getZ() + .5D);
+        var open = net.minecraft.world.entity.EntityType.COW.create(level);
+        var partial = net.minecraft.world.entity.EntityType.COW.create(level);
+        var covered = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (open == null || partial == null || covered == null) { helper.fail("Freeze exposure targets missing"); return; }
+        for (var target : java.util.List.of(open, partial, covered)) { target.setNoAi(true); target.setNoGravity(true); }
+        open.setPos(center.x - 4, base.getY(), center.z);
+        partial.setPos(center.x + 4, base.getY(), center.z);
+        covered.setPos(center.x, base.getY(), center.z - 4);
+        level.addFreshEntity(open); level.addFreshEntity(partial); level.addFreshEntity(covered);
+        java.util.List<net.minecraft.core.BlockPos> walls = new java.util.ArrayList<>();
+        walls.add(base.east(2)); // a low wall shields only part of the cow
+        for (int x = -2; x <= 2; ++x) for (int y = -1; y <= 2; ++y) walls.add(base.offset(x, y, -2));
+        for (var pos : walls) level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
+        try
+        {
+            float eo = net.minecraft.world.level.Explosion.getSeenPercent(center, open);
+            float ep = net.minecraft.world.level.Explosion.getSeenPercent(center, partial);
+            float ec = net.minecraft.world.level.Explosion.getSeenPercent(center, covered);
+            testFreezeBurst(level, ball, null, center, 3.0D, 9.0F, false);
+            float od = open.getMaxHealth() - open.getHealth(), pd = partial.getMaxHealth() - partial.getHealth();
+            if (!(eo > ep && ep > 0 && ec == 0 && od > pd && pd > 0
+                    && open.getTicksFrozen() > partial.getTicksFrozen() && partial.getTicksFrozen() > 0
+                    && open.getDeltaMovement().x < 0 && partial.getDeltaMovement().x > 0
+                    && open.getDeltaMovement().length() > partial.getDeltaMovement().length()
+                    && covered.getHealth() == covered.getMaxHealth() && covered.getTicksFrozen() == 0
+                    && covered.getDeltaMovement().lengthSqr() == 0 && open.hurtMarked && partial.hurtMarked))
+                helper.fail("Exposure must proportionally affect damage, freezing and outward velocity; solid cover must shield: exposure="
+                        + eo + "/" + ep + "/" + ec + ", damage=" + od + "/" + pd + ", frozen="
+                        + open.getTicksFrozen() + "/" + partial.getTicksFrozen() + ", velocity="
+                        + open.getDeltaMovement() + "/" + partial.getDeltaMovement());
+            else helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Freeze exposure invocation failed: " + e); }
+        finally { open.discard(); partial.discard(); covered.discard(); ball.discard(); for (var pos : walls) level.removeBlock(pos, false); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void freezeBurstColdResistanceAndOwnerPolicy(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var resistant = coldGunShooter(helper, "burst-resistant");
+        com.fiskmods.heroes.common.hero.HeroTracker.update(resistant);
+        var normal = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "burst-normal"));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 175, 1));
+        Vec3 center = new Vec3(base.getX() + .5D, base.getY() + .3D, base.getZ() + .5D);
+        normal.setPos(center.x + 2, base.getY(), center.z);
+        resistant.setPos(normal.position());
+        level.addFreshEntity(normal); level.addFreshEntity(resistant);
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
+        try
+        {
+            testFreezeBurst(level, ball, normal, center, 3.0D, 9.0F, false);
+            if (normal.getTicksFrozen() != 0 || normal.getDeltaMovement().lengthSqr() != 0 || resistant.getTicksFrozen() == 0)
+            { helper.fail("Owner must be excluded while another player is affected"); return; }
+            int reduced = resistant.getTicksFrozen();
+            resistant.setTicksFrozen(0); resistant.clearFire(); resistant.removeEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN);
+            testFreezeBurst(level, ball, normal, center, 3.0D, 9.0F, true);
+            int plain = normal.getTicksFrozen();
+            if (plain < 2 || Math.abs(reduced * 2 - plain) > 1 || normal.getDeltaMovement().lengthSqr() == 0 || !normal.hurtMarked)
+                helper.fail("Cold resistance must halve freeze exposure; affectsUser must allow owner impulse: normal=" + plain + ", resistant=" + reduced);
+            else helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Freeze resistance invocation failed: " + e); }
+        finally { normal.discard(); resistant.discard(); ball.discard(); }
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void coldBallImpactsTargetImmediately(GameTestHelper helper)
     {

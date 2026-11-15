@@ -18,8 +18,9 @@ Fisk's COLD profile and projectile/absolute-damage flags; the port models the
 latter with the 1.20 damage-type tags that bypass potion and enchantment
 reductions, but not armor. Vanilla hurt immunity still controls how often
 health can actually decrease. The cryo ball uses the original default base
-profile of 9 damage (60% COLD, 40% EXPLOSION), attenuated with distance by the
-port's simplified burst. Grenades have a 20-tick server-side per-player
+profile of 9 damage (60% COLD, 40% EXPLOSION). As in the original,
+blast damage and knockback depend on distance and sampled hitbox exposure; partial
+cover reduces the impact, and solid cover blocks it. Grenades have a 20-tick server-side per-player
 cooldown; releasing the beam has a four-tick cooldown. Replacing an item stack
 does not bypass these cooldowns.
 
@@ -38,9 +39,10 @@ mod version.
 * The original layers a special, gradually thickening ice residue on surfaces;
   that block and its melt behavior are not yet ported. The present approximation
   freezes water, solidifies lava, removes adjacent fire and places snow where it
-  can survive. Cryo explosions have simplified distance/exposure and no original
-  knockback model; their freezing duration does not yet scale with cold resistance,
-  although their damage respects damage-profile resistance.
+  can survive. Cryo bursts scale frozen ticks and slowing with distance, exposure,
+  damage and COLD resistance, but this remains an approximation of temperature.
+  Explosion impulse uses the modern vanilla Blast Protection calculation; it may
+  differ from the old enchantment implementation.
 * The original lowers an independently tracked body temperature by 0.1 per
   contact tick (with COLD resistance). The port approximates this with vanilla
   frozen ticks and a brief slowing effect, including contacts where damage was
