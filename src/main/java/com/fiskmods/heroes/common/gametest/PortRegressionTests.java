@@ -6215,14 +6215,21 @@ public final class PortRegressionTests
             }
             else if (n % 4 == 0) gun.fireFromAttack(player, stack);
             if (n == 627)
-                for (int d = 1; d <= 4; ++d)
+                for (int d = 0; d <= 4; ++d)
                     level.removeBlock(net.minecraft.core.BlockPos.containing(
                             player.getEyePosition().add(player.getViewVector(1.0F).scale(d))), false);
             if (n == 610 || n == 611 || n == 616 || n == 627)
                 level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
             com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
             if ((n == 610 || n == 627) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
-                failure = "Beam failed before limit or after release at tick " + n;
+                failure = "Beam failed before limit or after release at tick " + n
+                        + ": target=" + level.getBlockState(pos) + ", aim="
+                        + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING)
+                        + ", aimTimer=" + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING_TIMER)
+                        + ", clip=" + level.clip(new net.minecraft.world.level.ClipContext(player.getEyePosition(),
+                                player.getEyePosition().add(player.getViewVector(1.0F).scale(6.4D)),
+                                net.minecraft.world.level.ClipContext.Block.COLLIDER,
+                                net.minecraft.world.level.ClipContext.Fluid.ANY, player)).getBlockPos();
             if ((n == 611 || n == 616) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
                 failure = "Exhausted beam restarted without release at tick " + n;
             if (failure != null || n == 627)
