@@ -5,6 +5,9 @@ on:
     branches: ['arena/**']
     paths:
       - '.ci/cold_gun_visual_smoke.py'
+      - '.ci/prepare_cold_audio.py'
+      - 'src/main/java/com/fiskmods/heroes/client/sound/ColdGunBeamSound.java'
+      - 'src/main/java/com/fiskmods/heroes/common/sound/SoundManifest.java'
       - '.github/workflows/cold-gun-visual-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/ColdGunItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/ColdGunAimPose.java'
@@ -47,6 +50,8 @@ jobs:
         run: |
           chmod +x gradlew
           mkdir -p run-cold-gun-server run-cold-gun-client/config
+          curl --fail --location --retry 3 -o /tmp/fisk-cold-sounds.zip https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip
+          python3 .ci/prepare_cold_audio.py /tmp/fisk-cold-sounds.zip run-cold-gun-client run-cold-gun-alt-client
           printf 'earlyWindowControl = false\n' > run-cold-gun-client/config/fml.toml
           echo 'eula=true' > run-cold-gun-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-cold-gun-server/server.properties

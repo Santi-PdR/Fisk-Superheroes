@@ -258,6 +258,9 @@ public final class Vars
     public static final DataVar<Boolean> SENTRY_MODE = register("sentry_mode", DataType.BOOLEAN, false, true);
     public static final DataVar<Boolean> METAL_SKIN = register("metal_skin", DataType.BOOLEAN, false, true);
 
+    // Transient, server-authoritative beam-use state for the Cold Gun sound on tracking clients.
+    public static final DataVar<Boolean> COLD_GUN_BEAM_ACTIVE = register("port/cold_gun_beam_active", DataType.BOOLEAN, false, false);
+
     private Vars()
     {
     }

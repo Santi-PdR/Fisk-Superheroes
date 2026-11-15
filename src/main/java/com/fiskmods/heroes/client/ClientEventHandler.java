@@ -190,6 +190,7 @@ public class ClientEventHandler
 
         LocalPlayer player = Minecraft.getInstance().player;
         com.fiskmods.heroes.client.hud.QuiverHud.tick(Minecraft.getInstance());
+        com.fiskmods.heroes.client.sound.ColdGunBeamSound.tickClient();
 
         if (player == null)
         {

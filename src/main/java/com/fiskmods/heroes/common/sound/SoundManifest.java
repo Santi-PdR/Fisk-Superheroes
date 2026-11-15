@@ -40,6 +40,10 @@ public final class SoundManifest
                     sound.addProperty("type", "event");
                 }
                 else if (name.indexOf(':') < 0) sound.addProperty("name", "fiskheroes:" + name);
+                // The legacy MovingSoundColdGun.Loop implements IDistantSound at 64 blocks.
+                // Modern OpenAL attenuation is defined on each sound entry, not the event.
+                if (event.getKey().equals("item.coldgun.beam.loop") && !sound.has("attenuation_distance"))
+                    sound.addProperty("attenuation_distance", 64);
                 sounds.add(sound);
             }
             definition.add("sounds", sounds);

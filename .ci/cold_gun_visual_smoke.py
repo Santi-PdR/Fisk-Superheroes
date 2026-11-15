@@ -6,12 +6,13 @@ import subprocess
 import time
 from pathlib import Path
 from tonfa_visual_smoke import magenta, wait_for, xdo
+from held_livery_multiplayer import wait_for_new
 from PIL import Image
 
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciColdGunSoundDiagnostics=true')
     alt = os.environ.get('COLD_GUN_ALT_AIM') == '1'
     suffix = '-alt' if alt else ''
     prefix = 'ci-cold-gun' + suffix
@@ -123,9 +124,20 @@ def main():
             try:
                 wait_for(client_log, r'Cold gun first-person aiming: arm=RIGHT', 60, 'gun aims in first person', client)
                 wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:captain_cold, heat=false, firstPerson=true', 60, 'cold beam render path', client)
+                wait_for(client_log, r'Cold gun loop started: Dev', 60, 'loop starts while beam is held', client)
+                wait_for(client_log, r'Cold gun loop ticked: Dev, volume=1\.0, active=true', 60, 'real sound engine ticks loop at full volume', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
+            wait_for(client_log, r'Cold gun loop stopped: Dev', 60, 'loop stops on release', client)
+            before_restart = len(client_log.read_text(errors='replace'))
+            time.sleep(1)
+            xdo('mousedown', '1')
+            try:
+                wait_for_new(client_log, r'Cold gun loop started: Dev', before_restart, 60, 'loop restarts after release', client)
+            finally:
+                xdo('mouseup', '1')
+            wait_for_new(client_log, r'Cold gun loop stopped: Dev', before_restart, 60, 'restarted loop stops', client)
             # Flowing water may reach the player before the shot; the first
             # intercepted fluid, not necessarily the source, must freeze.
             for z in range(1, 5):

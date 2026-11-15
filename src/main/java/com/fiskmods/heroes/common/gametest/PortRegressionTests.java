@@ -4740,12 +4740,16 @@ public final class PortRegressionTests
     {
         var original = com.google.gson.JsonParser.parseString("""
                 {"ambient.flight":{"category":"ambient","sounds":["ambient/flight_loop","ambient/flight_loop2"]},
-                 "nexus.ignite":{"sounds":[{"name":"minecraft:mob/ghast/fireball4","pitch":1.1}]}}
+                 "nexus.ignite":{"sounds":[{"name":"minecraft:mob/ghast/fireball4","pitch":1.1}]},
+                 "item.coldgun.beam.loop":{"sounds":["item/cold_gun/beam_loop"]}}
                 """).getAsJsonObject();
         var converted = com.fiskmods.heroes.common.sound.SoundManifest.normalize(original);
         var flight = converted.getAsJsonObject("ambient.flight").getAsJsonArray("sounds");
         var vanilla = converted.getAsJsonObject("nexus.ignite").getAsJsonArray("sounds").get(0).getAsJsonObject();
-        if (flight.size() != 2 || !flight.get(0).getAsJsonObject().get("name").getAsString().equals("fiskheroes:ambient/flight_loop")
+        var cold = converted.getAsJsonObject("item.coldgun.beam.loop").getAsJsonArray("sounds").get(0).getAsJsonObject();
+        if (cold.get("attenuation_distance").getAsInt() != 64
+                || !cold.get("name").getAsString().equals("fiskheroes:item/cold_gun/beam_loop")
+                || flight.size() != 2 || !flight.get(0).getAsJsonObject().get("name").getAsString().equals("fiskheroes:ambient/flight_loop")
                 || !flight.get(1).getAsJsonObject().get("name").getAsString().equals("fiskheroes:ambient/flight_loop2")
                 || !vanilla.get("name").getAsString().equals("minecraft:entity.ghast.shoot")
                 || !vanilla.get("type").getAsString().equals("event")
@@ -6075,6 +6079,11 @@ public final class PortRegressionTests
         com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
         for (int i = 0; i < 4; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
         if (!gun.fireFromAttack(player, stack)) { helper.fail("Aimed cold beam was rejected"); return; }
+        var soundState = com.fiskmods.heroes.common.data.var.Vars.COLD_GUN_BEAM_ACTIVE;
+        var sync = new net.minecraft.nbt.CompoundTag();
+        data.getData().writeTo(sync);
+        if (!data.getData().get(soundState) || !sync.getBoolean("fiskheroes:port/cold_gun_beam_active"))
+        { helper.fail("Validated beam must activate the loop during charge and include it in full tracking sync"); return; }
         var target = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
         if (target == null) { helper.fail("Cold target missing"); return; }
         target.setNoAi(true); target.setNoGravity(true);
@@ -6114,6 +6123,7 @@ public final class PortRegressionTests
                 com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
                 if (target.getTicksFrozen() != frozen || gun.fireFromAttack(player, stack))
                     failure = "Released beam continued or bypassed its cooldown";
+                if (data.getData().get(soundState)) failure = "Released beam left the sound active";
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
             }
             if (failure != null || n == 12)
@@ -6242,6 +6252,10 @@ public final class PortRegressionTests
                 failure = "Beam failed just before its use limit";
             if (n == 627 && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.ENERGY_PROJECTION_TIMER) <= 0.0F)
                 failure = "A released and rearmed beam never cast after its new charge";
+            if ((n == 611 || n == 616) && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.COLD_GUN_BEAM_ACTIVE))
+                failure = "Exhausted beam left the loop active";
+            if (n == 617 && !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.COLD_GUN_BEAM_ACTIVE))
+                failure = "Rearmed beam did not reactivate its loop";
             if ((n == 611 || n == 616) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
                 failure = "Exhausted beam restarted without release at tick " + n;
             if (failure != null || n == 627)
@@ -6408,10 +6422,11 @@ public final class PortRegressionTests
                 level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
                 com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
                 boolean intact = level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER);
+                boolean soundStopped = !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.COLD_GUN_BEAM_ACTIVE);
                 level.removeBlock(pos, false);
                 com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
-                if (!intact) helper.fail("Expired beam request modified blocks"); else helper.succeed();
+                if (!intact || !soundStopped) helper.fail("Expired beam request modified blocks or left its sound active"); else helper.succeed();
             });
         });
     }

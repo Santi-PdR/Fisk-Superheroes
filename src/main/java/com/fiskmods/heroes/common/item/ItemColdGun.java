@@ -149,6 +149,7 @@ public final class ItemColdGun extends ItemGun
         if (request == null)
         {
             REQUESTS.put(player.getUUID(), new BeamRequest(stack, expires));
+            data.getData().set(Vars.COLD_GUN_BEAM_ACTIVE, true);
             SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         else request.expires = expires;
@@ -158,7 +159,11 @@ public final class ItemColdGun extends ItemGun
     public static void tickBeam(ServerPlayer player)
     {
         BeamRequest request = REQUESTS.get(player.getUUID());
-        if (request == null) return;
+        if (request == null)
+        {
+            setBeamSoundActive(player, false);
+            return;
+        }
         long now = player.level().getGameTime();
         var data = SHDataCapabilities.getPlayer(player);
         var hero = HeroTracker.getHeroType(player);
@@ -177,6 +182,7 @@ public final class ItemColdGun extends ItemGun
         if (++request.ticks > MAX_USE_TICKS)
         {
             request.exhausted = true;
+            setBeamSoundActive(player, false);
             player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + 4);
             SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.stop"), SoundSource.PLAYERS, 1.0F, 1.0F);
             return;
@@ -191,6 +197,7 @@ public final class ItemColdGun extends ItemGun
     public static void stopBeam(Player player)
     {
         BeamRequest request = REQUESTS.remove(player.getUUID());
+        setBeamSoundActive(player, false);
         if (request != null && !request.exhausted)
         {
             player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, player.level().getGameTime() + 4);
@@ -198,7 +205,21 @@ public final class ItemColdGun extends ItemGun
         }
     }
 
-    public static void clearBeam(Player player) { REQUESTS.remove(player.getUUID()); }
+    /** Clears transient state on logout and in tests, without emitting a stop one-shot. */
+    public static void clearBeam(Player player)
+    {
+        REQUESTS.remove(player.getUUID());
+        setBeamSoundActive(player, false);
+    }
+
+    private static void setBeamSoundActive(Player player, boolean active)
+    {
+        if (!player.level().isClientSide)
+        {
+            var data = SHDataCapabilities.getPlayer(player);
+            if (data != null) data.getData().set(Vars.COLD_GUN_BEAM_ACTIVE, active);
+        }
+    }
 
     @Override
     protected void playShotSound(Player player, Level level, ItemStack stack)
