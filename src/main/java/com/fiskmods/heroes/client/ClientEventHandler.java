@@ -230,9 +230,12 @@ public class ClientEventHandler
             syncAbilityInput(player, -1);
         }
 
-        // Firearms shoot from primary attack input. Send an explicit request so the server can
-        // validate the held item, hero permission, ammunition, reload state and cadence.
-        if (attackDown)
+        // Primary attack keeps the port's existing gun controls. Heat Gun also accepts held
+        // item use, so packs binding AIM to a different key can use the original two-key scheme.
+        // Requests are heartbeats for Heat Gun; every beam tick is still validated server-side.
+        boolean heatGunUseDown = mc.screen == null && !abilityClickMode && mc.options.keyUse.isDown()
+                && player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemHeatGun;
+        if (attackDown || heatGunUseDown)
         {
             requestGunShot(player);
         }

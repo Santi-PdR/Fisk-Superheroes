@@ -50,9 +50,10 @@ briefly bypass Fisk fire immunity for their impact and restore the prior cooldow
 The Heat Gun traces an authoritative ray every server tick once aim is fully raised. Every
 contact adds 1/170 heat, including when fire immunity rejects the damage. Normal cooling still
 applies independently, so this is the transfer rate, not a promise of full heat in 170 ticks.
-For compatibility with this port's existing controls, holding primary attack both aims and fires;
-the original required aiming and then holding item use. A short input heartbeat stops a stuck
-beam if input updates cease. Visual packets are throttled separately from the actual ray.
+For compatibility with this port's existing controls, Heatwave's primary attack both aims and fires;
+the original required aiming and then holding item use. Item use also sustains the beam while an
+AIM key is held, including for packs that bind AIM to a different key. A short input heartbeat
+stops a stuck beam if input updates cease. Visual packets are throttled separately from the actual ray.
 Its default range and damage are 32 blocks and 5 damage, as in the original defaults.
 Block melting and ignition respect the general `allowGriefing` setting, player edit and world
 border checks, and cancellable Forge break/place events.

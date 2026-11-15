@@ -6180,9 +6180,11 @@ public final class PortRegressionTests
             if (n == 1 && !level.getBlockState(pos).isAir()) failure = "snow was not melted";
             if (n == 2 && !level.getBlockState(pos.north()).isAir()) failure = "stone caught fire";
             if (n == 3 && !level.getBlockState(pos.north()).is(net.minecraft.world.level.block.Blocks.FIRE)) failure = "wood did not ignite";
-            if (n == 4 && (!target.isOnFire() || !level.getBlockState(pos).is(ice) || recorder.source == null
+            if (n == 4 && (!target.isOnFire() || Math.abs(target.getHealth() - (target.getMaxHealth() - 5.0F)) > .0001F
+                    || !level.getBlockState(pos).is(ice) || recorder.source == null
                     || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
-                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE))) failure = "target did not stop fire/projectile beam";
+                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)))
+                failure = "target did not stop fire/projectile beam or receive 5 damage: health=" + target.getHealth();
             if (n == 5 && (!level.getBlockState(pos).is(ice) || boat.getDamage() <= 0.0F))
                 failure = "non-living target did not stop and absorb the beam";
             if (failure != null || n == 5)
@@ -6277,7 +6279,9 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel();
         var shooter = heatGunShooter(helper, "heat-gun-range");
-        var start = shooter.position().add(0.0D, 120.0D, 0.0D);
+        // A high, empty plane avoids other GameTest structures. Blocks are explicitly loaded;
+        // distant entities outside the test's ticking chunks are not a reliable range fixture.
+        var start = shooter.position().add(0.0D, 210.0D, 0.0D);
         shooter.setPos(start);
         var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
         var stack = shooter.getMainHandItem();
@@ -6285,27 +6289,19 @@ public final class PortRegressionTests
         com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
         for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
         if (!gun.fireFromAttack(shooter, stack)) { helper.fail("Heat gun request rejected"); return; }
-        var cow = net.minecraft.world.entity.EntityType.COW.create(level);
-        if (cow == null) { helper.fail("Heat gun range target missing"); return; }
-        cow.setNoAi(true); cow.setNoGravity(true);
-        cow.setPos(start.x, start.y + 0.4D, start.z + 30.0D);
-        level.getChunk(cow.blockPosition());
-        level.addFreshEntity(cow);
-        float health = cow.getHealth();
+        var near = shooter.blockPosition().offset(0, 1, 30);
+        var far = shooter.blockPosition().offset(0, 1, 34);
+        level.setBlockAndUpdate(near, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+        level.setBlockAndUpdate(far, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
         com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
-        if (Math.abs(cow.getHealth() - (health - 5.0F)) > .0001F)
-        { float actual = cow.getHealth(); cow.discard(); helper.fail("Heat gun must deal original 5 damage within 32 blocks: before=" + health + ", after=" + actual); return; }
-        cow.setPos(start.x, start.y + 0.4D, start.z + 34.0D);
-        cow.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
-        cow.clearFire();
-        cow.invulnerableTime = 0;
-        health = cow.getHealth();
-        final float farHealth = health;
+        if (!level.getBlockState(near).is(net.minecraft.world.level.block.Blocks.WATER))
+        { helper.fail("Heat gun must reach a block 30 blocks away"); return; }
         helper.runAfterDelay(1, () -> {
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
-            if (cow.getHealth() != farHealth)
-            { cow.discard(); helper.fail("Heat gun hit beyond its 32-block range"); return; }
-            cow.discard();
+            if (!level.getBlockState(far).is(net.minecraft.world.level.block.Blocks.ICE))
+            { helper.fail("Heat gun hit a block beyond its 32-block range"); return; }
+            level.removeBlock(near, false);
+            level.removeBlock(far, false);
             var other = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:wild_dog");
             if (other == null) { helper.fail("Wild Dog missing"); return; }
             var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,

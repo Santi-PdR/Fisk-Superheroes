@@ -19,6 +19,7 @@ on:
       - 'src/main/java/com/fiskmods/heroes/client/render/WeaponHandRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/HeroSuitLayer.java'
       - 'src/main/resources/assets/fiskheroes/models/heroes/heatwave.json'
+      - 'src/main/resources/assets/fiskheroes/data/heroes/heatwave.js'
       - 'src/main/java/com/fiskmods/heroes/client/render/DualWieldVisuals.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/SuitItemRenderContext.java'
 concurrency:
@@ -65,6 +66,19 @@ jobs:
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-heat-gun-real-server/server.properties
           ./gradlew classes --no-daemon --console=plain
           HEAT_GUN_REAL_TEXTURE=1 xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/heat_gun_visual_smoke.py 2>&1 | tee ci-heat-gun-real-test.log
+      - name: Check held item use with an alternate AIM key
+        run: |
+          set -o pipefail
+          mkdir -p run-heat-gun-alt-server run-heat-gun-alt-client/config
+          printf 'earlyWindowControl = false\n' > run-heat-gun-alt-client/config/fml.toml
+          echo 'eula=true' > run-heat-gun-alt-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-heat-gun-alt-server/server.properties
+          # Runner-only fixture: exercise a pack that binds AIM to the first suit key (C).
+          sed -i 's/"key.aim", -1/"key.aim", 1/' src/main/resources/assets/fiskheroes/data/heroes/heatwave.js
+          grep -q '"key.aim", 1' src/main/resources/assets/fiskheroes/data/heroes/heatwave.js
+          ./gradlew classes --no-daemon --console=plain
+          HEAT_GUN_ALT_AIM=1 xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/heat_gun_visual_smoke.py 2>&1 | tee ci-heat-gun-alt-test.log
+          git restore src/main/resources/assets/fiskheroes/data/heroes/heatwave.js
       - name: Upload captures and logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -77,9 +91,9 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/models/heat_gun.png
+          git restore src/main/resources/assets/fiskheroes/textures/models/heat_gun.png src/main/resources/assets/fiskheroes/data/heroes/heatwave.js
           mkdir -p .ci
-          { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== original texture ===='; cat ci-heat-gun-real-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
+          { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== original texture ===='; cat ci-heat-gun-real-test.log 2>/dev/null || true; echo '==== alternate aim ===='; cat ci-heat-gun-alt-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/heat-gun-visual-log.txt

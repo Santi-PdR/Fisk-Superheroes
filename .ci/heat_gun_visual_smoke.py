@@ -12,8 +12,10 @@ from PIL import Image
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
     real = os.environ.get('HEAT_GUN_REAL_TEXTURE') == '1'
-    prefix = 'ci-heat-gun-real' if real else 'ci-heat-gun'
-    run_prefix = 'run-heat-gun-real' if real else 'run-heat-gun'
+    alt_aim = os.environ.get('HEAT_GUN_ALT_AIM') == '1'
+    suffix = '-alt' if alt_aim else '-real' if real else ''
+    prefix = 'ci-heat-gun' + suffix
+    run_prefix = 'run-heat-gun' + suffix
     server_log, client_log = Path(prefix + '-server.log'), Path(prefix + '-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
@@ -57,6 +59,34 @@ def main():
             command('execute as Dev run suit fiskheroes:heatwave')
             command('item replace entity Dev weapon.mainhand with fiskheroes:heat_gun')
             wait_for(client_log, r'First-person heat gun arm rendered: RIGHT', 60, 'first-person heat gun arm', client)
+            if alt_aim:
+                # The CI-only hero script binds AIM to C. Right-click alone must not fire;
+                # C + held item use must continue past the one-second server timeout.
+                command('setblock 0 181 4 minecraft:ice')
+                xdo('mousedown', '3')
+                time.sleep(2)
+                xdo('mouseup', '3')
+                command('execute if block 0 181 4 minecraft:ice run say HEAT_ALT_NO_AIM_OK')
+                wait_for(server_log, r'HEAT_ALT_NO_AIM_OK', 30, 'item use alone cannot fire', server)
+                xdo('keydown', 'c')
+                try:
+                    time.sleep(1)
+                    xdo('mousedown', '3')
+                    try:
+                        time.sleep(2)
+                        command('setblock 0 181 4 minecraft:ice')
+                        command('execute if block 0 181 4 minecraft:water run say HEAT_ALT_HELD_OK')
+                        wait_for(server_log, r'HEAT_ALT_HELD_OK', 30, 'alternate AIM and held use sustain beam', server)
+                        xdo('keyup', 'c')
+                        command('setblock 0 181 4 minecraft:ice')
+                        command('execute if block 0 181 4 minecraft:ice run say HEAT_ALT_RELEASE_OK')
+                        wait_for(server_log, r'HEAT_ALT_RELEASE_OK', 30, 'releasing AIM stops held-use beam', server)
+                    finally:
+                        xdo('mouseup', '3')
+                finally:
+                    xdo('keyup', 'c')
+                print('PASS: alternate AIM binding and held item use', flush=True)
+                return
             screenshot('first')
             command('time set midnight')
             screenshot('night')
