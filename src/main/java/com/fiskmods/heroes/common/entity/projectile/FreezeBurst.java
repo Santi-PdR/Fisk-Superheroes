@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.fiskmods.heroes.common.config.SHConfig;
 import com.fiskmods.heroes.common.hero.modifier.DamageGroups;
+import com.fiskmods.heroes.common.util.ProtectedBlockChanges;
 import com.google.gson.JsonObject;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -73,7 +74,9 @@ final class FreezeBurst
             BlockPos pos = cursor.immutable();
             Vec3 point = Vec3.atCenterOf(pos);
             if (point.distanceToSqr(center) > radius * radius || !level.hasChunkAt(pos)) continue;
-            if (owner instanceof ServerPlayer player && !level.mayInteract(player, pos)) continue;
+            if (!level.getWorldBorder().isWithinBounds(pos)) continue;
+            if (owner instanceof ServerPlayer player && (!level.mayInteract(player, pos)
+                    || !player.mayUseItemAt(pos, net.minecraft.core.Direction.UP, player.getMainHandItem()))) continue;
             var state = level.getBlockState(pos);
             if ((!state.is(Blocks.WATER) && !(state.isAir() && Blocks.SNOW.defaultBlockState().canSurvive(level, pos)))
                     || !visible(level, projectile, center, point)) continue;
@@ -81,10 +84,24 @@ final class FreezeBurst
             else snow.add(pos);
         }
         for (BlockPos pos : water)
-            if (level.getBlockState(pos).is(Blocks.WATER)) level.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
+        {
+            var state = level.getBlockState(pos);
+            if (!state.is(Blocks.WATER)) continue;
+            if (owner instanceof ServerPlayer player)
+            {
+                if (ProtectedBlockChanges.canBreak(player, pos, state))
+                    ProtectedBlockChanges.placeBlock(player, pos, net.minecraft.core.Direction.UP, Blocks.ICE.defaultBlockState());
+            }
+            else level.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
+        }
         for (BlockPos pos : snow)
-            if (level.isEmptyBlock(pos) && Blocks.SNOW.defaultBlockState().canSurvive(level, pos))
-                level.setBlockAndUpdate(pos, Blocks.SNOW.defaultBlockState());
+        {
+            if (!level.isEmptyBlock(pos) || !Blocks.SNOW.defaultBlockState().canSurvive(level, pos)
+                    || !level.getEntities(null, new AABB(pos)).isEmpty()) continue;
+            if (owner instanceof ServerPlayer player)
+                ProtectedBlockChanges.placeBlock(player, pos, net.minecraft.core.Direction.UP, Blocks.SNOW.defaultBlockState());
+            else level.setBlockAndUpdate(pos, Blocks.SNOW.defaultBlockState());
+        }
     }
 
     private static boolean visible(ServerLevel level, Entity projectile, Vec3 from, Vec3 to)

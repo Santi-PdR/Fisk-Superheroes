@@ -340,6 +340,8 @@ public class ItemGun extends Item
         {
             var damageType = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(id.equals("heat_gun") ? net.minecraft.world.damagesource.DamageTypes.FIREBALL
+                            : id.equals("cold_gun") ? net.minecraft.resources.ResourceKey.create(
+                                    net.minecraft.core.registries.Registries.DAMAGE_TYPE, FiskHeroes.id("cold_beam"))
                             : net.minecraft.world.damagesource.DamageTypes.ARROW);
             var source = new net.minecraft.world.damagesource.DamageSource(damageType, shooter, shooter);
             Entity target = hit;

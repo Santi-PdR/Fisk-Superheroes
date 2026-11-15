@@ -9,6 +9,7 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
+import com.fiskmods.heroes.common.util.ProtectedBlockChanges;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.projectile.ColdBallEntity;
@@ -216,8 +217,8 @@ public final class ItemColdGun extends ItemGun
         BlockState state = level.getBlockState(pos);
         if (state.is(Blocks.WATER) || state.is(Blocks.LAVA))
         {
-            if (ItemHeatGun.canMelt(shooter, pos, state))
-                ItemHeatGun.placeBlock(shooter, pos, block.getDirection(),
+            if (ProtectedBlockChanges.canBreak(shooter, pos, state))
+                ProtectedBlockChanges.placeBlock(shooter, pos, block.getDirection(),
                         (state.is(Blocks.WATER) ? Blocks.ICE : Blocks.OBSIDIAN).defaultBlockState());
             return;
         }
@@ -227,12 +228,12 @@ public final class ItemColdGun extends ItemGun
         BlockState adjacent = level.getBlockState(adj);
         if (adjacent.is(Blocks.FIRE))
         {
-            if (ItemHeatGun.canMelt(shooter, adj, adjacent)) level.removeBlock(adj, false);
+            if (ProtectedBlockChanges.canBreak(shooter, adj, adjacent)) level.removeBlock(adj, false);
         }
         else if (level.isEmptyBlock(adj) && Blocks.SNOW.defaultBlockState().canSurvive(level, adj)
                 && level.getEntities(null, new net.minecraft.world.phys.AABB(adj)).isEmpty())
         {
-            ItemHeatGun.placeBlock(shooter, adj, block.getDirection(), Blocks.SNOW.defaultBlockState());
+            ProtectedBlockChanges.placeBlock(shooter, adj, block.getDirection(), Blocks.SNOW.defaultBlockState());
         }
     }
 
@@ -243,6 +244,13 @@ public final class ItemColdGun extends ItemGun
         hit.clearFire();
         hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 1, hit.getTicksRequiredToFreeze() + 40));
         hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
+    }
+
+    @Override
+    protected void onRayEntityHit(ServerPlayer shooter, LivingEntity hit)
+    {
+        // The gradual contact effect above also applies to invulnerable targets; do not
+        // run ItemGun's legacy instant-freeze fallback on accepted damage.
     }
 
     @Override

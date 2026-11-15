@@ -8,6 +8,7 @@ import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
+import com.fiskmods.heroes.common.util.ProtectedBlockChanges;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -123,13 +124,13 @@ public final class ItemHeatGun extends ItemGun
         BlockState state = level.getBlockState(pos);
         if (state.is(Blocks.ICE) || state.is(Blocks.FROSTED_ICE))
         {
-            if (canMelt(shooter, pos, state))
+            if (ProtectedBlockChanges.canBreak(shooter, pos, state))
                 level.setBlockAndUpdate(pos, level.dimensionType().ultraWarm() ? Blocks.AIR.defaultBlockState() : Blocks.WATER.defaultBlockState());
             return;
         }
         if (state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK) || state.is(Blocks.POWDER_SNOW))
         {
-            if (canMelt(shooter, pos, state)) level.removeBlock(pos, false);
+            if (ProtectedBlockChanges.canBreak(shooter, pos, state)) level.removeBlock(pos, false);
             return;
         }
         BlockPos adj = pos.relative(block.getDirection());
@@ -138,61 +139,8 @@ public final class ItemHeatGun extends ItemGun
                 && shooter.mayUseItemAt(adj, block.getDirection(), shooter.getMainHandItem())
                 && level.isEmptyBlock(adj) && BaseFireBlock.canBePlacedAt(level, adj, block.getDirection()))
         {
-            placeBlock(shooter, adj, block.getDirection(), BaseFireBlock.getState(level, adj));
+            ProtectedBlockChanges.placeBlock(shooter, adj, block.getDirection(), BaseFireBlock.getState(level, adj));
         }
-    }
-
-    /** Follow Forge's placement transaction so a canceled claim does not notify neighbors first. */
-    static void placeBlock(ServerPlayer shooter, BlockPos pos, net.minecraft.core.Direction face, BlockState replacement)
-    {
-        Level level = shooter.level();
-        // Never steal another placement's captured snapshots in a re-entrant mod callback.
-        if (level.captureBlockSnapshots || level.restoringBlockSnapshots) return;
-        int first = level.capturedBlockSnapshots.size();
-        boolean placed;
-        level.captureBlockSnapshots = true;
-        try
-        {
-            placed = level.setBlock(pos, replacement, 3);
-        }
-        finally
-        {
-            level.captureBlockSnapshots = false;
-        }
-        var snapshots = new java.util.ArrayList<>(level.capturedBlockSnapshots.subList(first, level.capturedBlockSnapshots.size()));
-        level.capturedBlockSnapshots.subList(first, level.capturedBlockSnapshots.size()).clear();
-        if (!placed || snapshots.isEmpty()) return;
-        boolean canceled = snapshots.size() == 1
-                ? net.minecraftforge.event.ForgeEventFactory.onBlockPlace(shooter, snapshots.get(0), face)
-                : net.minecraftforge.event.ForgeEventFactory.onMultiBlockPlace(shooter, snapshots, face);
-        if (canceled)
-        {
-            level.restoringBlockSnapshots = true;
-            try
-            {
-                for (int i = snapshots.size() - 1; i >= 0; --i) snapshots.get(i).restore(true, false);
-            }
-            finally
-            {
-                level.restoringBlockSnapshots = false;
-            }
-            return;
-        }
-        for (var snapshot : snapshots)
-        {
-            BlockPos changed = snapshot.getPos();
-            BlockState oldState = snapshot.getReplacedBlock();
-            BlockState newState = level.getBlockState(changed);
-            newState.onPlace(level, changed, oldState, false);
-            level.markAndNotifyBlock(changed, level.getChunkAt(changed), oldState, newState, snapshot.getFlag(), 512);
-        }
-    }
-
-    static boolean canMelt(ServerPlayer shooter, BlockPos pos, BlockState state)
-    {
-        var event = new net.minecraftforge.event.level.BlockEvent.BreakEvent(shooter.level(), pos, state, shooter);
-        return !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)
-                && shooter.level().getBlockState(pos).equals(state);
     }
 
     @Override
