@@ -10,6 +10,12 @@ on:
       - 'src/main/java/com/fiskmods/heroes/client/sound/ColdGunBeamSound.java'
       - 'src/main/java/com/fiskmods/heroes/common/item/ItemColdGun.java'
       - 'src/main/java/com/fiskmods/heroes/common/sound/SoundManifest.java'
+      - 'src/main/java/com/fiskmods/heroes/common/sound/OggVorbisChannels.java'
+      - 'src/main/java/com/fiskmods/heroes/common/network/PacketSyncData.java'
+      - 'src/main/java/com/fiskmods/heroes/common/data/DataSyncer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+      - 'src/main/resources/heropack.json'
+      - '.ci/client_identity.gradle'
 concurrency:
   group: cold-gun-audio-output-${{ github.ref }}
   cancel-in-progress: true
