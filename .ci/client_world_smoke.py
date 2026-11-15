@@ -212,6 +212,9 @@ def main():
                      'releasing use lowers the shield on the server', process)
             # Check the local-player jump event after a real keypress. This measures the
             # initial impulse only, not the resulting trajectory or maximum height.
+            # Vision's earlier wall may still occupy the landing point. Clear the entire
+            # player volume before switching to survival so this test cannot suffocate.
+            command('fill ~-3 120 ~-3 ~3 124 ~3 minecraft:air')
             command('fill ~-3 119 ~-3 ~3 119 ~3 minecraft:stone')
             command('tp @s ~ 120 ~')
             command('suit fiskheroes:spider_man')

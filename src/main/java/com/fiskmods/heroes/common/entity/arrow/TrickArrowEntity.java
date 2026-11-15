@@ -167,8 +167,7 @@ public class TrickArrowEntity extends Arrow
 
         com.fiskmods.heroes.common.data.SHPlayerData targetData =
                 com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
-        return targetData != null && targetData.getData().get(
-                com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN);
+        return com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.hasEnabledMetalSkin(target, targetData);
     }
 
     public void setVialPotion(ItemStack potion)
@@ -510,8 +509,24 @@ public class TrickArrowEntity extends Arrow
             }
             else if ("blaze".equals(getArrowType()))
             {
-                com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                        blazeDamageProfile(), () -> super.onHitEntity(result));
+                // The original temporarily disables Fisk fire immunity for this impact, then
+                // restores the previous cooldown even if damage or another mod throws.
+                var targetData = !level().isClientSide && result.getEntity() instanceof LivingEntity living
+                        ? com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(living) : null;
+                short previousCooldown = targetData != null ? targetData.getData().get(
+                        com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN) : 0;
+                if (targetData != null) targetData.getData().set(
+                        com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN, (short) 1);
+                try
+                {
+                    com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                            blazeDamageProfile(), () -> super.onHitEntity(result));
+                }
+                finally
+                {
+                    if (targetData != null) targetData.getData().set(
+                            com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN, previousCooldown);
+                }
             }
             else
             {
@@ -576,7 +591,7 @@ public class TrickArrowEntity extends Arrow
         switch (getArrowType())
         {
             case "carrot" -> target.addEffect(new MobEffectInstance(MobEffects.NIGHT_VISION, 1200));
-            case "fire_charge", "blaze" -> target.setSecondsOnFire(5);
+            case "fire_charge" -> target.setSecondsOnFire(5);
             case "fireball" -> target.setSecondsOnFire(3);
             case "boxing_glove" ->
             {
@@ -604,7 +619,8 @@ public class TrickArrowEntity extends Arrow
             default -> { }
         }
         if ("blaze".equals(getArrowType()))
-            com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(target, 0.1F);
+            com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(target,
+                    1.0F / com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.BLAZE_ARROW_TICKS);
     }
 
     /** Restores the reusable, bouncing normal arrow state after a boxing-glove impact. */

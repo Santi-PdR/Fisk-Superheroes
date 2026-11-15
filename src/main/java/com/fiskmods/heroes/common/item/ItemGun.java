@@ -327,7 +327,8 @@ public class ItemGun extends Item
         if (hit != null)
         {
             var damageType = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
-                    .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.ARROW);
+                    .getHolderOrThrow(id.equals("heat_gun") ? net.minecraft.world.damagesource.DamageTypes.FIREBALL
+                            : net.minecraft.world.damagesource.DamageTypes.ARROW);
             var source = new net.minecraft.world.damagesource.DamageSource(damageType, shooter, shooter);
             LivingEntity target = hit;
             String dmgProfile = id.equals("cold_gun") ? "COLD" : (id.equals("heat_gun") ? "FIRE" : "BULLET");
@@ -337,10 +338,16 @@ public class ItemGun extends Item
             acceptedHit = applied[0];
         }
 
+        if (hit != null) onRayEntityContact(shooter, hit, acceptedHit);
         if (acceptedHit)
         {
             onRayEntityHit(shooter, hit);
         }
+    }
+
+    /** Contact effects that must run even when the damage itself was rejected. */
+    protected void onRayEntityContact(ServerPlayer shooter, LivingEntity hit, boolean acceptedHit)
+    {
     }
 
     protected void onRayBlockHit(ServerPlayer shooter, BlockHitResult block)

@@ -40,4 +40,13 @@ fire immunity is cooling down.
 Metal skin itself does not add a second damage reduction or heat up from ordinary hits; the tier
 and the separate per-piece absorption handle protection. Heat builds from lava and heat-transfer
 attacks and cools over time. Overheating temporarily disables fire immunity, including its effect
-on mixed damage profiles; recovery continues when switching to another active hero.
+on mixed damage profiles; a FIRE fraction of at least 0.5 counts as fire and is completely blocked
+while immunity is active. Recovery continues when switching to another active hero.
+
+The original default heat rates are 1/120 per tick in lava and 1/4 per successful blaze-arrow
+impact. A damage profile's `HEAT_TRANSFER` value is the number of applications needed for full
+heat, and still heats enabled metal skin when fire immunity rejects the damage. Blaze arrows
+briefly bypass Fisk fire immunity for their impact and restore the prior cooldown afterwards.
+The Heat Gun currently uses discrete rays instead of the original continuous beam: each contact
+adds its eight-tick cadence divided by the original 170-tick heating duration, including when
+fire immunity rejects the damage. This approximates sustained heating, not every intermediate tick.

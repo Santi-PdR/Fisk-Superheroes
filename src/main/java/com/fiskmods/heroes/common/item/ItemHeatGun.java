@@ -1,9 +1,5 @@
 package com.fiskmods.heroes.common.item;
 
-import com.fiskmods.heroes.common.data.SHDataCapabilities;
-import com.fiskmods.heroes.common.data.SHPlayerData;
-import com.fiskmods.heroes.common.data.var.Vars;
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -51,15 +47,19 @@ public final class ItemHeatGun extends ItemGun
     }
 
     @Override
+    protected void onRayEntityContact(ServerPlayer shooter, LivingEntity hit, boolean acceptedHit)
+    {
+        // The old continuous beam applied 1/170 per tick. This port fires a ray at its
+        // configured cadence, so one contact represents that many beam ticks.
+        int elapsedTicks = Math.max(1, getShotCooldownTicks(shooter.getMainHandItem()));
+        com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(hit,
+                (float) elapsedTicks / com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.HEAT_GUN_TICKS);
+    }
+
+    @Override
     protected void onRayEntityHit(ServerPlayer shooter, LivingEntity hit)
     {
-        hit.setSecondsOnFire(7);
-        SHPlayerData targetData = SHDataCapabilities.getPlayer(hit);
-        if (targetData != null)
-        {
-            float heat = targetData.getData().get(Vars.METAL_HEAT);
-            targetData.getData().set(Vars.METAL_HEAT, Math.min(1.0F, heat + 0.25F));
-        }
+        hit.setSecondsOnFire(5);
     }
 
     @Override

@@ -44,7 +44,14 @@ class ModifierImmunity extends Modifier
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
-        if (fireImmunityCoolingDown(entity)) return false;
+        if (group == Modifiers.DamageGroup.FIRE)
+        {
+            if (fireImmunityCoolingDown(entity)) return false;
+            float fireFraction = DamageGroups.profileFraction("FIRE");
+            boolean fire = fireFraction >= 0.0F ? fireFraction >= 0.5F : source.is(DamageTypeTags.IS_FIRE);
+            if (fire) entity.clearFire();
+            return fire;
+        }
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction >= 0.0F)
         {
@@ -56,7 +63,9 @@ class ModifierImmunity extends Modifier
     @Override
     public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
-        if (fireImmunityCoolingDown(entity)) return amount;
+        // Fire immunity uses the original all-or-nothing fire flag (FIRE >= 0.5),
+        // never a partial reduction on otherwise non-fire profiles.
+        if (group == Modifiers.DamageGroup.FIRE) return amount;
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction > 0.0F && profileFraction < 1.0F)
         {

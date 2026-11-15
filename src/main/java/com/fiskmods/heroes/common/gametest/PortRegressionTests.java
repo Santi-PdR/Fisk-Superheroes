@@ -5328,6 +5328,93 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void heatProfilesWarmMetalEvenWhenFireDamageIsRejected(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || iron == null || spider == null) { helper.fail("Heat profile fixtures missing"); return; }
+        player.getAbilities().invulnerable = false;
+        data.setHero(iron.getDefaultIteration());
+        // Deliberately stale: heat must use the hero's current modifier predicate, not the cached tick flag.
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
+        var heat = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT;
+        for (int divisor : new int[] {20, 160})
+        {
+            data.getData().set(heat, 0.0F);
+            player.invulnerableTime = 0;
+            var profile = com.google.gson.JsonParser.parseString("{\"types\":{\"FIRE\":1},\"properties\":{\"HEAT_TRANSFER\":" + divisor + "}}");
+            player.setHealth(20.0F);
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.applyProfileDamage(
+                    player, attacker, player.damageSources().lava(), 8.0F, profile);
+            if (player.getHealth() != 20.0F || Math.abs(data.getData().get(heat) - 1.0F / divisor) > .0001F)
+            { helper.fail("Fire-immune metal must receive one over HEAT_TRANSFER even on a rejected hit: " + divisor); return; }
+        }
+        data.setHero(spider.getDefaultIteration());
+        data.getData().set(heat, 0.0F);
+        com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(player, .25F);
+        if (data.getData().get(heat) != 0.0F)
+        { helper.fail("A non-metal hero must not gain metal heat"); return; }
+        var mk50 = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        if (mk50 == null) { helper.fail("Missing dynamic metal hero"); return; }
+        data.setHero(mk50.getDefaultIteration());
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(player);
+        js.setData("fiskheroes:dyn/nanites", false);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, true); // Stale old value.
+        com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(player, .25F);
+        if (data.getData().get(heat) != 0.0F) { helper.fail("Inactive nanites must not heat"); return; }
+        js.setData("fiskheroes:dyn/nanites", true);
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
+        com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.add(player, .25F);
+        if (Math.abs(data.getData().get(heat) - .25F) > .0001F)
+        { helper.fail("Activated nanites must receive heat immediately"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void blazeArrowTemporarilyBypassesFireImmunityAndHeatsMetal(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        if (data == null || iron == null) { helper.fail("Blaze arrow fixtures missing"); return; }
+        target.getAbilities().invulnerable = false;
+        data.setHero(iron.getDefaultIteration());
+        var values = data.getData();
+        values.set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false); // Live modifier check.
+        var cooldown = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN;
+        var heat = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT;
+        class TestArrow extends com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity
+        {
+            TestArrow() { super(com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level); }
+            void hit(net.minecraft.world.entity.Entity victim) { onHitEntity(new net.minecraft.world.phys.EntityHitResult(victim)); }
+        }
+        for (short before : new short[] {0, 37})
+        {
+            values.set(cooldown, before);
+            values.set(heat, 0.0F);
+            target.setHealth(20.0F);
+            target.invulnerableTime = 0;
+            var arrow = new TestArrow();
+            arrow.setArrowType("blaze");
+            arrow.setOwner(attacker);
+            arrow.setDeltaMovement(2.0D, 0.0D, 0.0D);
+            if (!arrow.canPierceDurability(target)) { helper.fail("Blaze arrow must pierce enabled metal skin"); return; }
+            target.clearFire();
+            arrow.hit(target);
+            if (target.getHealth() >= 20.0F || Math.abs(values.get(heat) - .25F) > .0001F
+                    || values.get(cooldown) != before || target.isOnFire())
+            { helper.fail("An unlit blaze arrow must penetrate, heat metal and restore cooldown without igniting"); return; }
+            arrow.discard();
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void metalHeatRecoveryDoesNotAddOrdinaryDamageReduction(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
@@ -5351,15 +5438,29 @@ public final class PortRegressionTests
         var lava = player.damageSources().lava();
         if (!fire.getModifier().isImmuneTo(player, fire, lava, 8.0F))
         { helper.fail("Fire immunity must work before overheating"); return; }
+        for (double fraction : new double[] {.25D, .499D, .5D, 1.0D})
+        {
+            player.setSecondsOnFire(5);
+            boolean[] immune = {false};
+            float[] result = {0.0F};
+            com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                    java.util.Map.of("FIRE", fraction, "ENERGY", 1.0D - fraction), () -> {
+                        immune[0] = fire.getModifier().isImmuneTo(player, fire, player.damageSources().magic(), 8.0F);
+                        result[0] = fire.getModifier().modifyDamage(player, fire, player.damageSources().magic(), 8.0F);
+                    });
+            if (immune[0] != (fraction >= .5D) || result[0] != 8.0F
+                    || player.isOnFire() == (fraction >= .5D))
+            { helper.fail("Fire immunity threshold/extinguishing mismatch at " + fraction); return; }
+        }
         values.set(cooldown, (short) 2);
         values.set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
         if (fire.getModifier().isImmuneTo(player, fire, lava, 8.0F))
         { helper.fail("Fire immunity cooldown must persist when metal skin is disabled"); return; }
         float[] mixed = {0.0F};
         com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                java.util.Map.of("FIRE", .25D, "ENERGY", .75D),
+                java.util.Map.of("FIRE", .75D, "ENERGY", .25D),
                 () -> mixed[0] = fire.getModifier().modifyDamage(player, fire, lava, 8.0F));
-        if (mixed[0] != 8.0F) { helper.fail("Cooldown must disable partial fire immunity as well"); return; }
+        if (mixed[0] != 8.0F) { helper.fail("Cooldown must not apply partial protection to a mixed fire profile"); return; }
         data.setHero(spider.getDefaultIteration());
         values.set(heat, 1.0F);
         com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
@@ -6054,10 +6155,59 @@ public final class PortRegressionTests
         target.setNoAi(true);
         target.setPos(player.getX(), player.getY(), player.getZ() + 2);
         level.addFreshEntity(target);
-        if (!shoot.getAsBoolean() || !target.isOnFire() || !level.getBlockState(pos).is(ice))
-        { helper.fail("A target before ice must catch fire without melting the ice behind it"); return; }
+        var recorder = new DirectArrowDamageRecorder(target);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            if (!shoot.getAsBoolean() || !target.isOnFire() || !level.getBlockState(pos).is(ice)
+                    || recorder.source == null || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
+                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE))
+            { helper.fail("Heat gun must stop at the target and use fire/projectile damage without melting ice behind it"); return; }
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+        }
         target.discard();
         level.removeBlock(pos, false);
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heatGunWarmsMetalEvenWhenFireImmune(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-metal-shooter"));
+        var target = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-metal-target"));
+        var heatwave = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:heatwave");
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        if (heatwave == null || iron == null || data == null) { helper.fail("Heat gun metal fixtures missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] { net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET };
+        for (int i = 0; i < 4; i++)
+            if (heatwave.getDefaultIteration().hasPieceOfSet(i)) shooter.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(heatwave.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 100, 1));
+        shooter.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        shooter.setYRot(0.0F); shooter.setXRot(0.0F);
+        target.setPos(shooter.getX(), shooter.getY(), shooter.getZ() + 2.0D);
+        target.getAbilities().invulnerable = false;
+        data.setHero(iron.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
+        level.addFreshEntity(target);
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();
+        var stack = new net.minecraft.world.item.ItemStack(gun);
+        shooter.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        boolean fired = gun.fireFromAttack(shooter, stack);
+        float heat = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
+        target.discard();
+        if (!fired || Math.abs(heat - 8.0F / 170.0F) > .0001F)
+        { helper.fail("A heat-gun ray must warm fire-immune metal at the ported beam cadence: " + heat); return; }
         helper.succeed();
     }
 

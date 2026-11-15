@@ -5,9 +5,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.fiskmods.heroes.common.data.SHDataCapabilities;
-import com.fiskmods.heroes.common.data.SHPlayerData;
-import com.fiskmods.heroes.common.data.var.Vars;
 
 public final class DamageGroups
 {
@@ -110,6 +107,17 @@ public final class DamageGroups
         net.minecraft.world.phys.Vec3 motionBefore = target.getDeltaMovement();
         boolean[] accepted = { false };
         withDamageProfile(definition, () -> accepted[0] = target.hurt(source, adjustedDamage));
+        // The original HEAT_TRANSFER post-property runs even when fire immunity rejects the
+        // damage. Its integer is the number of applications to reach full heat, not a percent.
+        if (properties != null)
+        {
+            JsonElement heat = properties.get("HEAT_TRANSFER");
+            if (heat != null && heat.isJsonPrimitive() && heat.getAsJsonPrimitive().isNumber())
+            {
+                int applications = heat.getAsInt();
+                if (applications > 0) MetalSkinHeat.add(target, 1.0F / applications);
+            }
+        }
         if (!accepted[0])
         {
             if (cookEntity && !wasBurning) target.clearFire();
@@ -135,16 +143,6 @@ public final class DamageGroups
                 target.setSecondsOnFire(Math.max(0, ignite.getAsInt()));
             }
 
-            JsonElement heat = properties.get("HEAT_TRANSFER");
-            if (heat != null && heat.isJsonPrimitive() && heat.getAsJsonPrimitive().isNumber())
-            {
-                SHPlayerData data = SHDataCapabilities.getPlayer(target);
-                int transfer = Math.max(0, heat.getAsInt());
-                if (data != null && data.getData().get(Vars.METAL_SKIN) && transfer > 0)
-                {
-                    MetalSkinHeat.add(target, transfer / 100.0F);
-                }
-            }
         }
         return true;
     }

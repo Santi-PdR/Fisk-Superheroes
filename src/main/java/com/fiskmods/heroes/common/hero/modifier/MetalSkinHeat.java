@@ -9,17 +9,27 @@ import net.minecraft.world.entity.LivingEntity;
 /** Shared normalized heat handling for metal skin and heat-transfer attacks. */
 public final class MetalSkinHeat
 {
-    private static final int LAVA_HEAT_TICKS = 100;
+    public static final int LAVA_HEAT_TICKS = 120;
+    public static final int HEAT_GUN_TICKS = 170;
+    public static final int BLAZE_ARROW_TICKS = 4;
     private static final int FULL_HEAT_RECOVERY_TICKS = 200;
 
     private MetalSkinHeat()
     {
     }
 
+    /** Check the live modifier predicate, not a potentially one-tick-old cached flag. */
+    public static boolean hasEnabledMetalSkin(LivingEntity entity, SHPlayerData data)
+    {
+        if (data == null || data.getHeroType() == null) return false;
+        var entry = data.getHeroType().getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("metal_skin"));
+        return entry != null && entry.isEnabled() && entry.isModifierEnabled(entity, data);
+    }
+
     public static void add(LivingEntity entity, float amount)
     {
         SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-        if (data == null || !data.getData().get(Vars.METAL_SKIN) || amount <= 0.0F) return;
+        if (!Float.isFinite(amount) || amount <= 0.0F || !hasEnabledMetalSkin(entity, data)) return;
 
         float heat = data.getData().get(Vars.METAL_HEAT);
         data.getData().set(Vars.METAL_HEAT, net.minecraft.util.Mth.clamp(heat + amount, 0.0F, 1.0F));
