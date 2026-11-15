@@ -70,7 +70,7 @@ jobs:
           mkdir -p .ci
           { cat ci-item-models-test.log 2>/dev/null || true
             echo '==== client diagnostics ===='
-            grep -E 'Item model base pass|First-person .*arm rendered|Exception|FATAL' ci-item-models-client.log 2>/dev/null | tail -120 || true
+            grep -E 'Item model base pass|Held weapon livery|First-person .*arm rendered|Exception|FATAL' ci-item-models-client.log 2>/dev/null | tail -120 || true
             echo '==== server tail ===='
             tail -50 ci-item-models-server.log 2>/dev/null || true
           } > .ci/item-models-log.txt

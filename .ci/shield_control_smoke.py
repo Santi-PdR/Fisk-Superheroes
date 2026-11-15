@@ -143,6 +143,9 @@ def main():
                     gain = 0
                     # Client interpolation can briefly show the moving shield edge-on.
                     for attempt in range(25):
+                        # scrot otherwise creates a numbered file and we repeatedly inspect
+                        # the first frame instead of the latest interpolated orientation.
+                        Path(prefix + '-projectile.png').unlink(missing_ok=True)
                         subprocess.run(['scrot', prefix + '-projectile.png'], check=True, timeout=30)
                         gain = magenta(prefix + '-projectile.png') - baseline
                         if gain >= 80: break

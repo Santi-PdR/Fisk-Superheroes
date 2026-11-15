@@ -57,7 +57,11 @@ public final class SuitItemRenderContext
         if (wearer != null && itemId.getNamespace().equals(FiskHeroes.MODID)
                 && (itemId.getPath().equals("katana") || itemId.getPath().equals("desert_eagle")
                         || itemId.getPath().equals("beretta_93r") || itemId.getPath().equals("cold_gun")
-                        || itemId.getPath().equals("heat_gun")))
+                        || itemId.getPath().equals("heat_gun")
+                        || (Boolean.getBoolean("fiskheroes.ciItemVisualDiagnostics")
+                            && (itemId.getPath().equals("tactical_tonfa") || itemId.getPath().equals("captain_americas_shield")
+                                || itemId.getPath().equals("grappling_gun") || itemId.getPath().equals("chronos_rifle")
+                                || itemId.getPath().equals("rip_hunters_gun")))))
         {
             String heroName = hero != null ? hero.getRegistryName().toString() : "none";
             String key = wearer.getUUID() + "|" + heroName + "|" + itemId + "|" + context + "|" + livery;

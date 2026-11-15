@@ -34,7 +34,10 @@ public final class ThrownShieldRenderer extends EntityRenderer<ThrownShieldEntit
         pose.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
         pose.mulPose(Axis.XP.rotationDegrees(180.0F));
         pose.mulPose(Axis.YP.rotationDegrees(entity.getSpin(partialTick)));
-        CaptainAmericaShieldItemRenderer.getInstance().renderShieldModel(entity.getItem(), net.minecraft.world.item.ItemDisplayContext.NONE, pose, buffers, light, OverlayTexture.NO_OVERLAY, false);
+        // A projectile is not part of a wearer's item render; do not inherit a
+        // surrounding suit livery when an entity is rendered in a nested pass.
+        SuitItemRenderContext.withTexture(null, () -> CaptainAmericaShieldItemRenderer.getInstance().renderShieldModel(
+                entity.getItem(), net.minecraft.world.item.ItemDisplayContext.NONE, pose, buffers, light, OverlayTexture.NO_OVERLAY, false));
         pose.popPose();
         super.render(entity, yaw, partialTick, pose, buffers, light);
     }
