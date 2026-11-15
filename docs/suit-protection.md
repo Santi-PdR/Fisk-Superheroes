@@ -54,6 +54,7 @@ For compatibility with this port's existing controls, Heatwave's primary attack 
 the original required aiming and then holding item use. Item use also sustains the beam while an
 AIM key is held, including for packs that bind AIM to a different key. A short input heartbeat
 stops a stuck beam if input updates cease. Visual packets are throttled separately from the actual ray.
-Its default range and damage are 32 blocks and 5 damage, as in the original defaults.
-Block melting and ignition respect the general `allowGriefing` setting, player edit and world
-border checks, and cancellable Forge break/place events.
+Its range and damage are fixed at 32 blocks and 5 damage, matching the original defaults; the
+original's per-hero rule overrides are not yet ported. Block melting and ignition respect the
+general `allowGriefing` setting, player edit and world border checks, and cancellable Forge
+break/place events rather than a separate Heat Gun griefing rule.
