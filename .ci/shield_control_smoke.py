@@ -140,8 +140,8 @@ def main():
                 finally:
                     stop.set(); thread.join(timeout=3)
                 def magenta(path):
-                    image = Image.open(path).convert('RGB').crop((520, 250, 760, 470))
-                    return sum(1 for r, g, b in image.get_flattened_data() if r > 170 and b > 170 and g < 100)
+                    image = Image.open(path).convert('RGB').crop((520, 280, 760, 550))
+                    return sum(1 for r, g, b in image.get_flattened_data() if r > 50 and b > 50 and g < 80 and r > 1.5 * g and b > 1.5 * g)
                 gain = magenta(prefix + '-projectile.png') - magenta(prefix + '-before.png')
                 if gain < 80:
                     import base64, io
