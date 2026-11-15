@@ -3,106 +3,99 @@ PASS: client joined
 PASS: held shield key received on server
 PASS: ability alone keeps shield
 PASS: ordinary attack keeps shield
-Traceback (most recent call last):
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/shield_control_smoke.py", line 151, in <module>
-    if __name__ == '__main__': main()
-                               ~~~~^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/shield_control_smoke.py", line 96, in main
-    wait_for(server_log, r'Shield throw completed: player=Dev', 45,
-    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-             'attack with held shield key launches exactly one shield', server)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/shield_control_smoke.py", line 22, in wait_for
-    raise RuntimeError(f'Timed out: {label}')
-RuntimeError: Timed out: attack with held shield key launches exactly one shield
+PASS: attack with held shield key launches exactly one shield
+PASS: shield returns with item data
+PASS: real keyboard attack requires held ability and returns shield
 ==== relevant server events ====
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[05:19:50] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[05:20:34] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
-[05:20:44] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[05:20:46] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_HOLD_ONLY_OK
-[05:20:50] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_ATTACK_ONLY_OK
-[05:20:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[05:24:04] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[05:24:59] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[05:25:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_HOLD_ONLY_OK
+[05:25:03] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_ATTACK_ONLY_OK
+[05:25:04] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[05:25:05] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
+[05:25:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=-1, matching=[]
+[05:25:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_RETURN_DATA_OK
 ==== client tail ====
-	at com.mojang.datafixers.Typed.update(Typed.java:133) ~[datafixerupper-6.0.8.jar:?] {}
-	at net.minecraft.util.datafix.fixes.OptionsKeyLwjgl3Fix.lambda$makeRule$4(OptionsKeyLwjgl3Fix.java:159) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at com.mojang.datafixers.DataFix.lambda$checked$3(DataFix.java:86) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.functions.Comp.applyUnchecked(Comp.java:126) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.functions.Comp.lambda$eval$2(Comp.java:118) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.types.Type.capWrite(Type.java:165) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.types.Type.lambda$readAndWrite$10(Type.java:157) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.serialization.DataResult.lambda$flatMap$11(DataResult.java:139) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.util.Either$Left.map(Either.java:38) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.serialization.DataResult.flatMap(DataResult.java:137) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.types.Type.readAndWrite(Type.java:156) ~[datafixerupper-6.0.8.jar:?] {}
-	at com.mojang.datafixers.DataFixerUpper.update(DataFixerUpper.java:78) ~[datafixerupper-6.0.8.jar:?] {}
-	at net.minecraft.util.datafix.DataFixTypes.update(DataFixTypes.java:41) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.util.datafix.DataFixTypes.update(DataFixTypes.java:49) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.util.datafix.DataFixTypes.updateToCurrentVersion(DataFixTypes.java:53) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.client.Options.dataFix(Options.java:1159) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-	at net.minecraft.client.Options.load(Options.java:1050) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-	at net.minecraftforge.client.loading.ClientModLoader.lambda$finishModLoading$7(ClientModLoader.java:103) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.server.packs.resources.SimpleReloadInstance.lambda$new$3(SimpleReloadInstance.java:69) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.util.thread.BlockableEventLoop.doRunTask(BlockableEventLoop.java:156) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-	at net.minecraft.util.thread.ReentrantBlockableEventLoop.doRunTask(ReentrantBlockableEventLoop.java:23) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
-	at net.minecraft.util.thread.BlockableEventLoop.pollTask(BlockableEventLoop.java:130) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-	at net.minecraft.util.thread.BlockableEventLoop.runAllTasks(BlockableEventLoop.java:115) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B}
-	at net.minecraft.client.Minecraft.runTick(Minecraft.java:1106) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-	at net.minecraft.client.Minecraft.run(Minecraft.java:718) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A}
-	at net.minecraft.client.main.Main.main(Main.java:218) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading,pl:runtimedistcleaner:A}
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method) ~[?:?] {}
-	at jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77) ~[?:?] {}
-	at jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43) ~[?:?] {}
-	at java.lang.reflect.Method.invoke(Method.java:569) ~[?:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.runTarget(CommonLaunchHandler.java:111) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonLaunchHandler.clientService(CommonLaunchHandler.java:99) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.ForgeClientUserdevLaunchHandler.devService(ForgeClientUserdevLaunchHandler.java:19) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-	at net.minecraftforge.fml.loading.targets.CommonDevLaunchHandler.lambda$makeService$7(CommonDevLaunchHandler.java:135) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandlerDecorator.launch(LaunchServiceHandlerDecorator.java:30) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:53) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.Launcher.run(Launcher.java:108) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.Launcher.main(Launcher.java:78) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23) ~[modlauncher-10.0.9.jar:?] {}
-	at cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:141) ~[bootstraplauncher-1.1.2.jar:?] {}
-[05:20:28] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7878
-[05:20:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[05:20:29] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[05:20:29] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[05:24:40] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[05:24:40] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
+[05:24:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
+[05:24:40] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
+[05:24:40] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:forge for mod file /
+[05:24:40] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
+[05:24:40] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
+[05:24:40] [Worker-Main-1/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
+[05:24:40] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[05:24:41] [Worker-Main-2/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
+[05:24:42] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[05:24:42] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@685a8158 into net.minecraft.network.Connection@5ae9ea0a
+[05:24:44] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[05:24:44] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7878
+[05:24:44] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
+[05:24:44] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[05:20:29] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
-[05:20:29] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[05:20:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
-[05:20:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
-[05:20:29] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[05:20:29] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[05:20:29] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
-[05:20:29] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
-[05:20:29] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[05:20:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[05:20:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[05:20:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[05:20:38] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[05:20:43] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_america, texture=fiskheroes:textures/heroes/captain_america_layer1.png, poseAligned=true
-[05:20:43] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[05:20:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[05:20:44] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[05:20:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_HOLD_ONLY_OK
-[05:20:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[05:20:50] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_ATTACK_ONLY_OK
-[05:20:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[05:20:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[05:24:44] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
+[05:24:44] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[05:24:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
+[05:24:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
+[05:24:45] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[05:24:45] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[05:24:45] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
+[05:24:45] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
+[05:24:45] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
+[05:24:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[05:24:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[05:24:57] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_america, texture=fiskheroes:textures/heroes/captain_america_layer1.png, poseAligned=true
+[05:24:57] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[05:24:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[05:24:59] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[05:25:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_HOLD_ONLY_OK
+[05:25:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[05:25:03] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_ATTACK_ONLY_OK
+[05:25:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[05:25:04] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[05:25:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:25:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:25:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
+[05:25:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=127
+[05:25:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:25:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[05:25:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_RETURN_DATA_OK
