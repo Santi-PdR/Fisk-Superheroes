@@ -62,3 +62,18 @@ jobs:
             cat ci-cold-sound-test.log 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish diagnostics to branch
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .ci
+          { cat ci-cold-sound-test.log 2>/dev/null || true; for f in ci-cold-sound-*.log; do echo "==== $f ===="; tail -100 "$f" 2>/dev/null || true; done; } > .ci/cold-gun-sound-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/cold-gun-sound-log.txt
+          git diff --cached --quiet || git commit -m 'ci: cold-gun-sound diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1

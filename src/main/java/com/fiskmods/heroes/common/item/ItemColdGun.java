@@ -99,7 +99,7 @@ public final class ItemColdGun extends ItemGun
                 stopBeam(player);
                 boolean next = !isGrenadeMode(stack);
                 stack.getOrCreateTag().putBoolean(TAG_GRENADE_MODE, next);
-                SHSounds.play(player, FiskHeroes.id("item.coldgun.aim"), SoundSource.PLAYERS, 1.0F, 1.0F);
+                SHSounds.play(player, FiskHeroes.id("item.coldgun.aim"), SoundSource.PLAYERS, 1.0F, next ? 0.8F : 0.9F);
                 Component modeName = Component.translatable(next ? "tooltip.cold_gun.mode.grenade" : "tooltip.cold_gun.mode.beam");
                 player.displayClientMessage(Component.translatable("tooltip.mode", modeName), true);
             }
@@ -217,7 +217,8 @@ public final class ItemColdGun extends ItemGun
         if (!player.level().isClientSide)
         {
             var data = SHDataCapabilities.getPlayer(player);
-            if (data != null) data.getData().set(Vars.COLD_GUN_BEAM_ACTIVE, active);
+            if (data != null && data.getData().get(Vars.COLD_GUN_BEAM_ACTIVE) != active)
+                data.getData().set(Vars.COLD_GUN_BEAM_ACTIVE, active);
         }
     }
 
@@ -226,11 +227,11 @@ public final class ItemColdGun extends ItemGun
     {
         if (isGrenadeMode(stack))
         {
-            SHSounds.play(player, FiskHeroes.id("item.coldgun.grenade"), SoundSource.PLAYERS, 2.0F, 1.0F);
+            SHSounds.play(player, FiskHeroes.id("item.coldgun.grenade"), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
         else
         {
-            SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 2.0F, 1.0F);
+            SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
     }
 

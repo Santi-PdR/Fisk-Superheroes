@@ -15,6 +15,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   audio:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -63,3 +65,18 @@ jobs:
             cat ci-cold-audio-test.log 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish diagnostics to branch
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .ci
+          { cat ci-cold-audio-test.log 2>/dev/null || true; for f in ci-cold-audio-*.log; do echo "==== $f ===="; tail -100 "$f" 2>/dev/null || true; done; } > .ci/cold-gun-audio-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/cold-gun-audio-log.txt
+          git diff --cached --quiet || git commit -m 'ci: cold-gun-audio diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1

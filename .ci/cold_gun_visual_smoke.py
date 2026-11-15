@@ -124,12 +124,14 @@ def main():
             try:
                 wait_for(client_log, r'Cold gun first-person aiming: arm=RIGHT', 60, 'gun aims in first person', client)
                 wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:captain_cold, heat=false, firstPerson=true', 60, 'cold beam render path', client)
+                wait_for(client_log, r'Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1\.0, pitch=1\.0', 60, 'beam start event received', client)
                 wait_for(client_log, r'Cold gun loop started: Dev', 60, 'loop starts while beam is held', client)
                 wait_for(client_log, r'Cold gun loop ticked: Dev, volume=1\.0, active=true', 60, 'real sound engine ticks loop at full volume', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
             wait_for(client_log, r'Cold gun loop stopped: Dev', 60, 'loop stops on release', client)
+            wait_for(client_log, r'Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1\.0, pitch=1\.0', 60, 'beam stop event received', client)
             before_restart = len(client_log.read_text(errors='replace'))
             time.sleep(1)
             xdo('mousedown', '1')
@@ -152,6 +154,7 @@ def main():
                 xdo('keyup', 'Shift_L')
             command('execute if data entity Dev SelectedItem.tag{GrenadeMode:1b} run say COLD_GRENADE_MODE_OK')
             wait_for(server_log, r'COLD_GRENADE_MODE_OK', 30, 'sneak-use switches to grenade mode', server)
+            wait_for(client_log, r'Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1\.0, pitch=0\.8', 30, 'grenade mode switch has original pitch', client)
             screenshot('grenade')
             command('fill -4 180 1 4 183 5 minecraft:air')
             command('tp Dev 0.5 180 0.5 0 10')
@@ -165,6 +168,7 @@ def main():
                 time.sleep(1.5)
             finally:
                 xdo('mouseup', '1')
+            wait_for(client_log, r'Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1\.0, pitch=1\.0', 30, 'grenade firing has original sound volume', client)
             command('execute store result score #cold_x cold_smoke run data get entity @e[type=minecraft:item,tag=cold_push_test,limit=1] Pos[0] 100')
             command('data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1]')
             command('execute as @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
