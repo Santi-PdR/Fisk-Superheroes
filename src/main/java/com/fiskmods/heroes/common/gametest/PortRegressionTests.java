@@ -6145,6 +6145,9 @@ public final class PortRegressionTests
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Heat gun target missing"); return; }
         target.setNoAi(true);
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        if (boat == null) { helper.fail("Heat gun non-living target missing"); return; }
+        boat.setNoGravity(true);
         var recorder = new DirectArrowDamageRecorder(target);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
         java.util.function.IntConsumer[] step = new java.util.function.IntConsumer[1];
@@ -6165,6 +6168,12 @@ public final class PortRegressionTests
                 target.setPos(player.getX(), player.getY(), player.getZ() + 2.0D);
                 level.addFreshEntity(target);
             }
+            if (n == 5)
+            {
+                target.discard();
+                boat.setPos(player.getX(), player.getY() + 1.35D, player.getZ() + 2.0D);
+                level.addFreshEntity(boat);
+            }
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(player);
             if (n == 0 && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER)) failure = "ice was not melted";
             if (n == 1 && !level.getBlockState(pos).isAir()) failure = "snow was not melted";
@@ -6173,9 +6182,12 @@ public final class PortRegressionTests
             if (n == 4 && (!target.isOnFire() || !level.getBlockState(pos).is(ice) || recorder.source == null
                     || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
                     || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE))) failure = "target did not stop fire/projectile beam";
-            if (failure != null || n == 4)
+            if (n == 5 && (!level.getBlockState(pos).is(ice) || boat.getDamage() <= 0.0F))
+                failure = "non-living target did not stop and absorb the beam";
+            if (failure != null || n == 5)
             {
                 target.discard();
+                boat.discard();
                 level.removeBlock(pos, false);
                 level.removeBlock(pos.north(), false);
                 level.removeBlock(pos.north().below(), false);
@@ -6189,7 +6201,7 @@ public final class PortRegressionTests
         step[0].accept(0);
     }
 
-    @GameTest(template = "test_empty", timeoutTicks = 100)
+    @GameTest(template = "test_empty", timeoutTicks = 180)
     public static void heatGunContinuousBeamIsAuthoritative(GameTestHelper helper)
     {
         var level = helper.getLevel();
@@ -6202,6 +6214,14 @@ public final class PortRegressionTests
         if (iron == null || targetData == null || data == null) { helper.fail("Heat gun fixtures missing"); return; }
         target.setPos(shooter.getX(), shooter.getY(), shooter.getZ() + 2.0D);
         target.getAbilities().invulnerable = false;
+        target.setNoGravity(true);
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (iron.getDefaultIteration().hasPieceOfSet(i)) target.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(iron.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
         targetData.setHero(iron.getDefaultIteration());
         level.addFreshEntity(target);
         var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
@@ -6213,28 +6233,34 @@ public final class PortRegressionTests
         step[0] = n -> {
             String failure = null;
             // Fake players are not on the server player list; drive their aim and beam explicitly.
+            if (n == 10) com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+            if (n >= 10 && (n - 10) % 8 == 0) gun.fireFromAttack(shooter, stack);
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
-            // Restore the live target predicate; its fixture is deliberately not wearing armor.
-            targetData.setHero(iron.getDefaultIteration());
+            var obstacle = shooter.blockPosition().offset(0, 1, 1);
+            if (n == 6) level.setBlockAndUpdate(obstacle, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            if (n == 7) level.removeBlock(obstacle, false);
             float before = targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
             float health = target.getHealth();
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
             float after = targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
-            float expected = n < 3 ? 0.0F : 1.0F / 170.0F;
+            float expected = n < 3 || n == 6 || n == 9 ? 0.0F : 1.0F / 170.0F;
             if (Math.abs(after - before - expected) > .0001F || target.getHealth() != health)
                 failure = "incorrect aim delay, heat transfer or immunity at tick " + n + ": " + (after - before);
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
             if (targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT) != after)
                 failure = "duplicate beam in same tick";
-            if (n == 5 && failure == null)
+            if (n == 8 && failure == null)
             {
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, false);
                 com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
                 if (targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT) != after)
                     failure = "beam continued after release";
             }
-            if (failure != null || n == 5)
+            if (n == 90 && (after < 0.15F || after > 0.60F))
+                failure = "sustained beam did not heat gradually: " + after;
+            if (failure != null || n == 90)
             {
+                level.removeBlock(obstacle, false);
                 target.discard();
                 com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
                 com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
@@ -6243,6 +6269,59 @@ public final class PortRegressionTests
             else helper.runAfterDelay(1, () -> step[0].accept(n + 1));
         };
         step[0].accept(0);
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void heatGunUsesOriginalRangeDamageAndPermission(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = heatGunShooter(helper, "heat-gun-range");
+        var start = shooter.position().add(0.0D, 120.0D, 0.0D);
+        shooter.setPos(start);
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
+        var stack = shooter.getMainHandItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(shooter);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+        for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
+        if (!gun.fireFromAttack(shooter, stack)) { helper.fail("Heat gun request rejected"); return; }
+        var cow = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (cow == null) { helper.fail("Heat gun range target missing"); return; }
+        cow.setNoAi(true); cow.setNoGravity(true);
+        cow.setPos(start.x, start.y, start.z + 30.0D);
+        level.getChunk(cow.blockPosition());
+        level.addFreshEntity(cow);
+        float health = cow.getHealth();
+        com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+        if (Math.abs(cow.getHealth() - (health - 5.0F)) > .0001F)
+        { cow.discard(); helper.fail("Heat gun must deal original 5 damage within 32 blocks"); return; }
+        cow.setPos(start.x, start.y, start.z + 34.0D);
+        cow.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
+        cow.clearFire();
+        cow.invulnerableTime = 0;
+        health = cow.getHealth();
+        final float farHealth = health;
+        helper.runAfterDelay(1, () -> {
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+            if (cow.getHealth() != farHealth)
+            { cow.discard(); helper.fail("Heat gun hit beyond its 32-block range"); return; }
+            cow.discard();
+            var other = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:wild_dog");
+            if (other == null) { helper.fail("Wild Dog missing"); return; }
+            var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                    net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                    net.minecraft.world.entity.EquipmentSlot.FEET};
+            for (int i = 0; i < 4; ++i)
+                shooter.setItemSlot(slots[i], other.getDefaultIteration().hasPieceOfSet(i)
+                        ? com.fiskmods.heroes.common.hero.ItemHeroArmor.create(other.getDefaultIteration(),
+                                com.fiskmods.heroes.common.item.ModItems.heroArmor[i]) : net.minecraft.world.item.ItemStack.EMPTY);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+            if (!com.fiskmods.heroes.common.hero.ability.AbilityHandler.isKeyPressed(shooter, "AIM")
+                    || gun.fireFromAttack(shooter, stack))
+            { helper.fail("An aiming hero without USE_HEAT_GUN must not start the beam"); return; }
+            com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
+            helper.succeed();
+        });
     }
 
     public static final class HeatGunProtectionGuard

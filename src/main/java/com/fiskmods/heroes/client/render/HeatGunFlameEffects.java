@@ -10,7 +10,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
-/** A bounded local flame stream for a shot accepted and clipped by the server. */
+/** Bounded local particles for a beam sample accepted and clipped by the server. */
 public final class HeatGunFlameEffects
 {
     private static final Set<Player> LOGGED = Collections.newSetFromMap(new WeakHashMap<>());

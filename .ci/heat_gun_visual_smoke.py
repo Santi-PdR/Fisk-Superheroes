@@ -91,6 +91,13 @@ def main():
             command('execute if block 0 181 4 minecraft:ice run say HEAT_PERMISSION_OK')
             wait_for(server_log, r'HEAT_PERMISSION_OK', 30, 'unsuited player cannot melt ice', server)
             command('execute as Dev run suit fiskheroes:heatwave')
+            command('setblock 0 181 2 minecraft:stone')
+            xdo('mousedown', '1')
+            time.sleep(2)
+            xdo('mouseup', '1')
+            command('execute if block 0 181 4 minecraft:ice run say HEAT_OCCLUSION_OK')
+            wait_for(server_log, r'HEAT_OCCLUSION_OK', 30, 'wall blocks the beam', server)
+            command('setblock 0 181 2 minecraft:air')
             xdo('mousedown', '1')
             try:
                 wait_for(client_log, r'Heat gun first-person aiming: arm=RIGHT', 60, 'heat gun aims in first person', client)

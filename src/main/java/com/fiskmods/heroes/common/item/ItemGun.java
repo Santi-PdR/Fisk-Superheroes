@@ -17,6 +17,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -263,15 +264,20 @@ public class ItemGun extends Item
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
 
         AABB search = shooter.getBoundingBox().expandTowards(direction.scale(range)).inflate(1.0D);
-        LivingEntity hit = null;
+        Entity hit = null;
         double nearest = Double.MAX_VALUE;
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, search,
-                entity -> entity != shooter && entity.isAlive() && !entity.isAlliedTo(shooter)))
+        boolean heatGun = id.equals("heat_gun");
+        for (Entity target : level.getEntities(shooter, search, entity -> entity.isAlive()
+                && (heatGun ? entity.isPickable() && (entity != shooter.getVehicle() || entity.canRiderInteract())
+                        : entity instanceof LivingEntity && !entity.isAlliedTo(shooter))))
         {
-            var intersection = target.getBoundingBox().inflate(0.25D).clip(start, end);
-            if (intersection.isPresent())
+            // The original heat-gun ray uses the target's collision border rather than a
+            // blanket 0.25-block enlargement, and can stop on pickable non-living entities.
+            AABB bounds = target.getBoundingBox().inflate(heatGun ? target.getPickRadius() : 0.25D);
+            var intersection = bounds.clip(start, end);
+            if (intersection.isPresent() || heatGun && bounds.contains(start))
             {
-                double distance = start.distanceToSqr(intersection.get());
+                double distance = heatGun && bounds.contains(start) ? 0.0D : start.distanceToSqr(intersection.get());
                 if (distance < nearest)
                 {
                     nearest = distance;
@@ -330,7 +336,7 @@ public class ItemGun extends Item
                     .getHolderOrThrow(id.equals("heat_gun") ? net.minecraft.world.damagesource.DamageTypes.FIREBALL
                             : net.minecraft.world.damagesource.DamageTypes.ARROW);
             var source = new net.minecraft.world.damagesource.DamageSource(damageType, shooter, shooter);
-            LivingEntity target = hit;
+            Entity target = hit;
             String dmgProfile = id.equals("cold_gun") ? "COLD" : (id.equals("heat_gun") ? "FIRE" : "BULLET");
             final boolean[] applied = { false };
             com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
@@ -338,10 +344,14 @@ public class ItemGun extends Item
             acceptedHit = applied[0];
         }
 
-        if (hit != null) onRayEntityContact(shooter, hit, acceptedHit);
-        if (acceptedHit)
+        if (hit instanceof LivingEntity living)
         {
-            onRayEntityHit(shooter, hit);
+            onRayEntityContact(shooter, living, acceptedHit);
+            if (acceptedHit) onRayEntityHit(shooter, living);
+        }
+        else if (acceptedHit && heatGun)
+        {
+            hit.setSecondsOnFire(5);
         }
     }
 

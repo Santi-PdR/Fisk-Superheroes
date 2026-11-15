@@ -6,7 +6,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
 
-/** One server-accepted Heat Gun shot, with its block/entity-clipped visual segment. */
+/** Throttled visual sample of the server-accepted Heat Gun beam, clipped to its first contact. */
 public final class PacketHeatGunFlame extends SHPacket
 {
     private final int shooterId;

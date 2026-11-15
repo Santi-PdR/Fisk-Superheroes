@@ -40,6 +40,8 @@ public class ClientEventHandler
     private static boolean webUseDown;
     private static boolean abilityClickMode;
     private static long nextGunShotTick = Long.MIN_VALUE;
+    private static net.minecraft.world.item.Item lastGunItem;
+    private static int lastGunSlot = -1;
     private static int hudAbilityHeld = Integer.MIN_VALUE;
     // One effective input per index, regardless of how many physical/HUD sources hold it.
     private static final boolean[] sentAbilityInputs = new boolean[17]; // indices -1..15
@@ -191,6 +193,8 @@ public class ClientEventHandler
             webUseDown = false;
             abilityClickMode = false;
             nextGunShotTick = Long.MIN_VALUE;
+            lastGunItem = null;
+            lastGunSlot = -1;
             hudAbilityHeld = Integer.MIN_VALUE;
             spellMenuWasDown = false;
             spellSequence.setLength(0);
@@ -565,6 +569,7 @@ public class ClientEventHandler
                 syncAbilityInput(mc.player, -1);
             }
             if (down) requestGunShot(mc.player);
+            else nextGunShotTick = Long.MIN_VALUE;
         }
 
         if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
@@ -584,9 +589,22 @@ public class ClientEventHandler
     {
         if (!com.fiskmods.heroes.common.item.ItemGun.isGun(player.getMainHandItem()))
         {
+            lastGunItem = null;
+            lastGunSlot = -1;
+            nextGunShotTick = Long.MIN_VALUE;
             return;
         }
 
+        // A different gun/slot must not inherit the previous weapon's local cadence. The server
+        // independently enforces every gun's cooldown, even for rapid presses and slot changes.
+        var item = player.getMainHandItem().getItem();
+        int slot = player.getInventory().selected;
+        if (lastGunItem != item || lastGunSlot != slot)
+        {
+            lastGunItem = item;
+            lastGunSlot = slot;
+            nextGunShotTick = Long.MIN_VALUE;
+        }
         long now = player.level().getGameTime();
         if (now < nextGunShotTick)
         {
