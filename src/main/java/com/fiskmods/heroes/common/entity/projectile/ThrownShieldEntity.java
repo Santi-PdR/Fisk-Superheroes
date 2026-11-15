@@ -28,6 +28,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             ThrownShieldEntity.class, EntityDataSerializers.BOOLEAN);
     private static final float DAMAGE = 7.0F;
     private static final int MAX_FLIGHT_TICKS = 200;
+    private static final int MAX_RETURN_TICKS = 200;
+    private int returnTicks;
 
     public ThrownShieldEntity(EntityType<? extends ThrownShieldEntity> type, Level level)
     {
@@ -105,10 +107,11 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             }
             if (distance > 0.001D)
             {
-                setDeltaMovement(offset.normalize().scale(Math.min(1.0D + tickCount * 0.025D, 2.5D)));
+                double speed = Math.min(1.0D + tickCount * 0.025D, 2.5D);
+                setDeltaMovement(offset.scale(Math.min(speed, distance) / distance));
             }
             setNoGravity(true);
-            if (!level().isClientSide && tickCount > MAX_FLIGHT_TICKS) dropShield();
+            if (!level().isClientSide && ++returnTicks > MAX_RETURN_TICKS) dropShield();
             else super.tick();
             return;
         }
@@ -154,6 +157,13 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             ItemStack stack = getItem().copy();
             if (!player.getInventory().add(stack)) player.drop(stack, false);
         }
+        else
+        {
+            // An owner restored or assigned by another mod may not be a player.
+            // Preserve the item rather than silently deleting it.
+            dropShield();
+            return;
+        }
         discard();
     }
 
@@ -173,6 +183,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         super.addAdditionalSaveData(tag);
         tag.put("Shield", getItem().save(new CompoundTag()));
         tag.putBoolean("Returning", isReturning());
+        tag.putInt("ReturnTicks", returnTicks);
     }
 
     @Override
@@ -181,5 +192,6 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         super.readAdditionalSaveData(tag);
         if (tag.contains("Shield", CompoundTag.TAG_COMPOUND)) setItem(ItemStack.of(tag.getCompound("Shield")));
         if (tag.contains("Returning")) entityData.set(RETURNING, tag.getBoolean("Returning"));
+        returnTicks = Math.min(MAX_RETURN_TICKS + 1, Math.max(0, tag.getInt("ReturnTicks")));
     }
 }

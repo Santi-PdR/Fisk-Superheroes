@@ -20,6 +20,111 @@ public final class PortRegressionTests
     private PortRegressionTests() {}
 
     @GameTest(template = "test_empty")
+    public static void thrownShieldReturnsAfterLongFlightWithItsData(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer();
+        owner.setPos(base.getX(), base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.getOrCreateTag().putString("RegressionMarker", "long flight");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        shield.setPos(owner.getX() + 12, owner.getEyeY() - .2D, owner.getZ());
+        shield.tickCount = 201;
+        level.addFreshEntity(shield);
+        shield.tick();
+        if (!shield.isReturning() || shield.isRemoved())
+        { helper.fail("A long outbound flight must initiate return, not drop the shield"); return; }
+        shield.tick();
+        if (shield.isRemoved())
+        { helper.fail("A shield returning after a long flight needs its own return time budget"); return; }
+        for (int i = 0; i < 12 && !shield.isRemoved(); ++i) shield.tick();
+        boolean found = owner.getInventory().items.stream().anyMatch(item ->
+                item.is(stack.getItem()) && item.hasTag() && "long flight".equals(item.getTag().getString("RegressionMarker")));
+        if (!shield.isRemoved() || !found)
+        { helper.fail("Returning shield must reach its owner and preserve its item data"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void thrownShieldDoesNotOvershootOwner(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer(); owner.setPos(base.getX(), base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        var state = new net.minecraft.nbt.CompoundTag(); shield.addAdditionalSaveData(state);
+        state.putBoolean("Returning", true); shield.readAdditionalSaveData(state); shield.setOwner(owner);
+        shield.setPos(owner.getX() + 1.3D, owner.getEyeY() - .2D, owner.getZ()); shield.tickCount = 100;
+        level.addFreshEntity(shield); shield.tick();
+        if (shield.isRemoved() || shield.getX() < owner.getX() - .001D)
+        { helper.fail("Return velocity must not overshoot a nearby owner"); return; }
+        shield.tick();
+        if (!shield.isRemoved() || owner.getInventory().items.stream().noneMatch(item -> item.is(stack.getItem())))
+        { helper.fail("A shield at the owner must be recovered on the next tick"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void thrownShieldReturnDeadlineSurvivesSave(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer();
+        owner.setPos(base.getX(), base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.getOrCreateTag().putString("RegressionMarker", "timed out");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        var state = new net.minecraft.nbt.CompoundTag();
+        shield.addAdditionalSaveData(state);
+        state.putBoolean("Returning", true); state.putInt("ReturnTicks", 199);
+        shield.readAdditionalSaveData(state); shield.setOwner(owner);
+        shield.setPos(owner.getX() + 20, owner.getEyeY(), owner.getZ()); level.addFreshEntity(shield);
+        shield.tick();
+        var saved = new net.minecraft.nbt.CompoundTag(); shield.addAdditionalSaveData(saved);
+        if (shield.isRemoved() || saved.getInt("ReturnTicks") != 200 || !saved.getBoolean("Returning"))
+        { helper.fail("Return deadline must count separately and be saved"); return; }
+        var position = shield.position(); shield.discard();
+        var restored = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.THROWN_SHIELD.get(), level);
+        restored.readAdditionalSaveData(saved); restored.setOwner(owner); restored.setPos(position); level.addFreshEntity(restored);
+        restored.tick();
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, restored.getBoundingBox().inflate(3));
+        boolean found = drops.stream().anyMatch(drop -> drop.getItem().is(stack.getItem()) && drop.getItem().hasTag()
+                && "timed out".equals(drop.getItem().getTag().getString("RegressionMarker")));
+        drops.forEach(net.minecraft.world.entity.Entity::discard);
+        if (!restored.isRemoved() || !found)
+        { helper.fail("Expired restored return must drop the original shield instead of losing it"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void thrownShieldWithNonPlayerOwnerIsNotDeleted(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (owner == null) { helper.fail("Shield owner missing"); return; }
+        owner.setPos(base.getX(), base.getY(), base.getZ()); level.addFreshEntity(owner);
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.THROWN_SHIELD.get(), level);
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.getOrCreateTag().putString("RegressionMarker", "nonplayer");
+        shield.setItem(stack); shield.setOwner(owner); shield.setPos(owner.getX(), owner.getEyeY() - .2D, owner.getZ());
+        var state = new net.minecraft.nbt.CompoundTag(); shield.addAdditionalSaveData(state);
+        state.putBoolean("Returning", true); shield.readAdditionalSaveData(state); shield.setOwner(owner);
+        level.addFreshEntity(shield); shield.tick();
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, shield.getBoundingBox().inflate(3));
+        boolean found = drops.stream().anyMatch(drop -> drop.getItem().is(stack.getItem()) && drop.getItem().hasTag()
+                && "nonplayer".equals(drop.getItem().getTag().getString("RegressionMarker")));
+        drops.forEach(net.minecraft.world.entity.Entity::discard); owner.discard();
+        if (!shield.isRemoved() || !found)
+        { helper.fail("A shield returned to a non-player owner must drop, not disappear"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void mysterioBoostSmokeTracksCurrentState(GameTestHelper helper)
     {
         try (var stream = PortRegressionTests.class.getResourceAsStream("/assets/fiskheroes/models/heroes/mysterio.json"))

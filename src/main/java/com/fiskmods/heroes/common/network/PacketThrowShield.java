@@ -48,9 +48,11 @@ public final class PacketThrowShield extends SHPacket
         projectile.setPos(player.getX(), player.getEyeY() - 0.15D, player.getZ());
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 0.0F);
         projectile.setDeltaMovement(projectile.getDeltaMovement().add(player.getDeltaMovement().scale(0.5D)));
-        player.level().addFreshEntity(projectile);
-        player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
-        player.getCooldowns().addCooldown(ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, entry.getInt(player,
-                com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME)));
+        if (player.level().addFreshEntity(projectile))
+        {
+            player.setItemInHand(InteractionHand.MAIN_HAND, ItemStack.EMPTY);
+            player.getCooldowns().addCooldown(ModItems.CAPTAIN_AMERICAS_SHIELD.get(), Math.max(1, entry.getInt(player,
+                    com.fiskmods.heroes.common.hero.power.PowerProperty.COOLDOWN_TIME)));
+        }
     }
 }
