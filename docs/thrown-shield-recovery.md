@@ -13,3 +13,7 @@ The original item throws on a primary-attack swing while `SHIELD_THROW` is held;
 ## Projectile rendering
 
 The original `RenderThrownShield` draws the shield mesh in flight orientation and spins it by 32 degrees per unit of velocity. The projectile now uses the existing shield geometry directly with interpolated yaw, pitch and spin instead of the generic camera-facing thrown-item renderer. Velocity-driven spin is tested server-side and the client smoke test uses a temporary diagnostic texture to verify rendered pixels. Suit-specific projectile liveries, electromagnetic model differences and enchantment glint are not yet reproduced.
+
+## Impact
+
+The original uses an indirect projectile damage source attributed to the thrower and wears the shield on a successful hit. The port now uses a tagged shield-specific projectile source with the original translated death-message key, applies one durability point (including Unbreaking and creative rules), and applies the shield's Fire Aspect on successful hits. The current flat seven-point damage, knockback and immediate return still differ from the original velocity-, equipment- and bounce-dependent calculations.

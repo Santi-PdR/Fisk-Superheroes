@@ -136,13 +136,19 @@ def main():
                     else: raise RuntimeError('The visual probe never rendered')
                     command('execute if entity @e[type=fiskheroes:thrown_shield,tag=visual_probe] run say SHIELD_PROBE_PRESENT')
                     wait_for(server_log, r'SHIELD_PROBE_PRESENT', 5, 'visual probe remained in the world', server)
-                    subprocess.run(['scrot', prefix + '-projectile.png'], check=True, timeout=30)
+                    def magenta(path):
+                        image = Image.open(path).convert('RGB').crop((520, 280, 760, 550))
+                        return sum(1 for r, g, b in image.get_flattened_data() if r > 50 and b > 50 and g < 80 and r > 1.5 * g and b > 1.5 * g)
+                    baseline = magenta(prefix + '-before.png')
+                    gain = 0
+                    # Client interpolation can briefly show the moving shield edge-on.
+                    for attempt in range(25):
+                        subprocess.run(['scrot', prefix + '-projectile.png'], check=True, timeout=30)
+                        gain = magenta(prefix + '-projectile.png') - baseline
+                        if gain >= 80: break
+                        time.sleep(.2)
                 finally:
                     stop.set(); thread.join(timeout=3)
-                def magenta(path):
-                    image = Image.open(path).convert('RGB').crop((520, 280, 760, 550))
-                    return sum(1 for r, g, b in image.get_flattened_data() if r > 50 and b > 50 and g < 80 and r > 1.5 * g and b > 1.5 * g)
-                gain = magenta(prefix + '-projectile.png') - magenta(prefix + '-before.png')
                 if gain < 80:
                     import base64, io
                     image = Image.open(prefix + '-projectile.png').convert('RGB')

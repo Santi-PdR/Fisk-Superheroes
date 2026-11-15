@@ -26,6 +26,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             ThrownShieldEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> RETURNING = SynchedEntityData.defineId(
             ThrownShieldEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SHIELD_DAMAGE =
+            net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    com.fiskmods.heroes.FiskHeroes.id("thrown_shield"));
     private static final float DAMAGE = 7.0F;
     private static final int MAX_FLIGHT_TICKS = 200;
     private static final int MAX_RETURN_TICKS = 200;
@@ -141,13 +144,25 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         Entity target = hit.getEntity();
         if (target != owner && target instanceof LivingEntity living && owner instanceof LivingEntity attacker)
         {
-            boolean damaged = living.hurt(attacker instanceof Player player
-                    ? damageSources().playerAttack(player) : damageSources().mobAttack(attacker), DAMAGE);
+            var damageType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                    .getHolderOrThrow(SHIELD_DAMAGE);
+            boolean damaged = living.hurt(new net.minecraft.world.damagesource.DamageSource(damageType, this, attacker), DAMAGE);
             if (damaged)
             {
                 Vec3 knockback = getDeltaMovement().normalize().scale(0.6D);
                 living.knockback(0.6F, -knockback.x, -knockback.z);
                 if (attacker instanceof ServerPlayer serverPlayer) living.setLastHurtByPlayer(serverPlayer);
+                ItemStack stack = getItem().copy();
+                int fireAspect = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
+                        net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, stack);
+                if (fireAspect > 0) living.setSecondsOnFire(fireAspect * 2);
+                stack.hurtAndBreak(1, attacker, ignored -> {});
+                setItem(stack);
+                if (stack.isEmpty())
+                {
+                    discard();
+                    return;
+                }
             }
         }
         startReturning();

@@ -96,6 +96,67 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void thrownShieldImpactUsesProjectileSourceAndWearsItem(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer(); owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Shield impact target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(base.getX() + .5, base.getY(), base.getZ() + 2.5); level.addFreshEntity(target);
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
+        stack.getOrCreateTag().putString("RegressionMarker", "impact");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        shield.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+        shield.setDeltaMovement(0, 0, 3); level.addFreshEntity(shield);
+        var recorder = new DirectArrowDamageRecorder(target);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            shield.tick();
+            var source = recorder.source;
+            if (source == null || source.getDirectEntity() != shield || source.getEntity() != owner
+                    || !source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                    || !source.is(com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.SHIELD_DAMAGE)
+                    || Math.abs(recorder.amount - 7.0F) > .01F)
+            { helper.fail("Shield impact must use its own projectile damage with owner attribution"); return; }
+            if (!shield.isReturning() || shield.getItem().getDamageValue() != 1 || !target.isOnFire()
+                    || !"impact".equals(shield.getItem().getTag().getString("RegressionMarker")))
+            { helper.fail("Successful shield impact must apply fire aspect and one durability while preserving item data"); return; }
+            shield.tick();
+            if (recorder.count != 1) { helper.fail("Returning shield must not damage a target twice"); return; }
+            shield.discard(); target.clearFire(); target.setInvulnerable(true);
+            var blocked = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+            blocked.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+            blocked.setDeltaMovement(0, 0, 3); level.addFreshEntity(blocked); blocked.tick();
+            if (blocked.getItem().getDamageValue() != 0 || target.isOnFire())
+            { blocked.discard(); helper.fail("Rejected damage must not wear the shield or apply fire"); return; }
+            blocked.discard(); target.setInvulnerable(false); target.invulnerableTime = 0; target.setHealth(target.getMaxHealth());
+            owner.getAbilities().instabuild = true;
+            var creative = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+            creative.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+            creative.setDeltaMovement(0, 0, 3); level.addFreshEntity(creative); creative.tick();
+            if (creative.getItem().getDamageValue() != 0)
+            { creative.discard(); helper.fail("Creative-mode hits must not wear the shield"); return; }
+            creative.discard(); owner.getAbilities().instabuild = false;
+            target.invulnerableTime = 0; target.setHealth(target.getMaxHealth());
+            var fragile = stack.copy(); fragile.setDamageValue(fragile.getMaxDamage() - 1);
+            var breaking = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, fragile);
+            breaking.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
+            breaking.setDeltaMovement(0, 0, 3); level.addFreshEntity(breaking); breaking.tick();
+            if (!breaking.isRemoved() || !breaking.getItem().isEmpty())
+            { breaking.discard(); helper.fail("A shield broken on impact must not return as an intact item"); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+            shield.discard(); target.discard();
+        }
+    }
+
+    @GameTest(template = "test_empty")
     public static void thrownShieldSpinTracksVelocityAndInterpolates(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();
