@@ -182,6 +182,10 @@ public final class AbilityHandler
                 continue;
             }
 
+            // The original shield ability is a held modifier: the actual throw occurs
+            // on a separate primary-attack request, not on the ability key-down.
+            if ("SHIELD_THROW".equals(key)) continue;
+
             ModifierEntry entry = activate(player, data, hero, key);
             if (entry != null && !entry.getBoolean(player, PowerProperty.IS_TOGGLE))
             {
@@ -240,6 +244,27 @@ public final class AbilityHandler
         com.fiskmods.heroes.common.sound.SHSounds.play(player,
                 com.fiskmods.heroes.FiskHeroes.id("atom_shrink"),
                 net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F);
+    }
+
+    /** Executes a primary-attack shield throw only after validating the held ability on the server. */
+    public static boolean throwShield(ServerPlayer player)
+    {
+        HeroTracker.update(player);
+        SHPlayerData data = SHDataCapabilities.getPlayer(player);
+        HeroIteration iteration = data != null ? data.getHero() : null;
+        if (iteration == null || !player.isAlive() || player.isSpectator()
+                || !player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                || player.getCooldowns().isOnCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                || !isKeyPressed(player, "SHIELD_THROW")) return false;
+
+        ModifierEntry entry = findEnabledModifier(iteration.getHero(), "SHIELD_THROW", "shield_throwing", false, player, data);
+        if (entry == null || !(entry.getModifier() instanceof com.fiskmods.heroes.common.hero.modifier.ModifierShieldThrowing modifier)) return false;
+        if (!modifier.throwShield(player, entry)) return false;
+        player.getCooldowns().addCooldown(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get(),
+                Math.max(1, entry.getInt(player, PowerProperty.COOLDOWN_TIME)));
+        if (Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shield throw completed: player={}", player.getGameProfile().getName());
+        return true;
     }
 
     /** Right-click-in-air shots from suit modifiers, independent of pack key bindings. */

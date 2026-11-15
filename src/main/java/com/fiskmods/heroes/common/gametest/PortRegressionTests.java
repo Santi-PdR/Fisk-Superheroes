@@ -19,6 +19,82 @@ public final class PortRegressionTests
 {
     private PortRegressionTests() {}
 
+    public static final class ShieldSpawnGuard
+    {
+        private final java.util.UUID owner;
+        ShieldSpawnGuard(java.util.UUID owner) { this.owner = owner; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onSpawn(net.minecraftforge.event.entity.EntityJoinLevelEvent event)
+        {
+            if (event.getEntity() instanceof com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity shield
+                    && shield.getOwner() != null && owner.equals(shield.getOwner().getUUID())) event.setCanceled(true);
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldThrowRequiresHeldKeyAndValidatesServerState(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-control-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        if (hero == null) { helper.fail("Captain America is missing"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
+                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
+                net.minecraft.world.entity.EquipmentSlot.FEET};
+        for (int i = 0; i < 4; ++i)
+            if (hero.getDefaultIteration().hasPieceOfSet(i)) player.setItemSlot(slots[i],
+                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
+                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
+        var shieldItem = com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get();
+        var stack = new net.minecraft.world.item.ItemStack(shieldItem);
+        stack.getOrCreateTag().putString("RegressionMarker", "control");
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player);
+        var bounds = player.getBoundingBox().inflate(10);
+        try
+        {
+            if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player))
+            { helper.fail("Attack request without held ability must not throw"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+            if (player.getMainHandItem().isEmpty() || !level.getEntitiesOfClass(
+                    com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.class, bounds,
+                    e -> e.getOwner() == player).isEmpty())
+            { helper.fail("Holding the ability alone must not launch the shield"); return; }
+            var guard = new ShieldSpawnGuard(player.getUUID());
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+            try
+            {
+                if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player)
+                        || player.getMainHandItem().isEmpty() || player.getCooldowns().isOnCooldown(shieldItem))
+                { helper.fail("Canceled spawn must preserve the shield and not consume cooldown"); return; }
+            }
+            finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+            if (!com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player) || !player.getMainHandItem().isEmpty()
+                    || !player.getCooldowns().isOnCooldown(shieldItem))
+            { helper.fail("Attack with held ability must create a shield and start cooldown"); return; }
+            var projectiles = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.class,
+                    bounds, e -> e.getOwner() == player);
+            if (projectiles.size() != 1 || !"control".equals(projectiles.get(0).getItem().getTag().getString("RegressionMarker")))
+            { helper.fail("Exactly one projectile must carry the original shield data"); return; }
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack.copy());
+            if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player))
+            { helper.fail("Cooldown must reject repeated requests"); return; }
+            player.getCooldowns().removeCooldown(shieldItem);
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, false);
+            if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player))
+            { helper.fail("Releasing the ability must revoke throw permission"); return; }
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, 1, true);
+            for (var slot : slots) player.setItemSlot(slot, net.minecraft.world.item.ItemStack.EMPTY);
+            if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player))
+            { helper.fail("Removing the suit must revoke throw permission"); return; }
+            projectiles.forEach(net.minecraft.world.entity.Entity::discard);
+            helper.succeed();
+        }
+        finally { com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player); }
+    }
+
     @GameTest(template = "test_empty")
     public static void thrownShieldReturnsAfterLongFlightWithItsData(GameTestHelper helper)
     {

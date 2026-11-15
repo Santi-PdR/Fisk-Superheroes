@@ -115,6 +115,7 @@ public class ClientEventHandler
                     && mc.options.keyAttack.matches(event.getKey(), event.getScanCode()))
             {
                 requestGunShot(player);
+                requestShieldThrow(player);
             }
             // Also catch a quick press/release between client ticks; a release can
             // only stop the sender's own beams, and the server retains its timeout.
@@ -455,8 +456,10 @@ public class ClientEventHandler
     public static void onGunAttack(InputEvent.InteractionKeyMappingTriggered event)
     {
         Minecraft mc = Minecraft.getInstance();
-        if (!event.isAttack() || mc.player == null || mc.screen != null
-                || !com.fiskmods.heroes.common.item.ItemGun.isGun(mc.player.getMainHandItem())) return;
+        if (!event.isAttack() || mc.player == null || mc.screen != null) return;
+        boolean gun = com.fiskmods.heroes.common.item.ItemGun.isGun(mc.player.getMainHandItem());
+        boolean shieldThrow = canRequestShieldThrow(mc.player);
+        if (!gun && !shieldThrow) return;
         // Mouse/key input and the held-key tick already send the shot and AIM input.
         // Canceling here preserves that input while stopping both startAttack and continueAttack.
         event.setCanceled(true);
@@ -587,7 +590,11 @@ public class ClientEventHandler
                 attackKeyDown = down;
                 syncAbilityInput(mc.player, -1);
             }
-            if (down) requestGunShot(mc.player);
+            if (down)
+            {
+                requestGunShot(mc.player);
+                requestShieldThrow(mc.player);
+            }
             else
             {
                 nextGunShotTick = Long.MIN_VALUE;
@@ -617,6 +624,19 @@ public class ClientEventHandler
                 || item instanceof com.fiskmods.heroes.common.item.ItemColdGun)
             SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketGunStop());
         beamInputDown = false;
+    }
+
+    private static boolean canRequestShieldThrow(LocalPlayer player)
+    {
+        return !abilityClickMode && player.getMainHandItem().is(ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                && AbilityHandler.isKeyPressed(player, "SHIELD_THROW");
+    }
+
+    /** The held shield ability modifies a primary attack; a key-down alone does not throw. */
+    private static void requestShieldThrow(LocalPlayer player)
+    {
+        if (canRequestShieldThrow(player))
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketThrowShield());
     }
 
     /** Sends one rate-limited shot for both quick presses and held primary-attack input. */
