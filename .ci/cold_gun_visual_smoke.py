@@ -147,11 +147,13 @@ def main():
             # proving that a real impact damages and slows it.
             command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["cold_ball_test"]}')
             command('summon minecraft:item 1.7 181 4.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,PickupDelay:32767s,Tags:["cold_push_test"]}')
+            command('scoreboard objectives add cold_smoke dummy')
             xdo('mousedown', '1')
             try:
                 time.sleep(1.5)
             finally:
                 xdo('mouseup', '1')
+            command('execute store result score #cold_x cold_smoke run data get entity @e[type=minecraft:item,tag=cold_push_test,limit=1] Pos[0] 100')
             command('data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1]')
             command('execute as @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
@@ -159,8 +161,6 @@ def main():
             wait_for(server_log, r'COLD_BALL_DAMAGE_OK', 30, 'cold ball impact damages the target', server)
             # Measure displacement on the dedicated server, rather than trusting
             # a client animation or a one-tick entity motion sample.
-            command('scoreboard objectives add cold_smoke dummy')
-            command('execute store result score #cold_x cold_smoke run data get entity @e[type=minecraft:item,tag=cold_push_test,limit=1] Pos[0] 100')
             command('execute if score #cold_x cold_smoke matches 180.. run say COLD_BALL_PUSH_OK')
             wait_for(server_log, r'COLD_BALL_PUSH_OK', 30, 'cold ball pushes an invulnerable entity away from impact', server)
             command('scoreboard objectives remove cold_smoke')

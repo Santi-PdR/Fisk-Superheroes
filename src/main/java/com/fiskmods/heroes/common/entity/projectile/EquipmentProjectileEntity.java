@@ -411,9 +411,10 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
             JsonObject profile = child(properties, "damageProfile");
             float damage = Math.max(0.0F, DamageGroups.profileDamage(profile, 16.0F));
             boolean affectsOwner = properties.has("affectsUser") && properties.get("affectsUser").getAsBoolean();
-            if (Boolean.getBoolean("fiskheroes.ciFreezeGrenadeDiagnostics"))
+            boolean diagnostics = Boolean.getBoolean("fiskheroes.ciFreezeGrenadeDiagnostics");
+            if (diagnostics)
                 com.fiskmods.heroes.FiskHeroes.LOGGER.info("Freeze grenade impact: center={}, owner={}", center, getOwner());
-            FreezeBurst.detonate(serverLevel, this, getOwner(), center, 3.0D, damage, profile, affectsOwner, false);
+            FreezeBurst.detonate(serverLevel, this, getOwner(), center, 3.0D, damage, profile, affectsOwner, diagnostics);
         }
         discard();
     }

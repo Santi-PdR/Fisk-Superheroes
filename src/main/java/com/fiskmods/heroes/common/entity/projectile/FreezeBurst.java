@@ -106,6 +106,8 @@ final class FreezeBurst
             Vec3 impulse = direction.normalize().scale(knockback);
             target.push(impulse.x, impulse.y, impulse.z);
             target.hurtMarked = true; // send the server-authoritative impulse to players
+            if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Freeze burst impulse: entity={}, impulse={}",
+                    target.getName().getString(), impulse);
         }
         if (SHConfig.ALLOW_GRIEFING.get()) freezeNearby(level, projectile, owner, center, blockRadius);
     }

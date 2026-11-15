@@ -53,6 +53,7 @@ def main():
             # A stationary, invulnerable item has ordinary physics even though
             # NoAI mobs do not travel. It also checks knockback after rejected damage.
             command('summon minecraft:item 2.0 181 7.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,PickupDelay:32767s,Tags:["freeze_push_test"]}')
+            command('scoreboard objectives add freeze_smoke dummy')
             command('setblock 1 180 7 minecraft:water')
             xdo('keydown', 'c')
             try:
@@ -70,13 +71,12 @@ def main():
                      30, 'use selected gadget with empty hand', server)
             wait_for(server_log, r'Freeze grenade impact: .*owner=ServerPlayer',
                      30, 'freeze grenade detonates on impact', server)
+            command('execute store result score #freeze_x freeze_smoke run data get entity @e[type=minecraft:item,tag=freeze_push_test,limit=1] Pos[0] 100')
             wait_for(client_log, r'Freeze grenade model rendered:', 30, '3D grenade renders on the real client', client)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say FREEZE_TARGET_OK')
             wait_for(server_log, r'FREEZE_TARGET_OK', 30, 'blast slows the target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] unless data entity @s {Health:100.0f} run say FREEZE_DAMAGE_OK')
             wait_for(server_log, r'FREEZE_DAMAGE_OK', 30, 'blast damages the target', server)
-            command('scoreboard objectives add freeze_smoke dummy')
-            command('execute store result score #freeze_x freeze_smoke run data get entity @e[type=minecraft:item,tag=freeze_push_test,limit=1] Pos[0] 100')
             command('execute if score #freeze_x freeze_smoke matches 210.. run say FREEZE_PUSH_OK')
             wait_for(server_log, r'FREEZE_PUSH_OK', 30, 'blast pushes an invulnerable entity away from impact', server)
             command('scoreboard objectives remove freeze_smoke')
