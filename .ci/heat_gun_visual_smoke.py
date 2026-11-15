@@ -142,7 +142,8 @@ def main():
             # block clipping or a mock entity outside the GameTest world's active chunks.
             command('fill 0 180 1 0 182 34 minecraft:air')
             command('scoreboard objectives add heatHealth dummy')
-            command('summon minecraft:cow 0.5 180.4 30.5 {NoAI:1b,NoGravity:1b,Health:100.0f,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["heat_range"]}')
+            command('execute as Dev at @s anchored eyes positioned ^ ^ ^30 positioned ~ ~-1.2 ~ run summon minecraft:cow ~ ~ ~ {NoAI:1b,NoGravity:1b,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["heat_range"]}')
+            command('data merge entity @e[type=minecraft:cow,tag=heat_range,limit=1] {Health:100.0f}')
             command('execute as @e[type=minecraft:cow,tag=heat_range,limit=1] store result score @s heatHealth run data get entity @s Health 1')
             command('execute if entity @e[type=minecraft:cow,tag=heat_range,scores={heatHealth=100..}] run say HEAT_RANGE_READY')
             wait_for(server_log, r'HEAT_RANGE_READY', 30, 'long-range target starts at full health', server)

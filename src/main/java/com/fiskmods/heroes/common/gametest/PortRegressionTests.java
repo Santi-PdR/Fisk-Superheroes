@@ -6289,15 +6289,16 @@ public final class PortRegressionTests
         com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
         for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
         if (!gun.fireFromAttack(shooter, stack)) { helper.fail("Heat gun request rejected"); return; }
-        var near = shooter.blockPosition().offset(0, 1, 30);
-        var far = shooter.blockPosition().offset(0, 1, 34);
+        // Follow the actual view vector, including any small player-rotation adjustments.
+        var eye = shooter.getEyePosition();
+        var view = shooter.getViewVector(1.0F);
+        var near = net.minecraft.core.BlockPos.containing(eye.add(view.scale(30)));
+        var far = net.minecraft.core.BlockPos.containing(eye.add(view.scale(34)));
         level.setBlockAndUpdate(near, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
         level.setBlockAndUpdate(far, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
         com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
         if (!level.getBlockState(near).is(net.minecraft.world.level.block.Blocks.WATER))
         {
-            var eye = shooter.getEyePosition();
-            var view = shooter.getViewVector(1.0F);
             var clipped = level.clip(new net.minecraft.world.level.ClipContext(eye, eye.add(view.scale(32)),
                     net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, shooter));
             helper.fail("Heat gun must reach a block 30 blocks away: state=" + level.getBlockState(near)
