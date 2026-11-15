@@ -68,7 +68,14 @@ def main():
             def expect(item, context, foil, texture=None):
                 pattern = (r'Item model base pass: item=fiskheroes:' + re.escape(item) + ', context=' + context
                            + ', foil=' + str(foil).lower() + ', texture=' + (re.escape(texture) if texture else r'[^\s]+'))
-                wait_for(client_log, pattern, 45, f'{item} {context} foil={foil}' + (f' livery={texture}' if texture else ''), client)
+                try:
+                    wait_for(client_log, pattern, 45, f'{item} {context} foil={foil}' + (f' livery={texture}' if texture else ''), client)
+                except RuntimeError:
+                    subprocess.run(['scrot', 'ci-item-models-failure.png'], check=True, timeout=30)
+                    image = Image.open('ci-item-models-failure.png').convert('RGB')
+                    image.thumbnail((640, 360)); out = io.BytesIO(); image.save(out, format='PNG')
+                    print('DIAGNOSTIC_SCREENSHOT_BASE64=' + base64.b64encode(out.getvalue()).decode(), flush=True)
+                    raise
 
             command('difficulty peaceful')
             command('gamemode creative Dev')
