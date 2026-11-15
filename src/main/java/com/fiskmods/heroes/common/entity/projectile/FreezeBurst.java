@@ -56,11 +56,13 @@ final class FreezeBurst
             {
                 // Like the original, ownerless bursts still inflict damage, but
                 // their block changes remain fail-closed without a player identity.
+                Entity shooter = owner instanceof LivingEntity ? owner : null;
+                // Minecraft 1.20 uses the base message key for a direct attacker;
+                // the original intentionally used explosion.player for that case.
                 var type = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                         .getHolderOrThrow(net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.DAMAGE_TYPE,
-                                com.fiskmods.heroes.FiskHeroes.id("freeze_explosion")));
-                Entity shooter = owner instanceof LivingEntity ? owner : null;
+                                com.fiskmods.heroes.FiskHeroes.id(shooter == null ? "freeze_explosion" : "freeze_explosion_owned")));
                 var source = shooter == null ? new net.minecraft.world.damagesource.DamageSource(type)
                         : new net.minecraft.world.damagesource.DamageSource(type, shooter, shooter);
                 Runnable hit = () -> target.hurt(source, damage * (float) strength);

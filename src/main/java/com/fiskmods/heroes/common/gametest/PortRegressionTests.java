@@ -6029,6 +6029,18 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    // Inject the config snapshot instead of writing the live Forge config file.
+    // Forge's asynchronous file watcher can otherwise reload stale values during a test.
+    private static void testGunBlockHit(Class<?> gunClass, net.minecraft.server.level.ServerPlayer shooter,
+            net.minecraft.core.BlockPos pos, boolean allowGriefing) throws ReflectiveOperationException
+    {
+        var method = gunClass.getDeclaredMethod("applyBlockHit", net.minecraft.server.level.ServerPlayer.class,
+                net.minecraft.world.phys.BlockHitResult.class, boolean.class);
+        method.setAccessible(true);
+        method.invoke(null, shooter, new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(pos),
+                net.minecraft.core.Direction.NORTH, pos, false), allowGriefing);
+    }
+
     private static net.minecraftforge.common.util.FakePlayer coldGunShooter(GameTestHelper helper, String name)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
@@ -6090,7 +6102,9 @@ public final class PortRegressionTests
                     || recorder.count != 1 || Math.abs(recorder.amount - 7.0F) > .001F
                     || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
                     || !recorder.source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_EFFECTS)
-                    || recorder.source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)))
+                    || recorder.source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)
+                    || recorder.source.getEntity() != player
+                    || !hasDeathMessage(recorder.source, target, "death.attack.fiskheroes.freeze.player", 2)))
                 failure = "Entity must stop beam, take seven damage and receive gradual freezing: frozen="
                         + target.getTicksFrozen() + ", hits=" + recorder.count + ", amount=" + recorder.amount;
             if (n == 12)
@@ -6313,15 +6327,16 @@ public final class PortRegressionTests
                 level.setBlockAndUpdate(pos, (n == 14 ? net.minecraft.world.level.block.Blocks.LAVA
                         : net.minecraft.world.level.block.Blocks.WATER).defaultBlockState());
             }
-            var rule = com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING;
-            boolean previous = rule.get();
-            if (n == 10) rule.set(false);
             if (n == 11) net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
             if (n == 12) { placeGuard.fireNotifications = 0; net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(placeGuard); }
-            try { com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player); }
+            try
+            {
+                if (n == 10) testGunBlockHit(com.fiskmods.heroes.common.item.ItemColdGun.class, player, pos, false);
+                else com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
+            }
+            catch (ReflectiveOperationException e) { failure = "Cold gun block test failed: " + e; }
             finally
             {
-                rule.set(previous);
                 if (n == 11) net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
                 if (n == 12) net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(placeGuard);
             }
@@ -6710,17 +6725,8 @@ public final class PortRegressionTests
         com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
         for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
         gun.fireFromAttack(shooter, shooter.getMainHandItem());
-        var rule = com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING;
-        boolean previous = rule.get();
-        try
-        {
-            rule.set(false);
-            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
-        }
-        finally
-        {
-            rule.set(previous);
-        }
+        try { testGunBlockHit(com.fiskmods.heroes.common.item.ItemHeatGun.class, shooter, pos, false); }
+        catch (ReflectiveOperationException e) { helper.fail("Heat gun block test failed: " + e); return; }
         boolean intact = level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE);
         level.removeBlock(pos, false);
         com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
@@ -6820,6 +6826,15 @@ public final class PortRegressionTests
                 || buffer.readableBytes() != 0)
         { helper.fail("Heat flame visual packet must preserve the server-clipped segment"); return; }
         helper.succeed();
+    }
+
+    private static boolean hasDeathMessage(net.minecraft.world.damagesource.DamageSource source,
+            net.minecraft.world.entity.LivingEntity victim, String expectedKey, int arguments)
+    {
+        if (source == null) return false;
+        var content = source.getLocalizedDeathMessage(victim).getContents();
+        return content instanceof net.minecraft.network.chat.contents.TranslatableContents translated
+                && translated.getKey().equals(expectedKey) && translated.getArgs().length == arguments;
     }
 
     // Exercise the actual shared burst synchronously, without relying on projectile
@@ -6925,6 +6940,8 @@ public final class PortRegressionTests
         boat.setNoGravity(true); boat.setPos(center.x + 2, base.getY(), center.z);
         level.addFreshEntity(cow); level.addFreshEntity(boat);
         cow.setTicksFrozen(300);
+        var recorder = new DirectArrowDamageRecorder(cow);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
         var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
                 com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
         try
@@ -6932,14 +6949,16 @@ public final class PortRegressionTests
             testFreezeBurst(level, ball, null, center, 3.0D, 1.0F, false);
             if (cow.getTicksFrozen() != 300 || cow.getHealth() >= cow.getMaxHealth()
                     || cow.getDeltaMovement().x >= 0 || boat.getDeltaMovement().x <= 0
-                    || !boat.hurtMarked || boat.getDamage() <= 0.0F)
+                    || !boat.hurtMarked || boat.getDamage() <= 0.0F || recorder.source == null
+                    || recorder.source.getEntity() != null
+                    || !hasDeathMessage(recorder.source, cow, "death.attack.fiskheroes.explosion", 1))
                 helper.fail("Ownerless burst must hurt and push living/nonliving entities without reducing existing freeze: frozen="
                         + cow.getTicksFrozen() + ", cow=" + cow.getDeltaMovement() + ", boat=" + boat.getDeltaMovement()
                         + ", boatDamage=" + boat.getDamage());
             else helper.succeed();
         }
         catch (ReflectiveOperationException e) { helper.fail("Ownerless burst invocation failed: " + e); }
-        finally { cow.discard(); boat.discard(); ball.discard(); }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder); cow.discard(); boat.discard(); ball.discard(); }
     }
 
     @GameTest(template = "test_empty", timeoutTicks = 100)
@@ -6970,6 +6989,8 @@ public final class PortRegressionTests
             else if (recorder.count != 1 || recorder.amount <= 0 || recorder.amount > 9.0F
                     || recorder.source == null || recorder.source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)
                     || recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                    || recorder.source.getEntity() != player
+                    || !hasDeathMessage(recorder.source, target, "death.attack.fiskheroes.explosion.player", 2)
                     || recorder.profile == null || Math.abs(recorder.profile.getOrDefault("COLD", 0.0D) - .6D) > .001D
                     || Math.abs(recorder.profile.getOrDefault("EXPLOSION", 0.0D) - .4D) > .001D)
                 failure = "Cold ball did not use its original damage profile and non-magic source: " + recorder.profile;

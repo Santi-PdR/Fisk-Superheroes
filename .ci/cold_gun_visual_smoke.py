@@ -160,7 +160,9 @@ def main():
             # a client animation or a one-tick entity motion sample.
             command('scoreboard objectives add cold_smoke dummy')
             command('execute store result score #cold_z cold_smoke run data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] Pos[2] 100')
+            command('execute store result score #cold_y cold_smoke run data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] Pos[1] 100')
             command('execute if score #cold_z cold_smoke matches 480.. run say COLD_BALL_PUSH_OK')
+            command('execute if score #cold_y cold_smoke matches 18020.. run say COLD_BALL_PUSH_OK')
             wait_for(server_log, r'COLD_BALL_PUSH_OK', 30, 'cold ball pushes the target away from impact', server)
             command('scoreboard objectives remove cold_smoke')
             command('kill @e[type=minecraft:iron_golem,tag=cold_ball_test]')
