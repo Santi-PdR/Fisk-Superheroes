@@ -96,6 +96,23 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void thrownShieldSpinTracksVelocityAndInterpolates(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(helper.getLevel(), player,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+        shield.setPos(player.getX() + 10, player.getEyeY(), player.getZ());
+        shield.setDeltaMovement(0.0D, 0.0D, 2.5D);
+        shield.tick();
+        float previous = shield.getSpin(0.0F), middle = shield.getSpin(0.5F), current = shield.getSpin(1.0F);
+        if (Math.abs(current - previous - 80.0F) > .01F || Math.abs(middle - (current + previous) / 2.0F) > .01F)
+        { helper.fail("Shield must spin 32 degrees per block of speed with frame interpolation"); return; }
+        shield.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void thrownShieldReturnsAfterLongFlightWithItsData(GameTestHelper helper)
     {
         var level = helper.getLevel();

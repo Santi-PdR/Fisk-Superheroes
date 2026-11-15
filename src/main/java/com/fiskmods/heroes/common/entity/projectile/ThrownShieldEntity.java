@@ -30,6 +30,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     private static final int MAX_FLIGHT_TICKS = 200;
     private static final int MAX_RETURN_TICKS = 200;
     private int returnTicks;
+    private float spinTime, previousSpinTime;
 
     public ThrownShieldEntity(EntityType<? extends ThrownShieldEntity> type, Level level)
     {
@@ -80,6 +81,12 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         if (!level().isClientSide) entityData.set(RETURNING, true);
     }
 
+    /** Interpolated velocity-driven rotation, as in the original projectile. */
+    public float getSpin(float partialTick)
+    {
+        return net.minecraft.util.Mth.lerp(partialTick, previousSpinTime, spinTime) * 32.0F;
+    }
+
     @Override
     protected float getGravity()
     {
@@ -89,6 +96,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     @Override
     public void tick()
     {
+        previousSpinTime = spinTime;
+        if (spinTime == 0.0F) previousSpinTime = spinTime = random.nextFloat() * 100.0F;
+        spinTime += (float) getDeltaMovement().length();
         Entity owner = getOwner();
         if (!level().isClientSide && (owner == null || !owner.isAlive()))
         {

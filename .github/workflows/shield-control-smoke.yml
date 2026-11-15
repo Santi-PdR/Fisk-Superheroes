@@ -7,6 +7,9 @@ on:
       - '.ci/shield_control_smoke.py'
       - '.github/workflows/shield-control-smoke.yml'
       - 'src/main/java/com/fiskmods/heroes/client/ClientEventHandler.java'
+      - 'src/main/java/com/fiskmods/heroes/client/ClientModEvents.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/ThrownShieldRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/client/render/CaptainAmericaShieldItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
       - 'src/main/java/com/fiskmods/heroes/common/hero/modifier/ModifierShieldThrowing.java'
       - 'src/main/java/com/fiskmods/heroes/common/network/PacketThrowShield.java'
@@ -20,6 +23,8 @@ jobs:
   shield:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -34,7 +39,8 @@ jobs:
       - name: Install headless client dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
+          sudo apt-get install -y -qq xvfb xdotool scrot imagemagick libgl1-mesa-dri libflite1
+          python3 -m pip install --user 'pillow>=13,<14'
       - name: Prepare dedicated server and client
         run: |
           chmod +x gradlew
@@ -43,6 +49,7 @@ jobs:
           printf 'earlyWindowControl = false\n' > "$prefix-client/config/fml.toml"
           echo 'eula=true' > "$prefix-server/eula.txt"
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > "$prefix-server/server.properties"
+          convert src/main/resources/assets/fiskheroes/textures/models/captain_americas_shield.png -channel RGB -fill '#ff00ff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/models/captain_americas_shield.png
           ./gradlew classes --no-daemon --console=plain
       - name: Test shield controls with a real client
         env:
@@ -55,5 +62,28 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: shield-control-${{ matrix.input }}
-          path: ci-shield-control-${{ matrix.input }}-*.log
+          path: |
+            ci-shield-control-${{ matrix.input }}-*.log
+            ci-shield-control-${{ matrix.input }}-*.png
           if-no-files-found: ignore
+      - name: Publish concise test diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .ci
+          log=".ci/shield-control-${{ matrix.input }}-log.txt"
+          { cat ci-shield-control-${{ matrix.input }}-test.log 2>/dev/null || true
+            echo '==== relevant server events ===='
+            grep -E 'Shield throw|Ability input|SHIELD_|Exception|ERROR' ci-shield-control-${{ matrix.input }}-server.log 2>/dev/null | tail -100 || true
+            echo '==== client tail ===='
+            tail -80 ci-shield-control-${{ matrix.input }}-client.log 2>/dev/null || true
+          } > "$log"
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f "$log"
+          git diff --cached --quiet || git commit -m 'ci: shield ${{ matrix.input }} diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1

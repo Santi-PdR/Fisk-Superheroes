@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Exercise real attack inputs and shield recovery on a dedicated Forge server."""
 import os
+import hashlib
+import threading
+import uuid
 import re
 import signal
 import subprocess
@@ -99,6 +102,41 @@ def main():
             count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
             if count != 1: raise RuntimeError(f'Expected one launch, saw {count}')
             print('PASS: real', 'keyboard' if keyboard else 'mouse', 'attack requires held ability and returns shield', flush=True)
+            if not keyboard:
+                # Hold a server-owned projectile in a controlled front-facing pose. A
+                # runner-only magenta texture makes actual model pixels distinguishable
+                # from the background and the player's HUD.
+                from PIL import Image
+                command('item replace entity Dev weapon.mainhand with minecraft:air')
+                command('fill -3 179 6 3 184 6 minecraft:black_concrete')
+                command('tp Dev 0.5 180 0.5 0 0')
+                time.sleep(1)
+                subprocess.run(['scrot', prefix + '-before.png'], check=True, timeout=30)
+                raw = hashlib.md5(b'OfflinePlayer:Dev').digest()
+                identity = uuid.UUID(bytes=raw, version=3)
+                chunks = [int.from_bytes(identity.bytes[i:i + 4], 'big', signed=True) for i in range(0, 16, 4)]
+                owner_tag = '[I;' + ','.join(str(value) for value in chunks) + ']'
+                command('summon fiskheroes:thrown_shield 0.5 181.62 3.5 '
+                        '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.03d,0.0d],Rotation:[0.0f,90.0f]}')
+                stop = threading.Event()
+                def anchor():
+                    while not stop.wait(.12):
+                        server.stdin.write('tp @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] 0.5 181.62 3.5 0 90\n')
+                        server.stdin.flush()
+                thread = threading.Thread(target=anchor, daemon=True); thread.start()
+                try:
+                    wait_for(client_log, r'Thrown shield model rendered: entity=', 30, 'projectile model render path', client)
+                    time.sleep(.5)
+                    subprocess.run(['scrot', prefix + '-projectile.png'], check=True, timeout=30)
+                finally:
+                    stop.set(); thread.join(timeout=3)
+                def magenta(path):
+                    image = Image.open(path).convert('RGB').crop((520, 250, 760, 470))
+                    return sum(1 for r, g, b in image.getdata() if r > 170 and b > 170 and g < 100)
+                gain = magenta(prefix + '-projectile.png') - magenta(prefix + '-before.png')
+                if gain < 80: raise RuntimeError(f'Thrown shield model was not visible: {gain} magenta pixels')
+                print(f'PASS: thrown shield model adds {gain} diagnostic pixels', flush=True)
+
         finally:
             for p in reversed(processes):
                 if p.poll() is None:

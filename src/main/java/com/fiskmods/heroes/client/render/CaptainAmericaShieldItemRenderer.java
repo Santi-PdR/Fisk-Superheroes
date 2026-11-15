@@ -126,6 +126,13 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
             }
         }
 
+        renderShieldModel(pose, buffers, light, overlay, showStraps);
+        pose.popPose();
+    }
+
+    /** Shared raw model, without item-context translations, for the spinning projectile. */
+    public void renderShieldModel(PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean showStraps)
+    {
         VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
 
         pose.pushPose();
@@ -150,8 +157,6 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
             strapWrist.render(pose, consumer, light, overlay);
             strapGrip.render(pose, consumer, light, overlay);
         }
-
-        pose.popPose();
     }
 
     private void buildShieldGeometry()
