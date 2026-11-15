@@ -6295,7 +6295,19 @@ public final class PortRegressionTests
         level.setBlockAndUpdate(far, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
         com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
         if (!level.getBlockState(near).is(net.minecraft.world.level.block.Blocks.WATER))
-        { helper.fail("Heat gun must reach a block 30 blocks away"); return; }
+        {
+            var eye = shooter.getEyePosition();
+            var view = shooter.getViewVector(1.0F);
+            var clipped = level.clip(new net.minecraft.world.level.ClipContext(eye, eye.add(view.scale(32)),
+                    net.minecraft.world.level.ClipContext.Block.COLLIDER, net.minecraft.world.level.ClipContext.Fluid.NONE, shooter));
+            helper.fail("Heat gun must reach a block 30 blocks away: state=" + level.getBlockState(near)
+                    + ", eye=" + eye + ", view=" + view + ", clip=" + clipped.getBlockPos()
+                    + ", clipType=" + clipped.getType() + ", near=" + near
+                    + ", aiming=" + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING)
+                    + ", timer=" + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.AIMING_TIMER)
+                    + ", permitted=" + level.mayInteract(shooter, near));
+            return;
+        }
         helper.runAfterDelay(1, () -> {
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
             if (!level.getBlockState(far).is(net.minecraft.world.level.block.Blocks.ICE))
