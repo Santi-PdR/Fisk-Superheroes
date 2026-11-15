@@ -62,7 +62,7 @@ public final class ColdBallEntity extends ThrowableProjectile
 
     @Override protected void onHitEntity(EntityHitResult hit)
     {
-        if (level() instanceof ServerLevel server) explode(server, hit.getLocation());
+        if (level() instanceof ServerLevel server) explode(server, FreezeBurst.impactLocation(this, hit));
         discard();
     }
 

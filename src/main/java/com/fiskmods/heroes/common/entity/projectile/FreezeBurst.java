@@ -29,6 +29,21 @@ final class FreezeBurst
 {
     private FreezeBurst() {}
 
+    /** Recover the surface contact when Minecraft supplies an entity-origin hit result. */
+    static Vec3 impactLocation(Entity projectile, net.minecraft.world.phys.EntityHitResult hit)
+    {
+        Vec3 start = projectile.position();
+        Vec3 end = start.add(projectile.getDeltaMovement());
+        var box = hit.getEntity().getBoundingBox();
+        var contact = box.clip(start, end);
+        if (contact.isEmpty()) contact = box.inflate(0.3D).clip(start, end);
+        if (contact.isPresent()) return contact.get();
+        // If the segment began inside the target, the generic EntityHitResult
+        // may report its feet instead of the collision point. Use the projectile
+        // position rather than relocating a burst to the center of a large mob.
+        return hit.getLocation().distanceToSqr(hit.getEntity().position()) < 1.0E-8D ? start : hit.getLocation();
+    }
+
     static void detonate(ServerLevel level, Entity projectile, Entity owner, Vec3 center,
             double blockRadius, float damage, JsonObject profile, boolean affectsOwner, boolean diagnostics)
     {

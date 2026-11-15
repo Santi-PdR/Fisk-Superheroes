@@ -6961,6 +6961,49 @@ public final class PortRegressionTests
         finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder); cow.discard(); boat.discard(); ball.discard(); }
     }
 
+    @GameTest(template = "test_empty")
+    public static void cryoProjectilesDetonateAtEntitySurface(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 245, 1));
+        var shooter = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "cryo-surface-test"));
+        shooter.setPos(base.getX() + .5D, base.getY(), base.getZ() - 10.0D);
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
+        var grenade = new com.fiskmods.heroes.common.entity.projectile.EquipmentProjectileEntity(shooter,
+                "fiskheroes:freeze_grenade", new com.google.gson.JsonObject(),
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.FREEZE_GRENADE.get()), 0.0F);
+        grenade.setOwner(null);
+        var first = net.minecraft.world.entity.EntityType.COW.create(level);
+        var second = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (first == null || second == null) { helper.fail("Cryo surface targets missing"); return; }
+        first.setNoAi(true); first.setNoGravity(true); second.setNoAi(true); second.setNoGravity(true);
+        first.setPos(base.getX() + .5D, base.getY(), base.getZ() + 2.5D);
+        second.setPos(first.position().add(0, 12, 0));
+        level.addFreshEntity(first); level.addFreshEntity(second);
+        ball.setPos(first.getX(), first.getY() + 1, first.getZ() - 1.5D);
+        grenade.setPos(second.getX(), second.getY() + 1, second.getZ() - 1.5D);
+        ball.setDeltaMovement(0, 0, 1.5D); grenade.setDeltaMovement(0, 0, 1.5D);
+        try
+        {
+            // The one-argument constructor deliberately uses the target origin;
+            // the burst must recover the actual segment/hitbox intersection.
+            var a = ball.getClass().getDeclaredMethod("onHitEntity", net.minecraft.world.phys.EntityHitResult.class);
+            var b = grenade.getClass().getDeclaredMethod("onHitEntity", net.minecraft.world.phys.EntityHitResult.class);
+            a.setAccessible(true); b.setAccessible(true);
+            a.invoke(ball, new net.minecraft.world.phys.EntityHitResult(first));
+            b.invoke(grenade, new net.minecraft.world.phys.EntityHitResult(second));
+            if (!ball.isRemoved() || !grenade.isRemoved() || first.getTicksFrozen() <= 0 || second.getTicksFrozen() <= 0
+                    || first.getDeltaMovement().z <= .05D || second.getDeltaMovement().z <= .05D)
+                helper.fail("Cryo projectiles must explode at the hit surface and push forward: ball="
+                        + first.getDeltaMovement() + ", grenade=" + second.getDeltaMovement());
+            else helper.succeed();
+        }
+        catch (ReflectiveOperationException e) { helper.fail("Cryo surface invocation failed: " + e); }
+        finally { first.discard(); second.discard(); ball.discard(); grenade.discard(); }
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void coldBallImpactsTargetImmediately(GameTestHelper helper)
     {

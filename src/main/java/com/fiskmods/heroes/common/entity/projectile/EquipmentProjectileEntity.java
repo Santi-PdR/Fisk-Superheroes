@@ -214,7 +214,7 @@ public final class EquipmentProjectileEntity extends ThrowableItemProjectile
         String id = gadget();
         if (isFreezeGrenade(id))
         {
-            detonateFreeze(hit.getLocation());
+            detonateFreeze(FreezeBurst.impactLocation(this, hit));
             return;
         }
         if (isTimedGrenade(id))
