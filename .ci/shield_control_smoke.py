@@ -37,7 +37,7 @@ def main():
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
     if keyboard:
-        Path(run + '-client/options.txt').write_text('key_key.attack:key.keyboard.r\n')
+        Path(run + '-client/options.txt').write_text('version:3465\nkey_key.attack:key.keyboard.r\n')
     processes = []
     with server_log.open('w') as sout, client_log.open('w') as cout:
         try:
@@ -116,25 +116,39 @@ def main():
                 identity = uuid.UUID(bytes=raw, version=3)
                 chunks = [int.from_bytes(identity.bytes[i:i + 4], 'big', signed=True) for i in range(0, 16, 4)]
                 owner_tag = '[I;' + ','.join(str(value) for value in chunks) + ']'
-                command('summon fiskheroes:thrown_shield 0.5 181.62 3.5 '
-                        '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.03d,0.0d],Rotation:[0.0f,90.0f]}')
+                log_offset = client_log.stat().st_size
+                server.stdin.write('summon fiskheroes:thrown_shield 0.5 181.62 3.5 '
+                        '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.03d,0.0d],Rotation:[0.0f,90.0f]}\n')
+                server.stdin.flush()
                 stop = threading.Event()
                 def anchor():
                     while not stop.wait(.12):
                         server.stdin.write('tp @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] 0.5 181.62 3.5 0 90\n')
+                        server.stdin.write('data merge entity @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] {Motion:[0.0d,0.02d,0.0d]}\n')
                         server.stdin.flush()
                 thread = threading.Thread(target=anchor, daemon=True); thread.start()
                 try:
-                    wait_for(client_log, r'Thrown shield model rendered: entity=', 30, 'projectile model render path', client)
-                    time.sleep(.5)
+                    deadline = time.monotonic() + 30
+                    while time.monotonic() < deadline:
+                        if b'Thrown shield model rendered: entity=' in client_log.read_bytes()[log_offset:]: break
+                        if client.poll() is not None: raise RuntimeError('Client exited before visual probe rendered')
+                        time.sleep(.1)
+                    else: raise RuntimeError('The visual probe never rendered')
+                    command('execute if entity @e[type=fiskheroes:thrown_shield,tag=visual_probe] run say SHIELD_PROBE_PRESENT')
+                    wait_for(server_log, r'SHIELD_PROBE_PRESENT', 5, 'visual probe remained in the world', server)
                     subprocess.run(['scrot', prefix + '-projectile.png'], check=True, timeout=30)
                 finally:
                     stop.set(); thread.join(timeout=3)
                 def magenta(path):
                     image = Image.open(path).convert('RGB').crop((520, 250, 760, 470))
-                    return sum(1 for r, g, b in image.getdata() if r > 170 and b > 170 and g < 100)
+                    return sum(1 for r, g, b in image.get_flattened_data() if r > 170 and b > 170 and g < 100)
                 gain = magenta(prefix + '-projectile.png') - magenta(prefix + '-before.png')
-                if gain < 80: raise RuntimeError(f'Thrown shield model was not visible: {gain} magenta pixels')
+                if gain < 80:
+                    import base64, io
+                    image = Image.open(prefix + '-projectile.png').convert('RGB')
+                    image.thumbnail((640, 360)); encoded = io.BytesIO(); image.save(encoded, format='PNG')
+                    print('DIAGNOSTIC_SCREENSHOT_BASE64=' + base64.b64encode(encoded.getvalue()).decode(), flush=True)
+                    raise RuntimeError(f'Thrown shield model was not visible: {gain} magenta pixels')
                 print(f'PASS: thrown shield model adds {gain} diagnostic pixels', flush=True)
 
         finally:
