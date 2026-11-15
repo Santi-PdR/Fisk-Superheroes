@@ -28,7 +28,7 @@ concurrency:
 jobs:
   coldgun:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     permissions:
       contents: write
     steps:
@@ -56,6 +56,19 @@ jobs:
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/cold_gun_visual_smoke.py 2>&1 | tee ci-cold-gun-test.log
+      - name: Check held item use with an alternate AIM key
+        run: |
+          set -o pipefail
+          git restore src/main/resources/assets/fiskheroes/textures/models/cold_gun.png
+          mkdir -p run-cold-gun-alt-server run-cold-gun-alt-client/config
+          printf 'earlyWindowControl = false\n' > run-cold-gun-alt-client/config/fml.toml
+          echo 'eula=true' > run-cold-gun-alt-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-cold-gun-alt-server/server.properties
+          sed -i 's/"key.aim", -1/"key.aim", 1/' src/main/resources/assets/fiskheroes/data/heroes/captain_cold.js
+          grep -q '"key.aim", 1' src/main/resources/assets/fiskheroes/data/heroes/captain_cold.js
+          ./gradlew classes --no-daemon --console=plain
+          COLD_GUN_ALT_AIM=1 xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/cold_gun_visual_smoke.py 2>&1 | tee ci-cold-gun-alt-test.log
+          git restore src/main/resources/assets/fiskheroes/data/heroes/captain_cold.js
       - name: Upload captures and logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,9 +81,9 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/models/cold_gun.png
+          git restore src/main/resources/assets/fiskheroes/textures/models/cold_gun.png src/main/resources/assets/fiskheroes/data/heroes/captain_cold.js
           mkdir -p .ci
-          { cat ci-cold-gun-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-cold-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-cold-gun-server.log 2>/dev/null || true; } > .ci/cold-gun-visual-log.txt
+          { cat ci-cold-gun-test.log 2>/dev/null || true; echo '==== alternate aim ===='; cat ci-cold-gun-alt-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-cold-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-cold-gun-server.log 2>/dev/null || true; } > .ci/cold-gun-visual-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
           git add -f .ci/cold-gun-visual-log.txt

@@ -42,6 +42,7 @@ import net.minecraft.world.phys.HitResult;
 public final class ItemColdGun extends ItemGun
 {
     private static final String TAG_GRENADE_MODE = "GrenadeMode";
+    private static final String PLAYER_COOLDOWN_TAG = "FiskColdGunCooldownUntil";
     private static final int REQUEST_TIMEOUT = 20;
     private static final int CHARGE_TICKS = 10;
     private static final int MAX_USE_TICKS = 611;
@@ -88,7 +89,7 @@ public final class ItemColdGun extends ItemGun
                 if (hand != InteractionHand.MAIN_HAND || hero == null || data == null
                         || !hasPermission(player, hero) || data.getData().get(Vars.AIMING)
                         || data.getData().get(Vars.RECOIL) > 0.0F) return InteractionResultHolder.fail(stack);
-                clearBeam(player);
+                stopBeam(player);
                 boolean next = !isGrenadeMode(stack);
                 stack.getOrCreateTag().putBoolean(TAG_GRENADE_MODE, next);
                 SHSounds.play(player, FiskHeroes.id("item.coldgun.aim"), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -123,11 +124,22 @@ public final class ItemColdGun extends ItemGun
         if (!AbilityHandler.isKeyPressed(serverPlayer, "AIM") || !data.getData().get(Vars.AIMING)
                 || data.getData().get(Vars.AIMING_TIMER) < 1.0F || data.getData().get(Vars.RECOIL) > 0.0F)
             return false;
-        if (isGrenadeMode(stack)) return super.fireFromAttack(player, stack);
-        if (stack.getOrCreateTag().getLong(NEXT_SHOT_TAG) > player.level().getGameTime()) return false;
-        long expires = player.level().getGameTime() + REQUEST_TIMEOUT;
+        long now = player.level().getGameTime();
+        if (player.getPersistentData().getLong(PLAYER_COOLDOWN_TAG) > now) return false;
+        if (isGrenadeMode(stack))
+        {
+            boolean fired = super.fireFromAttack(player, stack);
+            if (fired) player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + 20);
+            return fired;
+        }
         BeamRequest request = REQUESTS.get(player.getUUID());
-        if (request == null || request.stack != stack)
+        if (request != null && request.stack != stack)
+        {
+            stopBeam(player);
+            return false;
+        }
+        long expires = now + REQUEST_TIMEOUT;
+        if (request == null)
         {
             REQUESTS.put(player.getUUID(), new BeamRequest(stack, expires));
             SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -158,7 +170,7 @@ public final class ItemColdGun extends ItemGun
         if (++request.ticks > MAX_USE_TICKS)
         {
             request.exhausted = true;
-            request.stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, now + 4);
+            player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + 4);
             SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.stop"), SoundSource.PLAYERS, 1.0F, 1.0F);
             return;
         }
@@ -174,7 +186,7 @@ public final class ItemColdGun extends ItemGun
         BeamRequest request = REQUESTS.remove(player.getUUID());
         if (request != null && !request.exhausted)
         {
-            request.stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, player.level().getGameTime() + 4);
+            player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, player.level().getGameTime() + 4);
             SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.stop"), SoundSource.PLAYERS, 1.0F, 1.0F);
         }
     }
@@ -240,9 +252,25 @@ public final class ItemColdGun extends ItemGun
     @Override
     protected void onRayEntityContact(ServerPlayer shooter, LivingEntity hit, boolean acceptedHit)
     {
-        // Vanilla freezing is only an approximation of the original body-temperature system.
-        hit.clearFire();
-        hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 1, hit.getTicksRequiredToFreeze() + 40));
+        // Vanilla removes two frozen ticks per tick outside powder snow. Add those back
+        // during contact, plus one gradual exposure tick, so sustained fire accumulates.
+        // The original has a separate body-temperature system; this remains an approximation.
+        float exposure = 1.0F;
+        var data = SHDataCapabilities.getPlayer(hit);
+        if (data != null && data.getHeroType() != null)
+        {
+            var resistance = data.getHeroType().getPowerContainer().getEntry(FiskHeroes.id("damage_resistance"));
+            if (resistance != null && resistance.isEnabled() && resistance.isModifierEnabled(hit, data)
+                    && "COLD".equalsIgnoreCase(resistance.get(com.fiskmods.heroes.common.hero.power.PowerProperty.DAMAGE_TYPE)))
+                exposure = net.minecraft.util.Mth.clamp(1.0F - resistance.getFloat(hit,
+                        com.fiskmods.heroes.common.hero.power.PowerProperty.FACTOR), 0.0F, 1.0F);
+        }
+        if (exposure <= 0.0F) return;
+        final String remainderKey = "FiskColdBeamRemainder";
+        float amount = 2.0F + exposure + hit.getPersistentData().getFloat(remainderKey);
+        int ticks = (int) amount;
+        hit.getPersistentData().putFloat(remainderKey, amount - ticks);
+        hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + ticks, hit.getTicksRequiredToFreeze() + 40));
         hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
     }
 

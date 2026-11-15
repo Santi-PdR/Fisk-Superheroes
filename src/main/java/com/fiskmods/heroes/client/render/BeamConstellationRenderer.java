@@ -41,7 +41,10 @@ final class BeamConstellationRenderer
                 && suit.getCustom().containsKey("fiskheroes:charged_beam"))
             effect = suit.getCustom().get("fiskheroes:charged_beam");
         else if (state.getData().get(Vars.ENERGY_PROJECTION_TIMER) > 0)
+        {
             effect = suit.getCustom().get("fiskheroes:energy_projection");
+            if (effect == null) effect = suit.getCustom().get("fiskheroes:cold_gun");
+        }
         else return;
         if (effect == null) return;
         BeamLayout layout = LAYOUTS.computeIfAbsent(effect, value -> BeamLayout.parse(value, heat));

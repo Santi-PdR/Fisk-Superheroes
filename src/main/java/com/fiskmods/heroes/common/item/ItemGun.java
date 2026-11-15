@@ -328,7 +328,8 @@ public class ItemGun extends Item
             {
                 double length = hit != null ? Math.sqrt(nearest) : start.distanceTo(end);
                 data.getData().set(Vars.HEAT_VISION_LENGTH, Math.min(rayRange, length));
-                data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
+                data.getData().set(Vars.ENERGY_PROJECTION_TIMER,
+                        net.minecraft.util.Mth.clamp((float) (rayRange / range), 0.0F, 1.0F));
             }
         }
 

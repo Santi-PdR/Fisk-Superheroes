@@ -1,0 +1,45 @@
+# Captain Cold's Cold Gun (1.20.1 port)
+
+## Controls and server behavior
+
+Wear a hero suit that grants `USE_COLD_GUN`, hold the main-hand Cold Gun and
+hold the suit's **AIM** binding. The default Captain Cold suit binds AIM to
+primary attack. Sneak and use the gun while not aiming to switch between beam
+and cryo grenade; both modes require fully raised aim. A suit with a different
+AIM binding may instead hold AIM and item use together.
+
+The server validates the player, held stack, permission, aim, mode and
+cooldown. Beam packets are only held-input heartbeats: the server performs at
+most one raycast per tick and stops on release, lost heartbeats, suit/item
+changes, death, or after approximately 611 use ticks. After full aim the beam
+charges for 10 ticks, then grows over five ticks to a 32-block range. The
+first collidable entity or block stops it. The default hit is 7 damage, with
+Fisk's COLD profile and projectile/absolute-damage flags; the port models the
+latter with the 1.20 damage-type tags that bypass potion and enchantment
+reductions, but not armor. Vanilla hurt immunity still controls how often
+health can actually decrease. Grenades have a 20-tick server-side per-player
+cooldown; releasing the beam has a four-tick cooldown. Replacing an item stack
+does not bypass these cooldowns.
+
+World changes require `powers.allowGriefing`, world-border and player edit
+permissions, plus cancellable Forge break/placement events. Placement uses
+captured snapshots so a denied change is restored before neighbor notification.
+Player-owned cryo bursts use the same protections. Non-player-owned bursts do
+not have a player identity for claim checks. Protection plugins must support
+Forge's standard block events to intercept these effects.
+
+## Known differences from 1.7.10
+
+* The original layers a special, gradually thickening ice residue on surfaces;
+  that block and its melt behavior are not yet ported. The present approximation
+  freezes water, solidifies lava, removes adjacent fire and places snow where it
+  can survive. Cryo explosions have their own simplified area effects.
+* The original lowers an independently tracked body temperature by 0.1 per
+  contact tick (with COLD resistance). The port approximates this with vanilla
+  frozen ticks and a brief slowing effect, including contacts where damage was
+  rejected. Frozen-tick gain compensates for vanilla thaw while the beam hits;
+  it is not a recreation of the original temperature, HUD or speedster mechanics.
+* Original configuration and per-suit range/damage rules are not yet exposed:
+  32 blocks and 7 damage are the original default values. Recoil animation,
+  the full looping beam sound and configurable ice-layer grief rules remain
+  incomplete. The beam and hit particles are approximations of the original.

@@ -11,19 +11,23 @@ from PIL import Image
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true')
-    server_log, client_log = Path('ci-cold-gun-server.log'), Path('ci-cold-gun-client.log')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true')
+    alt = os.environ.get('COLD_GUN_ALT_AIM') == '1'
+    suffix = '-alt' if alt else ''
+    prefix = 'ci-cold-gun' + suffix
+    run_prefix = 'run-cold-gun' + suffix
+    server_log, client_log = Path(prefix + '-server.log'), Path(prefix + '-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
     processes = []
     with server_log.open('w') as sout, client_log.open('w') as cout:
         try:
-            server = subprocess.Popen(['./gradlew', 'runServer', '-PciRunDir=run-cold-gun-server', *common],
+            server = subprocess.Popen(['./gradlew', 'runServer', f'-PciRunDir={run_prefix}-server', *common],
                                       stdin=subprocess.PIPE, stdout=sout, stderr=subprocess.STDOUT,
                                       text=True, env=env, start_new_session=True)
             processes.append(server)
             wait_for(server_log, r'Done \(', 360, 'dedicated server ready', server)
-            client = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-cold-gun-client',
+            client = subprocess.Popen(['./gradlew', 'runClient', f'-PciRunDir={run_prefix}-client',
                                        '-PciUsername=Dev', '-PquickPlayServer=127.0.0.1:25565', *common],
                                       stdout=cout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
             processes.append(client)
@@ -43,7 +47,7 @@ def main():
 
             def screenshot(name):
                 time.sleep(2)
-                subprocess.run(['scrot', 'ci-cold-gun-' + name + '.png'], check=True, timeout=30)
+                subprocess.run(['scrot', prefix + '-' + name + '.png'], check=True, timeout=30)
                 print('Captured:', name, flush=True)
 
             command('difficulty peaceful')
@@ -55,6 +59,37 @@ def main():
             command('execute as Dev run suit fiskheroes:captain_cold')
             command('item replace entity Dev weapon.mainhand with fiskheroes:cold_gun')
             wait_for(client_log, r'First-person cold gun arm rendered: RIGHT', 60, 'first-person gun arm', client)
+            if alt:
+                # Fixture binds AIM to C: use alone cannot fire; C + held use must
+                # keep supplying requests beyond the one-second heartbeat timeout.
+                command('setblock 0 181 4 minecraft:water')
+                xdo('mousedown', '3')
+                try: time.sleep(2)
+                finally: xdo('mouseup', '3')
+                command('execute if block 0 181 4 minecraft:water run say COLD_ALT_NO_AIM_OK')
+                wait_for(server_log, r'COLD_ALT_NO_AIM_OK', 30, 'item use alone cannot fire', server)
+                xdo('keydown', 'c')
+                try:
+                    time.sleep(1)
+                    xdo('mousedown', '3')
+                    try:
+                        time.sleep(2)
+                        command('fill -2 180 1 2 183 5 minecraft:air')
+                        command('setblock 0 181 4 minecraft:water')
+                        for z in range(1, 5):
+                            command(f'execute if block 0 181 {z} minecraft:ice run say COLD_ALT_HELD_OK')
+                        wait_for(server_log, r'COLD_ALT_HELD_OK', 30, 'held use sustains cold beam', server)
+                    finally: xdo('mouseup', '3')
+                    # Keep AIM held but release use; the beam must expire.
+                    time.sleep(2)
+                    command('fill -2 180 1 2 183 5 minecraft:air')
+                    command('setblock 0 181 4 minecraft:water')
+                    time.sleep(1)
+                    command('execute if block 0 181 4 minecraft:water run say COLD_ALT_RELEASE_OK')
+                    wait_for(server_log, r'COLD_ALT_RELEASE_OK', 30, 'released use stops cold beam', server)
+                finally: xdo('keyup', 'c')
+                print('PASS: alternate AIM and held use start, sustain and stop the cold beam', flush=True)
+                return
             screenshot('first')
             xdo('key', 'F5')
             xdo('key', 'F5')
@@ -85,6 +120,7 @@ def main():
             xdo('mousedown', '1')
             try:
                 wait_for(client_log, r'Cold gun first-person aiming: arm=RIGHT', 60, 'gun aims in first person', client)
+                wait_for(client_log, r'Beam constellation rendered: hero=fiskheroes:captain_cold, heat=false, firstPerson=true', 60, 'cold beam render path', client)
                 screenshot('aimed')
             finally:
                 xdo('mouseup', '1')
