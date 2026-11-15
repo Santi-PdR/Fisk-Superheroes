@@ -5278,14 +5278,52 @@ public final class PortRegressionTests
         target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR).setBaseValue(10.0D);
         var hit = target.damageSources().playerAttack(attacker);
         float afterSuit = 10.0F * com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(target, hit);
-        float expected = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(afterSuit, 10.0F, 0.0F);
+        float expected = net.minecraft.world.damagesource.CombatRules.getDamageAfterAbsorb(afterSuit * .99F, 10.0F, 0.0F);
         target.setHealth(20.0F);
         if (!target.hurt(hit, 10.0F) || Math.abs(target.getHealth() - (20.0F - expected)) > .01F)
         { helper.fail("Real hit must apply suit protection once before other vanilla armor"); return; }
         target.invulnerableTime = 0;
         target.setHealth(20.0F);
-        if (!target.hurt(target.damageSources().inWall(), 8.0F) || Math.abs(target.getHealth() - 12.0F) > .01F)
-        { helper.fail("Suffocation must bypass suit and vanilla armor"); return; }
+        if (!target.hurt(target.damageSources().inWall(), 8.0F) || Math.abs(target.getHealth() - 12.08F) > .01F)
+        { helper.fail("Suffocation bypasses tier and vanilla armor but retains one percent passive piece absorption"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void passiveSuitPiecesProtectEvenWithoutAnActiveHero(GameTestHelper helper)
+    {
+        var target = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        target.getAbilities().invulnerable = false;
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        if (data == null || data.getHeroType() != null) { helper.fail("Unexpected active hero"); return; }
+        var slots = new net.minecraft.world.entity.EquipmentSlot[] {
+                net.minecraft.world.entity.EquipmentSlot.HEAD, net.minecraft.world.entity.EquipmentSlot.CHEST,
+                net.minecraft.world.entity.EquipmentSlot.LEGS, net.minecraft.world.entity.EquipmentSlot.FEET };
+        for (int pieces = 0; pieces <= 4; pieces++)
+        {
+            if (pieces > 0)
+                target.setItemSlot(slots[pieces - 1], new net.minecraft.world.item.ItemStack(
+                        com.fiskmods.heroes.common.item.ModItems.heroArmor[pieces - 1])); // No HeroType tag.
+            float multiplier = 1.0F - .01F * pieces;
+            if (Math.abs(com.fiskmods.heroes.common.hero.SuitProtection.passiveArmorMultiplier(target) - multiplier) > .0001F)
+            { helper.fail("Passive absorption should add one percent per piece: " + pieces); return; }
+            for (var hit : new net.minecraft.world.damagesource.DamageSource[] {
+                    target.damageSources().playerAttack(attacker), target.damageSources().inWall(),
+                    target.damageSources().drown(), target.damageSources().magic() })
+            {
+                target.invulnerableTime = 0;
+                target.setHealth(20.0F);
+                if (!target.hurt(hit, 10.0F) || Math.abs(target.getHealth() - (20.0F - 10.0F * multiplier)) > .01F)
+                { helper.fail("Passive absorption failed for " + pieces + " pieces and " + hit); return; }
+            }
+        }
+        var cow = net.minecraft.world.entity.EntityType.COW.create(helper.getLevel());
+        if (cow == null) { helper.fail("Passive non-player fixture missing"); return; }
+        cow.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.heroArmor[0]));
+        if (com.fiskmods.heroes.common.hero.SuitProtection.passiveArmorMultiplier(cow) != 1.0F)
+        { helper.fail("Legacy special armor applies through the player armor pipeline only"); return; }
         helper.succeed();
     }
 

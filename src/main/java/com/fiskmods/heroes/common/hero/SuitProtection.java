@@ -58,6 +58,21 @@ public final class SuitProtection
         return (float) (1.0D - reduction);
     }
 
+    /**
+     * The legacy player's ISpecialArmor pass grants each worn hero armor item 1% absorption,
+     * independently of whether a hero is active and even for armor-bypassing sources. All
+     * pieces have the same priority, so their ratios add rather than multiply. In this port it
+     * runs before modern vanilla armor; mixed armor therefore uses 1.20's armor/toughness rules.
+     */
+    public static float passiveArmorMultiplier(LivingEntity entity)
+    {
+        if (!(entity instanceof net.minecraft.world.entity.player.Player)) return 1.0F;
+        int pieces = 0;
+        for (var stack : entity.getArmorSlots())
+            if (!stack.isEmpty() && stack.getItem() instanceof ItemHeroArmor) pieces++;
+        return 1.0F - pieces * 0.01F;
+    }
+
     /** Legacy extended damage reports fire at a FIRE fraction of at least one half. */
     private static boolean isFireDamage(DamageSource source)
     {

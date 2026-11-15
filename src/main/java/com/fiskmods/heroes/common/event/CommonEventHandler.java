@@ -302,6 +302,7 @@ public class CommonEventHandler
         if (hooked) outgoing *= 1.25F;
         float result = ModifierHandler.modifyDamage(entity, event.getSource(), outgoing);
         result *= com.fiskmods.heroes.common.hero.SuitProtection.damageMultiplier(entity, event.getSource());
+        result *= com.fiskmods.heroes.common.hero.SuitProtection.passiveArmorMultiplier(entity);
 
         if (result <= 0)
         {

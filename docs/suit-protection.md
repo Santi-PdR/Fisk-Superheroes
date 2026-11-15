@@ -14,7 +14,7 @@ points from other items and enchantments still work; superhero pieces themselves
 vanilla armor points, avoiding a second reduction from the same suit. Other mods' modifiers on
 the synced `fiskheroes:damage_reduction` attribute remain effective.
 
-Most armor-bypassing damage, including fall, drowning, suffocation and the void, bypasses suit
+Most armor-bypassing damage, including fall, drowning, suffocation and the void, bypasses tier
 protection. As in the original, burning, lava and direct magic receive half protection, and
 indirect magic receives full protection even though it bypasses vanilla armor. Other powers and
 fall resistance may independently cancel or change damage. Martian fire weakness halves the
@@ -27,8 +27,11 @@ blocks to bound the scan.
 The `requireFullSuit` policy still controls whether a partial suit activates its hero's powers and
 protection; when disabled, an active partial suit receives the hero's full tier protection. This
 port policy is more permissive than the original tracker, which required the suit's full armor
-signature. The original's separate 1%-per-piece `ISpecialArmor` absorption is not emulated;
-suit pieces without an active hero therefore provide no passive protection in this port.
+signature. Each worn superhero armor item also gives the original separate 1%-per-piece passive
+absorption, even without an active hero and against armor-bypassing sources. Piece percentages add
+(up to 4%) and apply to players, as in the original special-armor pipeline. The port applies this
+small passive reduction before 1.20 vanilla armor; mixed armor and toughness therefore retain modern
+rules and do not exactly reproduce the original 1.7 armor calculation.
 Suit durability scaling is not implemented: ported suit pieces are currently unbreakable. The HUD
 currently shows the base protection rather than a source-specific value; it does not yet reproduce
 the original metal-skin heat coloring.
