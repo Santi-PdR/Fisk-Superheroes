@@ -39,7 +39,8 @@ mod version.
   that block and its melt behavior are not yet ported. The present approximation
   freezes water, solidifies lava, removes adjacent fire and places snow where it
   can survive. Cryo explosions have simplified distance/exposure and no original
-  knockback model.
+  knockback model; their freezing duration does not yet scale with cold resistance,
+  although their damage respects damage-profile resistance.
 * The original lowers an independently tracked body temperature by 0.1 per
   contact tick (with COLD resistance). The port approximates this with vanilla
   frozen ticks and a brief slowing effect, including contacts where damage was

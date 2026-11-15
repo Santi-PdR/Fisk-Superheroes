@@ -143,18 +143,20 @@ def main():
             screenshot('grenade')
             command('fill -4 180 1 4 183 5 minecraft:air')
             command('tp Dev 0.5 180 0.5 0 10')
-            command('summon minecraft:cow 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
+            # A durable target tolerates multiple held-input launches while still
+            # proving that a real impact damages and slows it.
+            command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
             xdo('mousedown', '1')
             try:
-                time.sleep(0.7)
+                time.sleep(1.5)
             finally:
                 xdo('mouseup', '1')
-            command('data get entity @e[type=minecraft:cow,tag=cold_ball_test,limit=1]')
-            command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
+            command('data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1]')
+            command('execute as @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
-            command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] unless data entity @s {Health:10.0f} run say COLD_BALL_DAMAGE_OK')
+            command('execute as @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] unless data entity @s {Health:100.0f} run say COLD_BALL_DAMAGE_OK')
             wait_for(server_log, r'COLD_BALL_DAMAGE_OK', 30, 'cold ball impact damages the target', server)
-            command('kill @e[type=minecraft:cow,tag=cold_ball_test]')
+            command('kill @e[type=minecraft:iron_golem,tag=cold_ball_test]')
             command('tp Dev 0.5 180 0.5 0 0')
             # Point-blank creative mining must be suppressed even when holding attack.
             command('setblock 0 181 2 minecraft:stone')
