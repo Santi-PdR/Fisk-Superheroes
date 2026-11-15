@@ -2838,11 +2838,17 @@ public final class PortRegressionTests
         net.minecraft.world.damagesource.DamageSource source;
         int count;
         float amount;
+        java.util.Map<String, Double> profile;
         DirectArrowDamageRecorder(net.minecraft.world.entity.Entity target) { this.target = target; }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void onHurt(net.minecraftforge.event.entity.living.LivingHurtEvent event)
         {
-            if (event.getEntity() == target) { source = event.getSource(); count++; amount = event.getAmount(); }
+            if (event.getEntity() == target)
+            {
+                source = event.getSource(); count++; amount = event.getAmount();
+                var active = com.fiskmods.heroes.common.hero.modifier.DamageGroups.currentDamageProfile();
+                profile = active == null ? null : java.util.Map.copyOf(active);
+            }
         }
     }
 
@@ -6186,7 +6192,10 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel();
         var player = coldGunShooter(helper, "cold-gun-limit");
-        player.setPos(player.position().add(0, 210, 0));
+        // Cast vertically in an empty band so this long-running test cannot
+        // affect other GameTests sharing the server's horizontal test grid.
+        player.setPos(player.position().add(0, 160, 0));
+        player.setXRot(-90.0F);
         var gun = (com.fiskmods.heroes.common.item.ItemColdGun) player.getMainHandItem().getItem();
         var stack = player.getMainHandItem();
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
@@ -6819,17 +6828,27 @@ public final class PortRegressionTests
         if (target == null) { helper.fail("Cold ball target missing"); return; }
         target.setNoAi(true); target.setPos(player.getX(), player.getY(), player.getZ() + 3.0D);
         level.addFreshEntity(target);
+        var recorder = new DirectArrowDamageRecorder(target);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
         var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(player);
         level.addFreshEntity(ball);
         helper.runAfterDelay(8, () -> {
-            if (!ball.isRemoved()) { helper.fail("Cold ball must detonate on impact, without a grenade fuse"); return; }
-            if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
+            String failure = null;
+            if (!ball.isRemoved()) failure = "Cold ball must detonate on impact, without a grenade fuse";
+            else if (!target.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN)
                     || target.getTicksFrozen() <= 0 || target.getHealth() >= target.getMaxHealth())
-            { helper.fail("Cold ball impact must damage and freeze the nearby target"); return; }
-            if (player.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
-            { helper.fail("Cold ball must not freeze its owner"); return; }
+                failure = "Cold ball impact must damage and freeze the nearby target";
+            else if (player.hasEffect(net.minecraft.world.effect.MobEffects.MOVEMENT_SLOWDOWN))
+                failure = "Cold ball must not freeze its owner";
+            else if (recorder.count != 1 || recorder.amount <= 0 || recorder.amount > 9.0F
+                    || recorder.source == null || recorder.source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)
+                    || recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                    || recorder.profile == null || Math.abs(recorder.profile.getOrDefault("COLD", 0.0D) - .6D) > .001D
+                    || Math.abs(recorder.profile.getOrDefault("EXPLOSION", 0.0D) - .4D) > .001D)
+                failure = "Cold ball did not use its original damage profile and non-magic source: " + recorder.profile;
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
             target.discard();
-            helper.succeed();
+            if (failure != null) helper.fail(failure); else helper.succeed();
         });
     }
 

@@ -15,6 +15,18 @@ import net.minecraft.world.phys.Vec3;
 public final class ColdBallEntity extends ThrowableProjectile
 {
     private static final double BLOCK_RADIUS = 1.0D;
+    // Original DamageProfiles.COLD_BALL: 9 damage, 60% COLD / 40% EXPLOSION.
+    private static final com.google.gson.JsonObject DAMAGE_PROFILE = createDamageProfile();
+
+    private static com.google.gson.JsonObject createDamageProfile()
+    {
+        var types = new com.google.gson.JsonObject();
+        types.addProperty("COLD", 0.6D);
+        types.addProperty("EXPLOSION", 0.4D);
+        var profile = new com.google.gson.JsonObject();
+        profile.add("types", types);
+        return profile;
+    }
 
     public ColdBallEntity(EntityType<? extends ColdBallEntity> type, Level level)
     {
@@ -69,6 +81,6 @@ public final class ColdBallEntity extends ThrowableProjectile
     {
         boolean diagnostics = Boolean.getBoolean("fiskheroes.ciColdBallDiagnostics");
         if (diagnostics) com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold ball impact: center={}, owner={}", center, getOwner());
-        FreezeBurst.detonate(level, this, getOwner(), center, BLOCK_RADIUS, 6.0F, null, false, diagnostics);
+        FreezeBurst.detonate(level, this, getOwner(), center, BLOCK_RADIUS, 9.0F, DAMAGE_PROFILE, false, diagnostics);
     }
 }

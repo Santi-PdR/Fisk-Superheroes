@@ -49,7 +49,15 @@ final class FreezeBurst
             float strength = (float) (1.0D - distance / entityRadius);
             if (owner instanceof LivingEntity shooter && damage > 0.0F)
             {
-                Runnable hit = () -> target.hurt(level.damageSources().indirectMagic(projectile, shooter), damage * strength);
+                // Original freeze explosions are attributed to their owner, but are not
+                // magic or armor-bypassing. Their COLD/EXPLOSION fractions come from
+                // the active Fisk profile rather than vanilla magic tags.
+                var type = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(net.minecraft.resources.ResourceKey.create(
+                                net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                                com.fiskmods.heroes.FiskHeroes.id("freeze_explosion")));
+                var source = new net.minecraft.world.damagesource.DamageSource(type, shooter, shooter);
+                Runnable hit = () -> target.hurt(source, damage * strength);
                 if (profile != null && profile.has("types")) DamageGroups.withDamageProfile(profile, hit);
                 else DamageGroups.withDamageProfile(Map.of("COLD", 0.5D, "EXPLOSION", 0.6D), hit);
             }

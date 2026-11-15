@@ -17,7 +17,9 @@ first collidable entity or block stops it. The default hit is 7 damage, with
 Fisk's COLD profile and projectile/absolute-damage flags; the port models the
 latter with the 1.20 damage-type tags that bypass potion and enchantment
 reductions, but not armor. Vanilla hurt immunity still controls how often
-health can actually decrease. Grenades have a 20-tick server-side per-player
+health can actually decrease. The cryo ball uses the original default base
+profile of 9 damage (60% COLD, 40% EXPLOSION), attenuated with distance by the
+port's simplified burst. Grenades have a 20-tick server-side per-player
 cooldown; releasing the beam has a four-tick cooldown. Replacing an item stack
 does not bypass these cooldowns.
 
@@ -36,7 +38,8 @@ mod version.
 * The original layers a special, gradually thickening ice residue on surfaces;
   that block and its melt behavior are not yet ported. The present approximation
   freezes water, solidifies lava, removes adjacent fire and places snow where it
-  can survive. Cryo explosions have their own simplified area effects.
+  can survive. Cryo explosions have simplified distance/exposure and no original
+  knockback model.
 * The original lowers an independently tracked body temperature by 0.1 per
   contact tick (with COLD resistance). The port approximates this with vanilla
   frozen ticks and a brief slowing effect, including contacts where damage was

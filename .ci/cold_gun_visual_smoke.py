@@ -146,7 +146,7 @@ def main():
             command('summon minecraft:cow 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
             xdo('mousedown', '1')
             try:
-                time.sleep(1.5)
+                time.sleep(0.7)
             finally:
                 xdo('mouseup', '1')
             command('data get entity @e[type=minecraft:cow,tag=cold_ball_test,limit=1]')
