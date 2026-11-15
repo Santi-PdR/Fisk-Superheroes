@@ -387,6 +387,9 @@ public class CommonEventHandler
     {
         if (event.getEntity() instanceof ServerPlayer player)
         {
+            // A saved capability may contain a stale transient beam flag after an unclean exit.
+            // Clear it before sending the initial state to this client and its trackers.
+            com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
             DataSyncer.onPlayerLogin(player);
         }
     }
@@ -422,6 +425,7 @@ public class CommonEventHandler
     {
         if (event.getEntity() instanceof ServerPlayer player)
         {
+            com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
             HeroTracker.update(player);
 
             com.fiskmods.heroes.common.data.SHPlayerData data = SHDataCapabilities.getPlayer(player);
@@ -446,6 +450,7 @@ public class CommonEventHandler
     {
         if (event.getEntity() instanceof ServerPlayer player)
         {
+            com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
             HeroTracker.update(player);
             DataSyncer.sendFullSync(player);
         }
