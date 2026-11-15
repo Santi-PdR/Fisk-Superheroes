@@ -7,7 +7,7 @@ Captured: inventory
 Captured: ball-before
 PASS: cold ball rendered by real client
 Captured: ball-visible
-PASS: cold ball blue shell adds 2686 pixels
+PASS: cold ball blue shell adds 2316 pixels
 PASS: gun aims in first person
 PASS: cold beam render path
 PASS: beam start event received
@@ -26,156 +26,169 @@ PASS: grenade firing has original sound volume
 PASS: cold ball explodes and slows a target on impact
 PASS: cold ball impact damages the target
 PASS: cold ball pushes a nearby item away from impact
+PASS: gun attack does not mine blocks in creative
+PASS: full-health melee target is present
+PASS: empty gun does not add a vanilla melee hit
+PASS: unarmed vanilla attack still works
+Captured: offhand
+PASS: first/third/offhand poses, contained icon, and aiming movement: 771.3 -> 689.5
 ==== alternate aim ====
+PASS: dedicated server ready
+PASS: client joined
+PASS: first-person gun arm
+PASS: item use alone cannot fire
+PASS: held use sustains cold beam
+PASS: released use promptly stops cold beam
+PASS: alternate AIM and held use start, sustain and stop the cold beam
 ==== client tail ====
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 17
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:enchantment
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 18
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:fluid
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 19
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:entity_type
-[04:26:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Waiting for registries to load.
-[04:26:39] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Injecting registry snapshot from server.
-[04:26:39] [Render thread/INFO] [ne.mi.re.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
-[04:26:39] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
-[04:26:40] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[04:26:40] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[04:26:40] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[04:26:40] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
-[04:26:40] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[04:26:41] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[04:26:41] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@7bbec1cc into net.minecraft.network.Connection@5a77b7cc
-[04:26:42] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[04:26:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[04:26:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[04:26:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[04:26:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[04:26:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[04:27:00] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
-[04:27:00] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[04:27:02] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
-[04:27:02] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[04:27:05] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[04:27:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
-[04:27:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
-[04:27:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
-[04:27:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
-[04:27:07] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
-[04:27:07] [Render thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0x501dd8500697b04f
-[04:27:13] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=153
-[04:27:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
-[04:27:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Dev
-[04:27:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Dev, volume=1.0, active=true
-[04:27:22] [Render thread/INFO] [Fisk's Superheroes/]: Beam constellation rendered: hero=fiskheroes:captain_cold, heat=false, firstPerson=true, beams=1
-[04:27:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[04:27:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
-[04:27:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
-[04:27:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Dev
-[04:27:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[04:27:26] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[04:27:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
-[04:27:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
-[04:27:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Dev
-[04:27:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Dev, volume=1.0, active=true
-[04:27:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[04:27:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
-[04:27:27] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
-[04:27:27] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Dev
-[04:27:32] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_WATER_OK
-[04:27:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
-[04:27:35] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
-[04:27:36] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_GRENADE_MODE_OK
-[04:27:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[04:27:46] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[04:27:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[04:27:46] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
-[04:27:46] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=156
-[04:27:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[04:27:47] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
-[04:27:47] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=157
-[04:27:48] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[04:27:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Iron Golem] COLD_BALL_IMPACT_OK
-[04:27:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Iron Golem] COLD_BALL_DAMAGE_OK
-[04:27:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_BALL_PUSH_OK
+[05:14:56] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
+[05:14:56] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
+[05:14:56] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
+[05:14:57] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[05:14:57] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[05:14:57] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
+[05:14:57] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
+[05:14:57] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[05:14:58] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[05:14:59] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@3ad7a94 into net.minecraft.network.Connection@648374fa
+[05:15:00] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[05:15:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[05:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:15:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:15:10] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[05:15:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket.png, poseAligned=true
+[05:15:17] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[05:15:19] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
+[05:15:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[05:15:22] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[05:15:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
+[05:15:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
+[05:15:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
+[05:15:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
+[05:15:24] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
+[05:15:24] [Render thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xce7adb6e3855ffdf
+[05:15:31] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=117
+[05:15:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
+[05:15:38] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=30, present=true, active=true
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Dev
+[05:15:38] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Dev, volume=1.0, active=true
+[05:15:39] [Render thread/INFO] [Fisk's Superheroes/]: Beam constellation rendered: hero=fiskheroes:captain_cold, heat=false, firstPerson=true, beams=1
+[05:15:40] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Dev, volume=1.0, active=true
+[05:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[05:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[05:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=30, present=true, active=false
+[05:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Dev
+[05:15:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:15:43] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:15:43] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[05:15:43] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[05:15:43] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=30, present=true, active=true
+[05:15:43] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Dev
+[05:15:43] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Dev, volume=1.0, active=true
+[05:15:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:15:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[05:15:44] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[05:15:44] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=30, present=true, active=false
+[05:15:44] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Dev
+[05:15:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_WATER_OK
+[05:15:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
+[05:15:52] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
+[05:15:53] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_GRENADE_MODE_OK
+[05:16:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:16:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:16:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[05:16:04] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[05:16:04] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=120
+[05:16:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[05:16:05] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[05:16:05] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=121
+[05:16:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:16:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Iron Golem] COLD_BALL_IMPACT_OK
+[05:16:10] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Iron Golem] COLD_BALL_DAMAGE_OK
+[05:16:12] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] COLD_BALL_PUSH_OK
+[05:16:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:16:20] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:16:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[05:16:20] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[05:16:20] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=123
+[05:16:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[05:16:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[05:16:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=124
+[05:16:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:16:22] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] GUN_NO_MINING_OK
+[05:16:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] MELEE_TARGET_READY
+[05:16:30] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
+[05:16:30] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[05:16:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:16:30] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:16:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:16:31] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] GUN_NO_MELEE_OK
+[05:16:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[05:16:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[05:16:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[05:16:34] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Dev] UNARMED_MELEE_OK
+[05:16:36] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: LEFT
+[05:16:36] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_LEFT_HAND, texture=default
 ==== server tail ====
-[04:26:51] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
-[04:26:53] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
-[04:26:54] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
-[04:26:56] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
-[04:26:56] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -8.0,245.0,7.0
-[04:26:56] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -8.0,245.0,7.0
-[04:26:56] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -8.0,245.0,7.0
-[04:26:56] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -8.0,245.0,7.0
-[04:26:57] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
-[04:26:59] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[04:26:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[04:26:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[04:26:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[04:26:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[04:26:59] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[04:27:00] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
-[04:27:02] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
-[04:27:10] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 25 block(s)
-[04:27:13] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new entity.fiskheroes.cold_ball
-[04:27:17] [Server thread/INFO] [minecraft/MinecraftServer]: Killed entity.fiskheroes.cold_ball
-[04:27:18] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 25 block(s)
-[04:27:20] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 4
-[04:27:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[04:27:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[04:27:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[04:27:26] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[04:27:32] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_WATER_OK
-[04:27:36] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_GRENADE_MODE_OK
-[04:27:39] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 12 block(s)
-[04:27:41] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[04:27:42] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
-[04:27:44] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Stone
-[04:27:45] [Server thread/INFO] [minecraft/MinecraftServer]: Created new objective [cold_smoke]
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 180.89340816218078, 3.800000011920929), owner=ServerPlayer['Dev'/67, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Iron Golem, position=(0.5, 180.0, 4.5), distance=1.1349793511610384, exposure=1.0, strength=0.4325103244194808
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Iron Golem, impulse=(0.0, 0.38693685172583114, 0.19324868306393878)
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Stone, position=(1.7, 181.0, 4.5), distance=1.3933276008176896, exposure=1.0, strength=0.3033361995911552
-[04:27:46] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Stone, impulse=(0.2553659071432932, 0.06790431512402173, 0.14896344329675537)
-[04:27:47] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 180.89340816218078, 3.800000011920929), owner=ServerPlayer['Dev'/67, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
-[04:27:47] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Iron Golem, position=(0.5, 180.0, 4.5), distance=1.1349793511610384, exposure=1.0, strength=0.4325103244194808
-[04:27:47] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Iron Golem, impulse=(0.0, 0.38693685172583114, 0.19324868306393878)
-[04:27:48] [Server thread/INFO] [minecraft/MinecraftServer]: Pos[0] on Stone after scale factor of 100.00 is 750
-[04:27:50] [Server thread/INFO] [minecraft/MinecraftServer]: Iron Golem has the following entity data: {NoGravity: 1b, Brain: {memories: {}}, HurtByTimestamp: 110, Attributes: [{Base: 0.25d, Modifiers: [{Amount: -0.45000001788139343d, Operation: 2, UUID: [I; 1896341086, 2095595568, -1811001012, 521537680], Name: "effect.minecraft.slowness 2"}], Name: "minecraft:generic.movement_speed"}], Invulnerable: 0b, FallFlying: 0b, PortalCooldown: 0, AbsorptionAmount: 0.0f, FallDistance: 0.0f, CanUpdate: 1b, DeathTime: 0s, HandDropChances: [0.085f, 0.085f], PersistenceRequired: 0b, UUID: [I; 1150731765, -356957093, -1856168004, 1035766109], Tags: ["cold_ball_test"], AngerTime: 0, Motion: [0.0d, 0.23498375577507405d, 0.11735842978617943d], Health: 92.21481f, Silent: 1b, PlayerCreated: 0b, LeftHanded: 0b, Air: 300s, OnGround: 0b, NoAI: 1b, Rotation: [0.0f, 0.0f], HandItems: [{}, {}], ArmorDropChances: [0.085f, 0.085f, 0.085f, 0.085f], Pos: [0.5d, 180.0d, 4.5d], Fire: 0s, ArmorItems: [{}, {}, {}, {}], CanPickUpLoot: 0b, HurtTime: 0s, ActiveEffects: [{"forge:id": "minecraft:slowness", Ambient: 0b, CurativeItems: [{id: "minecraft:milk_bucket", Count: 1b}], ShowIcon: 1b, ShowParticles: 1b, Duration: 80, Id: 2, Amplifier: 2b}]}
-[04:27:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Iron Golem] COLD_BALL_IMPACT_OK
-[04:27:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Iron Golem] COLD_BALL_DAMAGE_OK
-[04:27:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_BALL_PUSH_OK
-[04:27:56] [Server thread/INFO] [minecraft/MinecraftServer]: Removed objective [cold_smoke]
-[04:27:57] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Stone
+[05:15:37] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 4
+[05:15:38] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:15:38] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:15:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:15:43] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:15:49] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_WATER_OK
+[05:15:53] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_GRENADE_MODE_OK
+[05:15:57] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 12 block(s)
+[05:15:58] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[05:16:00] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Iron Golem
+[05:16:01] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Stone
+[05:16:03] [Server thread/INFO] [minecraft/MinecraftServer]: Created new objective [cold_smoke]
+[05:16:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:16:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:16:04] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 180.89340816218078, 3.800000011920929), owner=ServerPlayer['Dev'/30, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
+[05:16:04] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Iron Golem, position=(0.5, 180.0, 4.5), distance=1.1349793511610384, exposure=1.0, strength=0.4325103244194808
+[05:16:04] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Iron Golem, impulse=(0.0, 0.38693685172583114, 0.19324868306393878)
+[05:16:04] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Stone, position=(1.7, 181.0, 4.5), distance=1.3933276008176896, exposure=1.0, strength=0.3033361995911552
+[05:16:04] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Stone, impulse=(0.2553659071432932, 0.06790431512402173, 0.14896344329675537)
+[05:16:05] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 180.89340816218078, 3.800000011920929), owner=ServerPlayer['Dev'/30, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
+[05:16:05] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst target: name=Iron Golem, position=(0.5, 180.0, 4.5), distance=1.1349793511610384, exposure=1.0, strength=0.4325103244194808
+[05:16:05] [Server thread/INFO] [Fisk's Superheroes/]: Freeze burst impulse: entity=Iron Golem, impulse=(0.0, 0.38693685172583114, 0.19324868306393878)
+[05:16:06] [Server thread/INFO] [minecraft/MinecraftServer]: Pos[0] on Stone after scale factor of 100.00 is 877
+[05:16:07] [Server thread/INFO] [minecraft/MinecraftServer]: Iron Golem has the following entity data: {NoGravity: 1b, Brain: {memories: {}}, HurtByTimestamp: 100, Attributes: [{Base: 0.25d, Modifiers: [{Amount: -0.45000001788139343d, Operation: 2, UUID: [I; 1896341086, 2095595568, -1811001012, 521537680], Name: "effect.minecraft.slowness 2"}], Name: "minecraft:generic.movement_speed"}], Invulnerable: 0b, FallFlying: 0b, PortalCooldown: 0, AbsorptionAmount: 0.0f, TicksFrozen: 2, FallDistance: 0.0f, CanUpdate: 1b, DeathTime: 0s, HandDropChances: [0.085f, 0.085f], PersistenceRequired: 0b, UUID: [I; 27459159, -204517587, -1755762317, 1800658376], Tags: ["cold_ball_test"], AngerTime: 0, Motion: [0.0d, 0.28759218737212827d, 0.14363276907137526d], Health: 92.21481f, Silent: 1b, PlayerCreated: 0b, LeftHanded: 0b, Air: 300s, OnGround: 0b, NoAI: 1b, Rotation: [0.0f, 0.0f], HandItems: [{}, {}], ArmorDropChances: [0.085f, 0.085f, 0.085f, 0.085f], Pos: [0.5d, 180.0d, 4.5d], Fire: 0s, ArmorItems: [{}, {}, {}, {}], CanPickUpLoot: 0b, HurtTime: 0s, ActiveEffects: [{"forge:id": "minecraft:slowness", Ambient: 0b, CurativeItems: [{id: "minecraft:milk_bucket", Count: 1b}], ShowIcon: 1b, ShowParticles: 1b, Duration: 90, Id: 2, Amplifier: 2b}]}
+[05:16:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Iron Golem] COLD_BALL_IMPACT_OK
+[05:16:10] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Iron Golem] COLD_BALL_DAMAGE_OK
+[05:16:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] COLD_BALL_PUSH_OK
+[05:16:13] [Server thread/INFO] [minecraft/MinecraftServer]: Removed objective [cold_smoke]
+[05:16:15] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Stone
+[05:16:16] [Server thread/INFO] [minecraft/MinecraftServer]: Killed Iron Golem
+[05:16:18] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[05:16:19] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 2
+[05:16:20] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:16:20] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:16:20] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 181.51997000476905, 1.9814850000143052), owner=ServerPlayer['Dev'/30, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
+[05:16:21] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, 181.51997000476905, 1.9814850000143052), owner=ServerPlayer['Dev'/30, l='ServerLevel[world]', x=0.50, y=180.00, z=0.50]
+[05:16:22] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] GUN_NO_MINING_OK
+[05:16:24] [Server thread/INFO] [minecraft/MinecraftServer]: Changed the block at 0, 181, 2
+[05:16:25] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[05:16:27] [Server thread/INFO] [minecraft/MinecraftServer]: Summoned new Cow
+[05:16:28] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] MELEE_TARGET_READY
+[05:16:30] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[05:16:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:16:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:16:31] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] GUN_NO_MELEE_OK
+[05:16:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[05:16:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[05:16:33] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[05:16:34] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Dev] UNARMED_MELEE_OK
+[05:16:36] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
