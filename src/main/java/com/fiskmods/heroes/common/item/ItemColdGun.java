@@ -76,6 +76,13 @@ public final class ItemColdGun extends ItemGun
     }
 
     @Override
+    public int getRequestCooldownTicks(ItemStack stack)
+    {
+        // Retry quickly while aim raises; the actual grenade cadence is server-side.
+        return 4;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
         ItemStack stack = player.getItemInHand(hand);
@@ -181,7 +188,7 @@ public final class ItemColdGun extends ItemGun
         }
     }
 
-    private static void stopBeam(Player player)
+    public static void stopBeam(Player player)
     {
         BeamRequest request = REQUESTS.remove(player.getUUID());
         if (request != null && !request.exhausted)
@@ -271,7 +278,11 @@ public final class ItemColdGun extends ItemGun
         int ticks = (int) amount;
         hit.getPersistentData().putFloat(remainderKey, amount - ticks);
         hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + ticks, hit.getTicksRequiredToFreeze() + 40));
-        hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
+        MobEffectInstance slow = hit.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
+        // Avoid broadcasting a redundant effect update on every beam tick, and
+        // do not replace a stronger slowdown supplied by another source.
+        if (slow == null || slow.getAmplifier() == 0 && slow.getDuration() < 20)
+            hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
     }
 
     @Override

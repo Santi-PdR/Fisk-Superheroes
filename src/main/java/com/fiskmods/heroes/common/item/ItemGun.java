@@ -107,6 +107,12 @@ public class ItemGun extends Item
         return isDual(stack) ? Math.round(cooldownTicks * 1.2F) : cooldownTicks;
     }
 
+    /** Client heartbeat cadence; it may be faster than the authoritative shot cooldown. */
+    public int getRequestCooldownTicks(ItemStack stack)
+    {
+        return getShotCooldownTicks(stack);
+    }
+
     public static boolean isDual(ItemStack stack)
     {
         return ItemDualSword.isDual(stack);

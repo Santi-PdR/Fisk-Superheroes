@@ -10,7 +10,7 @@ AIM binding may instead hold AIM and item use together.
 
 The server validates the player, held stack, permission, aim, mode and
 cooldown. Beam packets are only held-input heartbeats: the server performs at
-most one raycast per tick and stops on release, lost heartbeats, suit/item
+most one raycast per tick and stops on release (or heartbeat timeout if the release packet is lost), suit/item
 changes, death, or after approximately 611 use ticks. After full aim the beam
 charges for 10 ticks, then grows over five ticks to a 32-block range. The
 first collidable entity or block stops it. The default hit is 7 damage, with
@@ -24,9 +24,12 @@ does not bypass these cooldowns.
 World changes require `powers.allowGriefing`, world-border and player edit
 permissions, plus cancellable Forge break/placement events. Placement uses
 captured snapshots so a denied change is restored before neighbor notification.
-Player-owned cryo bursts use the same protections. Non-player-owned bursts do
-not have a player identity for claim checks. Protection plugins must support
-Forge's standard block events to intercept these effects.
+Player-owned cryo bursts use the same protections; bursts without a server
+player owner do not change blocks, because there is no identity for claim checks.
+Protection plugins must support
+Forge's standard block events to intercept these effects. The new beam-release
+packet changes the networking protocol: server and clients must use this same
+mod version.
 
 ## Known differences from 1.7.10
 

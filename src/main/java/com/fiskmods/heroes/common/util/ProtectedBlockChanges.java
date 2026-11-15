@@ -5,7 +5,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
-/** Forge claim-aware block placement and removal checks for player-driven effects. */
+/** Forge claim-aware block placement and removal checks for player-driven effects.
+ * Callers must independently check the griefing rule, world border and player edit permissions.
+ */
 public final class ProtectedBlockChanges
 {
     private ProtectedBlockChanges() {}
@@ -63,4 +65,4 @@ public final class ProtectedBlockChanges
                 && shooter.level().getBlockState(pos).equals(state);
     }
 
- }
+}

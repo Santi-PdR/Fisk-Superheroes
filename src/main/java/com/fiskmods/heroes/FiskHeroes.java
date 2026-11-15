@@ -146,6 +146,9 @@ public class FiskHeroes
             SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketUseUtilityBelt.class,
                     com.fiskmods.heroes.common.network.PacketUseUtilityBelt::new, NetworkDirection.PLAY_TO_SERVER);
 
+            SHNetwork.registerPacket(com.fiskmods.heroes.common.network.PacketGunStop.class,
+                    com.fiskmods.heroes.common.network.PacketGunStop::new, NetworkDirection.PLAY_TO_SERVER);
+
             HeroPackEngine.INSTANCE.setup();
             com.fiskmods.heroes.common.block.FabricatorRecipes.ensureLoaded();
             LOGGER.info("Fisk's Superheroes loaded: {} heroes, {} powers, {} data variables",

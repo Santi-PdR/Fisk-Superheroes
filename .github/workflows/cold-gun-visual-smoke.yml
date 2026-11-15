@@ -78,7 +78,19 @@ jobs:
             ci-cold-gun-*.png
             ci-cold-gun-*.log
           if-no-files-found: ignore
-      - name: Publish diagnostic summary
+      - name: Write diagnostic summary
+        if: always()
+        run: |
+          {
+            echo '## Cold Gun visual diagnostics'
+            echo 'Full captures and logs: cold-gun-visual-diagnostics artifact.'
+            echo '```'
+            cat ci-cold-gun-test.log ci-cold-gun-alt-test.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish diagnostic log to branch
+        # Races with unrelated CI commits must not mask the gameplay result.
+        continue-on-error: true
         if: always()
         run: |
           git restore src/main/resources/assets/fiskheroes/textures/models/cold_gun.png src/main/resources/assets/fiskheroes/data/heroes/captain_cold.js

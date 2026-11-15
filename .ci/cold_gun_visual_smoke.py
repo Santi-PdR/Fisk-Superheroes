@@ -80,13 +80,15 @@ def main():
                             command(f'execute if block 0 181 {z} minecraft:ice run say COLD_ALT_HELD_OK')
                         wait_for(server_log, r'COLD_ALT_HELD_OK', 30, 'held use sustains cold beam', server)
                     finally: xdo('mouseup', '3')
-                    # Keep AIM held but release use; the beam must expire.
-                    time.sleep(2)
-                    command('fill -2 180 1 2 183 5 minecraft:air')
-                    command('setblock 0 181 4 minecraft:water')
-                    time.sleep(1)
-                    command('execute if block 0 181 4 minecraft:water run say COLD_ALT_RELEASE_OK')
-                    wait_for(server_log, r'COLD_ALT_RELEASE_OK', 30, 'released use stops cold beam', server)
+                    # Keep AIM held but release use. Probe within the one-second
+                    # heartbeat timeout, so a missing release packet cannot pass.
+                    time.sleep(0.3)
+                    server.stdin.write('fill -2 180 1 2 183 5 minecraft:air\nsetblock 0 181 4 minecraft:water\n')
+                    server.stdin.flush()
+                    time.sleep(0.3)
+                    server.stdin.write('execute if block 0 181 4 minecraft:water run say COLD_ALT_RELEASE_OK\n')
+                    server.stdin.flush()
+                    wait_for(server_log, r'COLD_ALT_RELEASE_OK', 30, 'released use promptly stops cold beam', server)
                 finally: xdo('keyup', 'c')
                 print('PASS: alternate AIM and held use start, sustain and stop the cold beam', flush=True)
                 return

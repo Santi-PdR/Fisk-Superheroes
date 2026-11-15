@@ -38,6 +38,7 @@ public class ClientEventHandler
     private static boolean maskKeyDown;
     private static boolean attackKeyDown;
     private static boolean webUseDown;
+    private static boolean beamInputDown;
     private static boolean abilityClickMode;
     private static long nextGunShotTick = Long.MIN_VALUE;
     private static net.minecraft.world.item.Item lastGunItem;
@@ -115,6 +116,12 @@ public class ClientEventHandler
             {
                 requestGunShot(player);
             }
+            // Also catch a quick press/release between client ticks; a release can
+            // only stop the sender's own beams, and the server retains its timeout.
+            if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE && mc.screen == null
+                    && ((mc.options.keyUse.matches(event.getKey(), event.getScanCode()) && !attackKeyDown)
+                        || (mc.options.keyAttack.matches(event.getKey(), event.getScanCode()) && !mc.options.keyUse.isDown())))
+                stopBeamInput(player);
         }
 
         if (player == null || mc.screen != null)
@@ -191,6 +198,7 @@ public class ClientEventHandler
             maskKeyDown = false;
             attackKeyDown = false;
             webUseDown = false;
+            beamInputDown = false;
             abilityClickMode = false;
             nextGunShotTick = Long.MIN_VALUE;
             lastGunItem = null;
@@ -236,6 +244,12 @@ public class ClientEventHandler
         boolean beamGunUseDown = mc.screen == null && !abilityClickMode && mc.options.keyUse.isDown()
                 && (player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemHeatGun
                     || player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemColdGun);
+        boolean beamWeapon = player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemHeatGun
+                || player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemColdGun;
+        boolean beamDown = beamWeapon && (attackDown || beamGunUseDown);
+        if (beamInputDown && !beamDown)
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketGunStop());
+        beamInputDown = beamDown;
         if (attackDown || beamGunUseDown)
         {
             requestGunShot(player);
@@ -573,8 +587,15 @@ public class ClientEventHandler
                 syncAbilityInput(mc.player, -1);
             }
             if (down) requestGunShot(mc.player);
-            else nextGunShotTick = Long.MIN_VALUE;
+            else
+            {
+                nextGunShotTick = Long.MIN_VALUE;
+                if (!mc.options.keyUse.isDown()) stopBeamInput(mc.player);
+            }
         }
+        if (mc.player != null && event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE
+                && mc.options.keyUse.matchesMouse(event.getButton()) && !attackKeyDown)
+            stopBeamInput(mc.player);
 
         if (!SHKeyBinds.WEAPON.matchesMouse(event.getButton())) return;
         if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
@@ -586,6 +607,15 @@ public class ClientEventHandler
     {
         float value = data.getData().get(var);
         data.getData().set(var, value + (target - value) * 0.15F);
+    }
+
+    private static void stopBeamInput(LocalPlayer player)
+    {
+        var item = player.getMainHandItem().getItem();
+        if (item instanceof com.fiskmods.heroes.common.item.ItemHeatGun
+                || item instanceof com.fiskmods.heroes.common.item.ItemColdGun)
+            SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketGunStop());
+        beamInputDown = false;
     }
 
     /** Sends one rate-limited shot for both quick presses and held primary-attack input. */
@@ -617,7 +647,7 @@ public class ClientEventHandler
 
         var gun = (com.fiskmods.heroes.common.item.ItemGun) player.getMainHandItem().getItem();
         SHNetwork.sendToServer(new PacketGunFire());
-        nextGunShotTick = now + gun.getShotCooldownTicks(player.getMainHandItem());
+        nextGunShotTick = now + gun.getRequestCooldownTicks(player.getMainHandItem());
     }
 
     /** The current frame's partial tick, kept by the render events. */

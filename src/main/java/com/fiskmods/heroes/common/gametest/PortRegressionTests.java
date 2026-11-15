@@ -6088,10 +6088,12 @@ public final class PortRegressionTests
                         + target.getTicksFrozen() + ", hits=" + recorder.count + ", amount=" + recorder.amount;
             if (n == 12)
             {
-                com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
                 int frozen = target.getTicksFrozen();
+                com.fiskmods.heroes.common.item.ItemColdGun.stopBeam(player);
                 com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
-                if (target.getTicksFrozen() != frozen) failure = "Released aim continued the beam";
+                if (target.getTicksFrozen() != frozen || gun.fireFromAttack(player, stack))
+                    failure = "Released beam continued or bypassed its cooldown";
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
             }
             if (failure != null || n == 12)
             {
@@ -6140,6 +6142,88 @@ public final class PortRegressionTests
                     helper.fail("Cold exposure must accumulate despite rejected damage and thaw after release: " + frozen);
                 else helper.succeed();
             });
+        };
+        step[0].accept(0);
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 80)
+    public static void coldGunExposureRespectsColdResistance(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = coldGunShooter(helper, "cold-resistance-shooter");
+        var target = coldGunShooter(helper, "cold-resistant-target");
+        target.setPos(shooter.getX(), shooter.getY(), shooter.getZ() + 2.0D);
+        com.fiskmods.heroes.common.hero.HeroTracker.update(target);
+        level.addFreshEntity(target);
+        var gun = (com.fiskmods.heroes.common.item.ItemColdGun) shooter.getMainHandItem().getItem();
+        var stack = shooter.getMainHandItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(shooter);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+        for (int i = 0; i < 4; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
+        gun.fireFromAttack(shooter, stack);
+        java.util.function.IntConsumer[] step = new java.util.function.IntConsumer[1];
+        step[0] = n -> {
+            if (n % 4 == 0) gun.fireFromAttack(shooter, stack);
+            com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(shooter);
+            String failure = null;
+            // FakePlayer does not tick and therefore has no vanilla thaw between these hits.
+            if (n == 10 && target.getTicksFrozen() != 2) failure = "First half-resistant exposure was not 2.5 ticks";
+            if (n == 11 && target.getTicksFrozen() != 5) failure = "Cold resistance did not preserve fractional exposure";
+            if (failure != null || n == 11)
+            {
+                int frozen = target.getTicksFrozen();
+                target.discard(); com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(shooter);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
+                if (failure != null) helper.fail(failure + ": " + frozen); else helper.succeed();
+            }
+            else helper.runAfterDelay(1, () -> step[0].accept(n + 1));
+        };
+        step[0].accept(0);
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 800)
+    public static void coldGunExhaustsAndRequiresRelease(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = coldGunShooter(helper, "cold-gun-limit");
+        player.setPos(player.position().add(0, 210, 0));
+        var gun = (com.fiskmods.heroes.common.item.ItemColdGun) player.getMainHandItem().getItem();
+        var stack = player.getMainHandItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+        for (int i = 0; i < 4; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        gun.fireFromAttack(player, stack);
+        var pos = net.minecraft.core.BlockPos.containing(player.getEyePosition().add(player.getViewVector(1.0F).scale(3)));
+        java.util.function.IntConsumer[] step = new java.util.function.IntConsumer[1];
+        step[0] = n -> {
+            String failure = null;
+            if (n == 617)
+            {
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, false);
+                com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+                if (!gun.fireFromAttack(player, stack)) failure = "Beam did not rearm after release";
+            }
+            else if (n % 4 == 0) gun.fireFromAttack(player, stack);
+            if (n == 627)
+                for (int d = 1; d <= 4; ++d)
+                    level.removeBlock(net.minecraft.core.BlockPos.containing(
+                            player.getEyePosition().add(player.getViewVector(1.0F).scale(d))), false);
+            if (n == 610 || n == 611 || n == 616 || n == 627)
+                level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+            com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
+            if ((n == 610 || n == 627) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
+                failure = "Beam failed before limit or after release at tick " + n;
+            if ((n == 611 || n == 616) && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
+                failure = "Exhausted beam restarted without release at tick " + n;
+            if (failure != null || n == 627)
+            {
+                level.removeBlock(pos, false);
+                com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+                if (failure != null) helper.fail(failure); else helper.succeed();
+            }
+            else helper.runAfterDelay(1, () -> step[0].accept(n + 1));
         };
         step[0].accept(0);
     }
@@ -6228,8 +6312,9 @@ public final class PortRegressionTests
             }
             if (n >= 10 && n <= 12 && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
                 failure = "Cold gun ignored disabled griefing or a canceled Forge event at tick " + n;
-            if (n == 12 && placeGuard.fireNotifications != 0)
-                failure = "Canceled freeze notified neighbors";
+            if (n == 11 && guard.breakEvents == 0) failure = "Cold beam did not reach the protected break event";
+            if (n == 12 && (placeGuard.placeEvents == 0 || placeGuard.fireNotifications != 0))
+                failure = "Canceled freeze did not fire a placement event or notified neighbors";
             if (n == 13 && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
                 failure = "Unprotected water failed to freeze: " + level.getBlockState(pos)
                         + ", canEdit=" + level.mayInteract(player, pos) + ", canUse="
@@ -6630,15 +6715,15 @@ public final class PortRegressionTests
     public static final class HeatGunProtectionGuard
     {
         private final net.minecraft.core.BlockPos melt, fire;
-        int fireNotifications;
+        int fireNotifications, breakEvents, placeEvents;
         HeatGunProtectionGuard(net.minecraft.core.BlockPos melt, net.minecraft.core.BlockPos fire)
         { this.melt = melt; this.fire = fire; }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void onBreak(net.minecraftforge.event.level.BlockEvent.BreakEvent event)
-        { if (event.getPos().equals(melt)) event.setCanceled(true); }
+        { if (event.getPos().equals(melt)) { ++breakEvents; event.setCanceled(true); } }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void onPlace(net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent event)
-        { if (event.getPos().equals(fire)) event.setCanceled(true); }
+        { if (event.getPos().equals(fire)) { ++placeEvents; event.setCanceled(true); } }
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void onNeighbor(net.minecraftforge.event.level.BlockEvent.NeighborNotifyEvent event)
         { if (event.getPos().equals(fire)) ++fireNotifications; }
@@ -6803,8 +6888,31 @@ public final class PortRegressionTests
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
             boolean intact = level.getBlockState(water).is(net.minecraft.world.level.block.Blocks.WATER);
             level.removeBlock(wall, false); level.removeBlock(wall.below(), false); level.removeBlock(water, false);
-            if (!ball.isRemoved() || !intact || guard.fireNotifications != 0)
-                helper.fail("Canceled cold-ball freeze must restore water without neighbor updates");
+            if (!ball.isRemoved() || !intact || guard.placeEvents == 0 || guard.fireNotifications != 0)
+                helper.fail("Canceled cold-ball freeze must restore water without neighbor updates: removed="
+                        + ball.isRemoved() + ", intact=" + intact + ", places=" + guard.placeEvents
+                        + ", notifications=" + guard.fireNotifications);
+            else helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void ownerlessColdBallDoesNotModifyWorld(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        var wall = base.offset(0, 1, 2); var water = base.offset(0, 1, 1);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(wall.below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(water, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
+        ball.setPos(base.getX() + .5D, base.getY() + 1.52D, base.getZ() + .5D);
+        ball.shoot(0, 0, 1, 1.5F, 0); level.addFreshEntity(ball);
+        helper.runAfterDelay(8, () -> {
+            boolean intact = level.getBlockState(water).is(net.minecraft.world.level.block.Blocks.WATER);
+            level.removeBlock(wall, false); level.removeBlock(wall.below(), false); level.removeBlock(water, false);
+            if (!ball.isRemoved() || !intact) helper.fail("An ownerless cold ball changed protected world state");
             else helper.succeed();
         });
     }
