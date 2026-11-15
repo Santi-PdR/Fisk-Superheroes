@@ -89,7 +89,7 @@ public final class BoStaffItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(1.0F, -1.0F, -1.0F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         shape2.y = Mth.lerp(extend, 0.5F, 8.0F);
         shape3.y = Mth.lerp(extend, 1.0F, 16.0F);
 

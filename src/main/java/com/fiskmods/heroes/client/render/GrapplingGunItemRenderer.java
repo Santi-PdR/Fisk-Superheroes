@@ -85,7 +85,7 @@ public final class GrapplingGunItemRenderer extends BlockEntityWithoutLevelRende
                 pose.scale(1.1F, -1.1F, -1.1F);
             }
         }
-        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, overlay);
+        shape1.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
         pose.popPose();
     }
 

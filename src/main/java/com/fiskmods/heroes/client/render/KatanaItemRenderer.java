@@ -54,8 +54,8 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             case GUI ->
             {
                 // The legacy dual icon used opposed rotations, not two coincident blades.
-                renderInventorySword(pose, buffers, light, overlay, false);
-                if (ItemDualSword.isDual(stack)) renderInventorySword(pose, buffers, light, overlay, true);
+                renderInventorySword(stack, pose, buffers, light, overlay, false);
+                if (ItemDualSword.isDual(stack)) renderInventorySword(stack, pose, buffers, light, overlay, true);
                 pose.popPose();
                 return;
             }
@@ -85,7 +85,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             }
         }
 
-        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        var consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         sword.render(pose, consumer, light, overlay);
         boolean secondCopy = ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED);
         if (context == ItemDisplayContext.NONE && ItemDualSword.isDual(stack) && !loggedStowedDual)
@@ -101,7 +101,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
         pose.popPose();
     }
 
-    private void renderInventorySword(PoseStack pose, MultiBufferSource buffers,
+    private void renderInventorySword(ItemStack stack, PoseStack pose, MultiBufferSource buffers,
             int light, int overlay, boolean mirrored)
     {
         pose.pushPose();
@@ -112,7 +112,7 @@ public final class KatanaItemRenderer extends BlockEntityWithoutLevelRenderer
             pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
             pose.mulPose(Axis.ZP.rotationDegrees(mirrored ? 20.0F : -20.0F));
             pose.scale(0.33F, -0.33F, -0.33F);
-            sword.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+            sword.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, ItemDisplayContext.GUI), light, overlay);
         }
         finally
         {

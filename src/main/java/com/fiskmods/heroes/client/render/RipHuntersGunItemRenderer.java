@@ -80,7 +80,7 @@ public final class RipHuntersGunItemRenderer extends BlockEntityWithoutLevelRend
                 pose.scale(0.6F, -0.6F, -0.6F);
             }
         }
-        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, overlay);
+        shape1.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
         shape1.render(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.0F, 0.37F, 1.0F, 1.0F);
         pose.popPose();
     }

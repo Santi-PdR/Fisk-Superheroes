@@ -126,14 +126,14 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
             }
         }
 
-        renderShieldModel(pose, buffers, light, overlay, showStraps);
+        renderShieldModel(stack, context, pose, buffers, light, overlay, showStraps);
         pose.popPose();
     }
 
     /** Shared raw model, without item-context translations, for the spinning projectile. */
-    public void renderShieldModel(PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean showStraps)
+    public void renderShieldModel(ItemStack stack, ItemDisplayContext context, PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean showStraps)
     {
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
 
         pose.pushPose();
         float discScale = 3.0874999F * 0.0625F;

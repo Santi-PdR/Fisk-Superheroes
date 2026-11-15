@@ -51,8 +51,8 @@ public final class ChokutoItemRenderer extends BlockEntityWithoutLevelRenderer
             case NONE -> pose.translate(0.5D, 0.5D, 0.5D);
             case GUI ->
             {
-                renderInventorySword(pose, buffers, light, overlay, false);
-                if (ItemDualSword.isDual(stack)) renderInventorySword(pose, buffers, light, overlay, true);
+                renderInventorySword(stack, pose, buffers, light, overlay, false);
+                if (ItemDualSword.isDual(stack)) renderInventorySword(stack, pose, buffers, light, overlay, true);
                 pose.popPose();
                 return;
             }
@@ -81,7 +81,7 @@ public final class ChokutoItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(1.0F, -1.0F, -1.0F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         sword.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {
@@ -91,7 +91,7 @@ public final class ChokutoItemRenderer extends BlockEntityWithoutLevelRenderer
         pose.popPose();
     }
 
-    private void renderInventorySword(PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean mirrored)
+    private void renderInventorySword(ItemStack stack, PoseStack pose, MultiBufferSource buffers, int light, int overlay, boolean mirrored)
     {
         pose.pushPose();
         try
@@ -101,7 +101,7 @@ public final class ChokutoItemRenderer extends BlockEntityWithoutLevelRenderer
             pose.mulPose(Axis.XP.rotationDegrees(-42.0F));
             pose.mulPose(Axis.ZP.rotationDegrees(mirrored ? 20.0F : -20.0F));
             pose.scale(0.33F, -0.33F, -0.33F);
-            sword.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+            sword.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, ItemDisplayContext.GUI), light, overlay);
         }
         finally
         {

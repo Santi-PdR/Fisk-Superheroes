@@ -1,0 +1,85 @@
+name: Item Models and Hands Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/item_models_smoke.py'
+      - '.ci/client_identity.gradle'
+      - '.github/workflows/item-models-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/client/render/**'
+      - 'src/main/resources/assets/fiskheroes/models/item/**'
+      - 'src/main/resources/assets/fiskheroes/models/heroes/deadpool_xmen.json'
+      - 'src/main/java/com/fiskmods/heroes/common/item/**'
+concurrency:
+  group: item-models-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  items:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri libflite1
+          python3 -m pip install --user 'pillow>=13,<14'
+      - name: Prepare test-only livery fixture
+        run: |
+          chmod +x gradlew
+          mkdir -p run-item-models-server run-item-models-client/config
+          printf 'earlyWindowControl = false\n' > run-item-models-client/config/fml.toml
+          echo 'eula=true' > run-item-models-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-item-models-server/server.properties
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path('src/main/resources/assets/fiskheroes/models/heroes/deadpool_xmen.json')
+          obj = json.loads(path.read_text())
+          for item in ('tactical_tonfa', 'captain_americas_shield', 'grappling_gun', 'chronos_rifle', 'rip_hunters_gun'):
+              obj['custom']['fiskheroes:livery'][item] = 'gun'
+          path.write_text(json.dumps(obj, indent=2))
+          PY
+          ./gradlew classes --no-daemon --console=plain
+      - name: Test real item models and hands
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/item_models_smoke.py 2>&1 | tee ci-item-models-test.log
+      - name: Upload captures and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: item-model-diagnostics
+          path: |
+            ci-item-models-*.png
+            ci-item-models-*.log
+          if-no-files-found: ignore
+      - name: Publish concise diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          git restore src/main/resources/assets/fiskheroes/models/heroes/deadpool_xmen.json
+          mkdir -p .ci
+          { cat ci-item-models-test.log 2>/dev/null || true
+            echo '==== client diagnostics ===='
+            grep -E 'Item model base pass|First-person .*arm rendered|Exception|FATAL' ci-item-models-client.log 2>/dev/null | tail -120 || true
+            echo '==== server tail ===='
+            tail -50 ci-item-models-server.log 2>/dev/null || true
+          } > .ci/item-models-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/item-models-log.txt
+          git diff --cached --quiet || git commit -m 'ci: item model diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "$GITHUB_REF_NAME" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1

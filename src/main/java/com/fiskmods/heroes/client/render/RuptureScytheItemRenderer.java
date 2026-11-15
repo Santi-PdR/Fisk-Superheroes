@@ -89,7 +89,7 @@ public final class RuptureScytheItemRenderer extends BlockEntityWithoutLevelRend
                 pose.scale(0.6F, -0.6F, -0.6F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         handle1.render(pose, consumer, light, overlay);
         ScytheChargeRenderer.render(pose, buffers, context);
         pose.popPose();

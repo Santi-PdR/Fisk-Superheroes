@@ -1,0 +1,7 @@
+# Item models and hand rendering
+
+Fisk's original weapon renderer passes the item stack's enchantment effect to the model and resolves the suit's livery before drawing it. The 1.20 port uses a shared foil-aware base pass for the custom 3D weapon meshes, shield and Flash ring. Its normal texture/livery is unchanged for non-enchanted items. Glow overlays, particles and the ring's stored-suit icon are separate passes and do not inherit the foil. Dual sword inventory meshes and the thrown shield also use the item's own foil state.
+
+Grappling gun, Chronos rifle, Rip Hunter's gun and Captain America's shield draw a first-person arm for the actual hand, like the port's other custom weapons; invisible and scoping players retain the existing exclusions. The shield, tonfa, grapple and both energy guns now also use the existing wearer-scoped livery context. Packs without a matching livery still get the default texture.
+
+`.ci/verify_item_models.py` checks registered items and local model overrides. The headless client test exercises 15 custom items with and without foil, the dual sword GUI path, both hands for the four newly handled items, and a runner-only suit-livery fixture. It also compares pixels between a normal and enchanted katana; other gameplay regression suites cover individual weapons. This is not a claim that every item pose, variant, animation or ability in the mod has been exhaustively verified.

@@ -19,6 +19,39 @@ public final class PortRegressionTests
 {
     private PortRegressionTests() {}
 
+    @GameTest(template = "test_empty")
+    public static void customItemEnchantmentStateSurvivesCopyAndSave(GameTestHelper helper)
+    {
+        var entries = java.util.List.of(
+                com.fiskmods.heroes.common.item.ModItems.KATANA,
+                com.fiskmods.heroes.common.item.ModItems.CHOKUTO,
+                com.fiskmods.heroes.common.item.ModItems.SCIMITAR,
+                com.fiskmods.heroes.common.item.ModItems.BO_STAFF,
+                com.fiskmods.heroes.common.item.ModItems.RUPTURES_SCYTHE,
+                com.fiskmods.heroes.common.item.ModItems.TACTICAL_TONFA,
+                com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD,
+                com.fiskmods.heroes.common.item.ModItems.GRAPPLING_GUN,
+                com.fiskmods.heroes.common.item.ModItems.CHRONOS_RIFLE,
+                com.fiskmods.heroes.common.item.ModItems.RIP_HUNTERS_GUN,
+                com.fiskmods.heroes.common.item.ModItems.COLD_GUN,
+                com.fiskmods.heroes.common.item.ModItems.HEAT_GUN,
+                com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE,
+                com.fiskmods.heroes.common.item.ModItems.BERETTA_93R,
+                com.fiskmods.heroes.common.item.ModItems.FLASH_RING);
+        for (var entry : entries)
+        {
+            var stack = new net.minecraft.world.item.ItemStack(entry.get());
+            if (stack.hasFoil()) { helper.fail("Unenchanted item unexpectedly has foil: " + entry.getId()); return; }
+            stack.enchant(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, 1);
+            stack.getOrCreateTag().putString("VisualRegressionMarker", "preserved");
+            var restored = net.minecraft.world.item.ItemStack.of(stack.save(new net.minecraft.nbt.CompoundTag()));
+            if (!stack.hasFoil() || !stack.copy().hasFoil() || !restored.hasFoil()
+                    || !"preserved".equals(restored.getTag().getString("VisualRegressionMarker")))
+            { helper.fail("Item foil and custom data must survive copying and save: " + entry.getId()); return; }
+        }
+        helper.succeed();
+    }
+
     public static final class ShieldSpawnGuard
     {
         private final java.util.UUID owner;

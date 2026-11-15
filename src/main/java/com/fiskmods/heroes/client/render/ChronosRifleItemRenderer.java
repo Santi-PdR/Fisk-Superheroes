@@ -80,7 +80,7 @@ public final class ChronosRifleItemRenderer extends BlockEntityWithoutLevelRende
                 pose.scale(0.75F, -0.75F, -0.75F);
             }
         }
-        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), light, overlay);
+        shape1.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
         shape1.render(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.35F, 1.0F, 0.45F, 1.0F);
         pose.popPose();
     }

@@ -36,7 +36,11 @@ public final class WeaponHandRenderer
         boolean beretta = event.getItemStack().is(ModItems.BERETTA_93R.get());
         boolean coldGun = event.getItemStack().is(ModItems.COLD_GUN.get());
         boolean heatGun = event.getItemStack().is(ModItems.HEAT_GUN.get());
-        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta && !coldGun && !heatGun)) return;
+        boolean grapple = event.getItemStack().is(ModItems.GRAPPLING_GUN.get());
+        boolean chronos = event.getItemStack().is(ModItems.CHRONOS_RIFLE.get());
+        boolean rip = event.getItemStack().is(ModItems.RIP_HUNTERS_GUN.get());
+        boolean shield = event.getItemStack().is(ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta && !coldGun && !heatGun && !grapple && !chronos && !rip && !shield)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -65,7 +69,7 @@ public final class WeaponHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : beretta ? "beretta" : coldGun ? "cold gun" : "heat gun";
+            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : beretta ? "beretta" : coldGun ? "cold gun" : heatGun ? "heat gun" : grapple ? "grappling gun" : chronos ? "chronos rifle" : rip ? "rip hunter gun" : "captain america shield";
             if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally

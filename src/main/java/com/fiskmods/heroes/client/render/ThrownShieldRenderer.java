@@ -34,7 +34,7 @@ public final class ThrownShieldRenderer extends EntityRenderer<ThrownShieldEntit
         pose.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.getXRot())));
         pose.mulPose(Axis.XP.rotationDegrees(180.0F));
         pose.mulPose(Axis.YP.rotationDegrees(entity.getSpin(partialTick)));
-        CaptainAmericaShieldItemRenderer.getInstance().renderShieldModel(pose, buffers, light, OverlayTexture.NO_OVERLAY, false);
+        CaptainAmericaShieldItemRenderer.getInstance().renderShieldModel(entity.getItem(), net.minecraft.world.item.ItemDisplayContext.NONE, pose, buffers, light, OverlayTexture.NO_OVERLAY, false);
         pose.popPose();
         super.render(entity, yaw, partialTick, pose, buffers, light);
     }

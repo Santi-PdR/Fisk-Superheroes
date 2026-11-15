@@ -92,7 +92,7 @@ public final class TacticalTonfaItemRenderer extends BlockEntityWithoutLevelRend
                 pose.scale(1.0F, -1.0F, -1.0F);
             }
         }
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         handle.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {

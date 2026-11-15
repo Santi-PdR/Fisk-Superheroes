@@ -81,7 +81,7 @@ public final class ColdGunItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(0.85F, -0.85F, -0.85F);
             }
         }
-        shape1.render(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+        shape1.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
         shape1.render(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.45F, 0.85F, 1.0F, 1.0F);
         pose.popPose();
     }

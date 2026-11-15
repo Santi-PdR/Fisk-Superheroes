@@ -97,7 +97,7 @@ public final class FlashRingItemRenderer extends BlockEntityWithoutLevelRenderer
             }
         }
 
-        VertexConsumer consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE));
+        VertexConsumer consumer = ItemModelBuffers.model(buffers, TEXTURE, stack, context);
         renderScaled(pose, consumer, light, overlay, upperRingSide2, 1.0F, 1.0F, 0.8F);
         renderScaled(pose, consumer, light, overlay, upperRingBase1, 0.6F, 0.55F, 0.6F);
         renderScaled(pose, consumer, light, overlay, topRing1, 0.55F, 0.5F, 0.55F);

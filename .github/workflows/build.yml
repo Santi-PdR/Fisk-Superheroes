@@ -9,6 +9,7 @@ on:
       - 'gradle.properties'
       - '.github/workflows/build.yml'
       - '.github/ci/build'
+      - '.ci/verify_item_models.py'
 
 concurrency:
   group: build-${{ github.ref }}
@@ -44,6 +45,7 @@ jobs:
 
       - name: Check packaged textures and trails
         run: |
+          python3 .ci/verify_item_models.py
           python3 .ci/verify_model_textures.py
           python3 .ci/verify_suit_textures.py
           python3 .ci/verify_trails.py

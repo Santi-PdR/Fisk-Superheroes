@@ -90,7 +90,7 @@ public final class HeatGunItemRenderer extends BlockEntityWithoutLevelRenderer
                 pose.scale(0.85F, -0.85F, -0.85F);
             }
         }
-        renderPass(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE))), light, overlay);
+        renderPass(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
         // Transparent pixels in the lights atlas have white RGB. The additive eyes
         // pass ignores that transparent RGB and washes the whole model white.
         // A cutout emissive pass keeps the small colored lights at full brightness.

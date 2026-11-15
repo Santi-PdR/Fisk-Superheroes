@@ -84,7 +84,7 @@ public final class DesertEagleItemRenderer extends BlockEntityWithoutLevelRender
         }
 
         GunVisualEffects.renderDesertEagle(pose, buffers, context);
-        var consumer = buffers.getBuffer(RenderType.entityCutoutNoCull(SuitItemRenderContext.textureOr(TEXTURE)));
+        var consumer = ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context);
         root.render(pose, consumer, light, overlay);
         if (ItemDualSword.isDual(stack) && (context == ItemDisplayContext.GUI || context == ItemDisplayContext.GROUND || context == ItemDisplayContext.FIXED))
         {
