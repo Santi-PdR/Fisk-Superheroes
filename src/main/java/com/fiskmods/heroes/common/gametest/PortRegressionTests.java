@@ -6107,14 +6107,12 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
-    @GameTest(template = "test_empty")
-    public static void heatGunMeltsIceAndStopsAtEntity(GameTestHelper helper)
+    private static net.minecraftforge.common.util.FakePlayer heatGunShooter(GameTestHelper helper, String name)
     {
-        var level = helper.getLevel();
-        var player = new net.minecraftforge.common.util.FakePlayer(level,
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-ray-test"));
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), name));
         var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:heatwave");
-        if (hero == null) { helper.fail("Heatwave is missing"); return; }
+        if (hero == null) throw new IllegalStateException("Heatwave missing");
         var slots = new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.HEAD,
                 net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
                 net.minecraft.world.entity.EquipmentSlot.FEET};
@@ -6123,92 +6121,186 @@ public final class PortRegressionTests
                     com.fiskmods.heroes.common.hero.ItemHeroArmor.create(hero.getDefaultIteration(),
                             com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
         var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
-        player.setPos(base.getX() + 0.5, base.getY(), base.getZ() + 0.5);
+        player.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
         player.setYRot(0); player.setXRot(0);
-        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();
-        var pos = base.offset(0, 1, 4);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get()));
+        return player;
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void heatGunMeltsIceAndStopsAtEntity(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = heatGunShooter(helper, "heat-gun-ray-test");
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) player.getMainHandItem().getItem();
+        var stack = player.getMainHandItem();
+        var pos = player.blockPosition().offset(0, 1, 4);
         var ice = net.minecraft.world.level.block.Blocks.ICE;
-        java.util.function.BooleanSupplier shoot = () -> {
-            var stack = new net.minecraft.world.item.ItemStack(gun);
-            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
-            return gun.fireFromAttack(player, stack);
-        };
-        level.setBlockAndUpdate(pos, ice.defaultBlockState());
-        if (!shoot.getAsBoolean() || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
-        { helper.fail("Heat gun must melt ice into water in the overworld"); return; }
-        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.SNOW_BLOCK.defaultBlockState());
-        if (!shoot.getAsBoolean() || !level.getBlockState(pos).isAir())
-        { helper.fail("Heat gun must melt snow blocks"); return; }
-        var fireSupport = pos.north().below();
-        level.setBlockAndUpdate(fireSupport, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-        if (!shoot.getAsBoolean() || !level.getBlockState(pos.north()).isAir())
-        { helper.fail("Heat gun must not ignite nonflammable stone"); return; }
-        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
-        if (!shoot.getAsBoolean() || !level.getBlockState(pos.north()).is(net.minecraft.world.level.block.Blocks.FIRE))
-        { helper.fail("Heat gun must ignite the exposed side of flammable blocks"); return; }
-        level.removeBlock(pos.north(), false);
-        level.removeBlock(fireSupport, false);
-        level.setBlockAndUpdate(pos, ice.defaultBlockState());
+        var stone = net.minecraft.world.level.block.Blocks.STONE;
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+        for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (!gun.fireFromAttack(player, stack)) { helper.fail("Heat gun request rejected"); return; }
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Heat gun target missing"); return; }
         target.setNoAi(true);
-        target.setPos(player.getX(), player.getY(), player.getZ() + 2);
-        level.addFreshEntity(target);
         var recorder = new DirectArrowDamageRecorder(target);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
-        try
-        {
-            if (!shoot.getAsBoolean() || !target.isOnFire() || !level.getBlockState(pos).is(ice)
-                    || recorder.source == null || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
-                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE))
-            { helper.fail("Heat gun must stop at the target and use fire/projectile damage without melting ice behind it"); return; }
-        }
-        finally
-        {
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
-        }
-        target.discard();
-        level.removeBlock(pos, false);
-        helper.succeed();
+        java.util.function.IntConsumer[] step = new java.util.function.IntConsumer[1];
+        step[0] = n -> {
+            String failure = null;
+            if (n == 0) level.setBlockAndUpdate(pos, ice.defaultBlockState());
+            if (n == 1) level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.SNOW_BLOCK.defaultBlockState());
+            if (n == 2) level.setBlockAndUpdate(pos, stone.defaultBlockState());
+            if (n == 3)
+            {
+                level.setBlockAndUpdate(pos.north().below(), stone.defaultBlockState());
+                level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
+            }
+            if (n == 4)
+            {
+                level.removeBlock(pos.north(), false);
+                level.setBlockAndUpdate(pos, ice.defaultBlockState());
+                target.setPos(player.getX(), player.getY(), player.getZ() + 2.0D);
+                level.addFreshEntity(target);
+            }
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(player);
+            if (n == 0 && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER)) failure = "ice was not melted";
+            if (n == 1 && !level.getBlockState(pos).isAir()) failure = "snow was not melted";
+            if (n == 2 && !level.getBlockState(pos.north()).isAir()) failure = "stone caught fire";
+            if (n == 3 && !level.getBlockState(pos.north()).is(net.minecraft.world.level.block.Blocks.FIRE)) failure = "wood did not ignite";
+            if (n == 4 && (!target.isOnFire() || !level.getBlockState(pos).is(ice) || recorder.source == null
+                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_FIRE)
+                    || !recorder.source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE))) failure = "target did not stop fire/projectile beam";
+            if (failure != null || n == 4)
+            {
+                target.discard();
+                level.removeBlock(pos, false);
+                level.removeBlock(pos.north(), false);
+                level.removeBlock(pos.north().below(), false);
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+                com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(player);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+                if (failure != null) helper.fail(failure); else helper.succeed();
+            }
+            else helper.runAfterDelay(1, () -> step[0].accept(n + 1));
+        };
+        step[0].accept(0);
     }
 
-    @GameTest(template = "test_empty")
-    public static void heatGunWarmsMetalEvenWhenFireImmune(GameTestHelper helper)
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void heatGunContinuousBeamIsAuthoritative(GameTestHelper helper)
     {
         var level = helper.getLevel();
-        var shooter = new net.minecraftforge.common.util.FakePlayer(level,
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-metal-shooter"));
+        var shooter = heatGunShooter(helper, "heat-gun-continuous");
         var target = new net.minecraftforge.common.util.FakePlayer(level,
                 new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "heat-gun-metal-target"));
-        var heatwave = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:heatwave");
         var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
-        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
-        if (heatwave == null || iron == null || data == null) { helper.fail("Heat gun metal fixtures missing"); return; }
-        var slots = new net.minecraft.world.entity.EquipmentSlot[] { net.minecraft.world.entity.EquipmentSlot.HEAD,
-                net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.LEGS,
-                net.minecraft.world.entity.EquipmentSlot.FEET };
-        for (int i = 0; i < 4; i++)
-            if (heatwave.getDefaultIteration().hasPieceOfSet(i)) shooter.setItemSlot(slots[i],
-                    com.fiskmods.heroes.common.hero.ItemHeroArmor.create(heatwave.getDefaultIteration(),
-                            com.fiskmods.heroes.common.item.ModItems.heroArmor[i]));
-        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 100, 1));
-        shooter.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
-        shooter.setYRot(0.0F); shooter.setXRot(0.0F);
+        var targetData = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(target);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(shooter);
+        if (iron == null || targetData == null || data == null) { helper.fail("Heat gun fixtures missing"); return; }
         target.setPos(shooter.getX(), shooter.getY(), shooter.getZ() + 2.0D);
         target.getAbilities().invulnerable = false;
-        data.setHero(iron.getDefaultIteration());
-        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
+        targetData.setHero(iron.getDefaultIteration());
         level.addFreshEntity(target);
-        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();
-        var stack = new net.minecraft.world.item.ItemStack(gun);
-        shooter.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
-        boolean fired = gun.fireFromAttack(shooter, stack);
-        float heat = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
-        target.discard();
-        if (!fired || Math.abs(heat - 8.0F / 170.0F) > .0001F)
-        { helper.fail("A heat-gun ray must warm fire-immune metal at the ported beam cadence: " + heat); return; }
-        helper.succeed();
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
+        var stack = shooter.getMainHandItem();
+        if (gun.fireFromAttack(shooter, stack)) { helper.fail("Unheld aim accepted a forged fire request"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+        if (!gun.fireFromAttack(shooter, stack)) { helper.fail("Held aim did not arm heat gun"); return; }
+        java.util.function.IntConsumer[] step = new java.util.function.IntConsumer[1];
+        step[0] = n -> {
+            String failure = null;
+            // Fake players are not on the server player list; drive their aim and beam explicitly.
+            com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
+            // Restore the live target predicate; its fixture is deliberately not wearing armor.
+            targetData.setHero(iron.getDefaultIteration());
+            float before = targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
+            float health = target.getHealth();
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+            float after = targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT);
+            float expected = n < 3 ? 0.0F : 1.0F / 170.0F;
+            if (Math.abs(after - before - expected) > .0001F || target.getHealth() != health)
+                failure = "incorrect aim delay, heat transfer or immunity at tick " + n + ": " + (after - before);
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+            if (targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT) != after)
+                failure = "duplicate beam in same tick";
+            if (n == 5 && failure == null)
+            {
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, false);
+                com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+                if (targetData.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT) != after)
+                    failure = "beam continued after release";
+            }
+            if (failure != null || n == 5)
+            {
+                target.discard();
+                com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
+                if (failure != null) helper.fail(failure); else helper.succeed();
+            }
+            else helper.runAfterDelay(1, () -> step[0].accept(n + 1));
+        };
+        step[0].accept(0);
+    }
+
+    public static final class HeatGunProtectionGuard
+    {
+        private final net.minecraft.core.BlockPos melt, fire;
+        HeatGunProtectionGuard(net.minecraft.core.BlockPos melt, net.minecraft.core.BlockPos fire)
+        { this.melt = melt; this.fire = fire; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onBreak(net.minecraftforge.event.level.BlockEvent.BreakEvent event)
+        { if (event.getPos().equals(melt)) event.setCanceled(true); }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onPlace(net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent event)
+        { if (event.getPos().equals(fire)) event.setCanceled(true); }
+    }
+
+    @GameTest(template = "test_empty", timeoutTicks = 100)
+    public static void heatGunRespectsProtectionAndExpires(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = heatGunShooter(helper, "heat-gun-protection");
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
+        var stack = shooter.getMainHandItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(shooter);
+        var pos = shooter.blockPosition().offset(0, 1, 4);
+        var guard = new HeatGunProtectionGuard(pos, pos.north());
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+        for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
+        gun.fireFromAttack(shooter, stack);
+        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+        com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+        if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
+        { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); helper.fail("Canceled break melted ice"); return; }
+        helper.runAfterDelay(1, () -> {
+            level.setBlockAndUpdate(pos.north().below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+            if (!level.getBlockState(pos.north()).isAir())
+            { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); helper.fail("Canceled placement left fire"); return; }
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
+            level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+            // No heartbeats for 20 ticks: a lost release cannot keep damaging the world.
+            helper.runAfterDelay(22, () -> {
+                com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+                if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
+                { helper.fail("Expired request continued firing"); return; }
+                gun.fireFromAttack(shooter, stack);
+                shooter.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(gun));
+                com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+                if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE))
+                { helper.fail("Replacing the held stack continued the old beam"); return; }
+                com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
+                com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
+                level.removeBlock(pos, false);
+                level.removeBlock(pos.north().below(), false);
+                helper.succeed();
+            });
+        });
     }
 
     @GameTest(template = "test_empty")

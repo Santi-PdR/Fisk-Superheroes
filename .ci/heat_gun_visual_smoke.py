@@ -79,7 +79,18 @@ def main():
             if real:
                 print('PASS: captured original Heat Gun texture in daylight, at night and firing', flush=True)
                 return
+            # Once released, a fresh target must remain untouched; losing the suit must also
+            # prevent a held input from melting it on a real dedicated server.
             command('setblock 0 181 4 minecraft:ice')
+            command('execute if block 0 181 4 minecraft:ice run say HEAT_RELEASE_OK')
+            wait_for(server_log, r'HEAT_RELEASE_OK', 30, 'beam stops on release', server)
+            command('execute as Dev run hero null')
+            xdo('mousedown', '1')
+            time.sleep(2)
+            xdo('mouseup', '1')
+            command('execute if block 0 181 4 minecraft:ice run say HEAT_PERMISSION_OK')
+            wait_for(server_log, r'HEAT_PERMISSION_OK', 30, 'unsuited player cannot melt ice', server)
+            command('execute as Dev run suit fiskheroes:heatwave')
             xdo('mousedown', '1')
             try:
                 wait_for(client_log, r'Heat gun first-person aiming: arm=RIGHT', 60, 'heat gun aims in first person', client)

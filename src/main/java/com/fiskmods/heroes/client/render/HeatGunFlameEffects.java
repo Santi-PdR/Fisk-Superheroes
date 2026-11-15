@@ -23,7 +23,7 @@ public final class HeatGunFlameEffects
         if (level == null || !finite(start) || !finite(end)) return;
         double length = start.distanceTo(end);
         if (!Double.isFinite(length) || length > 32.0D) return;
-        int samples = Math.min(96, Math.max(1, (int) Math.ceil(length / 0.28D)));
+        int samples = Math.min(48, Math.max(1, (int) Math.ceil(length / 0.45D)));
         for (int i = 0; i < samples; ++i)
         {
             Vec3 point = start.lerp(end, (i + 0.5D) / samples);

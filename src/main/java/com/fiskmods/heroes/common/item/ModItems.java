@@ -75,7 +75,7 @@ public class ModItems
     public static final RegistryObject<Item> COLD_GUN = REGISTRY.register("cold_gun",
             () -> new ItemColdGun(1, 8, 0, 24.0D, 1.0F, new Item.Properties()));
     public static final RegistryObject<Item> HEAT_GUN = REGISTRY.register("heat_gun",
-            () -> new ItemHeatGun(1, 8, 0, 24.0D, 2.0F, new Item.Properties()));
+            () -> new ItemHeatGun(1, 8, 0, 32.0D, 5.0F, new Item.Properties()));
     public static final RegistryObject<Item> RIP_HUNTERS_GUN = REGISTRY.register("rip_hunters_gun",
             () -> new ItemRipHuntersGun(1, 5, 0, 32.0D, 6.0F, new Item.Properties()));
     public static final RegistryObject<Item> BO_STAFF = REGISTRY.register("bo_staff",

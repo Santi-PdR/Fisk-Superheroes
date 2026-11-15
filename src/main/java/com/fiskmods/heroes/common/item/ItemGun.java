@@ -281,7 +281,7 @@ public class ItemGun extends Item
         }
 
         Vec3 tracerEnd = hit != null ? start.add(direction.scale(Math.sqrt(nearest))) : end;
-        if (id.equals("heat_gun"))
+        if (id.equals("heat_gun") && level.getGameTime() % 3L == 0L)
         {
             Vec3 right = direction.cross(new Vec3(0.0D, 1.0D, 0.0D));
             right = right.lengthSqr() < 1.0E-6D ? new Vec3(1.0D, 0.0D, 0.0D) : right.normalize();
@@ -293,7 +293,7 @@ public class ItemGun extends Item
                     new com.fiskmods.heroes.common.network.PacketHeatGunFlame(shooter.getId(), muzzle, tracerEnd),
                     level, start.x, start.y, start.z, 64.0D);
         }
-        else if (level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        else if (!id.equals("heat_gun") && level instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
             net.minecraft.core.particles.ParticleOptions tracer = switch (id)
             {
