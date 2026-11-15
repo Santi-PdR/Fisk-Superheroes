@@ -4723,6 +4723,27 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void oggVorbisChannelHeaderIsBounded(GameTestHelper helper)
+    {
+        byte[] header = new byte[58];
+        header[0] = 'O'; header[1] = 'g'; header[2] = 'g'; header[3] = 'S';
+        header[5] = 2; header[26] = 1; header[27] = 30; header[28] = 1;
+        byte[] vorbis = "vorbis".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+        System.arraycopy(vorbis, 0, header, 29, vorbis.length);
+        header[39] = 2;
+        if (com.fiskmods.heroes.common.sound.OggVorbisChannels.read(header) != 2)
+        { helper.fail("Stereo Vorbis header was not recognized"); return; }
+        header[39] = 1;
+        if (com.fiskmods.heroes.common.sound.OggVorbisChannels.read(header) != 1
+                || com.fiskmods.heroes.common.sound.OggVorbisChannels.read(new byte[27]) != 0)
+        { helper.fail("Mono or truncated Vorbis header misread"); return; }
+        header[27] = 5;
+        if (com.fiskmods.heroes.common.sound.OggVorbisChannels.read(header) != 0)
+        { helper.fail("A truncated identification packet must not be accepted"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void soundDefinitionsResolveToAudioEvents(GameTestHelper helper)
     {
         var oneShot = com.fiskmods.heroes.common.sound.SHSounds.get(FiskHeroes.id("vision_intang_on"));
@@ -6064,6 +6085,38 @@ public final class PortRegressionTests
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.COLD_GUN.get()));
         return player;
+    }
+
+    @GameTest(template = "test_empty")
+    public static void coldGunSoundStateTracksValidatedUse(GameTestHelper helper)
+    {
+        var player = coldGunShooter(helper, "cold-sound-state");
+        var gun = (com.fiskmods.heroes.common.item.ItemColdGun) player.getMainHandItem().getItem();
+        var stack = player.getMainHandItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var state = com.fiskmods.heroes.common.data.var.Vars.COLD_GUN_BEAM_ACTIVE;
+        String key = "fiskheroes:port/cold_gun_beam_active";
+        if (data == null) { helper.fail("Cold Gun player data missing"); return; }
+        if (gun.fireFromAttack(player, stack) || data.getData().get(state))
+        { helper.fail("Rejected input must not activate a beam sound"); return; }
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(player, -1, true);
+        for (int i = 0; i < 4; ++i) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(player, data);
+        if (!gun.fireFromAttack(player, stack) || !data.getData().get(state))
+        { helper.fail("Validated use must start the loop before the beam's charge ends"); return; }
+        data.getData().clearDirty();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
+        var stop = data.getData().writeDirty();
+        if (data.getData().get(state) || !stop.contains(key) || stop.getBoolean(key))
+        { helper.fail("Unequip must synchronize a false loop state"); return; }
+        data.getData().set(state, true); // Simulate stale data after an interrupted session.
+        com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(player);
+        if (data.getData().get(state)) { helper.fail("No request must clear stale loop state"); return; }
+        data.getData().set(state, true);
+        com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(player);
+        if (data.getData().get(state)) helper.fail("Session cleanup must clear beam sound state");
+        else helper.succeed();
     }
 
     @GameTest(template = "test_empty", timeoutTicks = 100)

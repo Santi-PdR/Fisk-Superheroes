@@ -53,7 +53,9 @@ mod version.
 
 The Cold Gun beam uses its original start, stop and moving loop events from the
 downloaded Fisk sound repository. The loop follows server-validated use, ramps
-up over three ticks, and can be heard by tracking players within 64 blocks.
+up over three ticks, and can be heard by tracking players within 64 blocks. The
+original stereo recording is attenuated by distance in software because OpenAL
+does not spatialize stereo; mono replacement recordings use native positioning.
 A client that begins tracking an active beam starts the loop too. As with other
 Fisk sounds, the external sound pack must be available and loaded; the gameplay
 does not depend on its download.

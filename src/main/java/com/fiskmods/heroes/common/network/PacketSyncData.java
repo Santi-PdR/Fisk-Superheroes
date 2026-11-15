@@ -47,6 +47,10 @@ public class PacketSyncData extends SHPacket
     private void handleClient()
     {
         Entity entity = ClientEntityLookup.get(entityId);
+        if (Boolean.getBoolean("fiskheroes.ciColdGunSoundDiagnostics") && tag != null
+                && tag.contains("fiskheroes:port/cold_gun_beam_active"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold gun state sync: entity={}, present={}, active={}",
+                    entityId, entity != null, tag.getBoolean("fiskheroes:port/cold_gun_beam_active"));
 
         if (entity != null)
         {

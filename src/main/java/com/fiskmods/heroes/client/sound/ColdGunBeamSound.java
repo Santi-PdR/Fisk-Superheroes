@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nullable;
+
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
 import com.fiskmods.heroes.common.data.var.Vars;
@@ -13,11 +15,15 @@ import com.fiskmods.heroes.common.item.ItemColdGun;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.resources.sounds.AbstractSoundInstance;
+import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.resources.sounds.TickableSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 
 /** A client-side moving loop driven by the server's validated Cold Gun use state. */
@@ -31,6 +37,7 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
 
     private final Player owner;
     private boolean stopped;
+    private boolean stereo;
     private int ticks;
     private int observedTicks;
 
@@ -67,6 +74,7 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
             if (level == null || mc.player == null) return;
         }
 
+        Entity listener = mc.getCameraEntity() != null ? mc.getCameraEntity() : mc.player;
         Iterator<ColdGunBeamSound> iterator = SOUNDS.values().iterator();
         while (iterator.hasNext())
         {
@@ -76,7 +84,7 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
             // Resource reloads and audio device resets can invalidate a sound without
             // changing beam state. Retry at a bounded rate, never every frame.
             if (level.getEntity(owner.getId()) != owner || !active(owner)
-                    || mc.player.distanceToSqr(owner) > RANGE_SQUARED
+                    || listener.distanceToSqr(owner) > RANGE_SQUARED
                     || (sound.observedTicks >= 100 && !mc.getSoundManager().isActive(sound)))
             {
                 sound.stopped = true;
@@ -90,7 +98,7 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
         if (mc.getSoundManager().getSoundEvent(EVENT) == null) return;
         for (Player owner : level.players())
         {
-            if (active(owner) && mc.player.distanceToSqr(owner) <= RANGE_SQUARED && !SOUNDS.containsKey(owner.getUUID()))
+            if (active(owner) && listener.distanceToSqr(owner) <= RANGE_SQUARED && !SOUNDS.containsKey(owner.getUUID()))
             {
                 ColdGunBeamSound sound = new ColdGunBeamSound(owner);
                 SOUNDS.put(owner.getUUID(), sound);
@@ -98,6 +106,28 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
                 if (DIAGNOSTICS) FiskHeroes.LOGGER.info("Cold gun loop started: {}", owner.getName().getString());
             }
         }
+    }
+
+    @Override
+    @Nullable
+    public WeighedSoundEvents resolve(SoundManager manager)
+    {
+        WeighedSoundEvents event = super.resolve(manager);
+        stereo = false;
+        if (event != null && getSound() != null)
+        {
+            // OpenAL does not spatialize stereo buffers. The original Cold Gun recording is
+            // stereo, so apply distance gain ourselves; mono replacements retain native panning.
+            try (var in = Minecraft.getInstance().getResourceManager().open(getSound().getPath()))
+            {
+                stereo = com.fiskmods.heroes.common.sound.OggVorbisChannels.read(in.readNBytes(512)) > 1;
+            }
+            catch (java.io.IOException ignored)
+            {
+                // A missing or non-Vorbis replacement still follows the normal sound pipeline.
+            }
+        }
+        return event;
     }
 
     @Override
@@ -113,9 +143,19 @@ public final class ColdGunBeamSound extends AbstractSoundInstance implements Tic
         z = owner.getZ();
         // Original GUN_SHOOTING_TIMER rises over three ticks while the gun is in use.
         volume = Mth.clamp(++ticks / 3.0F, 0.0F, 1.0F);
-        if (DIAGNOSTICS && ticks == 3)
+        Minecraft mc = Minecraft.getInstance();
+        Entity listener = mc.getCameraEntity() != null ? mc.getCameraEntity() : mc.player;
+        if (stereo && listener != null && listener != owner)
+            volume *= Mth.clamp(1.0F - (float) Math.sqrt(listener.distanceToSqr(owner)) / 64.0F, 0.0F, 1.0F);
+        if (DIAGNOSTICS && (ticks == 3 || ticks % 40 == 0))
             FiskHeroes.LOGGER.info("Cold gun loop ticked: {}, volume={}, active={}",
                     owner.getName().getString(), volume, Minecraft.getInstance().getSoundManager().isActive(this));
+    }
+
+    @Override
+    public SoundInstance.Attenuation getAttenuation()
+    {
+        return stereo ? SoundInstance.Attenuation.NONE : SoundInstance.Attenuation.LINEAR;
     }
 
     @Override public boolean isStopped() { return stopped; }

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Exercise a real Cold Gun loop on the shooter and a remote tracking client."""
 import os
+import array
+import math
 import signal
 import subprocess
 import time
@@ -15,6 +17,23 @@ def focus(window):
 
 def xdo(*args):
     subprocess.run(['xdotool', *args], check=True, timeout=30)
+
+
+def capture_rms(label):
+    path = Path('ci-cold-sound-' + label + '.raw')
+    with path.open('wb') as out:
+        recorder = subprocess.Popen(['parec', '--device=fisk_capture.monitor', '--raw',
+                                     '--format=s16le', '--rate=44100', '--channels=2'], stdout=out)
+        try: time.sleep(2)
+        finally:
+            recorder.terminate()
+            recorder.wait(timeout=10)
+    samples = array.array('h')
+    samples.frombytes(path.read_bytes())
+    if len(samples) < 88200: raise RuntimeError(f'Audio capture {label} was too short')
+    rms = math.sqrt(sum((x / 32768.0) ** 2 for x in samples) / len(samples))
+    print(f'Observer audio {label}: RMS={rms:.6f}', flush=True)
+    return rms
 
 
 def main():
@@ -35,7 +54,8 @@ def main():
             server.stdin.write('difficulty peaceful\n'); server.stdin.flush()
             observer = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-cold-sound-observer',
                                          '-PciUsername=Dev', '-PquickPlayServer=127.0.0.1:25565', *common],
-                                        stdout=oout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
+                                        stdout=oout, stderr=subprocess.STDOUT,
+                                        env=dict(env, ALSOFT_DRIVERS='pulse', PULSE_SINK='fisk_capture'), start_new_session=True)
             processes.append(observer)
             wait_for(server_log, r'Dev\[/.*logged in with entity id', 360, 'observer joined', observer)
             time.sleep(5)
@@ -56,7 +76,7 @@ def main():
                 if any(p.poll() is not None for p in processes): raise RuntimeError('Minecraft exited unexpectedly')
                 server.stdin.write(line + '\n'); server.stdin.flush(); time.sleep(1)
 
-            command('gamemode creative Dev')
+            command('gamemode spectator Dev')
             command('gamemode creative Partner')
             command('tp Dev 2 180 0 0 0')
             command('tp Partner 0 180 0 0 0')
@@ -68,19 +88,28 @@ def main():
             xdo('mousedown', '1')
             try:
                 wait_for(shooter_log, r'Cold gun loop ticked: Partner, volume=1\.0, active=true', 60, 'shooter loop plays', shooter)
-                wait_for(observer_log, r'Cold gun loop ticked: Partner, volume=1\.0, active=true', 60, 'remote loop plays', observer)
+                wait_for(observer_log, r'Cold gun loop ticked: Partner, volume=0\.[0-9]+, active=true', 60, 'remote loop plays with distance attenuation', observer)
+                time.sleep(3)  # Exclude the short beam-start one-shot from both recordings.
+                near_rms = capture_rms('near')
                 start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 72 180 0')
                 wait_for_new(observer_log, r'Cold gun loop stopped: Partner', start, 60, 'loop stops outside 64 blocks', observer)
                 start = len(observer_log.read_text(errors='replace'))
+                command('tp Dev 58 180 0')
+                wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=0\.0[0-9]+, active=true', start, 60, 'stereo loop resumes softly near range limit', observer)
+                far_rms = capture_rms('far')
+                if far_rms < 0.0001 or near_rms < far_rms * 4:
+                    raise RuntimeError(f'Stereo distance falloff missing in audio output: {near_rms=} {far_rms=}')
+                print('PASS: remote audio is quieter near the 64-block limit', flush=True)
+                start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 2 180 0')
-                wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=1\.0, active=true', start, 60, 'loop resumes upon entering range', observer)
+                wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=0\.9[0-9]+, active=true', start, 60, 'stereo loop gets louder approaching shooter', observer)
                 start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 220 180 0')
                 wait_for_new(observer_log, r'Cold gun loop stopped: Partner', start, 60, 'loop stops when player untracks', observer)
                 start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 2 180 0')
-                wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=1\.0, active=true', start, 60, 'late tracking synchronizes active beam', observer)
+                wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=0\.[0-9]+, active=true', start, 60, 'late tracking synchronizes active beam', observer)
                 start = len(observer_log.read_text(errors='replace'))
                 command('item replace entity Partner weapon.mainhand with minecraft:stick')
                 wait_for_new(observer_log, r'Cold gun loop stopped: Partner', start, 60, 'changing held item stops remote loop', observer)

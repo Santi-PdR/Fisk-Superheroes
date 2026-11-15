@@ -30,12 +30,16 @@ jobs:
       - name: Install headless dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri libflite1 pulseaudio pulseaudio-utils
+          pulseaudio --start --exit-idle-time=-1
+          pactl load-module module-null-sink sink_name=fisk_capture rate=44100 channels=2
+          pactl set-default-sink fisk_capture
       - name: Prepare clients and sound cache
         run: |
           chmod +x gradlew
           mkdir -p run-cold-sound-server run-cold-sound-observer/config run-cold-sound-shooter/config
           printf 'earlyWindowControl = false\n' | tee run-cold-sound-observer/config/fml.toml > run-cold-sound-shooter/config/fml.toml
+          printf 'soundCategory_music:0.0\nsoundCategory_ambient:0.0\nsoundCategory_weather:0.0\n' > run-cold-sound-observer/options.txt
           echo 'eula=true' > run-cold-sound-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=10\nsimulation-distance=3\n' > run-cold-sound-server/server.properties
           curl --fail --location --retry 3 -o /tmp/fisk-cold-sounds.zip https://raw.githubusercontent.com/FiskFille/Superheroes/master/sounds/3.zip
