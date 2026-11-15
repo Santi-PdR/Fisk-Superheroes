@@ -49,13 +49,17 @@ mod version.
   rejected. Frozen-tick gain compensates for vanilla thaw while the beam hits;
   it is not a recreation of the original temperature, HUD or speedster mechanics.
 * Original configuration and per-suit range/damage rules are not yet exposed:
-  32 blocks and 7 damage are the original default values. Recoil animation and configurable ice-layer grief rules remain incomplete. The beam and hit particles are approximations of the original.
+  32 blocks and 7 damage are the original default values. Recoil animation and
+  configurable ice-layer grief rules remain incomplete. The beam and hit
+  particles are approximations of the original.
 
 The Cold Gun beam uses its original start, stop and moving loop events from the
 downloaded Fisk sound repository. The loop follows server-validated use, ramps
 up over three ticks, and can be heard by tracking players within 64 blocks. The
 original stereo recording is attenuated by distance in software because OpenAL
 does not spatialize stereo; mono replacement recordings use native positioning.
+The brief start clip is currently played at the starting position, rather than
+following the player and cutting off on early release as in 1.7.10.
 A client that begins tracking an active beam starts the loop too. As with other
 Fisk sounds, the external sound pack must be available and loaded; the gameplay
 does not depend on its download.

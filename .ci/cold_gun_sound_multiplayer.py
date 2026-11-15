@@ -78,9 +78,11 @@ def main():
 
             command('gamemode spectator Dev')
             command('gamemode creative Partner')
+            # Build the floor before teleporting, or the shooter can fall into the
+            # superflat world before the platform exists and invalidate range checks.
+            command('fill -5 179 -5 5 179 5 minecraft:stone')
             command('tp Dev 2 180 0 0 0')
             command('tp Partner 0 180 0 0 0')
-            command('fill -5 179 -5 5 179 5 minecraft:stone')
             command('execute as Partner run suit fiskheroes:captain_cold')
             command('item replace entity Partner weapon.mainhand with fiskheroes:cold_gun')
             focus(window)
