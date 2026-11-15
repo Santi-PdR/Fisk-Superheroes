@@ -6165,7 +6165,8 @@ public final class PortRegressionTests
             {
                 level.removeBlock(pos.north(), false);
                 level.setBlockAndUpdate(pos, ice.defaultBlockState());
-                target.setPos(player.getX(), player.getY(), player.getZ() + 2.0D);
+                // A cow is shorter than the player's eye; put it directly in the ray.
+                target.setPos(player.getX(), player.getY() + 0.4D, player.getZ() + 2.0D);
                 level.addFreshEntity(target);
             }
             if (n == 5)
@@ -6287,14 +6288,14 @@ public final class PortRegressionTests
         var cow = net.minecraft.world.entity.EntityType.COW.create(level);
         if (cow == null) { helper.fail("Heat gun range target missing"); return; }
         cow.setNoAi(true); cow.setNoGravity(true);
-        cow.setPos(start.x, start.y, start.z + 30.0D);
+        cow.setPos(start.x, start.y + 0.4D, start.z + 30.0D);
         level.getChunk(cow.blockPosition());
         level.addFreshEntity(cow);
         float health = cow.getHealth();
         com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
         if (Math.abs(cow.getHealth() - (health - 5.0F)) > .0001F)
-        { cow.discard(); helper.fail("Heat gun must deal original 5 damage within 32 blocks"); return; }
-        cow.setPos(start.x, start.y, start.z + 34.0D);
+        { float actual = cow.getHealth(); cow.discard(); helper.fail("Heat gun must deal original 5 damage within 32 blocks: before=" + health + ", after=" + actual); return; }
+        cow.setPos(start.x, start.y + 0.4D, start.z + 34.0D);
         cow.setDeltaMovement(net.minecraft.world.phys.Vec3.ZERO);
         cow.clearFire();
         cow.invulnerableTime = 0;
@@ -6324,9 +6325,40 @@ public final class PortRegressionTests
         });
     }
 
+    @GameTest(template = "test_empty")
+    public static void heatGunHonorsDisabledGriefing(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = heatGunShooter(helper, "heat-gun-grief-rule");
+        var gun = (com.fiskmods.heroes.common.item.ItemHeatGun) shooter.getMainHandItem().getItem();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(shooter);
+        var pos = shooter.blockPosition().offset(0, 1, 4);
+        level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.onAbilityKey(shooter, -1, true);
+        for (int i = 0; i < 4; i++) com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickAiming(shooter, data);
+        gun.fireFromAttack(shooter, shooter.getMainHandItem());
+        var rule = com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING;
+        boolean previous = rule.get();
+        try
+        {
+            rule.set(false);
+            com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
+        }
+        finally
+        {
+            rule.set(previous);
+        }
+        boolean intact = level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.ICE);
+        level.removeBlock(pos, false);
+        com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(shooter);
+        com.fiskmods.heroes.common.hero.ability.AbilityHandler.clear(shooter);
+        if (!intact) helper.fail("Heat gun melted ice with griefing disabled"); else helper.succeed();
+    }
+
     public static final class HeatGunProtectionGuard
     {
         private final net.minecraft.core.BlockPos melt, fire;
+        int fireNotifications;
         HeatGunProtectionGuard(net.minecraft.core.BlockPos melt, net.minecraft.core.BlockPos fire)
         { this.melt = melt; this.fire = fire; }
         @net.minecraftforge.eventbus.api.SubscribeEvent
@@ -6335,6 +6367,9 @@ public final class PortRegressionTests
         @net.minecraftforge.eventbus.api.SubscribeEvent
         public void onPlace(net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent event)
         { if (event.getPos().equals(fire)) event.setCanceled(true); }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onNeighbor(net.minecraftforge.event.level.BlockEvent.NeighborNotifyEvent event)
+        { if (event.getPos().equals(fire)) ++fireNotifications; }
     }
 
     @GameTest(template = "test_empty", timeoutTicks = 100)
@@ -6358,9 +6393,10 @@ public final class PortRegressionTests
         helper.runAfterDelay(1, () -> {
             level.setBlockAndUpdate(pos.north().below(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
             level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.OAK_PLANKS.defaultBlockState());
+            guard.fireNotifications = 0;
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(shooter);
-            if (!level.getBlockState(pos.north()).isAir())
-            { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); helper.fail("Canceled placement left fire"); return; }
+            if (!level.getBlockState(pos.north()).isAir() || guard.fireNotifications != 0)
+            { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); helper.fail("Canceled placement left fire or notified neighbors"); return; }
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard);
             level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
             // No heartbeats for 20 ticks: a lost release cannot keep damaging the world.
