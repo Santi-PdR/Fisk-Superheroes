@@ -50,9 +50,10 @@ def main():
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:air')
             command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["freeze_test"]}')
-            # A stationary, invulnerable item has ordinary physics even though
-            # NoAI mobs do not travel. It also checks knockback after rejected damage.
-            command('summon minecraft:item 2.0 181 7.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,PickupDelay:32767s,Tags:["freeze_push_test"]}')
+            # A stationary, durable item has ordinary physics even though the
+            # NoAI golem does not travel. Creative attacks bypass Invulnerable,
+            # so its high health keeps it alive long enough to measure displacement.
+            command('summon minecraft:item 2.0 181 7.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,Health:32767s,PickupDelay:32767s,Tags:["freeze_push_test"]}')
             command('scoreboard objectives add freeze_smoke dummy')
             command('setblock 1 180 7 minecraft:water')
             xdo('keydown', 'c')
@@ -78,7 +79,7 @@ def main():
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] unless data entity @s {Health:100.0f} run say FREEZE_DAMAGE_OK')
             wait_for(server_log, r'FREEZE_DAMAGE_OK', 30, 'blast damages the target', server)
             command('execute if score #freeze_x freeze_smoke matches 210.. run say FREEZE_PUSH_OK')
-            wait_for(server_log, r'FREEZE_PUSH_OK', 30, 'blast pushes an invulnerable entity away from impact', server)
+            wait_for(server_log, r'FREEZE_PUSH_OK', 30, 'blast pushes a nearby item away from impact', server)
             command('scoreboard objectives remove freeze_smoke')
             command('kill @e[type=minecraft:item,tag=freeze_push_test]')
             command('execute if block 1 180 7 minecraft:ice run say FREEZE_WATER_OK')

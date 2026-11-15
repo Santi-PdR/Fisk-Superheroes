@@ -146,7 +146,7 @@ def main():
             # A durable target tolerates multiple held-input launches while still
             # proving that a real impact damages and slows it.
             command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["cold_ball_test"]}')
-            command('summon minecraft:item 1.7 181 4.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,PickupDelay:32767s,Tags:["cold_push_test"]}')
+            command('summon minecraft:item 1.7 181 4.5 {Item:{id:"minecraft:stone",Count:1b},Motion:[0.0d,0.0d,0.0d],NoGravity:1b,Invulnerable:1b,Health:32767s,PickupDelay:32767s,Tags:["cold_push_test"]}')
             command('scoreboard objectives add cold_smoke dummy')
             xdo('mousedown', '1')
             try:
@@ -162,7 +162,7 @@ def main():
             # Measure displacement on the dedicated server, rather than trusting
             # a client animation or a one-tick entity motion sample.
             command('execute if score #cold_x cold_smoke matches 180.. run say COLD_BALL_PUSH_OK')
-            wait_for(server_log, r'COLD_BALL_PUSH_OK', 30, 'cold ball pushes an invulnerable entity away from impact', server)
+            wait_for(server_log, r'COLD_BALL_PUSH_OK', 30, 'cold ball pushes a nearby item away from impact', server)
             command('scoreboard objectives remove cold_smoke')
             command('kill @e[type=minecraft:item,tag=cold_push_test]')
             command('kill @e[type=minecraft:iron_golem,tag=cold_ball_test]')
