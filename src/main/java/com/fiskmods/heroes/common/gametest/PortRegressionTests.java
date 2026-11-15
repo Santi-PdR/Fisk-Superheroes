@@ -6055,6 +6055,7 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel();
         var player = coldGunShooter(helper, "cold-gun-ray");
+        player.setPos(player.position().add(0, 10, 0));
         var gun = (com.fiskmods.heroes.common.item.ItemColdGun) player.getMainHandItem().getItem();
         var stack = player.getMainHandItem();
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
@@ -6290,6 +6291,7 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel();
         var player = coldGunShooter(helper, "cold-gun-protection");
+        player.setPos(player.position().add(0, 20, 0));
         var gun = (com.fiskmods.heroes.common.item.ItemColdGun) player.getMainHandItem().getItem();
         var stack = player.getMainHandItem();
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
@@ -6324,7 +6326,8 @@ public final class PortRegressionTests
                 if (n == 12) net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(placeGuard);
             }
             if (n >= 10 && n <= 12 && !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
-                failure = "Cold gun ignored disabled griefing or a canceled Forge event at tick " + n;
+                failure = "Cold gun ignored disabled griefing or a canceled Forge event at tick " + n
+                        + ": state=" + level.getBlockState(pos) + ", player=" + player.position();
             if (n == 11 && guard.breakEvents == 0) failure = "Cold beam did not reach the protected break event";
             if (n == 12 && (placeGuard.placeEvents == 0 || placeGuard.fireNotifications != 0))
                 failure = "Canceled freeze did not fire a placement event or notified neighbors";
@@ -6822,7 +6825,7 @@ public final class PortRegressionTests
     // Exercise the actual shared burst synchronously, without relying on projectile
     // travel or ticking entities to preserve the exact visibility/velocity samples.
     private static void testFreezeBurst(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.Entity projectile,
-            net.minecraft.world.entity.Entity owner, Vec3 center, double radius, float damage, boolean affectsOwner) throws Exception
+            net.minecraft.world.entity.Entity owner, Vec3 center, double radius, float damage, boolean affectsOwner) throws ReflectiveOperationException
     {
         Class<?> type = Class.forName("com.fiskmods.heroes.common.entity.projectile.FreezeBurst");
         var method = type.getDeclaredMethod("detonate", net.minecraft.server.level.ServerLevel.class,
@@ -6851,6 +6854,7 @@ public final class PortRegressionTests
         walls.add(base.east(2)); // a low wall shields only part of the cow
         for (int x = -2; x <= 2; ++x) for (int y = -1; y <= 2; ++y) walls.add(base.offset(x, y, -2));
         for (var pos : walls) level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(base.east(2), net.minecraft.world.level.block.Blocks.STONE_SLAB.defaultBlockState());
         var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
                 com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
         try
@@ -6872,7 +6876,7 @@ public final class PortRegressionTests
                         + open.getDeltaMovement() + "/" + partial.getDeltaMovement());
             else helper.succeed();
         }
-        catch (Exception e) { helper.fail("Freeze exposure invocation failed: " + e); }
+        catch (ReflectiveOperationException e) { helper.fail("Freeze exposure invocation failed: " + e); }
         finally { open.discard(); partial.discard(); covered.discard(); ball.discard(); for (var pos : walls) level.removeBlock(pos, false); }
     }
 
@@ -6904,8 +6908,38 @@ public final class PortRegressionTests
                 helper.fail("Cold resistance must halve freeze exposure; affectsUser must allow owner impulse: normal=" + plain + ", resistant=" + reduced);
             else helper.succeed();
         }
-        catch (Exception e) { helper.fail("Freeze resistance invocation failed: " + e); }
+        catch (ReflectiveOperationException e) { helper.fail("Freeze resistance invocation failed: " + e); }
         finally { normal.discard(); resistant.discard(); ball.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void freezeBurstOwnerlessPushesNonlivingAndPreservesExistingFreeze(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 225, 1));
+        Vec3 center = new Vec3(base.getX() + .5D, base.getY() + .3D, base.getZ() + .5D);
+        var cow = net.minecraft.world.entity.EntityType.COW.create(level);
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        if (cow == null || boat == null) { helper.fail("Ownerless burst targets missing"); return; }
+        cow.setNoAi(true); cow.setNoGravity(true); cow.setPos(center.x - 2, base.getY(), center.z);
+        boat.setNoGravity(true); boat.setPos(center.x + 2, base.getY(), center.z);
+        level.addFreshEntity(cow); level.addFreshEntity(boat);
+        cow.setTicksFrozen(300);
+        var ball = new com.fiskmods.heroes.common.entity.projectile.ColdBallEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.COLD_BALL.get(), level);
+        try
+        {
+            testFreezeBurst(level, ball, null, center, 3.0D, 1.0F, false);
+            if (cow.getTicksFrozen() != 300 || cow.getHealth() >= cow.getMaxHealth()
+                    || cow.getDeltaMovement().x >= 0 || boat.getDeltaMovement().x <= 0
+                    || !boat.hurtMarked || boat.getDamage() <= 0.0F)
+                helper.fail("Ownerless burst must hurt and push living/nonliving entities without reducing existing freeze: frozen="
+                        + cow.getTicksFrozen() + ", cow=" + cow.getDeltaMovement() + ", boat=" + boat.getDeltaMovement()
+                        + ", boatDamage=" + boat.getDamage());
+            else helper.succeed();
+        }
+        catch (ReflectiveOperationException e) { helper.fail("Ownerless burst invocation failed: " + e); }
+        finally { cow.discard(); boat.discard(); ball.discard(); }
     }
 
     @GameTest(template = "test_empty", timeoutTicks = 100)
@@ -6951,7 +6985,7 @@ public final class PortRegressionTests
         var level = helper.getLevel();
         var player = new net.minecraftforge.common.util.FakePlayer(level,
                 new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "cold-ball-wall-test"));
-        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 110, 1));
         player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
         player.setYRot(0.0F); player.setXRot(0.0F);
         var wall = base.offset(0, 1, 2);
@@ -6987,6 +7021,7 @@ public final class PortRegressionTests
     {
         var level = helper.getLevel();
         var shooter = coldGunShooter(helper, "cold-ball-claim");
+        shooter.setPos(shooter.position().add(0, 40, 0));
         var wall = shooter.blockPosition().offset(0, 1, 2);
         var water = shooter.blockPosition().offset(0, 1, 1);
         level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
@@ -7088,7 +7123,7 @@ public final class PortRegressionTests
         var level = helper.getLevel();
         var player = new net.minecraftforge.common.util.FakePlayer(level,
                 new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "freeze-wall-test"));
-        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 140, 1));
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 150, 1));
         player.setPos(base.getX() + 0.5D, base.getY(), base.getZ() + 0.5D);
         player.setYRot(0.0F); player.setXRot(0.0F);
         var wall = base.offset(0, 1, 3);

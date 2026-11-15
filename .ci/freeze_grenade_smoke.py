@@ -49,7 +49,7 @@ def main():
             command('execute as Dev run suit fiskheroes:batman_dceu')
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with minecraft:air')
-            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,Silent:1b,Tags:["freeze_test"]}')
+            command('summon minecraft:iron_golem 0.5 180 7.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["freeze_test"]}')
             command('setblock 1 180 7 minecraft:water')
             xdo('keydown', 'c')
             try:
@@ -72,6 +72,11 @@ def main():
             wait_for(server_log, r'FREEZE_TARGET_OK', 30, 'blast slows the target', server)
             command('execute as @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] unless data entity @s {Health:100.0f} run say FREEZE_DAMAGE_OK')
             wait_for(server_log, r'FREEZE_DAMAGE_OK', 30, 'blast damages the target', server)
+            command('scoreboard objectives add freeze_smoke dummy')
+            command('execute store result score #freeze_z freeze_smoke run data get entity @e[type=minecraft:iron_golem,tag=freeze_test,limit=1] Pos[2] 100')
+            command('execute if score #freeze_z freeze_smoke matches 780.. run say FREEZE_PUSH_OK')
+            wait_for(server_log, r'FREEZE_PUSH_OK', 30, 'blast pushes the target away from impact', server)
+            command('scoreboard objectives remove freeze_smoke')
             command('execute if block 1 180 7 minecraft:ice run say FREEZE_WATER_OK')
             wait_for(server_log, r'FREEZE_WATER_OK', 30, 'blast freezes nearby water', server)
             # Batman has one charge: another click during cooldown must not spawn a second grenade.

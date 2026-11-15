@@ -77,8 +77,8 @@ final class FreezeBurst
                 {
                     int frozen = Math.max(1, (int) Math.min(180.0D, Math.round(140.0D * cold)));
                     living.clearFire();
-                    living.setTicksFrozen(Math.min(living.getTicksFrozen() + frozen, living.getTicksRequiredToFreeze() + 40));
-                    int duration = Math.max(1, (int) Math.min(100.0D, Math.round(100.0D * cold)));
+                    com.fiskmods.heroes.common.util.ColdExposure.addFrozenTicks(living, frozen);
+                    int duration = Math.max(1, (int) Math.min(300.0D, Math.round(300.0D * cold)));
                     living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 2));
                 }
             }

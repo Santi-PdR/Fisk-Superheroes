@@ -145,7 +145,7 @@ def main():
             command('tp Dev 0.5 180 0.5 0 10')
             # A durable target tolerates multiple held-input launches while still
             # proving that a real impact damages and slows it.
-            command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
+            command('summon minecraft:iron_golem 0.5 180 4.5 {NoAI:1b,NoGravity:1b,Silent:1b,Tags:["cold_ball_test"]}')
             xdo('mousedown', '1')
             try:
                 time.sleep(1.5)
@@ -156,6 +156,13 @@ def main():
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
             command('execute as @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] unless data entity @s {Health:100.0f} run say COLD_BALL_DAMAGE_OK')
             wait_for(server_log, r'COLD_BALL_DAMAGE_OK', 30, 'cold ball impact damages the target', server)
+            # Measure displacement on the dedicated server, rather than trusting
+            # a client animation or a one-tick entity motion sample.
+            command('scoreboard objectives add cold_smoke dummy')
+            command('execute store result score #cold_z cold_smoke run data get entity @e[type=minecraft:iron_golem,tag=cold_ball_test,limit=1] Pos[2] 100')
+            command('execute if score #cold_z cold_smoke matches 480.. run say COLD_BALL_PUSH_OK')
+            wait_for(server_log, r'COLD_BALL_PUSH_OK', 30, 'cold ball pushes the target away from impact', server)
+            command('scoreboard objectives remove cold_smoke')
             command('kill @e[type=minecraft:iron_golem,tag=cold_ball_test]')
             command('tp Dev 0.5 180 0.5 0 0')
             # Point-blank creative mining must be suppressed even when holding attack.

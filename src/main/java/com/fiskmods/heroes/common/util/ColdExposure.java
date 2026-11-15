@@ -26,4 +26,13 @@ public final class ColdExposure
         }
         return 1.0F;
     }
+    /** Add exposure without reducing frozen ticks already supplied by another effect. */
+    public static void addFrozenTicks(LivingEntity target, int amount)
+    {
+        int current = target.getTicksFrozen();
+        int cap = target.getTicksRequiredToFreeze() + 40;
+        if (amount > 0 && current < cap)
+            target.setTicksFrozen((int) Math.min((long) current + amount, cap));
+    }
+
 }

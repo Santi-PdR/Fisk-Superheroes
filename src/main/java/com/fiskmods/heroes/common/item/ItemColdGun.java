@@ -268,7 +268,7 @@ public final class ItemColdGun extends ItemGun
         float amount = 2.0F + exposure + hit.getPersistentData().getFloat(remainderKey);
         int ticks = (int) amount;
         hit.getPersistentData().putFloat(remainderKey, amount - ticks);
-        hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + ticks, hit.getTicksRequiredToFreeze() + 40));
+        com.fiskmods.heroes.common.util.ColdExposure.addFrozenTicks(hit, ticks);
         MobEffectInstance slow = hit.getEffect(MobEffects.MOVEMENT_SLOWDOWN);
         // Avoid broadcasting a redundant effect update on every beam tick, and
         // do not replace a stronger slowdown supplied by another source.
