@@ -5328,6 +5328,93 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void metalHeatRecoveryDoesNotAddOrdinaryDamageReduction(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var attacker = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        if (data == null || iron == null || spider == null) { helper.fail("Metal recovery fixtures missing"); return; }
+        data.setHero(iron.getDefaultIteration());
+        var values = data.getData();
+        var heat = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT;
+        var cooldown = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN;
+        values.set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, true);
+        values.set(heat, .2F);
+        var melee = player.damageSources().playerAttack(attacker);
+        float hit = com.fiskmods.heroes.common.hero.ability.ModifierHandler.modifyDamage(player, melee, 8.0F);
+        if (Math.abs(hit - 8.0F) > .001F || Math.abs(values.get(heat) - .2F) > .001F)
+        { helper.fail("Ordinary hits must not arbitrarily heat metal or add a second damage reduction"); return; }
+        var fire = iron.getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("fire_immunity"));
+        if (fire == null) { helper.fail("Iron Man fire-immunity fixture missing"); return; }
+        var lava = player.damageSources().lava();
+        if (!fire.getModifier().isImmuneTo(player, fire, lava, 8.0F))
+        { helper.fail("Fire immunity must work before overheating"); return; }
+        values.set(cooldown, (short) 2);
+        values.set(com.fiskmods.heroes.common.data.var.Vars.METAL_SKIN, false);
+        if (fire.getModifier().isImmuneTo(player, fire, lava, 8.0F))
+        { helper.fail("Fire immunity cooldown must persist when metal skin is disabled"); return; }
+        float[] mixed = {0.0F};
+        com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
+                java.util.Map.of("FIRE", .25D, "ENERGY", .75D),
+                () -> mixed[0] = fire.getModifier().modifyDamage(player, fire, lava, 8.0F));
+        if (mixed[0] != 8.0F) { helper.fail("Cooldown must disable partial fire immunity as well"); return; }
+        data.setHero(spider.getDefaultIteration());
+        values.set(heat, 1.0F);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (values.get(cooldown) != 1 || values.get(heat) != 1.0F)
+        { helper.fail("Recovery must continue after changing to a non-metal hero"); return; }
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (values.get(cooldown) != 0 || values.get(heat) >= 1.0F)
+        { helper.fail("Heat must begin to decay when the cooldown expires"); return; }
+        float cooled = values.get(heat);
+        com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(player);
+        if (values.get(cooldown) != 0 || values.get(heat) >= cooled)
+        { helper.fail("Air cooling must continue without restarting the cooldown"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void metalHeatHudTracksModifiersAndInterpolates(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var spider = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:spider_man");
+        var mk50 = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man_mk50");
+        if (data == null || iron == null || spider == null || mk50 == null)
+        { helper.fail("Metal HUD test fixtures missing"); return; }
+        data.setHero(iron.getDefaultIteration());
+        var values = data.getData();
+        var heat = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT;
+        var cooldown = com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN;
+        values.set(heat, 0.0F);
+        values.updatePrevious();
+        values.set(heat, 1.0F);
+        if (com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.0F) != 79
+                || com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.5F) != 39
+                || com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 1.0F) != 0)
+        { helper.fail("Metal HUD should interpolate the original texture split and rounding"); return; }
+        values.set(cooldown, (short) 3);
+        if (com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.0F) != 0)
+        { helper.fail("Fire immunity cooldown must hide the metal overlay"); return; }
+        values.set(cooldown, (short) 0);
+        data.setHero(spider.getDefaultIteration());
+        if (com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.0F) != 0)
+        { helper.fail("A non-metal hero must not use the heat texture"); return; }
+        data.setHero(mk50.getDefaultIteration());
+        var js = new com.fiskmods.heroes.pack.js.JSEntity(player);
+        js.setData("fiskheroes:dyn/nanites", false);
+        if (com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.0F) != 0)
+        { helper.fail("Inactive nanites must not use the metal heat overlay"); return; }
+        js.setData("fiskheroes:dyn/nanites", true);
+        if (com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(player, data, 79, 0.0F) != 79)
+        { helper.fail("Activated nanites must immediately enable the heat overlay"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void suitProtectionMatchesOriginalRules(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

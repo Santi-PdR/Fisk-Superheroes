@@ -35,12 +35,15 @@ public final class SuitProtectionHud
         int filled = Mth.clamp(Math.round(reduction * 79.0F), 0, 79);
         gui.setupOverlayRenderState(true, false);
         graphics.blit(ICONS, x, y, 0, 0, 81, 9);
-        if (filled > 0) graphics.blit(ICONS, x + 1, y + 1, 81, 0, filled, 7);
+        int heatWidth = com.fiskmods.heroes.common.hero.SuitProtection.metalHeatOverlayWidth(mc.player, data, filled, partialTick);
+        int regularWidth = filled - heatWidth;
+        if (regularWidth > 0) graphics.blit(ICONS, x + 1 + heatWidth, y + 1, 81 + heatWidth, 0, regularWidth, 7);
+        if (heatWidth > 0) graphics.blit(ICONS, x + 1, y + 1, 160, 0, heatWidth, 7);
         if (vanillaArmor) gui.leftHeight += 10;
 
-        String key = data.getHeroType().getRegistryName() + ":" + width + "x" + height + ":" + vanillaArmor;
+        String key = data.getHeroType().getRegistryName() + ":" + width + "x" + height + ":" + vanillaArmor + ":" + (heatWidth > 0);
         if (DIAGNOSTICS.add(key))
-            FiskHeroes.LOGGER.info("Suit protection HUD: hero={}, fill={}, armor={}, x={}, y={}, screen={}x{}",
-                    data.getHeroType().getRegistryName(), filled, vanillaArmor, x, y, width, height);
+            FiskHeroes.LOGGER.info("Suit protection HUD: hero={}, fill={}, armor={}, x={}, y={}, screen={}x{}, metalOverlay={}",
+                    data.getHeroType().getRegistryName(), filled, vanillaArmor, x, y, width, height, heatWidth);
     }
 }

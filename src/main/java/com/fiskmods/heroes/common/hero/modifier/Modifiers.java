@@ -164,8 +164,7 @@ public final class Modifiers
         POTION_RETENTION = registry.register(new ModifierPotionRetention(new ResourceLocation(FiskHeroes.MODID, "potion_retention"))
                 .addProperty(PowerProperty.POTION_EFFECTS)
                 .hideFromHud());
-        METAL_SKIN = registry.register(new ModifierMetalSkin(new ResourceLocation(FiskHeroes.MODID, "metal_skin"))
-                .addProperty(PowerProperty.FACTOR, 0.5F));
+        METAL_SKIN = registry.register(new ModifierMetalSkin(new ResourceLocation(FiskHeroes.MODID, "metal_skin")));
         INVISIBILITY = registry.register(new ModifierInvisibility(new ResourceLocation(FiskHeroes.MODID, "invisibility"))
                 .addProperty(PowerProperty.IS_TOGGLE, true)).setSoundState(Vars.INVISIBLE);
         INTANGIBILITY = registry.register(new ModifierIntangibility(new ResourceLocation(FiskHeroes.MODID, "intangibility"))

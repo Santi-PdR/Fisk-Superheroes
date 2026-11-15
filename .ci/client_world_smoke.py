@@ -241,6 +241,28 @@ def main():
             if matching < 20:
                 raise RuntimeError(f'Protection meter pixels missing at {(px, py)}: {matching}/30 match, samples={sample}')
             print('PASS: suit protection meter rendered pixels, fill=', meter.group(1), 'matching=', matching, flush=True)
+            # Iron Man has both metal skin and fire immunity. At zero heat the original
+            # meter uses its orange alternate texture; inspect rendered pixels as well as
+            # the overlay's calculated width, then restore Spider-Man for the jump test.
+            command('suit fiskheroes:iron_man')
+            metal = wait_for(r'Suit protection HUD: hero=fiskheroes:iron_man, fill=(\d+), armor=false, x=(-?\d+), y=(-?\d+), screen=(\d+)x(\d+), metalOverlay=(\d+)',
+                             45, 'metal-skin protection overlay in the survival HUD', process)
+            if int(metal.group(6)) < 30:
+                raise RuntimeError(f'Expected a visible metal-skin overlay: {metal.group(6)} pixels')
+            time.sleep(10)
+            subprocess.run(['scrot', 'ci-protection-metal-hud.png'], check=True, timeout=30)
+            metal_image = Image.open('ci-protection-metal-hud.png').convert('RGB')
+            sx = int(values['WIDTH']) / int(metal.group(4))
+            sy = int(values['HEIGHT']) / int(metal.group(5))
+            px = int(gx + (int(metal.group(2)) + 8) * sx)
+            py = int(gy + (int(metal.group(3)) + 3) * sy)
+            sample = [metal_image.getpixel((px + int(i * sx), py)) for i in range(25)]
+            matching = sum(1 for r, g, b in sample if r >= 235 and 170 <= g <= 210 and 90 <= b <= 140)
+            if matching < 20:
+                raise RuntimeError(f'Metal protection pixels missing at {(px, py)}: {matching}/25 match, samples={sample}')
+            print('PASS: metal-skin protection texture rendered pixels, matching=', matching, flush=True)
+            command('suit fiskheroes:spider_man')
+            time.sleep(3)
             xdo('keydown', 'space')
             time.sleep(0.3)
             xdo('keyup', 'space')

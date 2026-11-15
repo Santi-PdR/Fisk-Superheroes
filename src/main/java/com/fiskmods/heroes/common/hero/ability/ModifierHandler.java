@@ -50,6 +50,8 @@ public final class ModifierHandler
                 .anyMatch(entry -> entry.getModifier().getId().getPath().equals("metal_skin")
                         && entry.isEnabled() && entry.isModifierEnabled(entity, data));
         data.getData().set(Vars.METAL_SKIN, hasActiveMetalSkin);
+        // The original updates cooling for every active hero, not only while metal skin is enabled.
+        com.fiskmods.heroes.common.hero.modifier.MetalSkinHeat.tick(entity, data);
 
         float projectionTimer = data.getData().get(Vars.ENERGY_PROJECTION_TIMER);
         if (projectionTimer > 0.0F)

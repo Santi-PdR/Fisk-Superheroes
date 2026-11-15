@@ -34,19 +34,17 @@ class ModifierImmunity extends Modifier
         this.group = group;
     }
 
+    private boolean fireImmunityCoolingDown(LivingEntity entity)
+    {
+        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        return group == Modifiers.DamageGroup.FIRE && data != null
+                && data.getData().get(Vars.METAL_HEAT_COOLDOWN) > 0;
+    }
+
     @Override
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
-        if (group == Modifiers.DamageGroup.FIRE)
-        {
-            SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-            if (data != null && data.getData().get(Vars.METAL_SKIN)
-                    && data.getData().get(Vars.METAL_HEAT_COOLDOWN) > 0)
-            {
-                return false;
-            }
-        }
-
+        if (fireImmunityCoolingDown(entity)) return false;
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction >= 0.0F)
         {
@@ -58,6 +56,7 @@ class ModifierImmunity extends Modifier
     @Override
     public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
     {
+        if (fireImmunityCoolingDown(entity)) return amount;
         float profileFraction = DamageGroups.profileFraction(group);
         if (profileFraction > 0.0F && profileFraction < 1.0F)
         {
@@ -288,32 +287,12 @@ class ModifierPotionImmunity extends Modifier
     }
 }
 
-/** Metal skin: damage is converted into heat, and heat builds up over time. */
+/** Metal skin marks a heat-sensitive hero; global heat processing is shared by all heroes. */
 class ModifierMetalSkin extends Modifier
 {
     ModifierMetalSkin(ResourceLocation id)
     {
         super(id);
-    }
-
-    @Override
-    public float modifyDamage(LivingEntity entity, ModifierEntry entry, DamageSource source, float amount)
-    {
-        SHPlayerData data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
-
-        if (data != null && data.getData().get(Vars.METAL_SKIN))
-        {
-            MetalSkinHeat.add(entity, amount * 0.02F);
-            return amount * entry.getFloat(entity, PowerProperty.FACTOR);
-        }
-
-        return amount;
-    }
-
-    @Override
-    public void tick(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
-    {
-        MetalSkinHeat.tick(entity, data);
     }
 }
 

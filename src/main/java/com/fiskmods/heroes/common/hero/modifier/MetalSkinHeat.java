@@ -28,13 +28,14 @@ public final class MetalSkinHeat
     /** Mirrors the original cooling, lava exposure and temporary loss of fire immunity. */
     public static void tick(LivingEntity entity, SHPlayerData data)
     {
-        if (entity.level().isClientSide || !data.getData().get(Vars.METAL_SKIN)) return;
+        if (entity.level().isClientSide) return;
+        boolean metalSkin = data.getData().get(Vars.METAL_SKIN);
 
         float previousHeat = data.getData().get(Vars.METAL_HEAT);
         float heat = previousHeat;
         short cooldown = data.getData().get(Vars.METAL_HEAT_COOLDOWN);
 
-        if (entity.isInWater())
+        if (metalSkin && entity.isInWater())
         {
             if (heat > 0.0F)
             {
@@ -54,7 +55,7 @@ public final class MetalSkinHeat
                 }
             }
         }
-        else if (entity.isInLava())
+        else if (metalSkin && entity.isInLava())
         {
             heat = Math.min(1.0F, heat + 1.0F / LAVA_HEAT_TICKS);
         }

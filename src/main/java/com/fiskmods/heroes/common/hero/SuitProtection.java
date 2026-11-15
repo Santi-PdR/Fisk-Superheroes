@@ -12,6 +12,9 @@ import net.minecraft.world.entity.LivingEntity;
 /** Original tier protection, applied before vanilla armor and enchantments. */
 public final class SuitProtection
 {
+    private static final net.minecraft.resources.ResourceLocation METAL_SKIN = new net.minecraft.resources.ResourceLocation("fiskheroes", "metal_skin");
+    private static final net.minecraft.resources.ResourceLocation FIRE_IMMUNITY = new net.minecraft.resources.ResourceLocation("fiskheroes", "fire_immunity");
+
     private SuitProtection() {}
 
     public static double tierReduction(int tier)
@@ -71,6 +74,30 @@ public final class SuitProtection
         for (var stack : entity.getArmorSlots())
             if (!stack.isEmpty() && stack.getItem() instanceof ItemHeroArmor) pieces++;
         return 1.0F - pieces * 0.01F;
+    }
+
+    /**
+     * Number of filled HUD pixels using the legacy metal-skin heat texture. Fire immunity's
+     * cooldown suppresses the overlay, as does disabling either modifier in the hero pack.
+     * A client passes the current frame fraction so the transition stays smooth between ticks.
+     */
+    public static int metalHeatOverlayWidth(LivingEntity entity, com.fiskmods.heroes.common.data.SHPlayerData data,
+            int filled, float partialTick)
+    {
+        filled = Math.max(0, Math.min(79, filled));
+        if (filled == 0 || data == null || data.getHeroType() == null
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT_COOLDOWN) > 0)
+            return 0;
+        var powers = data.getHeroType().getPowerContainer();
+        var metal = powers.getEntry(METAL_SKIN);
+        var fire = powers.getEntry(FIRE_IMMUNITY);
+        if (metal == null || fire == null || !metal.isEnabled() || !fire.isEnabled()
+                || !metal.isModifierEnabled(entity, data) || !fire.isModifierEnabled(entity, data)) return 0;
+        float heat = data.getData().getInterpolated(com.fiskmods.heroes.common.data.var.Vars.METAL_HEAT,
+                net.minecraft.util.Mth.clamp(partialTick, 0.0F, 1.0F));
+        if (!Float.isFinite(heat)) heat = 0.0F;
+        heat = net.minecraft.util.Mth.clamp(heat, 0.0F, 1.0F);
+        return filled - Math.round(heat * filled);
     }
 
     /** Legacy extended damage reports fire at a FIRE fraction of at least one half. */

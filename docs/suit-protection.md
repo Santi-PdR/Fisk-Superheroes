@@ -33,5 +33,11 @@ absorption, even without an active hero and against armor-bypassing sources. Pie
 small passive reduction before 1.20 vanilla armor; mixed armor and toughness therefore retain modern
 rules and do not exactly reproduce the original 1.7 armor calculation.
 Suit durability scaling is not implemented: ported suit pieces are currently unbreakable. The HUD
-currently shows the base protection rather than a source-specific value; it does not yet reproduce
-the original metal-skin heat coloring.
+shows the base protection rather than a source-specific value. For metal-skin heroes with active
+fire immunity, its two original textures visualize interpolated heat; the overlay disappears while
+fire immunity is cooling down.
+
+Metal skin itself does not add a second damage reduction or heat up from ordinary hits; the tier
+and the separate per-piece absorption handle protection. Heat builds from lava and heat-transfer
+attacks and cools over time. Overheating temporarily disables fire immunity, including its effect
+on mixed damage profiles; recovery continues when switching to another active hero.

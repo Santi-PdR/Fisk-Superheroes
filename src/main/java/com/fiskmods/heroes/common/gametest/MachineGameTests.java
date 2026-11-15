@@ -327,12 +327,12 @@ public final class MachineGameTests
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         var damage = new net.minecraftforge.event.entity.living.LivingHurtEvent(player, player.damageSources().playerAttack(player), 11F);
         com.fiskmods.heroes.common.event.CommonEventHandler.onLivingHurt(damage);
-        if (Math.abs(damage.getAmount() - .52F) > .001)
+        if (Math.abs(damage.getAmount() - .52F * .99F) > .001)
         { helper.fail("Tier and augment must combine before vanilla armor"); return; }
         var bypass = new net.minecraftforge.event.entity.living.LivingHurtEvent(player, player.damageSources().fellOutOfWorld(), 11F);
         com.fiskmods.heroes.common.event.CommonEventHandler.onLivingHurt(bypass);
-        if (Math.abs(bypass.getAmount() - 11F) > .001)
-        { helper.fail("Void damage must bypass suit protection"); return; }
+        if (Math.abs(bypass.getAmount() - 11F * .99F) > .001)
+        { helper.fail("Void damage bypasses tier protection, but not passive piece absorption"); return; }
         player.getInventory().armor.set(2, ItemStack.EMPTY);
         com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
         if (Math.abs(player.getAttributeValue(com.fiskmods.heroes.common.hero.attribute.SHAttributes.PUNCH_DAMAGE.get()) - 9.0) > .001
