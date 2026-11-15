@@ -223,6 +223,7 @@ public class CommonEventHandler
         if (entity instanceof ServerPlayer serverPlayer)
         {
             com.fiskmods.heroes.common.item.ItemHeatGun.tickBeam(serverPlayer);
+            com.fiskmods.heroes.common.item.ItemColdGun.tickBeam(serverPlayer);
             com.fiskmods.heroes.common.hero.ability.AbilityHandler.tickHeldAbilities(serverPlayer);
             com.fiskmods.heroes.common.hero.ability.WebSwingHandler.tick(serverPlayer);
             EquipmentHelper.tickRapidWebs(serverPlayer);
@@ -396,6 +397,7 @@ public class CommonEventHandler
         if (event.getEntity() instanceof ServerPlayer player)
         {
             com.fiskmods.heroes.common.item.ItemHeatGun.clearBeam(player);
+            com.fiskmods.heroes.common.item.ItemColdGun.clearBeam(player);
             DataSyncer.onPlayerLogout(player);
             EquipmentHelper.clearRapidWebs(player);
             com.fiskmods.heroes.common.hero.ability.FlightKickGuard.clear(player);

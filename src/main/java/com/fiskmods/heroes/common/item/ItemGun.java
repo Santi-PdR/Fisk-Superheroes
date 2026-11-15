@@ -234,6 +234,11 @@ public class ItemGun extends Item
 
     protected void fire(ServerPlayer shooter, ItemStack stack)
     {
+        fireRay(shooter, stack, range);
+    }
+
+    protected void fireRay(ServerPlayer shooter, ItemStack stack, double rayRange)
+    {
         Level level = shooter.level();
         String id = net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(this).getPath();
 
@@ -258,26 +263,27 @@ public class ItemGun extends Item
 
         Vec3 start = shooter.getEyePosition();
         Vec3 direction = shooter.getViewVector(1.0F);
-        Vec3 end = start.add(direction.scale(range));
+        Vec3 end = start.add(direction.scale(rayRange));
         BlockHitResult block = level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER,
                 id.equals("cold_gun") ? ClipContext.Fluid.ANY : ClipContext.Fluid.NONE, shooter));
         if (block.getType() != HitResult.Type.MISS) end = block.getLocation();
 
-        AABB search = shooter.getBoundingBox().expandTowards(direction.scale(range)).inflate(1.0D);
+        AABB search = shooter.getBoundingBox().expandTowards(direction.scale(rayRange)).inflate(1.0D);
         Entity hit = null;
         double nearest = Double.MAX_VALUE;
         boolean heatGun = id.equals("heat_gun");
+        boolean beamGun = heatGun || id.equals("cold_gun");
         for (Entity target : level.getEntities(shooter, search, entity -> entity.isAlive()
-                && (heatGun ? entity.isPickable() && (entity != shooter.getVehicle() || entity.canRiderInteract())
+                && (beamGun ? entity.isPickable() && (entity != shooter.getVehicle() || entity.canRiderInteract())
                         : entity instanceof LivingEntity && !entity.isAlliedTo(shooter))))
         {
             // The original heat-gun ray uses the target's collision border rather than a
             // blanket 0.25-block enlargement, and can stop on pickable non-living entities.
-            AABB bounds = target.getBoundingBox().inflate(heatGun ? target.getPickRadius() : 0.25D);
+            AABB bounds = target.getBoundingBox().inflate(beamGun ? target.getPickRadius() : 0.25D);
             var intersection = bounds.clip(start, end);
-            if (intersection.isPresent() || heatGun && bounds.contains(start))
+            if (intersection.isPresent() || beamGun && bounds.contains(start))
             {
-                double distance = heatGun && bounds.contains(start) ? 0.0D : start.distanceToSqr(intersection.get());
+                double distance = beamGun && bounds.contains(start) ? 0.0D : start.distanceToSqr(intersection.get());
                 if (distance < nearest)
                 {
                     nearest = distance;
@@ -299,7 +305,7 @@ public class ItemGun extends Item
                     new com.fiskmods.heroes.common.network.PacketHeatGunFlame(shooter.getId(), muzzle, tracerEnd),
                     level, start.x, start.y, start.z, 64.0D);
         }
-        else if (!id.equals("heat_gun") && level instanceof net.minecraft.server.level.ServerLevel serverLevel)
+        else if (!id.equals("heat_gun") && (!id.equals("cold_gun") || level.getGameTime() % 3L == 0L) && level instanceof net.minecraft.server.level.ServerLevel serverLevel)
         {
             net.minecraft.core.particles.ParticleOptions tracer = switch (id)
             {
@@ -321,7 +327,7 @@ public class ItemGun extends Item
             if (data != null)
             {
                 double length = hit != null ? Math.sqrt(nearest) : start.distanceTo(end);
-                data.getData().set(Vars.HEAT_VISION_LENGTH, Math.min(range, length));
+                data.getData().set(Vars.HEAT_VISION_LENGTH, Math.min(rayRange, length));
                 data.getData().set(Vars.ENERGY_PROJECTION_TIMER, 1.0F);
             }
         }

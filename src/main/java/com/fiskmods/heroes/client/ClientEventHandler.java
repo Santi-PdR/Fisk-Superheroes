@@ -230,12 +230,13 @@ public class ClientEventHandler
             syncAbilityInput(player, -1);
         }
 
-        // Primary attack keeps the port's existing gun controls. Heat Gun also accepts held
+        // Primary attack keeps the port's existing gun controls. Both beam guns accept held
         // item use, so packs binding AIM to a different key can use the original two-key scheme.
-        // Requests are heartbeats for Heat Gun; every beam tick is still validated server-side.
-        boolean heatGunUseDown = mc.screen == null && !abilityClickMode && mc.options.keyUse.isDown()
-                && player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemHeatGun;
-        if (attackDown || heatGunUseDown)
+        // Beam requests are heartbeats; every beam tick is still validated server-side.
+        boolean beamGunUseDown = mc.screen == null && !abilityClickMode && mc.options.keyUse.isDown()
+                && (player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemHeatGun
+                    || player.getMainHandItem().getItem() instanceof com.fiskmods.heroes.common.item.ItemColdGun);
+        if (attackDown || beamGunUseDown)
         {
             requestGunShot(player);
         }

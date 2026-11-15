@@ -1,6 +1,14 @@
 package com.fiskmods.heroes.common.item;
 
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
+import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.var.Vars;
+import com.fiskmods.heroes.common.hero.HeroTracker;
+import com.fiskmods.heroes.common.hero.ability.AbilityHandler;
 
 import com.fiskmods.heroes.FiskHeroes;
 import com.fiskmods.heroes.common.entity.projectile.ColdBallEntity;
@@ -33,6 +41,21 @@ import net.minecraft.world.phys.HitResult;
 public final class ItemColdGun extends ItemGun
 {
     private static final String TAG_GRENADE_MODE = "GrenadeMode";
+    private static final int REQUEST_TIMEOUT = 20;
+    private static final int CHARGE_TICKS = 10;
+    private static final int MAX_USE_TICKS = 611;
+    private static final Map<UUID, BeamRequest> REQUESTS = new HashMap<>();
+
+    private static final class BeamRequest
+    {
+        final ItemStack stack;
+        long expires;
+        long lastTick = Long.MIN_VALUE;
+        int ticks;
+        boolean exhausted;
+        BeamRequest(ItemStack stack, long expires) { this.stack = stack; this.expires = expires; }
+    }
+
 
     public ItemColdGun(int magazineSize, int cooldownTicks, int reloadTicks, double range, float damage, Properties properties)
     {
@@ -47,7 +70,7 @@ public final class ItemColdGun extends ItemGun
     @Override
     public int getShotCooldownTicks(ItemStack stack)
     {
-        return isGrenadeMode(stack) ? 24 : cooldownTicks;
+        return isGrenadeMode(stack) ? 20 : cooldownTicks;
     }
 
     @Override
@@ -58,6 +81,13 @@ public final class ItemColdGun extends ItemGun
         {
             if (!level.isClientSide)
             {
+                HeroTracker.update(player);
+                var hero = HeroTracker.getHeroType(player);
+                var data = SHDataCapabilities.getPlayer(player);
+                if (hand != InteractionHand.MAIN_HAND || hero == null || data == null
+                        || !hasPermission(player, hero) || data.getData().get(Vars.AIMING)
+                        || data.getData().get(Vars.RECOIL) > 0.0F) return InteractionResultHolder.fail(stack);
+                clearBeam(player);
                 boolean next = !isGrenadeMode(stack);
                 stack.getOrCreateTag().putBoolean(TAG_GRENADE_MODE, next);
                 SHSounds.play(player, FiskHeroes.id("item.coldgun.aim"), SoundSource.PLAYERS, 1.0F, 1.0F);
@@ -68,6 +98,87 @@ public final class ItemColdGun extends ItemGun
         }
         return super.use(level, player, hand);
     }
+
+    /** Fire packets are held-input heartbeats, never client-directed raycasts. */
+    @Override
+    public boolean fireFromAttack(Player player, ItemStack stack)
+    {
+        if (!(player instanceof ServerPlayer serverPlayer) || player.level().isClientSide
+                || !player.isAlive() || player.isSpectator() || stack.isEmpty()
+                || stack.getItem() != this || player.getMainHandItem() != stack) return false;
+        HeroTracker.update(player);
+        var hero = HeroTracker.getHeroType(player);
+        var data = SHDataCapabilities.getPlayer(player);
+        if (hero == null || data == null)
+        {
+            showUseNotice(player, "message.fiskheroes.gun.requires_suit");
+            return false;
+        }
+        if (!hasPermission(player, hero))
+        {
+            showUseNotice(player, "message.fiskheroes.gun.not_permitted");
+            return false;
+        }
+        if (!AbilityHandler.isKeyPressed(serverPlayer, "AIM") || !data.getData().get(Vars.AIMING)
+                || data.getData().get(Vars.AIMING_TIMER) < 1.0F || data.getData().get(Vars.RECOIL) > 0.0F)
+            return false;
+        if (isGrenadeMode(stack)) return super.fireFromAttack(player, stack);
+        if (stack.getOrCreateTag().getLong(NEXT_SHOT_TAG) > player.level().getGameTime()) return false;
+        long expires = player.level().getGameTime() + REQUEST_TIMEOUT;
+        BeamRequest request = REQUESTS.get(player.getUUID());
+        if (request == null || request.stack != stack)
+        {
+            REQUESTS.put(player.getUUID(), new BeamRequest(stack, expires));
+            SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.start"), SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
+        else request.expires = expires;
+        return true;
+    }
+
+    public static void tickBeam(ServerPlayer player)
+    {
+        BeamRequest request = REQUESTS.get(player.getUUID());
+        if (request == null) return;
+        long now = player.level().getGameTime();
+        var data = SHDataCapabilities.getPlayer(player);
+        var hero = HeroTracker.getHeroType(player);
+        if (!player.isAlive() || player.isSpectator() || now >= request.expires
+                || player.getMainHandItem() != request.stack
+                || !(request.stack.getItem() instanceof ItemColdGun gun) || isGrenadeMode(request.stack)
+                || hero == null || data == null || !gun.hasPermission(player, hero)
+                || !AbilityHandler.isKeyPressed(player, "AIM") || !data.getData().get(Vars.AIMING)
+                || data.getData().get(Vars.AIMING_TIMER) < 1.0F || data.getData().get(Vars.RECOIL) > 0.0F)
+        {
+            stopBeam(player);
+            return;
+        }
+        if (request.lastTick == now || request.exhausted) return;
+        request.lastTick = now;
+        if (++request.ticks > MAX_USE_TICKS)
+        {
+            request.exhausted = true;
+            request.stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, now + 4);
+            SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.stop"), SoundSource.PLAYERS, 1.0F, 1.0F);
+            return;
+        }
+        if (request.ticks > CHARGE_TICKS)
+        {
+            float intensity = Math.min((request.ticks - CHARGE_TICKS) / 5.0F, 1.0F);
+            gun.fireRay(player, request.stack, gun.range * intensity);
+        }
+    }
+
+    private static void stopBeam(Player player)
+    {
+        BeamRequest request = REQUESTS.remove(player.getUUID());
+        if (request != null && !request.exhausted)
+        {
+            request.stack.getOrCreateTag().putLong(NEXT_SHOT_TAG, player.level().getGameTime() + 4);
+            SHSounds.play(player, FiskHeroes.id("item.coldgun.beam.stop"), SoundSource.PLAYERS, 1.0F, 1.0F);
+        }
+    }
+
+    public static void clearBeam(Player player) { REQUESTS.remove(player.getUUID()); }
 
     @Override
     protected void playShotSound(Player player, Level level, ItemStack stack)
@@ -99,34 +210,39 @@ public final class ItemColdGun extends ItemGun
         if (block.getType() == HitResult.Type.MISS) return;
         Level level = shooter.level();
         BlockPos pos = block.getBlockPos();
-        BlockState hitState = level.getBlockState(pos);
-        if (hitState.is(Blocks.WATER))
+        if (!com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get()
+                || !level.getWorldBorder().isWithinBounds(pos) || !level.mayInteract(shooter, pos)
+                || !shooter.mayUseItemAt(pos, block.getDirection(), shooter.getMainHandItem())) return;
+        BlockState state = level.getBlockState(pos);
+        if (state.is(Blocks.WATER) || state.is(Blocks.LAVA))
         {
-            level.setBlockAndUpdate(pos, Blocks.ICE.defaultBlockState());
-            return;
-        }
-        if (hitState.is(Blocks.LAVA))
-        {
-            level.setBlockAndUpdate(pos, Blocks.OBSIDIAN.defaultBlockState());
+            if (ItemHeatGun.canMelt(shooter, pos, state))
+                ItemHeatGun.placeBlock(shooter, pos, block.getDirection(),
+                        (state.is(Blocks.WATER) ? Blocks.ICE : Blocks.OBSIDIAN).defaultBlockState());
             return;
         }
         BlockPos adj = pos.relative(block.getDirection());
-        if (level.getBlockState(adj).is(Blocks.FIRE))
+        if (!level.getWorldBorder().isWithinBounds(adj) || !level.mayInteract(shooter, adj)
+                || !shooter.mayUseItemAt(adj, block.getDirection(), shooter.getMainHandItem())) return;
+        BlockState adjacent = level.getBlockState(adj);
+        if (adjacent.is(Blocks.FIRE))
         {
-            level.removeBlock(adj, false);
+            if (ItemHeatGun.canMelt(shooter, adj, adjacent)) level.removeBlock(adj, false);
         }
-        else if (level.isEmptyBlock(adj) && Blocks.SNOW.defaultBlockState().canSurvive(level, adj))
+        else if (level.isEmptyBlock(adj) && Blocks.SNOW.defaultBlockState().canSurvive(level, adj)
+                && level.getEntities(null, new net.minecraft.world.phys.AABB(adj)).isEmpty())
         {
-            level.setBlockAndUpdate(adj, Blocks.SNOW.defaultBlockState());
+            ItemHeatGun.placeBlock(shooter, adj, block.getDirection(), Blocks.SNOW.defaultBlockState());
         }
     }
 
     @Override
-    protected void onRayEntityHit(ServerPlayer shooter, LivingEntity hit)
+    protected void onRayEntityContact(ServerPlayer shooter, LivingEntity hit, boolean acceptedHit)
     {
+        // Vanilla freezing is only an approximation of the original body-temperature system.
         hit.clearFire();
-        hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 140, hit.getTicksRequiredToFreeze() + 40));
-        hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 80, 2));
+        hit.setTicksFrozen(Math.min(hit.getTicksFrozen() + 1, hit.getTicksRequiredToFreeze() + 40));
+        hit.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 0));
     }
 
     @Override

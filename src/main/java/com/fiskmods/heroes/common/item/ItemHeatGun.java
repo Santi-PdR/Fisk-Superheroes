@@ -138,12 +138,12 @@ public final class ItemHeatGun extends ItemGun
                 && shooter.mayUseItemAt(adj, block.getDirection(), shooter.getMainHandItem())
                 && level.isEmptyBlock(adj) && BaseFireBlock.canBePlacedAt(level, adj, block.getDirection()))
         {
-            placeFire(shooter, adj, block.getDirection());
+            placeBlock(shooter, adj, block.getDirection(), BaseFireBlock.getState(level, adj));
         }
     }
 
     /** Follow Forge's placement transaction so a canceled claim does not notify neighbors first. */
-    private static void placeFire(ServerPlayer shooter, BlockPos pos, net.minecraft.core.Direction face)
+    static void placeBlock(ServerPlayer shooter, BlockPos pos, net.minecraft.core.Direction face, BlockState replacement)
     {
         Level level = shooter.level();
         // Never steal another placement's captured snapshots in a re-entrant mod callback.
@@ -153,7 +153,7 @@ public final class ItemHeatGun extends ItemGun
         level.captureBlockSnapshots = true;
         try
         {
-            placed = level.setBlock(pos, BaseFireBlock.getState(level, pos), 3);
+            placed = level.setBlock(pos, replacement, 3);
         }
         finally
         {
@@ -188,7 +188,7 @@ public final class ItemHeatGun extends ItemGun
         }
     }
 
-    private static boolean canMelt(ServerPlayer shooter, BlockPos pos, BlockState state)
+    static boolean canMelt(ServerPlayer shooter, BlockPos pos, BlockState state)
     {
         var event = new net.minecraftforge.event.level.BlockEvent.BreakEvent(shooter.level(), pos, state, shooter);
         return !net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)

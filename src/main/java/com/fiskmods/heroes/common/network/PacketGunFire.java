@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
-/** Client request for the main-hand gun. Firearms validate each shot; Heat Gun uses it as a held-input heartbeat. */
+/** Client request for the main-hand gun. Firearms validate each shot; beam guns use it as a held-input heartbeat. */
 public final class PacketGunFire extends SHPacket
 {
     public PacketGunFire()

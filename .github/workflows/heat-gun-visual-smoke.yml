@@ -88,21 +88,16 @@ jobs:
             ci-heat-gun-*.png
             ci-heat-gun-*.log
           if-no-files-found: ignore
+      # Diagnostic publication must never turn passing gameplay checks red or race
+      # with other workflows committing logs to the same branch. Full logs and captures
+      # are retained in the artifact above; this short report is visible on the run page.
       - name: Publish diagnostic summary
         if: always()
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/models/heat_gun.png src/main/resources/assets/fiskheroes/data/heroes/heatwave.js
-          mkdir -p .ci
-          { cat ci-heat-gun-test.log 2>/dev/null || true; echo '==== original texture ===='; cat ci-heat-gun-real-test.log 2>/dev/null || true; echo '==== alternate aim ===='; cat ci-heat-gun-alt-test.log 2>/dev/null || true; echo '==== client tail ===='; tail -100 ci-heat-gun-client.log 2>/dev/null || true; echo '==== server tail ===='; tail -50 ci-heat-gun-server.log 2>/dev/null || true; } > .ci/heat-gun-visual-log.txt
-          git config user.name 'github-actions[bot]'
-          git config user.email 'github-actions[bot]@users.noreply.github.com'
-          git add -f .ci/heat-gun-visual-log.txt
-          git diff --cached --quiet || git commit -m 'ci: heat gun visual diagnostics [skip ci]' --no-verify
-          for i in $(seq 1 20); do
-            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
-              exit 0
-            fi
-            sleep 5
-          done
-          echo 'Failed to publish heat gun diagnostics after retries' >&2
-          exit 1
+          {
+            echo '## Heat Gun visual diagnostics'
+            echo 'Full captures and logs: heat-gun-visual-diagnostics artifact.'
+            echo '```'
+            cat ci-heat-gun-test.log ci-heat-gun-real-test.log ci-heat-gun-alt-test.log 2>/dev/null || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

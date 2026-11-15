@@ -106,7 +106,11 @@ def main():
             command('fill -4 180 1 4 183 5 minecraft:air')
             command('tp Dev 0.5 180 0.5 0 10')
             command('summon minecraft:cow 0.5 180 4.5 {NoAI:1b,Silent:1b,Tags:["cold_ball_test"]}')
-            xdo('click', '1')
+            xdo('mousedown', '1')
+            try:
+                time.sleep(1.5)
+            finally:
+                xdo('mouseup', '1')
             command('data get entity @e[type=minecraft:cow,tag=cold_ball_test,limit=1]')
             command('execute as @e[type=minecraft:cow,tag=cold_ball_test,limit=1] if data entity @s ActiveEffects[{Id:2}] run say COLD_BALL_IMPACT_OK')
             wait_for(server_log, r'COLD_BALL_IMPACT_OK', 30, 'cold ball explodes and slows a target on impact', server)
