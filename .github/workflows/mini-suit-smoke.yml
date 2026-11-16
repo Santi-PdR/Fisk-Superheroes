@@ -1,0 +1,76 @@
+name: Miniature Suit Client and Server Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/mini_suit_smoke.py'
+      - '.ci/tonfa_visual_smoke.py'
+      - '.ci/client_identity.gradle'
+      - '.github/workflows/mini-suit-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/client/render/MiniSuitItemRenderer.java'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemMiniSuit.java'
+      - 'src/main/java/com/fiskmods/heroes/common/item/ItemFlashRing.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
+      - 'src/main/resources/assets/fiskheroes/models/heroes/atom.json'
+      - 'src/main/resources/assets/fiskheroes/textures/heroes/atom*.png'
+concurrency:
+  group: mini-suit-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool scrot imagemagick libgl1-mesa-dri libflite1
+          python3 -m pip install --user 'pillow>=13,<14'
+      - name: Prepare runner-only textures
+        run: |
+          chmod +x gradlew
+          mkdir -p run-mini-suit-server run-mini-suit-client/config
+          printf 'earlyWindowControl = false\n' > run-mini-suit-client/config/fml.toml
+          printf 'version:3465\ntutorialStep:none\n' > run-mini-suit-client/options.txt
+          echo 'eula=true' > run-mini-suit-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-mini-suit-server/server.properties
+          for f in atom_layer1 atom_layer2; do
+            convert "src/main/resources/assets/fiskheroes/textures/heroes/$f.png" -channel RGB -fill '#ff00ff' -colorize 100% +channel "src/main/resources/assets/fiskheroes/textures/heroes/$f.png"
+          done
+          ./gradlew classes --no-daemon --console=plain
+      - name: Check miniature suit preview and deployment
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/mini_suit_smoke.py 2>&1 | tee ci-mini-suit-test.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mini-suit-diagnostics
+          path: |
+            ci-mini-suit-*.png
+            ci-mini-suit-*.log
+          if-no-files-found: ignore
+      - name: Publish concise diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          git restore src/main/resources/assets/fiskheroes/textures/heroes/{atom_layer1,atom_layer2}.png
+          { cat ci-mini-suit-test.log 2>/dev/null || true; echo '==== client ===='; grep -E 'Mini suit preview|Exception|FATAL' ci-mini-suit-client.log 2>/dev/null | tail -80 || true; echo '==== server ===='; tail -50 ci-mini-suit-server.log 2>/dev/null || true; } > .ci/mini-suit-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/mini-suit-log.txt
+          git diff --cached --quiet || git commit -m 'ci: mini suit diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "$GITHUB_REF_NAME" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1

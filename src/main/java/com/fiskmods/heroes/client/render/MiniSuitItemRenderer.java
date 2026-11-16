@@ -24,6 +24,7 @@ import net.minecraft.world.item.ItemStack;
 public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
 {
     private static MiniSuitItemRenderer instance;
+    private static final java.util.Set<String> DIAGNOSTICS = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private final PlayerModel<?> playerModel;
 
     private MiniSuitItemRenderer()
@@ -43,17 +44,33 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack pose,
             MultiBufferSource buffers, int light, int overlay)
     {
-        HeroIteration iter = ItemFlashRing.getContainedHero(stack);
-        if (iter == null)
+        ItemStack[] stored = ItemFlashRing.getContainedArmor(stack);
+        if (stored == null)
         {
-            // Fallback for an empty mini_suit in creative: preview The Atom if loaded
-            var atom = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHero(
-                    com.fiskmods.heroes.FiskHeroes.id("atom"));
-            if (atom != null) iter = atom.getDefaultIteration();
+            // An empty miniature cannot deploy a suit: do not depict a fully equipped Atom.
+            // Render a neutral icon instead of silently producing an invisible item.
+            pose.pushPose();
+            pose.translate(0.5D, 0.5D, 0.5D);
+            Minecraft.getInstance().getItemRenderer().renderStatic(new ItemStack(ModItems.SUIT_CORE.get()),
+                    context, light, overlay, pose, buffers, Minecraft.getInstance().level, 0);
+            pose.popPose();
+            return;
         }
-        if (iter == null) return;
 
-        HeroModelData modelData = HeroModelRegistry.get(iter);
+        if (Boolean.getBoolean("fiskheroes.ciMiniSuitDiagnostics"))
+        {
+            StringBuilder pieces = new StringBuilder();
+            for (int slot = 0; slot < stored.length; ++slot)
+            {
+                HeroIteration hero = ItemHeroArmor.getHero(stored[slot]);
+                if (hero != null && stored[slot].getItem() instanceof ItemHeroArmor armor
+                        && armor.getSlot() == slot && hero.hasPieceOfSet(slot))
+                    pieces.append(slot).append('=').append(hero.getRegistryName()).append(';');
+            }
+            String key = context + "|" + pieces;
+            if (DIAGNOSTICS.add(key))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Mini suit preview: context={}, pieces={}", context, pieces);
+        }
         pose.pushPose();
         switch (context)
         {
@@ -77,17 +94,24 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
             }
         }
 
-        if (modelData != null)
+        boolean rendered = false;
+        try
         {
-            for (int slot = 0; slot < 4; ++slot)
+            for (int slot = 0; slot < stored.length; ++slot)
             {
-                if (!iter.hasPieceOfSet(slot)) continue;
+                ItemStack piece = stored[slot];
+                HeroIteration iter = ItemHeroArmor.getHero(piece);
+                if (!(piece.getItem() instanceof ItemHeroArmor armor) || armor.getSlot() != slot
+                        || iter == null || !iter.hasPieceOfSet(slot)) continue;
+                HeroModelData modelData = HeroModelRegistry.get(iter);
+                if (modelData == null) continue;
                 ResourceLocation baseTex = modelData.getTexture(slot, Minecraft.getInstance().player);
                 if (baseTex != null)
                 {
                     setVisibleForSlot(slot);
                     playerModel.renderToBuffer(pose, buffers.getBuffer(RenderType.entityTranslucent(baseTex)),
                             light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
+                    rendered = true;
                 }
                 ResourceLocation lightsTex = modelData.getLights(slot, Minecraft.getInstance().player);
                 if (lightsTex != null)
@@ -97,14 +121,21 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
                             LightTexture.FULL_BRIGHT, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
                 }
             }
+        }
+        finally
+        {
             playerModel.setAllVisible(true);
         }
-        else if (ModItems.heroArmor != null)
+        if (!rendered)
         {
-            int core = Math.max(0, iter.getHero().getCorePieceOfSet());
-            ItemStack icon = ItemHeroArmor.create(iter, ModItems.heroArmor[core]);
-            Minecraft.getInstance().getItemRenderer().renderStatic(
-                    icon, ItemDisplayContext.GUI, light, overlay, pose, buffers, Minecraft.getInstance().level, 0);
+            // Unknown hero models and non-suit contents still have a visible, truthful icon.
+            for (ItemStack piece : stored)
+                if (!piece.isEmpty())
+                {
+                    Minecraft.getInstance().getItemRenderer().renderStatic(
+                            piece, ItemDisplayContext.GUI, light, overlay, pose, buffers, Minecraft.getInstance().level, 0);
+                    break;
+                }
         }
         pose.popPose();
     }

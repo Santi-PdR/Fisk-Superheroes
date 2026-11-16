@@ -2881,6 +2881,44 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void miniatureSuitDeploysOnlyStoredPiecesAndPreservesData(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "mini-suit-test"));
+        var atom = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:atom");
+        if (atom == null) { helper.fail("Atom is missing"); return; }
+        var head = com.fiskmods.heroes.common.hero.ItemHeroArmor.create(atom.getDefaultIteration(),
+                com.fiskmods.heroes.common.item.ModItems.heroArmor[0]);
+        head.getOrCreateTag().putString("Marker", "miniature armor data");
+        var displaced = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_HELMET);
+        displaced.getOrCreateTag().putString("Marker", "displaced armor data");
+        var chest = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_CHESTPLATE);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, displaced);
+        player.setItemSlot(net.minecraft.world.entity.EquipmentSlot.CHEST, chest);
+        var mini = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.MINI_SUIT.get());
+        com.fiskmods.heroes.common.item.ItemFlashRing.setContainedArmor(mini, head);
+        mini = net.minecraft.world.item.ItemStack.of(mini.save(new net.minecraft.nbt.CompoundTag()));
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, mini);
+        mini.use(level, player, net.minecraft.world.InteractionHand.OFF_HAND);
+        var equipped = player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD);
+        boolean returned = player.getInventory().items.stream().anyMatch(stack -> stack.is(net.minecraft.world.item.Items.IRON_HELMET)
+                && stack.hasTag() && "displaced armor data".equals(stack.getTag().getString("Marker")));
+        if (com.fiskmods.heroes.common.hero.ItemHeroArmor.getHero(equipped) != atom.getDefaultIteration()
+                || !"miniature armor data".equals(equipped.getTag().getString("Marker"))
+                || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST) != chest
+                || !player.getOffhandItem().isEmpty() || !returned)
+        { helper.fail("Partial miniature must equip stored armor, preserve data and return displaced pieces"); return; }
+        var empty = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.MINI_SUIT.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, empty);
+        empty.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);
+        if (player.getMainHandItem() != empty || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.HEAD) != equipped
+                || player.getItemBySlot(net.minecraft.world.entity.EquipmentSlot.CHEST) != chest)
+        { helper.fail("Empty miniature must not synthesize armor or modify equipment"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void flashRingPartialSuitPreservesOtherArmor(GameTestHelper helper)
     {
         var level = helper.getLevel();
