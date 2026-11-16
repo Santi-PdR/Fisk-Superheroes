@@ -74,6 +74,8 @@ def main():
                     print(f'PASS: {item} {context}: {len(pixels)} model pixels, bounds={bounds}', flush=True)
                     if item == 'grappling_gun' and context in ('main', 'off') and (bounds[0] <= 220 or bounds[2] >= 1060):
                         failures.append(f'{item} {context}: pistol clips into the screen edge: {bounds}')
+                    if context == 'third' and bounds[3] >= 480:
+                        failures.append(f'{item}: weapon hangs into the legs instead of the hand: {bounds}')
 
             command('difficulty peaceful'); command('gamemode creative Dev'); command('gamerule doDaylightCycle false')
             command('time set day'); command('tp Dev 0 185 0 0 0')

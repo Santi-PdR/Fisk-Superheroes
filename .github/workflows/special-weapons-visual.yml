@@ -44,8 +44,6 @@ jobs:
           done
           ./gradlew classes --no-daemon --console=plain
       - name: Capture hands
-        env:
-          CI_ITEM_ARM_CAPTURES: '1'
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/special_weapons_visual_smoke.py 2>&1 | tee ci-special-weapons-test.log
