@@ -69,9 +69,12 @@ public final class GrapplingGunItemRenderer extends BlockEntityWithoutLevelRende
             }
             case FIRST_PERSON_RIGHT_HAND, FIRST_PERSON_LEFT_HAND ->
             {
-                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.68D : 0.32D, 0.54D, 0.44D);
-                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 180.0F : 0.0F));
-                pose.scale(1.15F, -1.15F, -1.15F);
+                // Place the compact pistol at the same grip as the other firearms;
+                // the old oversized, edge-on pose clipped it out of both hands.
+                pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.36D : 0.64D, 0.75D, 0.18D);
+                pose.mulPose(Axis.YP.rotationDegrees(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 150.0F : -150.0F));
+                pose.mulPose(Axis.XP.rotationDegrees(-10.0F));
+                pose.scale(0.70F, -0.70F, -0.70F);
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {

@@ -81,7 +81,10 @@ public final class RipHuntersGunItemRenderer extends BlockEntityWithoutLevelRend
             }
         }
         shape1.render(pose, ItemModelBuffers.model(buffers, SuitItemRenderContext.textureOr(TEXTURE), stack, context), light, overlay);
-        shape1.render(pose, buffers.getBuffer(RenderType.eyes(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.0F, 0.37F, 1.0F, 1.0F);
+        // The source light map has white RGB in transparent texels. The additive
+        // eyes pass ignores their alpha and washes out the entire model; use an
+        // alpha-aware emissive pass so only the actual lights are drawn.
+        shape1.render(pose, buffers.getBuffer(RenderType.entityTranslucentEmissive(TEXTURE_LIGHTS)), LightTexture.FULL_BRIGHT, overlay, 0.0F, 0.37F, 1.0F, 1.0F);
         pose.popPose();
     }
 
