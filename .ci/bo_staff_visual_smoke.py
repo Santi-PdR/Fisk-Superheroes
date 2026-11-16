@@ -121,6 +121,24 @@ def main():
             wait_for(client_log, r'First-person bo staff arm rendered: LEFT', 60, 'first-person offhand staff arm rendered', client)
             screenshot('offhand')
             assert_geometry()
+            # Verify that a real survival attack damages the main target and a
+            # nearby second target, including the staff's enchantment effect.
+            command('gamemode survival Dev')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:bo_staff{Enchantments:[{id:"minecraft:sharpness",lvl:2s},{id:"minecraft:fire_aspect",lvl:1s}]}')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('summon minecraft:iron_golem 0.5 180 2.6 {NoAI:1b,Silent:1b,Tags:["staff_primary"]}')
+            command('summon minecraft:iron_golem 1.9 180 1.8 {NoAI:1b,Silent:1b,Tags:["staff_secondary"]}')
+            command('scoreboard objectives add staff_fire dummy')
+            time.sleep(2)
+            xdo('click', '1'); time.sleep(1)
+            command('execute if entity @e[type=minecraft:iron_golem,tag=staff_primary] unless data entity @e[type=minecraft:iron_golem,tag=staff_primary,limit=1] {Health:100.0f} run say STAFF_PRIMARY_HIT_OK')
+            command('execute if entity @e[type=minecraft:iron_golem,tag=staff_secondary] unless data entity @e[type=minecraft:iron_golem,tag=staff_secondary,limit=1] {Health:100.0f} run say STAFF_SWEEP_HIT_OK')
+            command('execute as @e[type=minecraft:iron_golem,tag=staff_secondary,limit=1] store result score @s staff_fire run data get entity @s Fire')
+            command('execute if entity @e[type=minecraft:iron_golem,tag=staff_secondary,scores={staff_fire=1..}] run say STAFF_SWEEP_FIRE_OK')
+            for marker, label in [('STAFF_PRIMARY_HIT_OK', 'primary target hit'), ('STAFF_SWEEP_HIT_OK', 'nearby target swept'),
+                                  ('STAFF_SWEEP_FIRE_OK', 'Fire Aspect applies to the swept target')]:
+                wait_for(server_log, r'\[Server\] ' + marker, 30, label, server)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

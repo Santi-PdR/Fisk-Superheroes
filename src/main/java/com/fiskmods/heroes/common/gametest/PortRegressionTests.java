@@ -7196,6 +7196,40 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void boStaffSweepUsesWielderDamageAndEnchantments(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "staff-sweep-test"));
+        player.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
+        player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE).setBaseValue(8.0D);
+        var staff = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.BO_STAFF.get());
+        staff.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 2);
+        staff.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, staff);
+        var primary = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var nearby = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        var distant = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (primary == null || nearby == null || distant == null) { helper.fail("Staff targets missing"); return; }
+        for (var entity : java.util.List.of(primary, nearby, distant)) { entity.setNoAi(true); entity.setNoGravity(true); }
+        primary.setPos(player.getX(), player.getY(), player.getZ() + 1.0D);
+        nearby.setPos(player.getX() + 1.0D, player.getY(), player.getZ());
+        distant.setPos(player.getX() + 7.0D, player.getY(), player.getZ());
+        level.addFreshEntity(primary); level.addFreshEntity(nearby); level.addFreshEntity(distant);
+        float expected = (float) player.getAttributeValue(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE)
+                + net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageBonus(staff, nearby.getMobType());
+        float initial = nearby.getHealth();
+        staff.getItem().hurtEnemy(staff, primary, player);
+        boolean valid = Math.abs((initial - nearby.getHealth()) - expected) < 0.01F && nearby.isOnFire()
+                && primary.getHealth() == primary.getMaxHealth() && distant.getHealth() == distant.getMaxHealth()
+                && staff.getDamageValue() == 1;
+        primary.discard(); nearby.discard(); distant.discard();
+        if (!valid) { helper.fail("Sweep must apply the wielder's damage and Fire Aspect once to nearby targets only"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void gunAmmoBarShowsClampedSingleAndDualMagazines(GameTestHelper helper)
     {
         for (var entry : java.util.List.of(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE,
