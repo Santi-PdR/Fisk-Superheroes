@@ -220,7 +220,7 @@ def main():
             wait_for(client_log, r'Desert eagle reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND',
                      60, 'dual offhand reload pose rendered', client)
             command('execute unless data entity Dev Inventory[{Slot:-106b}] run say EAGLE_OFFHAND_EMPTY_OK')
-            wait_for(server_log, r'EAGLE_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
+            wait_for(server_log, r'\[Server\] EAGLE_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
             command('item replace entity Dev weapon.offhand with minecraft:torch')
             wait_for(client_log, r'Dual visual offhand: player=Dev, item=fiskheroes:desert_eagle, mode=occupied',
                      60, 'real offhand takes precedence', client)
@@ -230,7 +230,7 @@ def main():
             before = len(client_log.read_text(errors='replace'))
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:14} run say EAGLE_OCCUPIED_SHOT_OK')
-            wait_for(server_log, r'EAGLE_OCCUPIED_SHOT_OK', 30, 'occupied-offhand gun fired', server)
+            wait_for(server_log, r'\[Server\] EAGLE_OCCUPIED_SHOT_OK', 30, 'occupied-offhand gun fired', server)
             time.sleep(1)
             received = client_log.read_text(errors='replace')[before:]
             if 'Gun shot effect received: wearer=Dev, hand=MAIN_HAND' not in received or 'Gun shot effect received: wearer=Dev, hand=OFF_HAND' in received:
@@ -244,10 +244,10 @@ def main():
             screenshot('single-first')
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:4} run say EAGLE_SHOT_OK')
-            wait_for(server_log, r'EAGLE_SHOT_OK', 30, 'gun fires and consumes exactly one round', server)
+            wait_for(server_log, r'\[Server\] EAGLE_SHOT_OK', 30, 'gun fires and consumes exactly one round', server)
             capture_reload('single-reload', [(710, 340, 850, 545)])
             command('execute if data entity Dev SelectedItem.tag{Ammo:8} run say EAGLE_RELOAD_OK')
-            wait_for(server_log, r'EAGLE_RELOAD_OK', 30, 'gun reload restores magazine', server)
+            wait_for(server_log, r'\[Server\] EAGLE_RELOAD_OK', 30, 'gun reload restores magazine', server)
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Ammo:0}')
             before = client_log.read_text(errors='replace').count('Gun shot effect received: wearer=Dev')
             if before < 1:

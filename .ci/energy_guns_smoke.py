@@ -101,7 +101,7 @@ def main():
             xdo('click', '1')
             time.sleep(2)
             command('execute as @e[type=minecraft:iron_golem,tag=energy_gun_target] unless data entity @s {Health:100.0f} run say ENERGY_GUN_TARGET_HIT')
-            wait_for(server_log, r'ENERGY_GUN_TARGET_HIT', 30, 'real revolver bolt hits and damages target', server)
+            wait_for(server_log, r'\[Iron Golem\] ENERGY_GUN_TARGET_HIT', 30, 'real revolver bolt hits and damages target', server)
             wait_for(client_log, r'Energy bolt rendered: owner=Dev, color=005EFF', 60, 'Rip bolt has blue suit color', client)
             print('PASS: real energy weapons exercised', flush=True)
         finally:

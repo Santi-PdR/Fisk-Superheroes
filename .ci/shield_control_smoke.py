@@ -79,14 +79,14 @@ def main():
                 wait_for(server_log, r'Ability input accepted: hero=fiskheroes:captain_america, index=1', 45,
                          'held shield key received on server', server)
                 command('execute if data entity Dev SelectedItem{id:"fiskheroes:captain_americas_shield"} run say SHIELD_HOLD_ONLY_OK')
-                wait_for(server_log, r'SHIELD_HOLD_ONLY_OK', 30, 'ability alone keeps shield', server)
+                wait_for(server_log, r'\[Server\] SHIELD_HOLD_ONLY_OK', 30, 'ability alone keeps shield', server)
                 if 'Shield throw completed: player=Dev' in server_log.read_text(errors='replace'):
                     raise RuntimeError('Ability key alone launched the shield')
             finally: xdo('keyup', 'c')
             time.sleep(1)
             attack(); time.sleep(1)
             command('execute if data entity Dev SelectedItem{id:"fiskheroes:captain_americas_shield"} run say SHIELD_ATTACK_ONLY_OK')
-            wait_for(server_log, r'SHIELD_ATTACK_ONLY_OK', 30, 'ordinary attack keeps shield', server)
+            wait_for(server_log, r'\[Server\] SHIELD_ATTACK_ONLY_OK', 30, 'ordinary attack keeps shield', server)
             if 'Shield throw completed: player=Dev' in server_log.read_text(errors='replace'):
                 raise RuntimeError('Attack without held shield key launched it')
             xdo('keydown', 'c')
@@ -98,7 +98,7 @@ def main():
             finally: xdo('keyup', 'c')
             time.sleep(3)
             command('execute if data entity Dev Inventory[{id:"fiskheroes:captain_americas_shield",tag:{ControlMarker:42}}] run say SHIELD_RETURN_DATA_OK')
-            wait_for(server_log, r'SHIELD_RETURN_DATA_OK', 30, 'shield returns with item data', server)
+            wait_for(server_log, r'\[Server\] SHIELD_RETURN_DATA_OK', 30, 'shield returns with item data', server)
             count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
             if count != 1: raise RuntimeError(f'Expected one launch, saw {count}')
             print('PASS: real', 'keyboard' if keyboard else 'mouse', 'attack requires held ability and returns shield', flush=True)
@@ -135,7 +135,7 @@ def main():
                         time.sleep(.1)
                     else: raise RuntimeError('The visual probe never rendered')
                     command('execute if entity @e[type=fiskheroes:thrown_shield,tag=visual_probe] run say SHIELD_PROBE_PRESENT')
-                    wait_for(server_log, r'SHIELD_PROBE_PRESENT', 5, 'visual probe remained in the world', server)
+                    wait_for(server_log, r'\[Server\] SHIELD_PROBE_PRESENT', 5, 'visual probe remained in the world', server)
                     def magenta(path):
                         image = Image.open(path).convert('RGB').crop((520, 280, 760, 550))
                         return sum(1 for r, g, b in image.get_flattened_data() if r > 50 and b > 50 and g < 80 and r > 1.5 * g and b > 1.5 * g)
