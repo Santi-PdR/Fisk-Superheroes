@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 """Verify miniature suit previews and deployment with a real client and server."""
+import base64
+import io
 import os
 import signal
 import subprocess
@@ -42,7 +44,12 @@ def main():
                 time.sleep(2)
                 path = f'ci-mini-suit-{label}.png'
                 subprocess.run(['scrot', path], check=True, timeout=30)
-                image = Image.open(path).convert('RGB').crop((600, 200, 1067, 550))
+                original = Image.open(path).convert('RGB')
+                if os.environ.get('CI_MINI_SUIT_CAPTURES') == '1':
+                    original.thumbnail((640, 360)); out = io.BytesIO(); original.save(out, format='PNG')
+                    print('CAPTURE_' + label + '=' + base64.b64encode(out.getvalue()).decode(), flush=True)
+                    original = Image.open(path).convert('RGB')
+                image = original.crop((600, 200, 1067, 550))
                 return sum(1 for r, g, b in image.get_flattened_data()
                            if r > 90 and b > 90 and g < 50 and abs(r - b) < 50)
 

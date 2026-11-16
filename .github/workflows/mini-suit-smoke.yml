@@ -49,6 +49,8 @@ jobs:
           convert src/main/resources/assets/fiskheroes/textures/heroes/the_flash_layer1.png -channel RGB -fill '#00ffff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/heroes/the_flash_layer1.png
           ./gradlew classes --no-daemon --console=plain
       - name: Check miniature suit preview and deployment
+        env:
+          CI_MINI_SUIT_CAPTURES: '1'
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/mini_suit_smoke.py 2>&1 | tee ci-mini-suit-test.log
