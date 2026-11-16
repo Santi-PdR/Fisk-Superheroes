@@ -83,7 +83,7 @@ def main():
                 time.sleep(1)
 
             command('say LIVERY_COMMAND_CHANNEL_OK')
-            wait_for(server_log, r'LIVERY_COMMAND_CHANNEL_OK', 30, 'server command channel accepts input', server)
+            wait_for(server_log, r'\[Server\] LIVERY_COMMAND_CHANNEL_OK', 30, 'server command channel accepts input', server)
             command('gamemode creative Dev')
             command('gamemode creative Partner')
             command('tp Dev 0 185 0 0 0')
@@ -127,8 +127,8 @@ def main():
             command('execute as Partner run suit fiskheroes:deadpool_xmen')
             command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle')
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle')
-            command('execute at Dev if entity Partner[distance=..8] run say LIVERY_PLAYERS_NEARBY')
-            wait_for(server_log, r'LIVERY_PLAYERS_NEARBY', 30, 'both players are within render range', server)
+            command('execute at Dev if entity @a[name=Partner,distance=..8] run say LIVERY_PLAYERS_NEARBY')
+            wait_for(server_log, r'\[Server\] LIVERY_PLAYERS_NEARBY', 30, 'both players are within render range', server)
             wait_for(observer_log, r'Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default',
                      90, 'observer without a livery uses the default', observer)
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun\.png',
@@ -149,7 +149,7 @@ def main():
             wait_for(observer_log, r'Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
                      60, 'observer sees remote offhand reload', observer)
             command('execute if data entity Partner SelectedItem.tag{Ammo:16} run say REMOTE_RELOAD_AMMO_OK')
-            wait_for(server_log, r'REMOTE_RELOAD_AMMO_OK', 30, 'remote reload restores dual magazine', server)
+            wait_for(server_log, r'\[Server\] REMOTE_RELOAD_AMMO_OK', 30, 'remote reload restores dual magazine', server)
             command('item replace entity Partner weapon.mainhand with fiskheroes:desert_eagle{Dual:1b,Ammo:0}')
             subprocess.run(['xdotool', 'mousedown', '1'], check=True, timeout=30)
             try:
@@ -186,7 +186,7 @@ def main():
             wait_for(observer_log, r'Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND',
                      60, 'observer sees remote Beretta offhand reload', observer)
             command('execute unless data entity Partner Inventory[{Slot:-106b}] run say REMOTE_BERETTA_EMPTY_OK')
-            wait_for(server_log, r'REMOTE_BERETTA_EMPTY_OK', 30, 'remote Beretta dual is visual only', server)
+            wait_for(server_log, r'\[Server\] REMOTE_BERETTA_EMPTY_OK', 30, 'remote Beretta dual is visual only', server)
             command('item replace entity Partner weapon.offhand with minecraft:torch')
             wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied',
                      60, 'observer respects real offhand with Beretta', observer)
@@ -224,7 +224,7 @@ def main():
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana\.png',
                      90, 'observer sees remote dual katana in offhand', observer)
             command('execute unless data entity Partner Inventory[{Slot:-106b}] run say REMOTE_DUAL_EMPTY_OK')
-            wait_for(server_log, r'REMOTE_DUAL_EMPTY_OK', 30, 'remote dual offhand does not change server inventory', server)
+            wait_for(server_log, r'\[Server\] REMOTE_DUAL_EMPTY_OK', 30, 'remote dual offhand does not change server inventory', server)
             command('item replace entity Partner weapon.offhand with minecraft:torch')
             wait_for(observer_log, r'Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied',
                      60, 'observer respects remote real offhand item', observer)
