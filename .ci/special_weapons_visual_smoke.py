@@ -17,6 +17,7 @@ def main():
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
     processes = []
+    failures = []
     with server_log.open('w') as sout, client_log.open('w') as cout:
         try:
             server = subprocess.Popen(['./gradlew', 'runServer', '-PciRunDir=run-special-weapons-server', *common],
@@ -48,13 +49,16 @@ def main():
                 # Mask excludes hotbar, sky and chat and reports the geometry bounds.
                 pixels = [(x, y) for y in range(100, 600) for x in range(210, 1070)
                           if (lambda p: p[0] > 90 and p[2] > 90 and p[1] < 50 and abs(p[0] - p[2]) < 50)(image.getpixel((x, y)))]
-                if len(pixels) < 100: raise RuntimeError(f'{item} {context}: model missing ({len(pixels)} pixels)')
-                bounds = (min(x for x, y in pixels), min(y for x, y in pixels),
-                          max(x for x, y in pixels), max(y for x, y in pixels))
-                print(f'PASS: {item} {context}: {len(pixels)} model pixels, bounds={bounds}', flush=True)
                 if os.environ.get('CI_ITEM_ARM_CAPTURES') == '1':
                     image.thumbnail((640, 360)); output = io.BytesIO(); image.save(output, format='PNG')
                     print('CAPTURE_' + item + '_' + context + '=' + base64.b64encode(output.getvalue()).decode(), flush=True)
+                if len(pixels) < 100:
+                    failures.append(f'{item} {context}: model missing ({len(pixels)} pixels)')
+                    print('FAIL:', failures[-1], flush=True)
+                else:
+                    bounds = (min(x for x, y in pixels), min(y for x, y in pixels),
+                              max(x for x, y in pixels), max(y for x, y in pixels))
+                    print(f'PASS: {item} {context}: {len(pixels)} model pixels, bounds={bounds}', flush=True)
 
             command('difficulty peaceful'); command('gamemode creative Dev'); command('gamerule doDaylightCycle false')
             command('time set day'); command('tp Dev 0 185 0 0 0')
@@ -70,6 +74,7 @@ def main():
                 wait_for(client_log, rf'First-person {label} arm rendered: LEFT', 60, item + ' left arm rendered', client)
                 capture(item, 'off')
                 command('item replace entity Dev weapon.offhand with minecraft:air')
+            if failures: raise RuntimeError('; '.join(failures))
         finally:
             for p in reversed(processes):
                 if p.poll() is None:
