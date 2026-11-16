@@ -70,6 +70,15 @@ def main():
             wait_for(client_log, r'Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:atom;2=fiskheroes:atom;3=fiskheroes:atom;',
                      60, 'complete miniature renders all four stored pieces', client)
             full_pixels = capture('full')
+            # The hand preview must fit inside the game viewport rather than
+            # showing a cropped torso with the legs below the screen. Ignore
+            # the central hotbar by checking only the right-hand region.
+            full_frame = Image.open('ci-mini-suit-full.png').convert('RGB')
+            edge = full_frame.crop((840, 580, 1067, 600))
+            clipped = sum(1 for r, g, b in edge.get_flattened_data()
+                          if r > 90 and b > 90 and g < 50 and abs(r - b) < 50)
+            if clipped > 10: raise RuntimeError(f'First-person miniature is clipped at the bottom: {clipped} diagnostic pixels')
+            print('PASS: complete first-person miniature fits above bottom edge', flush=True)
             flash_chest = '{Slot:1b,id:"fiskheroes:superhero_chestplate",Count:1b,tag:{HeroType:"fiskheroes:the_flash"}}'
             command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit{Items:[' + head + ',' + flash_chest + ']}')
             wait_for(client_log, r'Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:the_flash;',

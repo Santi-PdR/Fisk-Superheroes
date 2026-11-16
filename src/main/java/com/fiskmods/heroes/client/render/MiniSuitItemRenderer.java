@@ -85,7 +85,9 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
             {
                 pose.translate(context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND ? 0.62D : 0.38D, 0.72D, 0.45D);
                 pose.mulPose(Axis.YP.rotationDegrees(180.0F));
-                pose.scale(0.32F, -0.32F, -0.32F);
+                // A player model is taller than an ordinary item; keep the entire
+                // miniature inside the first-person viewport, including its legs.
+                pose.scale(0.18F, -0.18F, -0.18F);
             }
             default ->
             {

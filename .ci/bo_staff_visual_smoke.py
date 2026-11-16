@@ -131,10 +131,12 @@ def main():
             command('summon minecraft:iron_golem 1.9 180 1.8 {NoAI:1b,Silent:1b,Tags:["staff_secondary"]}')
             command('scoreboard objectives add staff_fire dummy')
             time.sleep(2)
-            xdo('click', '1'); time.sleep(1)
+            xdo('click', '1'); time.sleep(0.5)
+            # Fire Aspect I lasts four seconds. Snapshot it before the other
+            # one-second command waits can let the effect expire.
+            command('execute as @e[type=minecraft:iron_golem,tag=staff_secondary,limit=1] store result score @s staff_fire run data get entity @s Fire')
             command('execute if entity @e[type=minecraft:iron_golem,tag=staff_primary] unless data entity @e[type=minecraft:iron_golem,tag=staff_primary,limit=1] {Health:100.0f} run say STAFF_PRIMARY_HIT_OK')
             command('execute if entity @e[type=minecraft:iron_golem,tag=staff_secondary] unless data entity @e[type=minecraft:iron_golem,tag=staff_secondary,limit=1] {Health:100.0f} run say STAFF_SWEEP_HIT_OK')
-            command('execute as @e[type=minecraft:iron_golem,tag=staff_secondary,limit=1] store result score @s staff_fire run data get entity @s Fire')
             command('execute if entity @e[type=minecraft:iron_golem,tag=staff_secondary,scores={staff_fire=1..}] run say STAFF_SWEEP_FIRE_OK')
             for marker, label in [('STAFF_PRIMARY_HIT_OK', 'primary target hit'), ('STAFF_SWEEP_HIT_OK', 'nearby target swept'),
                                   ('STAFF_SWEEP_FIRE_OK', 'Fire Aspect applies to the swept target')]:
