@@ -1,27 +1,54 @@
 ==== crash reports ====
 ==== mod mentions ====
-Build file '/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build.gradle' line: 5
+A problem occurred configuring root project 'FiskHeroes-1.20.1'.
 ==== run classpath ====
 ==== errors and exceptions ====
-25:BUILD FAILED in 4s
+52:BUILD FAILED in 5s
 ==== tail ====
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
 
 FAILURE: Build failed with an exception.
 
-* Where:
-Build file '/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build.gradle' line: 5
-
 * What went wrong:
-Plugin [id: 'net.minecraftforge.gradle', version: '[6.0.24,6.2)'] was not found in any of the following sources:
-
-- Gradle Core Plugins (plugin is not in 'org.gradle' namespace)
-- Included Builds (No included builds contain this plugin)
-- Plugin Repositories (could not resolve plugin artifact 'net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:[6.0.24,6.2)')
-  Searched in the following repositories:
-    Gradle Central Plugin Repository
-    MinecraftForge(https://maven.minecraftforge.net/)
+A problem occurred configuring root project 'FiskHeroes-1.20.1'.
+> Could not resolve all artifacts for configuration ':classpath'.
+   > Could not find net.minecraftforge:artifactural:3.0.21.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/artifactural/3.0.21/artifactural-3.0.21.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/artifactural/3.0.21/artifactural-3.0.21.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
+   > Could not find net.minecraftforge:unsafe:0.2.0.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/unsafe/0.2.0/unsafe-0.2.0.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/unsafe/0.2.0/unsafe-0.2.0.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
+   > Could not find net.minecraftforge:srgutils:0.6.2.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/srgutils/0.6.2/srgutils-0.6.2.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/srgutils/0.6.2/srgutils-0.6.2.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
+   > Could not find net.minecraftforge:DiffPatch:2.0.12.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/DiffPatch/2.0.12/DiffPatch-2.0.12.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/DiffPatch/2.0.12/DiffPatch-2.0.12.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
+   > Could not find net.minecraftforge:JarJarMetadata:0.3.19.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/JarJarMetadata/0.3.19/JarJarMetadata-0.3.19.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/JarJarMetadata/0.3.19/JarJarMetadata-0.3.19.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
+   > Could not find net.minecraftforge:JarJarSelector:0.3.19.
+     Searched in the following locations:
+       - https://plugins.gradle.org/m2/net/minecraftforge/JarJarSelector/0.3.19/JarJarSelector-0.3.19.pom
+       - https://maven.minecraftforge.net/net/minecraftforge/JarJarSelector/0.3.19/JarJarSelector-0.3.19.pom
+     Required by:
+         project : > net.minecraftforge.gradle:net.minecraftforge.gradle.gradle.plugin:6.0.54 > net.minecraftforge.gradle:ForgeGradle:6.0.54
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -29,5 +56,5 @@ Plugin [id: 'net.minecraftforge.gradle', version: '[6.0.24,6.2)'] was not found 
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 4s
+BUILD FAILED in 5s
 exit code: 1
