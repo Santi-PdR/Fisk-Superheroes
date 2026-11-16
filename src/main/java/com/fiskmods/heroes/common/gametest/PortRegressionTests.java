@@ -7158,6 +7158,46 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void gunAmmoBarShowsClampedSingleAndDualMagazines(GameTestHelper helper)
+    {
+        for (var entry : java.util.List.of(com.fiskmods.heroes.common.item.ModItems.DESERT_EAGLE,
+                com.fiskmods.heroes.common.item.ModItems.BERETTA_93R))
+        {
+            var gun = (com.fiskmods.heroes.common.item.ItemGun) entry.get();
+            var stack = new net.minecraft.world.item.ItemStack(gun);
+            if (!gun.isBarVisible(stack) || gun.getBarWidth(stack) != 13)
+            { helper.fail("A new firearm must show a full ammo bar: " + entry.getId()); return; }
+            int fullColor = gun.getBarColor(stack);
+            stack.getOrCreateTag().putInt("Ammo", 0);
+            if (gun.getBarWidth(stack) != 0 || gun.getBarColor(stack) == fullColor)
+            { helper.fail("Empty ammo must show an empty, differently colored bar: " + entry.getId()); return; }
+            stack.getTag().putInt("Ammo", gun.getMagazineSize(stack) / 2);
+            int singleWidth = gun.getBarWidth(stack);
+            if (singleWidth < 6 || singleWidth > 7)
+            { helper.fail("Half a magazine must show half a bar: " + entry.getId()); return; }
+            stack.getTag().putBoolean("Dual", true);
+            stack.getTag().putInt("Ammo", gun.getMagazineSize(stack) / 2);
+            if (gun.getBarWidth(stack) < 6 || gun.getBarWidth(stack) > 7)
+            { helper.fail("Dual firearm bar must use its doubled magazine: " + entry.getId()); return; }
+            stack.getTag().putInt("Ammo", -20);
+            if (gun.getAmmo(stack) != 0 || gun.getBarWidth(stack) != 0)
+            { helper.fail("Negative ammo must be clamped: " + entry.getId()); return; }
+            stack.getTag().putInt("Ammo", Integer.MAX_VALUE);
+            if (gun.getAmmo(stack) != gun.getMagazineSize(stack) || gun.getBarWidth(stack) != 13)
+            { helper.fail("Excess ammo must be clamped: " + entry.getId()); return; }
+        }
+        for (var entry : java.util.List.of(com.fiskmods.heroes.common.item.ModItems.CHRONOS_RIFLE,
+                com.fiskmods.heroes.common.item.ModItems.RIP_HUNTERS_GUN,
+                com.fiskmods.heroes.common.item.ModItems.HEAT_GUN, com.fiskmods.heroes.common.item.ModItems.COLD_GUN))
+        {
+            var gun = (com.fiskmods.heroes.common.item.ItemGun) entry.get();
+            if (gun.isBarVisible(new net.minecraft.world.item.ItemStack(gun)))
+            { helper.fail("Ammoless energy weapon must not show an ammo bar: " + entry.getId()); return; }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void gunMetadataDoesNotTriggerReequip(GameTestHelper helper)
     {
         var gun = (com.fiskmods.heroes.common.item.ItemGun) com.fiskmods.heroes.common.item.ModItems.HEAT_GUN.get();

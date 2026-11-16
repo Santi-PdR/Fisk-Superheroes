@@ -282,8 +282,20 @@ def main():
                 raise RuntimeError(f'Scope zoom did not visibly change the view: {changed} pixels')
             print(f'PASS: scope zoom visibly changes the view: {changed} pixels', flush=True)
             xdo('key', 'e')
-            screenshot('inventory-single')
+            screenshot('inventory-single')  # Empty magazine from the previous check.
             xdo('key', 'e')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:desert_eagle{Ammo:8}')
+            xdo('key', 'e')
+            screenshot('inventory-full-ammo')
+            xdo('key', 'e')
+            def green_bar(name):
+                slot = Image.open('ci-desert_eagle-' + name + '.png').convert('RGB').crop((461, 448, 496, 484))
+                return sum(1 for r, g, b in slot.get_flattened_data() if g > 180 and r < 60 and b < 60)
+            empty_green = green_bar('inventory-single')
+            full_green = green_bar('inventory-full-ammo')
+            if full_green - empty_green < 15:
+                raise RuntimeError(f'Full magazine bar is not visible in slot: empty={empty_green}, full={full_green}')
+            print(f'PASS: full magazine shows a visible green ammo bar: {full_green - empty_green} pixels', flush=True)
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:desert_eagle')
             screenshot('offhand')

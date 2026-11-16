@@ -78,7 +78,7 @@ public class ItemGun extends Item
     {
         if (!usesAmmo) return Integer.MAX_VALUE;
         return stack.hasTag() && stack.getTag().contains(AMMO_TAG)
-                ? Math.min(stack.getTag().getInt(AMMO_TAG), getMagazineSize(stack)) : getMagazineSize(stack);
+                ? net.minecraft.util.Mth.clamp(stack.getTag().getInt(AMMO_TAG), 0, getMagazineSize(stack)) : getMagazineSize(stack);
     }
 
     public int getMagazineSize()
@@ -89,6 +89,31 @@ public class ItemGun extends Item
     public int getMagazineSize(ItemStack stack)
     {
         return magazineSize * (isDual(stack) ? 2 : 1);
+    }
+
+    /** The original firearms used the durability bar to show rounds remaining. */
+    @Override
+    public boolean isBarVisible(ItemStack stack)
+    {
+        return usesAmmo;
+    }
+
+    @Override
+    public int getBarWidth(ItemStack stack)
+    {
+        return usesAmmo ? Math.round(13.0F * ammoFraction(stack)) : super.getBarWidth(stack);
+    }
+
+    @Override
+    public int getBarColor(ItemStack stack)
+    {
+        return usesAmmo ? net.minecraft.util.Mth.hsvToRgb(ammoFraction(stack) / 3.0F, 1.0F, 1.0F)
+                : super.getBarColor(stack);
+    }
+
+    private float ammoFraction(ItemStack stack)
+    {
+        return getAmmo(stack) / (float) Math.max(1, getMagazineSize(stack));
     }
 
     @Override
