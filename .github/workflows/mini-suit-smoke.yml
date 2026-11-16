@@ -46,6 +46,7 @@ jobs:
           for f in atom_layer1 atom_layer2; do
             convert "src/main/resources/assets/fiskheroes/textures/heroes/$f.png" -channel RGB -fill '#ff00ff' -colorize 100% +channel "src/main/resources/assets/fiskheroes/textures/heroes/$f.png"
           done
+          convert src/main/resources/assets/fiskheroes/textures/heroes/the_flash_layer1.png -channel RGB -fill '#00ffff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/heroes/the_flash_layer1.png
           ./gradlew classes --no-daemon --console=plain
       - name: Check miniature suit preview and deployment
         run: |
@@ -63,7 +64,7 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/heroes/{atom_layer1,atom_layer2}.png
+          git restore src/main/resources/assets/fiskheroes/textures/heroes/{atom_layer1,atom_layer2,the_flash_layer1}.png
           { cat ci-mini-suit-test.log 2>/dev/null || true; echo '==== client ===='; grep -E 'Mini suit preview|Exception|FATAL' ci-mini-suit-client.log 2>/dev/null | tail -80 || true; echo '==== server ===='; tail -50 ci-mini-suit-server.log 2>/dev/null || true; } > .ci/mini-suit-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'
