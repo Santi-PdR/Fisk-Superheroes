@@ -11,24 +11,52 @@ Traceback (most recent call last):
 RuntimeError: dedicated server ready: process exited with 1
 ==== server errors ====
 FAILURE: Build failed with an exception.
-Initialization script '/home/runner/.gradle/init.d/playeranim.gradle' line: 6
-No signature of method: org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.flatDir() is applicable for argument types: (playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7) values: [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1]
-> Could not find method flatDir() for arguments [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1] on object of type org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.
+   > Could not find ci:playeranim:1.0.2_mapped_official_1.20.1.
 ==== server tail ====
 Picked up JAVA_TOOL_OPTIONS: -Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true
 To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
 Daemon will be stopped at the end of the build 
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794854453239.json
+
+> Task :compileJava
+Picked up JAVA_TOOL_OPTIONS: -Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true
+Picked up JAVA_TOOL_OPTIONS: -Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true
+[18:45:06] [main/INFO]: Writing debug log file accesstransform.log
+[18:45:06] [main/INFO]: Access Transformer processor running version 8.2.14
+[18:45:06] [main/INFO]: Command line arguments [--inJar, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10/forge-1.20.1-47.4.10-injected.jar, --outJar, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, --logFile, accesstransform.log, --atFile, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/resources/META-INF/accesstransformer.cfg, --atFile, /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/_atJar_4/parent_at.cfg]
+[18:45:06] [main/INFO]: Reading from /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10/forge-1.20.1-47.4.10-injected.jar
+[18:45:06] [main/INFO]: Writing to /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar
+[18:45:06] [main/INFO]: Transformer file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/src/main/resources/META-INF/accesstransformer.cfg
+[18:45:06] [main/INFO]: Transformer file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/_atJar_4/parent_at.cfg
+[18:45:06] [main/WARN]: Found existing output jar /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar, overwriting
+[18:45:08] [main/INFO]: JAR transformation complete /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/fg_cache/net/minecraftforge/forge/1.20.1-47.4.10_mapped_official_1.20.1/forge-1.20.1-47.4.10_mapped_official_1.20.1.jar
+Creating SRG -> MCP TSRG
+Picked up JAVA_TOOL_OPTIONS: -Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true
+
+> Task :compileJava FROM-CACHE
+> Task :generateModMetadata
+> Task :processResources
+> Task :classes
+> Task :downloadMcpConfig
+> Task :extractSrg
+> Task :createSrgToMcp
+> Task :downloadMCMeta
+> Task :downloadAssets
+> Task :extractNatives
+> Task :makeSrcDirs
+> Task :prepareRuns
+> Task :prepareRunServer
+> Task :prepareRunServerCompile
+> Task :runServer FAILED
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794854679907.json
 
 FAILURE: Build failed with an exception.
 
-* Where:
-Initialization script '/home/runner/.gradle/init.d/playeranim.gradle' line: 6
-
 * What went wrong:
-No signature of method: org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.flatDir() is applicable for argument types: (playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7) values: [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1]
-Possible solutions: filter(org.gradle.api.Action)
-> Could not find method flatDir() for arguments [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1] on object of type org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.
+Execution failed for task ':runServer'.
+> Could not resolve all files for configuration ':runtimeClasspathCopy'.
+   > Could not find ci:playeranim:1.0.2_mapped_official_1.20.1.
+     Required by:
+         project :
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -36,7 +64,14 @@ Possible solutions: filter(org.gradle.api.Action)
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-BUILD FAILED in 7s
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 45s
+11 actionable tasks: 10 executed, 1 from cache
 ==== observer errors ====
 ==== observer tail ====
 ==== wearer errors ====
