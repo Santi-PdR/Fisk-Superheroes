@@ -107,12 +107,25 @@ def main():
                 equip(item, enchant); expect(item, 'FIRST_PERSON_RIGHT_HAND', True)
             print(f'PASS: {len(weapons)} different 3D items show both plain and foil base passes', flush=True)
 
-            # GUI has a separate geometry path for each of the dual swords.
+            # The GUI and hotbar both request GUI renders, so the diagnostic alone
+            # cannot prove that the creative inventory actually opened. In particular,
+            # two E keypresses in the same render tick can leave it open unexpectedly.
+            def verify_inventory(expected_open):
+                time.sleep(1.5)
+                path = Path('ci-item-models-inventory-state.png')
+                path.unlink(missing_ok=True)
+                subprocess.run(['scrot', str(path)], check=True, timeout=30)
+                image = Image.open(path).convert('RGB')
+                r, g, b = image.getpixel((456, 320))
+                is_open = min(r, g, b) > 150 and max(r, g, b) - min(r, g, b) < 8
+                if is_open != expected_open:
+                    raise RuntimeError(f'Creative inventory expected open={expected_open}, pixel={(r, g, b)}')
+
             for item in ('katana', 'chokuto', 'scimitar'):
                 equip(item, '{Dual:1b,' + enchant[1:])
-                xdo('key', 'e')
+                xdo('key', 'e'); verify_inventory(True)
                 expect(item, 'GUI', True)
-                xdo('key', 'e'); time.sleep(.6)
+                xdo('key', 'e'); verify_inventory(False)
             print('PASS: dual sword inventory meshes retain foil', flush=True)
 
             command('item replace entity Dev weapon.mainhand with minecraft:air')

@@ -5,6 +5,11 @@ on:
     branches: ['arena/**']
     paths:
       - '.ci/special_weapons_visual_smoke.py'
+      - '.ci/tonfa_visual_smoke.py'
+      - '.ci/client_identity.gradle'
+      - 'src/main/resources/assets/fiskheroes/textures/models/grappling_gun.png'
+      - 'src/main/resources/assets/fiskheroes/textures/models/chronos_rifle*.png'
+      - 'src/main/resources/assets/fiskheroes/textures/models/rip_hunters_gun*.png'
       - '.github/workflows/special-weapons-visual.yml'
       - 'src/main/java/com/fiskmods/heroes/client/render/GrapplingGunItemRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/ChronosRifleItemRenderer.java'
