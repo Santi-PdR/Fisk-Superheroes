@@ -78,9 +78,11 @@ public final class GrapplingGunItemRenderer extends BlockEntityWithoutLevelRende
             }
             case THIRD_PERSON_RIGHT_HAND, THIRD_PERSON_LEFT_HAND ->
             {
-                pose.translate(0.5D, 0.52D, 0.5D);
-                pose.mulPose(Axis.YP.rotationDegrees(180.0F));
-                pose.scale(1.15F, -1.15F, -1.15F);
+                // Align the grip to the vanilla hand rather than hanging the barrel
+                // vertically through the player's leg.
+                pose.translate(0.5D, 0.95D, 0.55D);
+                pose.mulPose(Axis.XP.rotationDegrees(90.0F));
+                pose.scale(0.70F, -0.70F, -0.70F);
             }
             default ->
             {
