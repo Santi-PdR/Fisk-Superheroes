@@ -10,146 +10,25 @@ Traceback (most recent call last):
     raise RuntimeError(f'{label}: process exited with {process.returncode}')
 RuntimeError: dedicated server ready: process exited with 1
 ==== server errors ====
-Error getting artifact: ci:playeranim:1.0.2_mapped_official_1.20.1:null@pom from  DeobfuscatingRepo
-org.gradle.api.internal.artifacts.ivyservice.DefaultLenientConfiguration$ArtifactResolveException: Could not resolve all dependencies for configuration ':__obfuscated'.
-	at org.gradle.api.internal.artifacts.ResolveExceptionContextualizer.mapFailure(ResolveExceptionContextualizer.java:81)
-	at org.gradle.api.internal.artifacts.ResolveExceptionContextualizer.mapFailures(ResolveExceptionContextualizer.java:60)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$resolveComponentMetaData$5(ErrorHandlingModuleComponentRepository.java:150)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$tryResolveAndMaybeDisable$15(ErrorHandlingModuleComponentRepository.java:220)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:236)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:219)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.performOperationWithRetries(ErrorHandlingModuleComponentRepository.java:203)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.resolveComponentMetaData(ErrorHandlingModuleComponentRepository.java:149)
-	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
-Caused by: org.gradle.internal.resolve.ModuleVersionResolveException: Could not resolve ci:playeranim:1.0.2.
-Caused by: org.gradle.internal.resolve.ModuleVersionResolveException: Could not resolve ci:playeranim:1.0.2.
-Caused by: org.gradle.api.resources.ResourceException: Could not get resource 'https://maven.minecraftforge.net/ci/playeranim/1.0.2/playeranim-1.0.2.module'.
-	at org.gradle.internal.resource.ResourceExceptions.failure(ResourceExceptions.java:74)
-	at org.gradle.internal.resource.ResourceExceptions.getFailed(ResourceExceptions.java:57)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$resolveComponentMetaData$5(ErrorHandlingModuleComponentRepository.java:150)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$tryResolveAndMaybeDisable$15(ErrorHandlingModuleComponentRepository.java:220)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:236)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:219)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.performOperationWithRetries(ErrorHandlingModuleComponentRepository.java:203)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.resolveComponentMetaData(ErrorHandlingModuleComponentRepository.java:149)
-Caused by: org.gradle.internal.resource.transport.http.HttpRequestException: Could not GET 'https://maven.minecraftforge.net/ci/playeranim/1.0.2/playeranim-1.0.2.module'.
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.createHttpRequestException(HttpClientHelper.java:122)
-Caused by: java.net.SocketTimeoutException: Read timed out
-Error getting artifact: ci:playeranim:1.0.2_mapped_official_1.20.1:null@jar from  DeobfuscatingRepo
-org.gradle.api.internal.artifacts.ivyservice.DefaultLenientConfiguration$ArtifactResolveException: Could not resolve all dependencies for configuration ':__obfuscated'.
-	at org.gradle.api.internal.artifacts.ResolveExceptionContextualizer.mapFailure(ResolveExceptionContextualizer.java:81)
-	at org.gradle.api.internal.artifacts.ResolveExceptionContextualizer.mapFailures(ResolveExceptionContextualizer.java:60)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$resolveComponentMetaData$5(ErrorHandlingModuleComponentRepository.java:150)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$tryResolveAndMaybeDisable$15(ErrorHandlingModuleComponentRepository.java:220)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:236)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:219)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.performOperationWithRetries(ErrorHandlingModuleComponentRepository.java:203)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.resolveComponentMetaData(ErrorHandlingModuleComponentRepository.java:149)
-	at org.gradle.api.internal.tasks.execution.CatchExceptionTaskExecuter.execute(CatchExceptionTaskExecuter.java:36)
-Caused by: org.gradle.internal.resolve.ModuleVersionResolveException: Could not resolve ci:playeranim:1.0.2.
-Caused by: org.gradle.internal.resolve.ModuleVersionResolveException: Could not resolve ci:playeranim:1.0.2.
-Caused by: org.gradle.api.resources.ResourceException: Could not get resource 'https://maven.minecraftforge.net/ci/playeranim/1.0.2/playeranim-1.0.2.module'.
-	at org.gradle.internal.resource.ResourceExceptions.failure(ResourceExceptions.java:74)
-	at org.gradle.internal.resource.ResourceExceptions.getFailed(ResourceExceptions.java:57)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$resolveComponentMetaData$5(ErrorHandlingModuleComponentRepository.java:150)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.lambda$tryResolveAndMaybeDisable$15(ErrorHandlingModuleComponentRepository.java:220)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:236)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.tryResolveAndMaybeDisable(ErrorHandlingModuleComponentRepository.java:219)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.performOperationWithRetries(ErrorHandlingModuleComponentRepository.java:203)
-	at org.gradle.api.internal.artifacts.ivyservice.ivyresolve.ErrorHandlingModuleComponentRepository$ErrorHandlingModuleComponentRepositoryAccess.resolveComponentMetaData(ErrorHandlingModuleComponentRepository.java:149)
-Caused by: org.gradle.internal.resource.transport.http.HttpRequestException: Could not GET 'https://maven.minecraftforge.net/ci/playeranim/1.0.2/playeranim-1.0.2.module'.
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.createHttpRequestException(HttpClientHelper.java:122)
-Caused by: java.net.SocketTimeoutException: Read timed out
 FAILURE: Build failed with an exception.
-   > Could not find ci:playeranim:1.0.2_mapped_official_1.20.1.
-       - file:/home/runner/.gradle/caches/forge_gradle/bundled_deobf_repo/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.pom
-       - file:/home/runner/.gradle/caches/forge_gradle/bundled_deobf_repo/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+Initialization script '/home/runner/.gradle/init.d/playeranim.gradle' line: 6
+No signature of method: org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.flatDir() is applicable for argument types: (playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7) values: [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1]
+> Could not find method flatDir() for arguments [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1] on object of type org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.
 ==== server tail ====
-	at org.gradle.launcher.daemon.server.exec.LogAndCheckHealth.execute(LogAndCheckHealth.java:53)
-	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
-	at org.gradle.launcher.daemon.server.exec.LogToClient.doBuild(LogToClient.java:63)
-	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
-	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
-	at org.gradle.launcher.daemon.server.exec.EstablishBuildEnvironment.doBuild(EstablishBuildEnvironment.java:84)
-	at org.gradle.launcher.daemon.server.exec.BuildCommandOnly.execute(BuildCommandOnly.java:37)
-	at org.gradle.launcher.daemon.server.api.DaemonCommandExecution.proceed(DaemonCommandExecution.java:104)
-	at org.gradle.launcher.daemon.server.exec.StartBuildOrRespondWithBusy$1.run(StartBuildOrRespondWithBusy.java:52)
-	at org.gradle.launcher.daemon.server.DaemonStateCoordinator$1.run(DaemonStateCoordinator.java:297)
-	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
-	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
-	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1136)
-	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
-	at java.base/java.lang.Thread.run(Thread.java:840)
-Caused by: org.gradle.internal.resource.transport.http.HttpRequestException: Could not GET 'https://maven.minecraftforge.net/ci/playeranim/1.0.2/playeranim-1.0.2.module'.
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.createHttpRequestException(HttpClientHelper.java:122)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performRequest(HttpClientHelper.java:116)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performRawGet(HttpClientHelper.java:98)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performGet(HttpClientHelper.java:103)
-	at org.gradle.internal.resource.transport.http.HttpResourceAccessor.openResource(HttpResourceAccessor.java:45)
-	at org.gradle.internal.resource.transport.http.HttpResourceAccessor.openResource(HttpResourceAccessor.java:30)
-	at org.gradle.internal.resource.transfer.AbstractExternalResourceAccessor.withContent(AbstractExternalResourceAccessor.java:32)
-	at org.gradle.internal.resource.transfer.DefaultExternalResourceConnector.withContent(DefaultExternalResourceConnector.java:59)
-	at org.gradle.internal.resource.transfer.ProgressLoggingExternalResourceAccessor$DownloadOperation.call(ProgressLoggingExternalResourceAccessor.java:123)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:209)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:204)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:66)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:59)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:166)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:59)
-	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:53)
-	at org.gradle.internal.resource.transfer.ProgressLoggingExternalResourceAccessor.withContent(ProgressLoggingExternalResourceAccessor.java:46)
-	at org.gradle.internal.resource.transfer.AccessorBackedExternalResource.withContentIfPresent(AccessorBackedExternalResource.java:103)
-	at org.gradle.internal.resource.transfer.DefaultCacheAwareExternalResourceAccessor.copyToCache(DefaultCacheAwareExternalResourceAccessor.java:188)
-	at org.gradle.internal.resource.transfer.DefaultCacheAwareExternalResourceAccessor.lambda$getResource$1(DefaultCacheAwareExternalResourceAccessor.java:86)
-	at org.gradle.cache.internal.ProducerGuard$AdaptiveProducerGuard.guardByKey(ProducerGuard.java:97)
-	at org.gradle.internal.resource.transfer.DefaultCacheAwareExternalResourceAccessor.getResource(DefaultCacheAwareExternalResourceAccessor.java:80)
-	at org.gradle.api.internal.artifacts.repositories.resolver.DefaultExternalResourceArtifactResolver.downloadByCoords(DefaultExternalResourceArtifactResolver.java:149)
-	... 241 more
-Caused by: java.net.SocketTimeoutException: Read timed out
-	at java.base/sun.nio.ch.NioSocketImpl.timedRead(NioSocketImpl.java:288)
-	at java.base/sun.nio.ch.NioSocketImpl.implRead(NioSocketImpl.java:314)
-	at java.base/sun.nio.ch.NioSocketImpl.read(NioSocketImpl.java:355)
-	at java.base/sun.nio.ch.NioSocketImpl$1.read(NioSocketImpl.java:808)
-	at java.base/java.net.Socket$SocketInputStream.read(Socket.java:966)
-	at java.base/sun.security.ssl.SSLSocketInputRecord.read(SSLSocketInputRecord.java:484)
-	at java.base/sun.security.ssl.SSLSocketInputRecord.readHeader(SSLSocketInputRecord.java:478)
-	at java.base/sun.security.ssl.SSLSocketInputRecord.bytesInCompletePacket(SSLSocketInputRecord.java:70)
-	at java.base/sun.security.ssl.SSLSocketImpl.readApplicationRecord(SSLSocketImpl.java:1464)
-	at java.base/sun.security.ssl.SSLSocketImpl$AppInputStream.read(SSLSocketImpl.java:1069)
-	at org.apache.http.impl.io.SessionInputBufferImpl.streamRead(SessionInputBufferImpl.java:137)
-	at org.apache.http.impl.io.SessionInputBufferImpl.fillBuffer(SessionInputBufferImpl.java:153)
-	at org.apache.http.impl.io.SessionInputBufferImpl.readLine(SessionInputBufferImpl.java:280)
-	at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:138)
-	at org.apache.http.impl.conn.DefaultHttpResponseParser.parseHead(DefaultHttpResponseParser.java:56)
-	at org.apache.http.impl.io.AbstractMessageParser.parse(AbstractMessageParser.java:259)
-	at org.apache.http.impl.DefaultBHttpClientConnection.receiveResponseHeader(DefaultBHttpClientConnection.java:163)
-	at org.apache.http.impl.conn.CPoolProxy.receiveResponseHeader(CPoolProxy.java:157)
-	at org.apache.http.protocol.HttpRequestExecutor.doReceiveResponse(HttpRequestExecutor.java:273)
-	at org.apache.http.protocol.HttpRequestExecutor.execute(HttpRequestExecutor.java:125)
-	at org.apache.http.impl.execchain.MainClientExec.execute(MainClientExec.java:272)
-	at org.apache.http.impl.execchain.ProtocolExec.execute(ProtocolExec.java:186)
-	at org.apache.http.impl.execchain.RetryExec.execute(RetryExec.java:89)
-	at org.apache.http.impl.execchain.RedirectExec.execute(RedirectExec.java:110)
-	at org.apache.http.impl.client.InternalHttpClient.doExecute(InternalHttpClient.java:185)
-	at org.apache.http.impl.client.CloseableHttpClient.execute(CloseableHttpClient.java:83)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performHttpRequest(HttpClientHelper.java:199)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performHttpRequest(HttpClientHelper.java:175)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.executeGetOrHead(HttpClientHelper.java:164)
-	at org.gradle.internal.resource.transport.http.HttpClientHelper.performRequest(HttpClientHelper.java:112)
-	... 262 more
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794853947952.json
+Picked up JAVA_TOOL_OPTIONS: -Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.8/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1794854453239.json
 
 FAILURE: Build failed with an exception.
+
+* Where:
+Initialization script '/home/runner/.gradle/init.d/playeranim.gradle' line: 6
 
 * What went wrong:
-Execution failed for task ':runServer'.
-> Could not resolve all files for configuration ':runtimeClasspathCopy'.
-   > Could not find ci:playeranim:1.0.2_mapped_official_1.20.1.
-     Searched in the following locations:
-       - file:/home/runner/.gradle/caches/forge_gradle/bundled_deobf_repo/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.pom
-       - file:/home/runner/.gradle/caches/forge_gradle/bundled_deobf_repo/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-     Required by:
-         project :
+No signature of method: org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.flatDir() is applicable for argument types: (playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7) values: [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1]
+Possible solutions: filter(org.gradle.api.Action)
+> Could not find method flatDir() for arguments [playeranim_5mgqnrrq9cfmptnob73mpi9kr$_run_closure1$_closure3$_closure5$_closure7@756389b1] on object of type org.gradle.api.internal.artifacts.dsl.DefaultRepositoryHandler$ExclusiveContentRepositorySpec.
 
 * Try:
 > Run with --stacktrace option to get the stack trace.
@@ -157,14 +36,7 @@ Execution failed for task ':runServer'.
 > Run with --scan to get full insights.
 > Get more help at https://help.gradle.org.
 
-Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
-
-You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
-
-For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
-
-BUILD FAILED in 3m 12s
-11 actionable tasks: 11 executed
+BUILD FAILED in 7s
 ==== observer errors ====
 ==== observer tail ====
 ==== wearer errors ====
