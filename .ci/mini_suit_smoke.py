@@ -61,6 +61,7 @@ def main():
             head = piece(0, 'helmet')
             full = ','.join(piece(i, name) for i, name in enumerate(('helmet', 'chestplate', 'leggings', 'boots')))
             command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit')
+            wait_for(client_log, r'First-person miniature suit arm rendered: RIGHT', 60, 'miniature renders right hand', client)
             empty_pixels = capture('empty')
             command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit{Items:[' + head + ']}')
             wait_for(client_log, r'Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;',
@@ -91,6 +92,11 @@ def main():
             if partial_pixels < 25 or full_pixels < partial_pixels * 1.4 or empty_pixels > partial_pixels * .25:
                 raise RuntimeError(f'Preview pixels not proportional to stored armor: empty={empty_pixels}, head={partial_pixels}, full={full_pixels}')
             print(f'PASS: only stored pieces are visible: empty={empty_pixels}, head={partial_pixels}, full={full_pixels} diagnostic pixels', flush=True)
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with fiskheroes:mini_suit{Items:[' + full + ']}')
+            wait_for(client_log, r'First-person miniature suit arm rendered: LEFT', 60, 'miniature renders offhand', client)
+            capture('offhand')
+            command('item replace entity Dev weapon.offhand with minecraft:air')
             command('item replace entity Dev armor.head with minecraft:iron_helmet{Marker:"old-helmet"}')
             command('item replace entity Dev armor.chest with minecraft:iron_chestplate{Marker:"keep-chest"}')
             command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit{Items:[' + head + ']}')

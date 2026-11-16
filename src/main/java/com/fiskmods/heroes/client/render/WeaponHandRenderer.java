@@ -28,6 +28,7 @@ public final class WeaponHandRenderer
         var player = Minecraft.getInstance().player;
         boolean tonfa = event.getItemStack().is(ModItems.TACTICAL_TONFA.get());
         boolean staff = event.getItemStack().is(ModItems.BO_STAFF.get());
+        boolean miniature = event.getItemStack().is(ModItems.MINI_SUIT.get());
         boolean scythe = event.getItemStack().is(ModItems.RUPTURES_SCYTHE.get());
         boolean katana = event.getItemStack().is(ModItems.KATANA.get());
         boolean chokuto = event.getItemStack().is(ModItems.CHOKUTO.get());
@@ -40,7 +41,7 @@ public final class WeaponHandRenderer
         boolean chronos = event.getItemStack().is(ModItems.CHRONOS_RIFLE.get());
         boolean rip = event.getItemStack().is(ModItems.RIP_HUNTERS_GUN.get());
         boolean shield = event.getItemStack().is(ModItems.CAPTAIN_AMERICAS_SHIELD.get());
-        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta && !coldGun && !heatGun && !grapple && !chronos && !rip && !shield)) return;
+        if (player == null || player.isInvisible() || player.isScoping() || (!tonfa && !staff && !miniature && !scythe && !katana && !chokuto && !scimitar && !desertEagle && !beretta && !coldGun && !heatGun && !grapple && !chronos && !rip && !shield)) return;
         var renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(player);
         if (!(renderer instanceof PlayerRenderer playerRenderer)) return;
         HumanoidArm arm = event.getHand() == InteractionHand.MAIN_HAND ? player.getMainArm() : player.getMainArm().getOpposite();
@@ -69,7 +70,7 @@ public final class WeaponHandRenderer
             pose.translate(side * 5.6F, 0.0F, 0.0F);
             if (arm == HumanoidArm.RIGHT) playerRenderer.renderRightHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
             else playerRenderer.renderLeftHand(pose, event.getMultiBufferSource(), event.getPackedLight(), player);
-            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : beretta ? "beretta" : coldGun ? "cold gun" : heatGun ? "heat gun" : grapple ? "grappling gun" : chronos ? "chronos rifle" : rip ? "rip hunter gun" : "captain america shield";
+            String weapon = tonfa ? "tonfa" : staff ? "bo staff" : miniature ? "miniature suit" : scythe ? "scythe" : katana ? "katana" : chokuto ? "chokuto" : scimitar ? "scimitar" : desertEagle ? "desert eagle" : beretta ? "beretta" : coldGun ? "cold gun" : heatGun ? "heat gun" : grapple ? "grappling gun" : chronos ? "chronos rifle" : rip ? "rip hunter gun" : "captain america shield";
             if (DIAGNOSTICS.add(weapon + "|" + arm)) FiskHeroes.LOGGER.info("First-person {} arm rendered: {}", weapon, arm);
         }
         finally
