@@ -4,7 +4,8 @@ allprojects { project ->
     // coordinate: a remote outage otherwise aborts resolution before flatDir.
     repositories.exclusiveContent {
         forRepository { project.repositories.flatDir { dirs project.file('.ci/playeranim-dependency') } }
-        filter { includeGroup('ci') }
+        // ForgeGradle synthesizes a separate mapped version in its own repo.
+        filter { includeVersion('ci', 'playeranim', '1.0.2') }
     }
     afterEvaluate {
         dependencies.add('runtimeOnly', project.fg.deobf('ci:playeranim:1.0.2'))
