@@ -2,6 +2,8 @@ PASS: dedicated server ready
 PASS: client joined
 PASS: partial miniature renders stored helmet
 PASS: complete miniature renders all four stored pieces
+PASS: mixed miniature resolves each actual hero piece
+PASS: mixed miniature displays the second hero texture: 8544 cyan pixels
 PASS: only stored pieces are visible: empty=0, head=12457, full=21171 diagnostic pixels
 PASS: partial suit deploys, preserves unrelated armor and returns displaced helmet
 PASS: empty miniature leaves armor and itself unchanged
@@ -9,58 +11,60 @@ PASS: empty miniature leaves armor and itself unchanged
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[03:25:53] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=GUI, pieces=0=fiskheroes:atom;
-[03:25:53] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;
-[03:25:56] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=GUI, pieces=0=fiskheroes:atom;1=fiskheroes:atom;2=fiskheroes:atom;3=fiskheroes:atom;
-[03:25:56] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:atom;2=fiskheroes:atom;3=fiskheroes:atom;
+[03:32:40] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=GUI, pieces=0=fiskheroes:atom;
+[03:32:40] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;
+[03:32:43] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=GUI, pieces=0=fiskheroes:atom;1=fiskheroes:atom;2=fiskheroes:atom;3=fiskheroes:atom;
+[03:32:43] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:atom;2=fiskheroes:atom;3=fiskheroes:atom;
+[03:32:46] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=GUI, pieces=0=fiskheroes:atom;1=fiskheroes:the_flash;
+[03:32:46] [Render thread/INFO] [Fisk's Superheroes/]: Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:the_flash;
 ==== server ====
-[03:25:31] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[03:25:31] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[03:25:31] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
-[03:25:31] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[03:25:31] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[03:25:31] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[03:25:31] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
-[03:25:31] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[03:25:32] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[03:25:32] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[03:25:32] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[03:25:32] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:50818] logged in with entity id 71 at (-5.5, -60.0, -7.5)
-[03:25:32] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@64871ee4 into net.minecraft.network.Connection@6b28bd36
-[03:25:32] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[03:25:32] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[03:25:40] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[03:25:40] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
-[03:25:41] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
-[03:25:43] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
-[03:25:44] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
-[03:25:45] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
-[03:25:45] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 6.0,245.0,8.0
-[03:25:45] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 6.0,245.0,8.0
-[03:25:45] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 6.0,245.0,8.0
-[03:25:45] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 6.0,245.0,8.0
-[03:25:46] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 176 block(s)
-[03:25:47] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 66 block(s)
-[03:25:49] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[03:25:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
-[03:25:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
-[03:25:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
-[03:25:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
-[03:25:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
-[03:25:50] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
-[03:25:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
-[03:25:56] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
-[03:26:00] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [Suit Up]
-[03:26:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Iron Helmet]
-[03:26:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Iron Chestplate]
-[03:26:02] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
-[03:26:05] [Server thread/INFO] [minecraft/MinecraftServer]: Expected whitespace to end one argument, but found trailing data
-[03:26:05] [Server thread/INFO] [minecraft/MinecraftServer]: ...entity Dev[nbt={Inventory:[{Slot:103b,id:"fiskheroes:superhero_helmet",tag:{HeroType:"fiskheroes:atom",Marker:"mini-test"}},{Slot:102b,id:"minecraft:iron_chestplate",tag:{Marker:"keep-chest"}},{id:"minecraft:iron_helmet",tag:{Marker:"old-helmet"}}]}] unless data entity Dev SelectedItem run say MINI_PARTIAL_DEPLOY_OK<--[HERE]
-[03:26:06] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
-[03:26:08] [Server thread/INFO] [minecraft/MinecraftServer]: Expected whitespace to end one argument, but found trailing data
-[03:26:08] [Server thread/INFO] [minecraft/MinecraftServer]: ...entity Dev[nbt={Inventory:[{Slot:103b,id:"fiskheroes:superhero_helmet",tag:{Marker:"mini-test"}},{Slot:102b,id:"minecraft:iron_chestplate",tag:{Marker:"keep-chest"}},{Slot:0b,id:"fiskheroes:mini_suit"}]}] run say MINI_EMPTY_UNCHANGED_OK<--[HERE]
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[03:32:17] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[03:32:17] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[03:32:17] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
+[03:32:17] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[03:32:18] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[03:32:18] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
+[03:32:18] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[03:32:18] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:40952] logged in with entity id 1 at (-0.5, -60.0, 3.5)
+[03:32:18] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@7f40d971 into net.minecraft.network.Connection@79f55355
+[03:32:18] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
+[03:32:19] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
+[03:32:19] [Server thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xcfb3ac9469f59a43
+[03:32:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[03:32:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
+[03:32:28] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
+[03:32:29] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
+[03:32:30] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
+[03:32:31] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
+[03:32:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 1.0,245.0,-3.0
+[03:32:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 1.0,245.0,-3.0
+[03:32:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 1.0,245.0,-3.0
+[03:32:31] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 1.0,245.0,-3.0
+[03:32:33] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 176 block(s)
+[03:32:34] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 66 block(s)
+[03:32:35] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[03:32:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
+[03:32:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
+[03:32:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
+[03:32:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,148.40983136102312,0.0
+[03:32:36] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:40] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:46] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:50] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has made the advancement [Suit Up]
+[03:32:50] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Iron Helmet]
+[03:32:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Iron Chestplate]
+[03:32:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:55] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] MINI_PARTIAL_DEPLOY_OK
+[03:32:56] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Miniaturized Suit]
+[03:32:58] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] MINI_EMPTY_UNCHANGED_OK
