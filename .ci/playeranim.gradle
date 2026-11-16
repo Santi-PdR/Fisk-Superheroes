@@ -3,7 +3,7 @@ allprojects { project ->
     // The pinned jar is local. Never ask Forge Maven for this synthetic CI
     // coordinate: a remote outage otherwise aborts resolution before flatDir.
     repositories.exclusiveContent {
-        forRepository { flatDir { dirs project.file('.ci/playeranim-dependency') } }
+        forRepository { project.repositories.flatDir { dirs project.file('.ci/playeranim-dependency') } }
         filter { includeGroup('ci') }
     }
     afterEvaluate {
