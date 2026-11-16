@@ -1,6 +1,11 @@
 // CI-only, remap the pinned production Player Animator jar for the dev client.
 allprojects { project ->
-    repositories { flatDir { dirs project.file('.ci/playeranim-dependency') } }
+    // The pinned jar is local. Never ask Forge Maven for this synthetic CI
+    // coordinate: a remote outage otherwise aborts resolution before flatDir.
+    repositories.exclusiveContent {
+        forRepository { flatDir { dirs project.file('.ci/playeranim-dependency') } }
+        filter { includeGroup('ci') }
+    }
     afterEvaluate {
         dependencies.add('runtimeOnly', project.fg.deobf('ci:playeranim:1.0.2'))
     }
