@@ -43,9 +43,10 @@ public final class ModifierSentryMode extends Modifier
                 data.getData().set(Vars.SUIT_OPEN_TIMER, (byte) (timer - 1));
             }
         }
-        else if (open)
+        else if (open && data.getData().get(Vars.MASK_OPEN))
         {
             data.getData().set(Vars.MASK_OPEN, false);
+            com.fiskmods.heroes.common.hero.ability.HeroMaskSounds.play(entity, data.getHero(), false);
         }
     }
 

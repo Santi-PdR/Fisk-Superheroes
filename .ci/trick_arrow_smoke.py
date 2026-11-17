@@ -191,8 +191,15 @@ def main():
             if int(texture_cache.group(1)) >= 30:
                 raise RuntimeError('Too many texture expression compilations: ' + texture_cache.group(1))
             print('TEXTURE_CACHE: 100 lookups, ' + texture_cache.group(1) + ' compilations', flush=True)
-            animated_values = re.findall(r'Texture expression value: expression=\(entity\.ticksExisted\(\) \* 6 % 360\) \| 0, value=([0-9]+)',
-                                         client_log.read_text(errors='replace'))
+            # The mask selector can fill the shared texture cache before Savitar is
+            # equipped, so the 100-lookup marker alone does not prove RGB has run.
+            dynamic_pattern = r'Texture expression value: expression=\(entity\.ticksExisted\(\) \* 6 % 360\) \| 0, value=([0-9]+)'
+            wait_for(client_log, dynamic_pattern, 60, 'Savitar RGB getter actually evaluates', client)
+            deadline = time.monotonic() + 30
+            while time.monotonic() < deadline:
+                animated_values = re.findall(dynamic_pattern, client_log.read_text(errors='replace'))
+                if len(set(animated_values)) >= 2: break
+                time.sleep(.2)
             if len(set(animated_values)) < 2:
                 raise RuntimeError('Savitar RGB texture did not produce changing tick values: ' + str(animated_values))
             print('PASS: animated texture getter returned changing values: ' + ', '.join(animated_values[:2]), flush=True)

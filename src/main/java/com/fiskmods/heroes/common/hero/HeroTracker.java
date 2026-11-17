@@ -154,6 +154,7 @@ public final class HeroTracker
         if (!player.level().isClientSide && previous != null
                 && (current == null || previous.getHero() != current.getHero()))
         {
+            com.fiskmods.heroes.common.hero.ability.HeroMaskSounds.stopOpenLoops(player, previous);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER, (byte) 0);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2, 0.0F);

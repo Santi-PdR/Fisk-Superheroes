@@ -305,36 +305,42 @@ public class JSHero
         }
     }
 
-    public void addSoundEvent(String name, String sound)
+    public void addSoundEvent(String name, Object sounds)
     {
-        ResourceLocation id = ResourceLocation.tryParse(sound);
-
-        if (id != null)
-        {
-            hero.addSoundEvent(name, id);
-        }
+        for (ResourceLocation id : soundIds(sounds)) hero.addSoundEvent(name, id);
     }
 
     public void addSoundOverrides(String name, Object overrides)
     {
-        Map<Integer, String> map = new LinkedHashMap<>();
+        // The original format nests suit triggers under "suit". Power-target
+        // overrides are separate and are not interpreted by this suit dispatcher.
+        Object suit = JSContext.asMap(overrides).get("suit");
+        for (Map.Entry<String, Object> entry : JSContext.asMap(suit).entrySet())
+            hero.addSuitSoundOverride(name, entry.getKey(), soundIds(entry.getValue()));
+    }
 
-        for (Map.Entry<String, Object> entry : JSContext.asMap(overrides).entrySet())
+    private static java.util.List<ResourceLocation> soundIds(Object sounds)
+    {
+        java.util.List<ResourceLocation> result = new java.util.ArrayList<>();
+        if (sounds instanceof String sound)
         {
-            if (entry.getValue() instanceof String string)
-            {
-                try
-                {
-                    map.put(Integer.parseInt(entry.getKey()), string);
-                }
-                catch (NumberFormatException e)
-                {
-                    // Not an indexed override; ignore
-                }
-            }
+            ResourceLocation id = ResourceLocation.tryParse(sound);
+            if (id != null) result.add(id);
         }
-
-        hero.addSoundOverrides(name, map);
+        else if (sounds instanceof java.util.List<?> list)
+        {
+            for (Object value : list) result.addAll(soundIds(value));
+        }
+        else if (sounds instanceof Object[] array)
+        {
+            for (Object value : array) result.addAll(soundIds(value));
+        }
+        else if (sounds instanceof Map<?, ?>)
+        {
+            // Nashorn arrays are ScriptObjectMirror maps with indexed entries.
+            for (Object value : JSContext.asMap(sounds).values()) result.addAll(soundIds(value));
+        }
+        return result;
     }
 
     /* --- Helpers --- */

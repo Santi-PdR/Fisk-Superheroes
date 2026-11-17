@@ -84,6 +84,8 @@ public class Hero implements Comparable<Hero>
 
     private final Map<String, ResourceLocation> soundEvents = new LinkedHashMap<>();
     private final Map<String, Map<Integer, String>> soundOverrides = new LinkedHashMap<>();
+    private final Map<String, List<ResourceLocation>> suitSoundLayers = new LinkedHashMap<>();
+    private final Map<String, Map<String, List<ResourceLocation>>> suitSoundProfiles = new LinkedHashMap<>();
 
     private final Map<Integer, HeroIteration> iterations = new LinkedHashMap<>();
     private final Map<String, HeroIteration> iterationKeyMap = new HashMap<>();
@@ -312,6 +314,20 @@ public class Hero implements Comparable<Hero>
     public void addSoundEvent(String name, ResourceLocation sound)
     {
         soundEvents.put(name, sound);
+        suitSoundLayers.computeIfAbsent(name, key -> new ArrayList<>()).add(sound);
+    }
+
+    /** Suit-trigger overrides apply per iteration sound profile; unspecified triggers fall back. */
+    public void addSuitSoundOverride(String profile, String trigger, List<ResourceLocation> sounds)
+    {
+        suitSoundProfiles.computeIfAbsent(profile, key -> new LinkedHashMap<>()).put(trigger, List.copyOf(sounds));
+    }
+
+    public List<ResourceLocation> getSuitSoundEvents(String trigger, @Nullable String profile)
+    {
+        Map<String, List<ResourceLocation>> overrides = profile != null ? suitSoundProfiles.get(profile) : null;
+        return overrides != null && overrides.containsKey(trigger) ? overrides.get(trigger)
+                : suitSoundLayers.getOrDefault(trigger, List.of());
     }
 
     public void addSoundOverrides(String name, Map<Integer, String> overrides)

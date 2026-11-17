@@ -7196,6 +7196,25 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void suitMaskSoundsHonorProfilesAndLayers(GameTestHelper helper)
+    {
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var reverse = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:reverse_flash");
+        if (iron == null || reverse == null) { helper.fail("Suit sound test setup missing"); return; }
+        var mk46 = iron.getDefaultIteration();
+        var mk45 = iron.getIteration("mk45");
+        var base = iron.getSuitSoundEvents("MASK_OPEN", mk45.getSoundProfile());
+        var profile = iron.getSuitSoundEvents("MASK_OPEN", mk46.getSoundProfile());
+        var layers = reverse.getSuitSoundEvents("MASK_OPEN", reverse.getDefaultIteration().getSoundProfile());
+        if (!base.equals(java.util.List.of(FiskHeroes.id("iron_man_mask_open")))
+                || !profile.equals(java.util.List.of(FiskHeroes.id("iron_man_mk46_mask_open")))
+                || !layers.contains(FiskHeroes.id("reverse_flash_vibration_on"))
+                || !layers.contains(FiskHeroes.id("reverse_flash_vibration_loop")) || layers.size() != 2)
+        { helper.fail("Suit mask sound defaults, profile overrides and layers must load from the pack"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void changingHeroClearsMaskAndSentryState(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

@@ -101,6 +101,8 @@ def main():
             try:
                 wait_for(observer_log, r'Remote mask animation: wearer=Partner, phase=open, progress=',
                          60, 'observer sees the remote mask open', observer)
+                wait_for(observer_log, r'Playing pack sound definition fiskheroes:iron_man_mk46_mask_open as',
+                         30, 'observer receives the Mk 46 mask-open sound', observer)
             finally:
                 subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
             time.sleep(1)
@@ -108,6 +110,8 @@ def main():
             try:
                 wait_for(observer_log, r'Remote mask animation: wearer=Partner, phase=closing, progress=',
                          60, 'observer sees the remote mask close', observer)
+                wait_for(observer_log, r'Playing pack sound definition fiskheroes:iron_man_mk46_mask_close as',
+                         30, 'observer receives the Mk 46 mask-close sound', observer)
             finally:
                 subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
             # Reopen before switching to a different hero: the new suit must not
