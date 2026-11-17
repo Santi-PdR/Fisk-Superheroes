@@ -6,6 +6,8 @@ PASS: server command channel accepts input
 PASS: observer sees remote Iron Man suit
 PASS: observer sees the remote mask open
 PASS: observer sees the remote mask close
+PASS: server reopens the old mask before changing hero
+PASS: observer sees the new hero with a reset mask
 PASS: observer sees enchanted quiver on unsuited player
 PASS: observer renders synchronized quiver arrow quantities
 PASS: back-mounted quiver is hidden when held
@@ -51,646 +53,646 @@ PASS: origin observer receives remote teleport burst
 PASS: destination observer receives untracked remote teleport burst
 PASS: separated endpoint observers receive one burst each without needing to track the caster
 ==== server errors ====
-[19:18:59] [main/DEBUG] [cp.mo.mo.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,eventbus,slf4jfixer,object_holder_definalize,runtime_enum_extender,capability_token_subclass,accesstransformer,runtimedistcleaner]
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/mods
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml
-[19:18:59] [main/WARN] [ne.mi.fm.lo.FMLConfig/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml is not correct. Correcting
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
-[19:18:59] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@2cbb3d47
-[19:18:59] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=SERVER
-[19:18:59] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
-[19:18:59] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
-[19:18:59] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
-[19:18:59] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
-[19:18:59] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
-[19:18:59] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/mods
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config
-[19:18:59] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
-[19:18:59] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.UniqueModListBuilder/]: Found 2 mods for first modid playeranimator, selecting most recent based on version data
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.UniqueModListBuilder/]: Selected file playeranim-1.0.2_mapped_official_1.20.1.jar for modid playeranimator with version 1.0.2-rc1+1.20
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from playeranim-1.0.2_mapped_official_1.20.1.jar, it does not contain dependency information.
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_held_item_livery with Javascript path coremods/held_item_livery.js
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/held_item_livery.js
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
-[19:19:00] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[46.0.0,)]]
-[19:19:00] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
-[19:19:00] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
-[19:19:00] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/held_item_livery.js
-[19:19:01] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:01] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:01] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
-[19:19:01] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:19:01] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
-[19:19:01] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:19:01] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
-[19:19:01] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:19:01] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
-[19:19:01] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
-[19:19:01] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
-[19:19:01] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:19:01] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
-[19:19:01] [main/DEBUG] [mixin/]: inject() running with 5 agents
-[19:19:01] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:01] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:19:01] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:19:01] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:19:01] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:19:01] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
-[19:19:01] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
-[19:19:01] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
-[19:19:02] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
-[19:19:02] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
-[19:19:02] [main/DEBUG] [mixin/]: Prepared 0 mixins in 0.373 sec (∞ms avg) (0ms load, 0ms transform, 0ms plugin)
+[19:40:05] [main/DEBUG] [cp.mo.mo.LaunchPluginHandler/MODLAUNCHER]: Found launch plugins: [mixin,eventbus,slf4jfixer,object_holder_definalize,runtime_enum_extender,capability_token_subclass,accesstransformer,runtimedistcleaner]
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/mods
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml
+[19:40:05] [main/WARN] [ne.mi.fm.lo.FMLConfig/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml is not correct. Correcting
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServicesHandler/MODLAUNCHER]: Found transformer services : [mixin,fml]
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loading service mixin
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Loaded service mixin
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformation service mixin
+[19:40:05] [main/DEBUG] [mixin/]: MixinService [ModLauncher] was successfully booted in cpw.mods.cl.ModuleClassLoader@2cbb3d47
+[19:40:05] [main/INFO] [mixin/]: SpongePowered MIXIN Subsystem Version=0.8.5 Source=union:/home/runner/.gradle/caches/modules-2/files-2.1/org.spongepowered/mixin/0.8.5/9d1c0c3a304ae6697ecd477218fa61b850bf57fc/mixin-0.8.5.jar%23116!/ Service=ModLauncher Env=SERVER
+[19:40:05] [main/DEBUG] [mixin/]: Initialising Mixin Platform Manager
+[19:40:05] [main/DEBUG] [mixin/]: Adding mixin platform agents for container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[19:40:05] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[19:40:05] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[19:40:05] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for ModLauncher Root Container(ModLauncher:4f56a0a2)
+[19:40:05] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container ModLauncher Root Container(ModLauncher:4f56a0a2)
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformation service mixin
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path GAMEDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path MODSDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/mods
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path CONFIGDIR is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.FMLPaths/CORE]: Path FMLCONFIG is /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fml.toml
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Beginning scan trigger - transformation service mixin
+[19:40:05] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: End scan trigger - transformation service mixin
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.UniqueModListBuilder/]: Found 2 mods for first modid playeranimator, selecting most recent based on version data
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.UniqueModListBuilder/]: Selected file playeranim-1.0.2_mapped_official_1.20.1.jar for modid playeranimator with version 1.0.2-rc1+1.20
+[19:40:05] [main/DEBUG] [ne.mi.fm.lo.mo.AbstractJarFileDependencyLocator/]: Failed to load resource META-INF/jarjar/metadata.json from playeranim-1.0.2_mapped_official_1.20.1.jar, it does not contain dependency information.
+[19:40:06] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_held_item_livery with Javascript path coremods/held_item_livery.js
+[19:40:06] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/held_item_livery.js
+[19:40:06] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:40:06] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
+[19:40:06] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[46.0.0,)]]
+[19:40:06] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[19:40:06] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[19:40:07] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/held_item_livery.js
+[19:40:07] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:40:07] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:40:07] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
+[19:40:07] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:40:07] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[19:40:07] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:40:07] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
+[19:40:07] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:40:07] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
+[19:40:07] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
+[19:40:07] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
+[19:40:07] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:40:07] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
+[19:40:07] [main/DEBUG] [mixin/]: inject() running with 5 agents
+[19:40:07] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:40:07] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:40:07] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:40:07] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:40:07] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:40:08] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[19:40:08] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[19:40:08] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
+[19:40:08] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
+[19:40:08] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
+[19:40:08] [main/DEBUG] [mixin/]: Prepared 0 mixins in 0.317 sec (∞ms avg) (0ms load, 0ms transform, 0ms plugin)
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[19:19:06] [main/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
-[19:19:06] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
-[19:19:07] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml
-[19:19:07] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml
-[19:19:07] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml for changes
-[19:19:07] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml is not correct. Correcting
-[19:19:11] [main/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:19:11] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[19:19:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[19:19:13] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[19:19:13] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[19:19:13] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[19:19:50] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge, playeranimator]
-[19:20:47] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge, playeranimator]
-[19:20:59] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_COMMAND_CHANNEL_OK
-[19:21:34] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_PLAYERS_NEARBY
+[19:40:14] [main/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
+[19:40:14] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
+[19:40:15] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml
+[19:40:15] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml
+[19:40:15] [main/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml for changes
+[19:40:15] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-server/config/fiskheroes-common.toml is not correct. Correcting
+[19:40:19] [main/DEBUG] [ne.mi.se.ServerLifecycleHooks/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:40:20] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[19:40:22] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[19:40:22] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
+[19:40:22] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[19:40:22] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
+[19:41:07] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge, playeranimator]
+[19:42:15] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client connection with modlist [fiskheroes, minecraft, forge, playeranimator]
+[19:42:28] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_COMMAND_CHANNEL_OK
+[19:43:08] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_PLAYERS_NEARBY
 ==== server tail ====
-[19:21:15] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
-[19:21:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:17] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:18] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:19] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:20] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
-[19:21:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
-[19:21:22] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Compound Bow]
-[19:21:23] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Green Arrow.
-[19:21:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:27] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:green_arrow, index=-1, matching=[]
-[19:21:28] [Server thread/INFO] [Fisk's Superheroes/]: Compound bow shot: power=1.0, specialSound=true
-[19:21:28] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
-[19:21:30] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:31] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[19:21:32] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[19:21:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[19:21:34] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_PLAYERS_NEARBY
-[19:21:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:21:35] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
-[19:21:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:21:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:37] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:21:38] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[19:21:38] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
-[19:21:40] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_RELOAD_AMMO_OK
-[19:21:41] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
-[19:21:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:21:44] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[19:21:44] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:44] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:21:47] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
-[19:21:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Beretta 93Rs]
-[19:21:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
-[19:21:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[19:21:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
-[19:21:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_BERETTA_EMPTY_OK
-[19:21:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
-[19:21:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:21:54] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Heatwave.
-[19:21:55] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Heat Gun]
-[19:21:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:21:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
-[19:21:58] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
-[19:21:59] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
-[19:22:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
-[19:22:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:22:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[19:22:02] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
-[19:22:03] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[19:22:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Katanas]
-[19:22:05] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_DUAL_EMPTY_OK
-[19:22:06] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
-[19:22:07] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:22:08] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[19:22:09] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, -59.98, 124.63842588913556), owner=ServerPlayer['Partner'/51, l='ServerLevel[world]', x=0.50, y=180.00, z=4.50]
-[19:22:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [item.fiskheroes.tactical_tonfa.dual]
-[19:22:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:22:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:22:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:22:11] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:22:11] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Bo-Staff]
-[19:22:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:22:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
-[19:22:15] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Rupture.
-[19:22:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Rupture's Scythe]
-[19:22:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
-[19:22:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rupture, index=1, matching=[CHARGE_ENERGY]
-[19:22:17] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:rupture, key=CHARGE_ENERGY, modifier=fiskheroes:energy_manipulation
-[19:22:18] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
-[19:22:19] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deathstroke.
-[19:22:20] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
-[19:22:21] [Server thread/INFO] [minecraft/MinecraftServer]: Marked [-1, -1] chunks in minecraft:overworld from [-1, -1] to [1, 6] to be force loaded
-[19:22:22] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 90 block(s)
-[19:22:23] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
-[19:22:24] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Monitor.
-[19:22:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
-[19:22:26] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 3.500000, 180.000000, 2.500000
-[19:22:27] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 2.500000
-[19:22:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[19:22:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=-1, matching=[]
-[19:22:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=3
-[19:22:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=3, matching=[TELEPORT]
-[19:22:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT, modifier=fiskheroes:teleportation
-[19:22:34] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 3.500000, 180.000000, 78.500000
-[19:22:34] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,76.0
-[19:22:34] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,76.0
-[19:22:34] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,76.0
-[19:22:35] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 2.500000
-[19:22:35] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,-77.0
-[19:22:39] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=3
-[19:22:39] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=3, matching=[TELEPORT]
-[19:22:39] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT, modifier=fiskheroes:teleportation
-[19:22:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,77.0
-[19:22:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,77.0
+[19:42:43] [Server thread/INFO] [Fisk's Superheroes/]: Mask toggled: player=Partner, open=true
+[19:42:47] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Iron Man/Mark 50.
+[19:42:48] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[19:42:49] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:42:50] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:42:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:42:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:42:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
+[19:42:54] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
+[19:42:55] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Compound Bow]
+[19:42:56] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Green Arrow.
+[19:43:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:00] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:green_arrow, index=-1, matching=[]
+[19:43:01] [Server thread/INFO] [Fisk's Superheroes/]: Compound bow shot: power=1.0, specialSound=true
+[19:43:02] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:43:03] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Quiver]
+[19:43:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:43:05] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[19:43:06] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[19:43:07] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[19:43:08] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] LIVERY_PLAYERS_NEARBY
+[19:43:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:08] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
+[19:43:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:09] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[19:43:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=1, matching=[GUN_RELOAD]
+[19:43:12] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_RELOAD_AMMO_OK
+[19:43:13] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Desert Eagles]
+[19:43:13] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:13] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[19:43:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:16] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:19] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
+[19:43:20] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Beretta 93Rs]
+[19:43:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:21] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[19:43:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[19:43:22] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
+[19:43:24] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_BERETTA_EMPTY_OK
+[19:43:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
+[19:43:27] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:43:28] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Heatwave.
+[19:43:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Heat Gun]
+[19:43:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
+[19:43:33] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
+[19:43:34] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
+[19:43:35] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
+[19:43:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:36] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[19:43:38] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 4.500000
+[19:43:39] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[19:43:40] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Dual Katanas]
+[19:43:41] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] REMOTE_DUAL_EMPTY_OK
+[19:43:42] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Torch]
+[19:43:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:43:44] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[19:43:44] [Server thread/INFO] [Fisk's Superheroes/]: Cold ball impact: center=(0.5, -59.98, 124.63842588913556), owner=ServerPlayer['Partner'/63, l='ServerLevel[world]', x=0.50, y=180.00, z=4.50]
+[19:43:45] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [item.fiskheroes.tactical_tonfa.dual]
+[19:43:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:46] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:46] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:47] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Bo-Staff]
+[19:43:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:43:49] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:deadpool_xmen, index=-1, matching=[AIM]
+[19:43:51] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Rupture.
+[19:43:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Rupture's Scythe]
+[19:43:52] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=1
+[19:43:52] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rupture, index=1, matching=[CHARGE_ENERGY]
+[19:43:52] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:rupture, key=CHARGE_ENERGY, modifier=fiskheroes:energy_manipulation
+[19:43:54] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Desert Eagle]
+[19:43:55] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deathstroke.
+[19:43:56] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Flash/Barry Allen.
+[19:43:57] [Server thread/INFO] [minecraft/MinecraftServer]: Marked [-1, -1] chunks in minecraft:overworld from [-1, -1] to [1, 6] to be force loaded
+[19:43:58] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 90 block(s)
+[19:43:59] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 20 block(s)
+[19:44:00] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped The Monitor.
+[19:44:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Air]
+[19:44:02] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 3.500000, 180.000000, 2.500000
+[19:44:03] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 2.500000
+[19:44:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[19:44:06] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=-1, matching=[]
+[19:44:07] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=3
+[19:44:07] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=3, matching=[TELEPORT]
+[19:44:07] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT, modifier=fiskheroes:teleportation
+[19:44:07] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,77.0
+[19:44:10] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 3.500000, 180.000000, 78.500000
+[19:44:10] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,0.0,76.0
+[19:44:11] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 2.500000
+[19:44:11] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,-77.0
+[19:44:11] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Partner moved too quickly! 0.0,0.0,-77.0
+[19:44:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=3
+[19:44:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:the_monitor, index=3, matching=[TELEPORT]
+[19:44:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:the_monitor, key=TELEPORT, modifier=fiskheroes:teleportation
 ==== observer errors ====
-[19:19:32] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/held_item_livery.js
-[19:19:33] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:33] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:33] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
-[19:19:33] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:19:33] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
-[19:19:33] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:19:33] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
-[19:19:33] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:19:33] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
-[19:19:33] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
-[19:19:33] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
-[19:19:33] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:19:33] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
-[19:19:33] [main/DEBUG] [mixin/]: inject() running with 5 agents
-[19:19:33] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:19:33] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:19:33] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:19:33] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:19:33] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:19:33] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
-[19:19:33] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
-[19:19:33] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
-[19:19:33] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
-[19:19:33] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
-[19:19:33] [main/DEBUG] [mixin/]: Prepared 13 mixins in 0.668 sec (51.4ms avg) (0ms load, 0ms transform, 0ms plugin)
-[19:19:34] [pool-3-thread-1/DEBUG] [mixin/]: Mixing PlayerEntityMixin from playerAnimator-common.mixins.json into net.minecraft.world.entity.player.Player
-[19:19:34] [pool-3-thread-1/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerEntityMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
+[19:40:46] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:40:46] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[19:40:46] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:40:46] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
+[19:40:46] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:40:46] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
+[19:40:46] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
+[19:40:46] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
+[19:40:46] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:40:46] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
+[19:40:46] [main/DEBUG] [mixin/]: inject() running with 5 agents
+[19:40:46] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:40:46] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:40:46] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:40:46] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:40:46] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:40:46] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[19:40:46] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[19:40:46] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
+[19:40:46] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
+[19:40:46] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[19:40:47] [main/DEBUG] [mixin/]: Prepared 13 mixins in 1.032 sec (79.4ms avg) (0ms load, 0ms transform, 0ms plugin)
+[19:40:48] [pool-3-thread-1/DEBUG] [mixin/]: Mixing PlayerEntityMixin from playerAnimator-common.mixins.json into net.minecraft.world.entity.player.Player
+[19:40:48] [pool-3-thread-1/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerEntityMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[19:19:40] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
-[19:19:40] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
-[19:19:40] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.kosmx.playerAnim.forge.ForgeClientEvent to MOD
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Mixing FeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.RenderLayer
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:FeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LevelRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.LevelRenderer
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LevelRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.CameraAccessor from playerAnimator-common.mixins.json into net.minecraft.client.Camera
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.CameraAccessor: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Mixing PlayerRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.player.PlayerRenderer
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LivingEntityRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.LivingEntityRenderer
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:40] [modloading-worker-0/DEBUG] [mixin/]: Renaming synthetic method lambda$filterLayers$0(Ljava/lang/Object;)Z to md8c98ac$lambda$filterLayers$0$0 in playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin
-[19:19:41] [modloading-worker-0/DEBUG] [mixin/]: Mixing ModelPartMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.geom.ModelPart
-[19:19:41] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ModelPartMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:41] [Render thread/DEBUG] [mixin/]: Mixing BipedEntityModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.HumanoidModel
-[19:19:41] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:BipedEntityModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:41] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$3(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md8c98ac$lambda$renderToBuffer$3$0 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:19:41] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$2(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md8c98ac$lambda$renderToBuffer$2$1 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:19:41] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$1(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md8c98ac$lambda$renderToBuffer$1$2 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:19:41] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$0(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md8c98ac$lambda$renderToBuffer$0$3 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:19:41] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:19:41] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.EntityRenderDispatcherMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.EntityRenderDispatcher
-[19:19:41] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.EntityRenderDispatcherMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:41] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.ItemInHandRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.ItemInHandRenderer
-[19:19:41] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.ItemInHandRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:42] [Render thread/DEBUG] [mixin/]: Mixing HeldItemMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.ItemInHandLayer
-[19:19:42] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:HeldItemMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:42] [Render thread/DEBUG] [mixin/]: Mixing ArmorFeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer
-[19:19:42] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ArmorFeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:42] [Render thread/DEBUG] [mixin/]: Mixing PlayerModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.PlayerModel
-[19:19:42] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml for changes
-[19:19:42] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml is not correct. Correcting
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml
-[19:19:42] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml for changes
-[19:19:42] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml is not correct. Correcting
-[19:19:50] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge, playeranimator]
-[19:19:51] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:20:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_COMMAND_CHANNEL_OK
-[19:21:31] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.50156254, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:21:31] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.65624976, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[19:21:32] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:33] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[19:21:34] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_PLAYERS_NEARBY
-[19:21:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.65624976, livery=null
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[19:21:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:03] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:15] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
-[19:22:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:40:55] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
+[19:40:56] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
+[19:40:56] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.kosmx.playerAnim.forge.ForgeClientEvent to MOD
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing FeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.RenderLayer
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:FeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LevelRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.LevelRenderer
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LevelRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.CameraAccessor from playerAnimator-common.mixins.json into net.minecraft.client.Camera
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.CameraAccessor: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing PlayerRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.player.PlayerRenderer
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LivingEntityRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.LivingEntityRenderer
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Renaming synthetic method lambda$filterLayers$0(Ljava/lang/Object;)Z to mdd42593$lambda$filterLayers$0$0 in playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing ModelPartMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.geom.ModelPart
+[19:40:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ModelPartMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [Render thread/DEBUG] [mixin/]: Mixing BipedEntityModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.HumanoidModel
+[19:40:56] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:BipedEntityModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:56] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$3(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdd42593$lambda$renderToBuffer$3$0 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:40:56] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$2(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdd42593$lambda$renderToBuffer$2$1 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:40:56] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$1(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdd42593$lambda$renderToBuffer$1$2 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:40:56] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$0(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdd42593$lambda$renderToBuffer$0$3 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:40:57] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:40:57] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.EntityRenderDispatcherMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.EntityRenderDispatcher
+[19:40:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.EntityRenderDispatcherMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:57] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.ItemInHandRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.ItemInHandRenderer
+[19:40:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.ItemInHandRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:57] [Render thread/DEBUG] [mixin/]: Mixing HeldItemMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.ItemInHandLayer
+[19:40:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:HeldItemMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:57] [Render thread/DEBUG] [mixin/]: Mixing ArmorFeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer
+[19:40:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ArmorFeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:57] [Render thread/DEBUG] [mixin/]: Mixing PlayerModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.PlayerModel
+[19:40:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml for changes
+[19:40:58] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/forge-client.toml is not correct. Correcting
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml
+[19:40:58] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml for changes
+[19:40:58] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-observer/config/fiskheroes-common.toml is not correct. Correcting
+[19:41:07] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge, playeranimator]
+[19:41:08] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+com.mojang.authlib.exceptions.AuthenticationUnavailableException: Cannot contact authentication server
+	at net.minecraft.client.Minecraft.getProfileProperties(Minecraft.java:2438) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar%23181!/:?] {re:classloading,pl:accesstransformer:B,pl:runtimedistcleaner:A,re:mixin,pl:accesstransformer:B,pl:runtimedistcleaner:A}
+Caused by: com.mojang.authlib.exceptions.MinecraftClientException: Failed to read value <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+        #errorref {
+Caused by: com.google.gson.JsonSyntaxException: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $
+Caused by: java.lang.IllegalStateException: Expected BEGIN_OBJECT but was STRING at line 1 column 1 path $
+[19:42:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_COMMAND_CHANNEL_OK
+[19:43:05] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, poseScale=0.50156254, livery=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:05] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, poseScale=0.6562499, livery=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[19:43:06] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:07] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[19:43:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_PLAYERS_NEARBY
+[19:43:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562499, livery=null
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[19:43:29] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:39] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:51] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
+[19:43:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
 ==== observer tail ====
-[19:21:38] [Render thread/INFO] [Fisk's Superheroes/]: Desert eagle reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[19:21:40] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_RELOAD_AMMO_OK
-[19:21:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:41] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:deadpool_xmen, sleeveAligned=true
-[19:21:42] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[19:21:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:43] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[19:21:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:45] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
-[19:21:45] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[19:21:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:46] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
-[19:21:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
-[19:21:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.65624976, livery=null
-[19:21:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
-[19:21:47] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[19:21:50] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
-[19:21:50] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
-[19:21:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
-[19:21:52] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
-[19:21:53] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[19:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
-[19:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
-[19:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
-[19:21:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
-[19:21:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=9
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[19:21:57] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
-[19:21:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
-[19:21:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
-[19:21:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
-[19:22:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[19:22:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=73
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
-[19:22:02] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
-[19:22:03] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:05] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
-[19:22:06] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
-[19:22:07] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
-[19:22:10] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
-[19:22:14] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
-[19:22:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
-[19:22:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
-[19:22:15] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
-[19:22:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
-[19:22:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
-[19:22:17] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
-[19:22:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[19:22:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
-[19:22:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
-[19:22:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
-[19:22:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
-[19:22:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:22:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_monitor_chest.png
-[19:22:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:leggings from fiskheroes:textures/heroes/the_monitor_pants.png
-[19:22:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:boots from fiskheroes:textures/heroes/the_monitor_boots.png
-[19:22:31] [Render thread/INFO] [Fisk's Superheroes/]: Teleport burst emitted: endpoint=origin, firstPerson=false, center=(0.5, 180.89999997615814, 2.5), count=200, cloud=fiskheroes:breach
-[19:22:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
-[19:22:32] [Render thread/INFO] [Fisk's Superheroes/]: Breach burst animated color: startR=1.0, startG=1.0, startB=1.0, midR=0.105635345, midG=0.47698045, midB=1.0
-[19:22:39] [Render thread/INFO] [Fisk's Superheroes/]: Teleport burst emitted: endpoint=destination, firstPerson=false, center=(0.5, 180.89999997615814, 79.5), count=200, cloud=fiskheroes:breach
+[19:43:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[19:43:17] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope active: wearer=Partner
+[19:43:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[19:43:17] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[19:43:18] [Render thread/INFO] [Fisk's Superheroes/]: Remote scope released: wearer=Partner
+[19:43:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[19:43:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:wild_dog, sleeveAligned=true
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:wild_dog, open=false, timer=0, progress=0
+[19:43:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
+[19:43:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562499, livery=null
+[19:43:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
+[19:43:19] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:21] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:21] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[19:43:22] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=THIRD_PERSON_RIGHT_HAND
+[19:43:22] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=THIRD_PERSON_LEFT_HAND
+[19:43:24] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
+[19:43:26] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
+[19:43:27] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:heatwave, open=false, timer=0, progress=0
+[19:43:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:helmet from fiskheroes:textures/heroes/heatwave_jacket.png
+[19:43:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:chestplate from fiskheroes:textures/heroes/heatwave_jacket.png
+[19:43:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:leggings from fiskheroes:textures/heroes/heatwave_pants.png
+[19:43:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:heatwave slot fiskheroes:boots from fiskheroes:textures/heroes/heatwave_boots.png
+[19:43:29] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=9
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[19:43:31] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:captain_cold, open=false, timer=0, progress=0
+[19:43:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
+[19:43:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
+[19:43:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
+[19:43:34] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
+[19:43:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[19:43:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=88
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming sustained: wearer=Partner
+[19:43:37] [Render thread/INFO] [Fisk's Superheroes/]: Remote aiming released: wearer=Partner
+[19:43:39] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=THIRD_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
+[19:43:42] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
+[19:43:43] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=false
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_LEFT_HAND, toggled=false
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, toggled=true
+[19:43:49] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND
+[19:43:51] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:rupture, open=false, timer=0, progress=0
+[19:43:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:helmet from fiskheroes:textures/heroes/rupture_layer1.png
+[19:43:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:chestplate from fiskheroes:textures/heroes/rupture_layer1.png
+[19:43:51] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:rupture, item=fiskheroes:ruptures_scythe, poseScale=0.515625, livery=null
+[19:43:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:leggings from fiskheroes:textures/heroes/rupture_layer2.png
+[19:43:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:rupture slot fiskheroes:boots from fiskheroes:textures/heroes/rupture_layer1.png
+[19:43:52] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, charge=0.06666667
+[19:43:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:deathstroke_dceu, open=false, timer=0, progress=0
+[19:43:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:helmet from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[19:43:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:chestplate from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:katana, poseScale=0.5015625, livery=fiskheroes:textures/heroes/deathstroke_dceu_katana.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, poseScale=0.6562498, livery=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:leggings from fiskheroes:textures/heroes/deathstroke_dceu_layer2.png
+[19:43:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:deathstroke_dceu slot fiskheroes:boots from fiskheroes:textures/heroes/deathstroke_dceu_layer1.png
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:the_flash, open=false, timer=0, progress=0
+[19:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:helmet from fiskheroes:textures/heroes/the_flash_layer1.png
+[19:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_flash_layer1.png
+[19:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:leggings from fiskheroes:textures/heroes/the_flash_layer2.png
+[19:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_flash slot fiskheroes:boots from fiskheroes:textures/heroes/the_flash_layer1.png
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Remote mask reset: wearer=Partner, hero=fiskheroes:the_monitor, open=false, timer=0, progress=0
+[19:44:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:chestplate from fiskheroes:textures/heroes/the_monitor_chest.png
+[19:44:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:leggings from fiskheroes:textures/heroes/the_monitor_pants.png
+[19:44:00] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:the_monitor slot fiskheroes:boots from fiskheroes:textures/heroes/the_monitor_boots.png
+[19:44:07] [Render thread/INFO] [Fisk's Superheroes/]: Teleport burst emitted: endpoint=origin, firstPerson=false, center=(0.5, 180.89999997615814, 2.5), count=200, cloud=fiskheroes:breach
+[19:44:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
+[19:44:07] [Render thread/INFO] [Fisk's Superheroes/]: Breach burst animated color: startR=1.0, startG=1.0, startB=1.0, midR=0.08383572, midG=0.33659554, midB=1.0
+[19:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Teleport burst emitted: endpoint=destination, firstPerson=false, center=(0.5, 180.89999997615814, 79.5), count=200, cloud=fiskheroes:breach
 ==== wearer errors ====
-[19:20:18] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/held_item_livery.js
-[19:20:18] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:20:18] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
-[19:20:18] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[46.0.0,)]]
-[19:20:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
-[19:20:19] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
-[19:20:20] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/held_item_livery.js
-[19:20:21] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:20:21] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:20:21] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
-[19:20:21] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:20:21] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
-[19:20:21] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:20:21] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
-[19:20:21] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:20:21] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
-[19:20:21] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
-[19:20:21] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
-[19:20:21] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:20:21] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
-[19:20:21] [main/DEBUG] [mixin/]: inject() running with 5 agents
-[19:20:21] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
-[19:20:21] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
-[19:20:21] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
-[19:20:21] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
-[19:20:21] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
-[19:20:21] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
-[19:20:21] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
-[19:20:21] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
-[19:20:22] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
-[19:20:22] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
-[19:20:22] [main/DEBUG] [mixin/]: Prepared 13 mixins in 1.037 sec (79.8ms avg) (0ms load, 0ms transform, 0ms plugin)
-[19:20:24] [pool-3-thread-1/DEBUG] [mixin/]: Mixing PlayerEntityMixin from playerAnimator-common.mixins.json into net.minecraft.world.entity.player.Player
-[19:20:24] [pool-3-thread-1/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerEntityMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/held_item_livery.js
+[19:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Considering mod file candidate /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileInfo/LOADING]: Found valid mod file playeranim-1.0.2_mapped_official_1.20.1.jar with {playeranimator} mods - versions {1.0.2-rc1+1.20}
+[19:41:40] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Loading mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar with languages [LanguageSpec[languageName=javafml, acceptedVersions=[46.0.0,)]]
+[19:41:41] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initializing transformers for transformation service mixin
+[19:41:41] [main/DEBUG] [cp.mo.mo.TransformationServiceDecorator/MODLAUNCHER]: Initialized transformers for transformation service mixin
+[19:41:42] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/held_item_livery.js
+[19:41:43] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:41:43] [main/DEBUG] [mixin/]: Processing launch tasks for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:41:43] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(fiskheroes)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(fiskheroes)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(fiskheroes)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(fiskheroes)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(fiskheroes)
+[19:41:43] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:41:43] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(minecraft)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(minecraft)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(minecraft)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(minecraft)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(minecraft)
+[19:41:43] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:41:43] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(forge)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(forge)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(forge)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(forge)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(forge)
+[19:41:43] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:41:43] [main/DEBUG] [mixin/]: Adding mixin platform agents for container SecureJarResource(playeranimator)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentMinecraftForge for SecureJarResource(playeranimator)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentMinecraftForge rejected container SecureJarResource(playeranimator)
+[19:41:43] [main/DEBUG] [mixin/]: Instancing new MixinPlatformAgentDefault for SecureJarResource(playeranimator)
+[19:41:43] [main/DEBUG] [mixin/]: MixinPlatformAgentDefault accepted container SecureJarResource(playeranimator)
+[19:41:43] [main/DEBUG] [mixin/]: Processing prepare() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:41:43] [main/DEBUG] [mixin/]: Registering mixin config: playerAnimator-common.mixins.json
+[19:41:43] [main/DEBUG] [mixin/]: inject() running with 5 agents
+[19:41:43] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:ModLauncher Root Container(ModLauncher:4f56a0a2)]
+[19:41:43] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(fiskheroes)]
+[19:41:43] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(minecraft)]
+[19:41:43] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(forge)]
+[19:41:43] [main/DEBUG] [mixin/]: Processing inject() for PlatformAgent[MixinPlatformAgentDefault:SecureJarResource(playeranimator)]
+[19:41:44] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[19:41:44] [main/DEBUG] [mixin/]: Preparing mixins for MixinEnvironment[DEFAULT]
+[19:41:44] [main/DEBUG] [mixin/]: Selecting config playerAnimator-common.mixins.json
+[19:41:44] [main/INFO] [mixin/]: Remapping refMap player-animation-lib-minecraft_common-refmap.json using /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/createSrgToMcp/output.srg
+[19:41:44] [main/DEBUG] [mixin/]: Preparing playerAnimator-common.mixins.json (14)
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @Inject with org.spongepowered.asm.mixin.injection.struct.CallbackInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArg with org.spongepowered.asm.mixin.injection.struct.ModifyArgInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @ModifyArgs with org.spongepowered.asm.mixin.injection.struct.ModifyArgsInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @Redirect with org.spongepowered.asm.mixin.injection.struct.RedirectInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @ModifyVariable with org.spongepowered.asm.mixin.injection.struct.ModifyVariableInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Registering new injector for @ModifyConstant with org.spongepowered.asm.mixin.injection.struct.ModifyConstantInjectionInfo
+[19:41:45] [main/DEBUG] [mixin/]: Prepared 13 mixins in 1.033 sec (79.5ms avg) (0ms load, 0ms transform, 0ms plugin)
+[19:41:46] [pool-3-thread-1/DEBUG] [mixin/]: Mixing PlayerEntityMixin from playerAnimator-common.mixins.json into net.minecraft.world.entity.player.Player
+[19:41:46] [pool-3-thread-1/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerEntityMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[19:20:32] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
-[19:20:32] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
-[19:20:32] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.kosmx.playerAnim.forge.ForgeClientEvent to MOD
-[19:20:32] [modloading-worker-0/DEBUG] [mixin/]: Mixing FeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.RenderLayer
-[19:20:32] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:FeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LevelRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.LevelRenderer
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LevelRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.CameraAccessor from playerAnimator-common.mixins.json into net.minecraft.client.Camera
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.CameraAccessor: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Mixing PlayerRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.player.PlayerRenderer
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LivingEntityRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.LivingEntityRenderer
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Renaming synthetic method lambda$filterLayers$0(Ljava/lang/Object;)Z to md57fb74$lambda$filterLayers$0$0 in playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: Mixing ModelPartMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.geom.ModelPart
-[19:20:33] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ModelPartMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [Render thread/DEBUG] [mixin/]: Mixing BipedEntityModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.HumanoidModel
-[19:20:33] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:BipedEntityModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:33] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$3(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md57fb74$lambda$renderToBuffer$3$0 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:20:33] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$2(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md57fb74$lambda$renderToBuffer$2$1 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:20:33] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$1(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md57fb74$lambda$renderToBuffer$1$2 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:20:33] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$0(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to md57fb74$lambda$renderToBuffer$0$3 in playerAnimator-common.mixins.json:BipedEntityModelMixin
-[19:20:34] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:20:34] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.EntityRenderDispatcherMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.EntityRenderDispatcher
-[19:20:34] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.EntityRenderDispatcherMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:34] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.ItemInHandRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.ItemInHandRenderer
-[19:20:34] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.ItemInHandRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:35] [Render thread/DEBUG] [mixin/]: Mixing HeldItemMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.ItemInHandLayer
-[19:20:35] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:HeldItemMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:35] [Render thread/DEBUG] [mixin/]: Mixing ArmorFeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer
-[19:20:35] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ArmorFeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:35] [Render thread/DEBUG] [mixin/]: Mixing PlayerModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.PlayerModel
-[19:20:35] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml for changes
-[19:20:35] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml is not correct. Correcting
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml
-[19:20:35] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml for changes
-[19:20:35] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml is not correct. Correcting
-[19:20:47] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge, playeranimator]
-[19:20:48] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
-[19:20:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_COMMAND_CHANNEL_OK
-[19:21:32] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[19:21:33] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[19:21:34] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_PLAYERS_NEARBY
-[19:21:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[19:21:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[19:21:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:03] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:41:56] [Render thread/DEBUG] [ne.mi.fm.ja.FMLModContainer/LOADING]: Creating FMLModContainer instance for dev.kosmx.playerAnim.forge.ForgeModInterface
+[19:41:56] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Attempting to inject @EventBusSubscriber classes into the eventbus for playeranimator
+[19:41:56] [modloading-worker-0/DEBUG] [ne.mi.fm.ja.AutomaticEventSubscriber/LOADING]: Auto-subscribing dev.kosmx.playerAnim.forge.ForgeClientEvent to MOD
+[19:41:56] [modloading-worker-0/DEBUG] [mixin/]: Mixing FeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.RenderLayer
+[19:41:56] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:FeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LevelRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.LevelRenderer
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LevelRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.CameraAccessor from playerAnimator-common.mixins.json into net.minecraft.client.Camera
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.CameraAccessor: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Mixing PlayerRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.player.PlayerRenderer
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Mixing firstPerson.LivingEntityRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.LivingEntityRenderer
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Renaming synthetic method lambda$filterLayers$0(Ljava/lang/Object;)Z to mdeccb1a$lambda$filterLayers$0$0 in playerAnimator-common.mixins.json:firstPerson.LivingEntityRendererMixin
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: Mixing ModelPartMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.geom.ModelPart
+[19:41:57] [modloading-worker-0/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ModelPartMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [Render thread/DEBUG] [mixin/]: Mixing BipedEntityModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.HumanoidModel
+[19:41:57] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:BipedEntityModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:57] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$3(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdeccb1a$lambda$renderToBuffer$3$0 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:41:57] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$2(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdeccb1a$lambda$renderToBuffer$2$1 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:41:57] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$1(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdeccb1a$lambda$renderToBuffer$1$2 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:41:57] [Render thread/DEBUG] [mixin/]: Renaming synthetic method lambda$renderToBuffer$0(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFFLnet/minecraft/client/model/geom/ModelPart;)V to mdeccb1a$lambda$renderToBuffer$0$3 in playerAnimator-common.mixins.json:BipedEntityModelMixin
+[19:41:58] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:41:58] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.EntityRenderDispatcherMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.EntityRenderDispatcher
+[19:41:58] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.EntityRenderDispatcherMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:58] [Render thread/DEBUG] [mixin/]: Mixing firstPerson.ItemInHandRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.ItemInHandRenderer
+[19:41:58] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:firstPerson.ItemInHandRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:59] [Render thread/DEBUG] [mixin/]: Mixing HeldItemMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.ItemInHandLayer
+[19:41:59] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:HeldItemMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:59] [Render thread/DEBUG] [mixin/]: Mixing ArmorFeatureRendererMixin from playerAnimator-common.mixins.json into net.minecraft.client.renderer.entity.layers.HumanoidArmorLayer
+[19:41:59] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:ArmorFeatureRendererMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:41:59] [Render thread/DEBUG] [mixin/]: Mixing PlayerModelMixin from playerAnimator-common.mixins.json into net.minecraft.client.model.PlayerModel
+[19:41:59] [Render thread/DEBUG] [mixin/]: playerAnimator-common.mixins.json:PlayerModelMixin: Class version 61 required is higher than the class version supported by the current version of Mixin (JAVA_16 supports class version 60)
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml for changes
+[19:42:00] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/forge-client.toml is not correct. Correcting
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Built TOML config for /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Loaded TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml
+[19:42:00] [modloading-worker-0/DEBUG] [ne.mi.fm.co.ConfigFileTypeHandler/CONFIG]: Watching TOML config file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml for changes
+[19:42:00] [modloading-worker-0/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Configuration file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/run-livery-wearer/config/fiskheroes-common.toml is not correct. Correcting
+[19:42:15] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Logging into server with mod list [fiskheroes, minecraft, forge, playeranimator]
+[19:42:16] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:playeranimator for mod file /home/runner/.gradle/caches/forge_gradle/deobf_dependencies/ci/playeranim/1.0.2_mapped_official_1.20.1/playeranim-1.0.2_mapped_official_1.20.1.jar
+[19:42:28] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_COMMAND_CHANNEL_OK
+[19:43:06] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[19:43:07] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[19:43:08] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] LIVERY_PLAYERS_NEARBY
+[19:43:09] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:desert_eagle, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[19:43:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[19:43:29] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:39] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
 ==== wearer tail ====
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
-[19:21:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:49] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
-[19:21:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[19:21:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[19:21:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[19:21:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[19:21:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
-[19:21:50] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[19:21:50] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[19:21:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
-[19:21:52] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
-[19:21:53] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:heatwave, texture=fiskheroes:textures/heroes/heatwave_jacket.png, poseAligned=true
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[19:21:54] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:heatwave, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[19:21:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
-[19:21:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=9
-[19:21:56] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun first-person aiming: arm=RIGHT
-[19:21:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:21:59] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[19:22:00] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
-[19:22:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
-[19:22:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[19:22:01] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=73
-[19:22:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:22:03] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
-[19:22:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
-[19:22:05] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
-[19:22:06] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
-[19:22:07] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: LEFT
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
-[19:22:09] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
-[19:22:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:22:10] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:22:10] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:22:10] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
-[19:22:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:22:11] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:22:11] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:22:11] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
-[19:22:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:22:14] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:22:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:22:14] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
-[19:22:15] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:rupture, texture=fiskheroes:textures/heroes/rupture_layer1.png, poseAligned=true
-[19:22:15] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:rupture, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=92, height=10]]
-[19:22:16] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
-[19:22:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[19:22:17] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[19:22:17] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
-[19:22:18] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[19:22:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deathstroke_dceu, texture=fiskheroes:textures/heroes/deathstroke_dceu_layer1.png, poseAligned=true
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
-[19:22:19] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deathstroke_dceu, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=101, height=10], Rect[x=4, y=157, width=101, height=10], Rect[x=4, y=168, width=101, height=10]]
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:20] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_monitor, texture=fiskheroes:textures/heroes/the_monitor_chest.png, poseAligned=true
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[19:22:24] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_monitor, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=116, height=10], Rect[x=4, y=157, width=116, height=10], Rect[x=4, y=168, width=116, height=10]]
-[19:22:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[19:22:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[19:22:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[19:22:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
-[19:22:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
-[19:22:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
-[19:22:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
-[19:22:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
-[19:22:39] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
-[19:22:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
-[19:22:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
+[19:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:21] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:21] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=OFF_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:21] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Partner, hand=MAIN_HAND
+[19:43:21] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[19:43:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[19:43:22] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[19:43:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[19:43:22] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[19:43:22] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[19:43:22] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Partner, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[19:43:24] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_BERETTA_EMPTY_OK
+[19:43:26] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=occupied
+[19:43:27] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:beretta_93r, mode=synthetic
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:heatwave, texture=fiskheroes:textures/heroes/heatwave_jacket.png, poseAligned=true
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[19:43:28] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:heatwave, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[19:43:29] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
+[19:43:29] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:heatwave, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:heatwave, sleeveAligned=true
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun first-person aiming: arm=RIGHT
+[19:43:30] [Render thread/INFO] [Fisk's Superheroes/]: Heat gun flame emitted: wearer=Partner, samples=9
+[19:43:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:34] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[19:43:35] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
+[19:43:35] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[19:43:36] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Cold ball rendered: entity=88
+[19:43:36] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
+[19:43:37] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:39] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
+[19:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deadpool_xmen, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_katana.png
+[19:43:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] REMOTE_DUAL_EMPTY_OK
+[19:43:42] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=occupied
+[19:43:43] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:katana, mode=synthetic
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Partner, item=fiskheroes:tactical_tonfa, mode=synthetic
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: LEFT
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_LEFT_HAND, toggled=false
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=false
+[19:43:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:45] [Render thread/INFO] [Fisk's Superheroes/]: Tonfa hand pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, toggled=true
+[19:43:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:46] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:46] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:47] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
+[19:43:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:43:49] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:43:49] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:43:49] [Render thread/INFO] [Fisk's Superheroes/]: Bo staff swing pose: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND
+[19:43:51] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:rupture, texture=fiskheroes:textures/heroes/rupture_layer1.png, poseAligned=true
+[19:43:51] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:rupture, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=92, height=10]]
+[19:43:52] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
+[19:43:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[19:43:52] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[19:43:52] [Render thread/INFO] [Fisk's Superheroes/]: Scythe charge arcs: wearer=Partner, context=FIRST_PERSON_RIGHT_HAND, charge=0.06666667
+[19:43:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[19:43:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:rupture, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deathstroke_dceu, texture=fiskheroes:textures/heroes/deathstroke_dceu_layer1.png, poseAligned=true
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:deathstroke_dceu, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deathstroke_dceu_gun.png
+[19:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:deathstroke_dceu, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=101, height=10], Rect[x=4, y=157, width=101, height=10], Rect[x=4, y=168, width=101, height=10]]
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_flash, texture=fiskheroes:textures/heroes/the_flash_layer1.png, poseAligned=true
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:43:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_flash, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=159, height=10], Rect[x=4, y=168, width=159, height=10]]
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:the_monitor, texture=fiskheroes:textures/heroes/the_monitor_chest.png, poseAligned=true
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:the_monitor, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[19:44:00] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:the_monitor, screen=427x240, titleY=135, rows=[Rect[x=4, y=146, width=116, height=10], Rect[x=4, y=157, width=116, height=10], Rect[x=4, y=168, width=116, height=10]]
+[19:44:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[19:44:06] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[19:44:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[19:44:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
+[19:44:07] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
+[19:44:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
+[19:44:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
+[19:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=true
+[19:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=3
+[19:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:breach as fiskheroes:modifier.teleportation.breach
+[19:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=3, pressed=false
