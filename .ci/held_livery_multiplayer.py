@@ -191,6 +191,18 @@ def main():
                 for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
                     wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:' + sound + r', entity=',
                                  restart_start, 60, 'observer restarts ' + sound, observer)
+                # The observer leaves tracking range and returns while Partner
+                # continues moving, without another MOVE transition on the server.
+                command('tp Dev 250 200 0 0 0')
+                time.sleep(3)
+                server_start = len(server_log.read_text(errors='replace'))
+                returning_start = len(observer_log.read_text(errors='replace'))
+                command('tp Dev 3 180 2 0 0')
+                for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
+                    wait_for_new(server_log, r'Active loop synced: sound=fiskheroes:' + sound + r', subject=Partner, listener=Dev',
+                                 server_start, 60, 'server resynchronizes active ' + sound, server)
+                    wait_for_new(observer_log, r'Sound loop active: id=fiskheroes:' + sound + r', entity=',
+                                 returning_start, 60, 'returning observer retains active ' + sound, observer)
                 switch_start = len(observer_log.read_text(errors='replace'))
                 command('execute as Partner run suit fiskheroes:iron_man_mk50')
                 for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):

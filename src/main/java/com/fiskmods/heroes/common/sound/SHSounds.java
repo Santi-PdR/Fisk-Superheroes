@@ -210,6 +210,23 @@ public final class SHSounds
                 1.0F, 1.0F, true);
     }
 
+    /** Restore an already-active entity loop for one newly tracking listener. */
+    public static void syncLoopTo(Entity entity, ResourceLocation id, net.minecraft.server.level.ServerPlayer listener)
+    {
+        if (entity == null || entity.level().isClientSide || entity.level() != listener.level()) return;
+        SoundDefinition definition = DEFINITIONS.get(id);
+        if (definition == null || !definition.isLoop() || !definition.getCondition().shouldStart(entity)
+                || !definition.getCondition().shouldContinue(entity)
+                || !definition.acceptsListener(listener == entity, listener.distanceToSqr(entity))) return;
+        PacketPlaySound packet = new PacketPlaySound(id, entity.getId(), entity.getX(), entity.getY(), entity.getZ(),
+                SoundSource.PLAYERS, 1.0F, 1.0F, true, definition.getFadeIn(), definition.getFadeOut(),
+                definition.getDelay(), (float) definition.getRange());
+        SHNetwork.sendToPlayer(packet, listener);
+        if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+            FiskHeroes.LOGGER.info("Active loop synced: sound={}, subject={}, listener={}", id,
+                    entity.getName().getString(), listener.getGameProfile().getName());
+    }
+
     /** Stops a looping sound previously started with {@link #playLoop}. */
     public static void stopLoop(Entity entity, ResourceLocation id)
     {

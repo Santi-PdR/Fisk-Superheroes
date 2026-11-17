@@ -230,6 +230,9 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
             }
         }
 
+        if (ticks == 5 && Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop active: id={}, entity={}", definitionId, entityId);
+
         float fade = getFadeProgress();
         volume = baseVolume * dynamicVolume * fade;
         pitch = basePitch * dynamicPitch;
