@@ -56,6 +56,16 @@ public final class WeaponHandRenderer
             if (desertEagle || beretta) DesertEagleAimPose.apply(pose, player, arm, event.getPartialTick());
             if (coldGun) ColdGunAimPose.apply(pose, player, arm, event.getPartialTick());
             if (heatGun) HeatGunAimPose.apply(pose, player, arm, event.getPartialTick());
+            if (bow && player.isUsingItem() && player.getUseItem() == event.getItemStack())
+            {
+                var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+                float horizontal = data == null ? 0.0F : Mth.lerp(event.getPartialTick(),
+                        data.getData().get(com.fiskmods.heroes.common.data.var.Vars.PREV_HORIZONTAL_BOW_TIMER),
+                        data.getData().get(com.fiskmods.heroes.common.data.var.Vars.HORIZONTAL_BOW_TIMER));
+                // The bow's two drawing poses place its grip lower and (when
+                // horizontal) nearer the center than the generic empty-hand pose.
+                pose.translate(-side * 0.38F * horizontal, -0.30F + 0.05F * horizontal, 0.0F);
+            }
             // Vanilla's empty-hand pose, with the grip nudged towards the
             // repositioned first-person weapon and back from the camera.
             pose.translate(side * (-0.3F * Mth.sin(root * (float) Math.PI) + 0.54F),

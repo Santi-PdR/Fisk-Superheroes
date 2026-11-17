@@ -51,6 +51,7 @@ def main():
                      'unbroken bow inventory icon is loaded', client)
             wait_for(client_log, r'Quiver HUD rendered: selected=0, occupied=2', 30,
                      'five-slot quiver HUD displays ammunition', client)
+            subprocess.run(['scrot', 'ci-bow-idle-first.png'], check=True, timeout=30)
             # A quick but valid shot should not play the extra full-draw sound.
             xdo('mousedown', '3'); time.sleep(.30); xdo('mouseup', '3')
             wait_for(server_log, r'Compound bow shot: power=[0-9.]+, specialSound=false', 30,
@@ -159,6 +160,7 @@ def main():
             command('execute if entity @a[name=Dev,nbt={SelectedItem:{id:"fiskheroes:compound_bow",tag:{Damage:1}}}] run say BOW_MELEE_DURABILITY_PASS')
             wait_for(server_log, r'\[Server\] BOW_MELEE_DURABILITY_PASS', 20, 'bow melee hit consumes one durability', server)
             command('gamemode creative Dev')
+            command('kill @e[type=minecraft:iron_golem,tag=fisk_bow_melee]')
             command('item replace entity Dev weapon.mainhand with minecraft:air')
             command('item replace entity Dev weapon.offhand with fiskheroes:compound_bow')
             wait_for(client_log, r'First-person compound bow arm rendered: LEFT', 30,
