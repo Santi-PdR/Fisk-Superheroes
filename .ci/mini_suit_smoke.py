@@ -95,6 +95,8 @@ def main():
                      60, 'single-piece Iron Man miniature is resolved', client)
             wait_for(client_log, r'Mini suit mask: context=FIRST_PERSON_RIGHT_HAND, hero=fiskheroes:iron_man_mk50, slot=1, head=true, body=true, rightArm=true, leftArm=true, rightLeg=true, leftLeg=true',
                      60, 'Iron Man chest piece renders the full body mask', client)
+            wait_for(client_log, r'Mini suit texture: context=FIRST_PERSON_RIGHT_HAND, hero=fiskheroes:iron_man_mk50, slot=1, texture=fiskheroes:textures/heroes/iron_man_mk50\.png',
+                     60, 'Iron Man display resolves the intact suit texture rather than the holder state', client)
             capture('iron-man')
             iron = Image.open('ci-mini-suit-iron-man.png').convert('RGB').crop((600, 200, 1067, 550))
             cyan_iron = sum(1 for r, g, b in iron.get_flattened_data() if g > 90 and b > 90 and r < 50)

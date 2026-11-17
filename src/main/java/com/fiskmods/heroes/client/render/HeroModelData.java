@@ -251,6 +251,41 @@ public class HeroModelData
         return resolveResource(key, entity, slot);
     }
 
+    /** Resolve a stored suit as a neutral miniature display rather than as its holder. */
+    @Nullable
+    public ResourceLocation getMiniatureTexture(int slot, Entity holder, ItemStack[] stored, boolean emissive)
+    {
+        var display = new com.fiskmods.heroes.pack.js.JSMiniatureDisplayEntity(holder);
+        JsonElement tree = emissive ? lights : texture;
+        String key = com.fiskmods.heroes.common.hero.render.SuitTextureTree.resolve(tree, selector -> {
+            if (selector.equals("renderLayer")) return slot >= 0 && slot < 4 ? slotName(slot) : null;
+            if (selector.startsWith("vars:"))
+                return Boolean.toString(evaluateMiniature(selector.substring(5), display));
+            int worn = switch (selector)
+            {
+                case "wornHelmet" -> 0;
+                case "wornChestplate" -> 1;
+                case "wornLeggings" -> 2;
+                case "wornBoots" -> 3;
+                default -> -1;
+            };
+            if (worn >= 0) return worn < stored.length ? suitType(stored[worn]) : "null";
+            return selector.equals("heldItem") ? "minecraft:air" : null;
+        });
+        // Resource-specific .tx.json getters still use the holder; static display
+        // semantics here apply to the model tree and its script variables.
+        return resolveResource(key, holder, slot);
+    }
+
+    private boolean evaluateMiniature(String name, com.fiskmods.heroes.pack.js.JSMiniatureDisplayEntity display)
+    {
+        String script = vars.get(name.toUpperCase(Locale.ROOT));
+        if (script == null) return name.equalsIgnoreCase("DISPLAY");
+        ScriptFunction function = expressions.get(script);
+        Object result = function != null ? function.call(display) : null;
+        return result instanceof Boolean b ? b : result instanceof Number n && n.doubleValue() != 0.0D;
+    }
+
     /** Model texture trees name entries in {@code resources}; resolve that indirection first. */
     @Nullable
     private ResourceLocation resolveResource(@Nullable String key, Entity entity, int slot)

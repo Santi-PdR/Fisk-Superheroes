@@ -7196,6 +7196,23 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void miniatureScriptUsesNeutralDisplayState(GameTestHelper helper)
+    {
+        var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "mini-display-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Holder data missing"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, true);
+        var expression = com.fiskmods.heroes.pack.js.JSExpressions.compile(
+                "entity.is('DISPLAY') && entity.as('DISPLAY').getDisplayType() === 'MINI_SUIT_ITEM' && !entity.getData('fiskheroes:mask_open')");
+        if (expression == null || !Boolean.TRUE.equals(expression.call(
+                new com.fiskmods.heroes.pack.js.JSMiniatureDisplayEntity(player)))
+                || !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN))
+        { helper.fail("Miniature scripts must see neutral display data without modifying the holder"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void particleTickGateKeepsDifferentEntityAgesIndependent(GameTestHelper helper)
     {
         var gate = new com.fiskmods.heroes.common.util.WeakTickGate<Object>();

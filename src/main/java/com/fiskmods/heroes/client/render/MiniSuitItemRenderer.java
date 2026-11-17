@@ -118,14 +118,20 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
                                 playerModel.rightArm.visible, playerModel.leftArm.visible,
                                 playerModel.rightLeg.visible, playerModel.leftLeg.visible);
                 }
-                ResourceLocation baseTex = modelData.getTexture(slot, Minecraft.getInstance().player);
+                ResourceLocation baseTex = modelData.getMiniatureTexture(slot, Minecraft.getInstance().player, stored, false);
+                if (Boolean.getBoolean("fiskheroes.ciMiniSuitDiagnostics"))
+                {
+                    String key = "texture|" + context + "|" + iter.getRegistryName() + "|" + slot + "|" + baseTex;
+                    if (DIAGNOSTICS.add(key)) com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                            "Mini suit texture: context={}, hero={}, slot={}, texture={}", context, iter.getRegistryName(), slot, baseTex);
+                }
                 if (baseTex != null)
                 {
                     playerModel.renderToBuffer(pose, buffers.getBuffer(RenderType.entityTranslucent(baseTex)),
                             light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
                     rendered = true;
                 }
-                ResourceLocation lightsTex = modelData.getLights(slot, Minecraft.getInstance().player);
+                ResourceLocation lightsTex = modelData.getMiniatureTexture(slot, Minecraft.getInstance().player, stored, true);
                 if (lightsTex != null)
                 {
                     playerModel.renderToBuffer(pose, buffers.getBuffer(RenderType.eyes(lightsTex)),
