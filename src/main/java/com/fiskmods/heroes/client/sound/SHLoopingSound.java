@@ -166,6 +166,9 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
         {
             if (entity == null || !entity.isAlive())
             {
+                if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop ended: id={}, entity={}, reason={}",
+                            definitionId, entityId, entity == null ? "untracked" : "dead");
                 stopped = true;
                 return;
             }
@@ -196,6 +199,8 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
             // The definition decides whether the sound may keep playing
             if (ticks > 1 && !definition.getCondition().shouldContinue(entity))
             {
+                if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop ended: id={}, entity={}, reason=condition", definitionId, entityId);
                 fadeOut();
                 return;
             }
@@ -247,6 +252,9 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
         boolean audible = range <= 0.0F || listener == null
                 || listener.distanceToSqr(x, y, z) <= (double) range * range * rangeScale * rangeScale;
         volume = audible ? value : 0.0F;
+        if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics") && ticks > 0 && ticks % 100 == 0 && listener != null)
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop distance: id={}, entity={}, distance={}, range={}, fading={}",
+                    definitionId, entityId, Math.sqrt(listener.distanceToSqr(x, y, z)), range * rangeScale, fadingOut);
         if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics")
                 && (withinRange == null || withinRange != audible))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop range: id={}, entity={}, audible={}, volume={}",
