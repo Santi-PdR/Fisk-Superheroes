@@ -16,172 +16,192 @@ PASS: dual-aim LEFT aims and returns: 502.3 -> 557.7 -> 502.3
 PASS: dual-aim RIGHT aims and returns: 776.7 -> 723.5 -> 776.7
 PASS: Beretta main aim pose
 PASS: Beretta offhand aim pose
-Traceback (most recent call last):
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/beretta_visual_smoke.py", line 278, in <module>
-    if __name__ == '__main__': main()
-                               ~~~~^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/beretta_visual_smoke.py", line 199, in main
-    capture_shots()
-    ~~~~~~~~~~~~~^^
-  File "/home/runner/work/Fisk-Superheroes/Fisk-Superheroes/.ci/beretta_visual_smoke.py", line 101, in capture_shots
-    raise RuntimeError(f'Muzzle flash not visible in captured frames: warm-pixel increase {best}')
-RuntimeError: Muzzle flash not visible in captured frames: warm-pixel increase 29
-[02:02:08] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562498, livery=null
-[02:02:14] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[02:02:14] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+PASS: visible muzzle flash, warm-pixel increase: 134
+PASS: Beretta main-hand shot
+PASS: Beretta offhand shot
+Captured: dual-reload-before
+PASS: dual-reload reload moved pistol pixels: [3029, 3029]
+Captured: dual-reload-restored
+PASS: dual-reload reload returned to rest: [0, 0]
+PASS: Beretta main reload
+PASS: Beretta offhand reload
+PASS: dual reload restores both magazines
+PASS: dual offhand is visual only
+Captured: inventory-dual
+PASS: real offhand takes precedence
+Captured: occupied
+Captured: occupied-aim-before
+Captured: occupied-aim-aimed
+Captured: occupied-aim-restored
+PASS: occupied-aim RIGHT aims and returns: 779.5 -> 676.0 -> 779.5
+PASS: occupied-aim real offhand remains stationary: 0 pixels changed
+PASS: empty Beretta emits no shot effect
+PASS: occupied-offhand Beretta fired
+PASS: occupied offhand forces main-hand Beretta shot effect
+Captured: single-first
+PASS: burst consumes three rounds
+PASS: reload restores magazine
+PASS: single mode consumes one round
+PASS: sneak-use switches firing mode
+Captured: inventory-single
+Captured: offhand
+PASS: stowed, dual held, real offhand, and compact single/dual Beretta icons
+[02:14:41] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562498, livery=null
+[02:14:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[02:14:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
 ==== client tail ====
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[02:01:46] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[02:01:46] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[02:01:46] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
-[02:01:46] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:fiskheroes for mod file /home/runner/work/Fisk-Superheroes/Fisk-Superheroes/build/resources/main
-[02:01:46] [Render thread/DEBUG] [ne.mi.cl.lo.ClientModLoader/CORE]: Generating PackInfo named mod:forge for mod file /
-[02:01:46] [Render thread/INFO] [Fisk's Superheroes/]: FiskHeroes sound repository: 424 cached sounds
-[02:01:46] [Render thread/INFO] [minecraft/ReloadableResourceManager]: Reloading ResourceManager: vanilla, mod_resources, fiskheroes_sounds
-[02:01:46] [Worker-Main-3/INFO] [minecraft/UnihexProvider]: Found unifont_all_no_pua-15.0.06.hex, loading
-[02:01:46] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[02:01:47] [Worker-Main-1/WARN] [minecraft/SpriteLoader]: Texture fiskheroes:item/web_24 with size 24x24 limits mip level from 4 to 3
-[02:01:49] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[02:01:49] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@3ad7a94 into net.minecraft.network.Connection@648374fa
-[02:01:50] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[02:01:50] [Render thread/DEBUG] [ne.mi.co.ForgeI18n/CORE]: Loading I18N data entries: 7879
-[02:01:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[02:01:50] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:item.goat_horn.play
-[02:01:50] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
-[ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[02:01:50] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
-[02:01:50] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[02:01:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
-[02:01:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
-[02:01:51] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[02:01:51] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[02:01:51] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
-[02:01:51] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
-[02:01:51] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[02:01:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[02:01:55] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[02:01:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[02:02:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[02:02:07] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:wild_dog, texture=fiskheroes:textures/heroes/wild_dog_layer1.png, poseAligned=true
-[02:02:07] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:wild_dog, screen=427x240, titleY=146, rows=[Rect[x=4, y=157, width=90, height=10], Rect[x=4, y=168, width=90, height=10]]
-[02:02:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:helmet from fiskheroes:textures/heroes/wild_dog_layer1.png
-[02:02:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:chestplate from fiskheroes:textures/heroes/wild_dog_layer1.png
-[02:02:08] [Render thread/INFO] [Fisk's Superheroes/]: Equipped suit item rendered: hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, poseScale=0.6562498, livery=null
-[02:02:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:leggings from fiskheroes:textures/heroes/wild_dog_layer2.png
-[02:02:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:wild_dog slot fiskheroes:boots from fiskheroes:textures/heroes/wild_dog_layer1.png
-[02:02:14] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:beretta_93r, mode=synthetic
-[02:02:14] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
-[02:02:14] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
-[02:02:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
-[02:02:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[02:02:23] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[02:02:23] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[02:02:24] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:wild_dog, sleeveAligned=true
-[02:02:24] [Render thread/INFO] [Fisk's Superheroes/]: Beretta first-person aiming: arm=RIGHT
-[02:02:24] [Render thread/INFO] [Fisk's Superheroes/]: Beretta first-person aiming: arm=LEFT
-[02:02:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
-[02:02:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[02:02:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[02:02:29] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[02:02:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[02:02:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:29] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
-[02:02:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[02:02:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:30] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
-[02:02:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[02:02:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[02:02:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
-[02:02:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:14:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[02:14:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=THIRD_PERSON_LEFT_HAND, texture=default
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: LEFT
+[02:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:wild_dog, item=fiskheroes:beretta_93r, context=FIRST_PERSON_LEFT_HAND, texture=default
+[02:14:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:14:57] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:14:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[02:14:57] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:wild_dog, sleeveAligned=true
+[02:14:57] [Render thread/INFO] [Fisk's Superheroes/]: Beretta first-person aiming: arm=RIGHT
+[02:14:57] [Render thread/INFO] [Fisk's Superheroes/]: Beretta first-person aiming: arm=LEFT
+[02:14:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[02:14:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:15:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:03] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:03] [Render thread/INFO] [Fisk's Superheroes/]: Beretta shot effect rendered: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:04] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=OFF_HAND
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:09] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[02:15:13] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[02:15:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[02:15:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload.dual as fiskheroes:item.gun.reload.dual
+[02:15:13] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND
+[02:15:13] [Render thread/INFO] [Fisk's Superheroes/]: Beretta reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND
+[02:15:17] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_DUAL_RELOAD_OK
+[02:15:18] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_OFFHAND_EMPTY_OK
+[02:15:20] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/entity/raid/Raid
+[02:15:20] [Render thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xb18dbb21e157a8d9
+[02:15:22] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:beretta_93r, mode=occupied
+[02:15:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:15:29] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:15:29] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.click as fiskheroes:item.gun.click
+[02:15:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:15:35] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:15:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:35] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:35] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_OCCUPIED_SHOT_OK
+[02:15:36] [Render thread/INFO] [Fisk's Superheroes/]: Dual visual offhand: player=Dev, item=fiskheroes:beretta_93r, mode=synthetic
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:41] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:44] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_BURST_OK
+[02:15:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[02:15:45] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[02:15:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[02:15:45] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.reload as fiskheroes:item.gun.reload
+[02:15:48] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_RELOAD_OK
+[02:15:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[02:15:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[02:15:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[02:15:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Gun shot effect received: wearer=Dev, hand=MAIN_HAND
+[02:15:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.shoot as fiskheroes:item.gun.beretta.shoot
+[02:15:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_SINGLE_OK
+[02:15:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.gun.beretta.switch as fiskheroes:item.gun.beretta.switch
+[02:15:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] BERETTA_MODE_OK
 ==== server tail ====
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[02:01:46] [Netty Epoll Server IO #1/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[02:01:46] [Server thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[02:01:46] [Server thread/INFO] [minecraft/PlayerList]: Dev[/127.0.0.1:58724] logged in with entity id 1 at (-3.5, -60.0, -7.5)
-[02:01:46] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@20314613 into net.minecraft.network.Connection@2d155b51
-[02:01:47] [Server thread/INFO] [minecraft/MinecraftServer]: Dev joined the game
-[02:01:47] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=server scale=1.0 width=0.6 eye=1.62
-[02:01:47] [Server thread/DEBUG] [io.ne.ut.in.ThreadLocalRandom/]: -Dio.netty.initialSeedUniquifier: 0xd2ba76d1b3839ce5
-[02:01:55] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[02:01:55] [Server thread/INFO] [Fisk's Superheroes/]: Ability input ignored: player=Dev, index=-1, reason=no_active_suit
-[02:01:58] [Server thread/INFO] [minecraft/MinecraftServer]: The difficulty has been set to Peaceful
-[02:02:00] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
-[02:02:01] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
-[02:02:03] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
-[02:02:03] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 4.0,245.0,8.0
-[02:02:03] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 4.0,245.0,8.0
-[02:02:03] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 4.0,245.0,8.0
-[02:02:03] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 4.0,245.0,8.0
-[02:02:04] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
-[02:02:06] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[02:02:06] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[02:02:06] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[02:02:06] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[02:02:06] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[02:02:06] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
-[02:02:07] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
-[02:02:14] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
-[02:02:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
-[02:02:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[02:02:23] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
-[02:02:28] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
-[02:02:29] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
-[02:02:29] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:14:33] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Creative Mode
+[02:14:34] [Server thread/INFO] [minecraft/MinecraftServer]: Set the time to 1000
+[02:14:36] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 185.000000, 0.500000
+[02:14:36] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 7.0,245.0,0.0
+[02:14:36] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 7.0,245.0,0.0
+[02:14:36] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 7.0,245.0,0.0
+[02:14:36] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 7.0,245.0,0.0
+[02:14:37] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
+[02:14:39] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[02:14:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[02:14:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[02:14:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[02:14:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[02:14:39] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,89.79065895245445,0.0
+[02:14:40] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Wild Dog.
+[02:14:47] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
+[02:14:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
+[02:14:57] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:14:57] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
+[02:15:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:15:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:13] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[02:15:13] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
+[02:15:17] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_DUAL_RELOAD_OK
+[02:15:18] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_OFFHAND_EMPTY_OK
+[02:15:22] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Torch]
+[02:15:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
+[02:15:29] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:15:29] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Beretta 93Rs]
+[02:15:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:15:35] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:35] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_OCCUPIED_SHOT_OK
+[02:15:36] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[02:15:38] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
+[02:15:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:15:41] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:43] [Server thread/INFO] [minecraft/MinecraftServer]: Dev has the following entity data: {BurstNextTick: 2225L, Ammo: 9, NextShotTick: 2236L, BurstRemaining: 0}
+[02:15:44] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_BURST_OK
+[02:15:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=1
+[02:15:45] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=1, matching=[GUN_RELOAD]
+[02:15:48] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_RELOAD_OK
+[02:15:49] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
+[02:15:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Dev, index=-1
+[02:15:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[02:15:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_SINGLE_OK
+[02:15:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] BERETTA_MODE_OK
+[02:15:58] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[02:16:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
