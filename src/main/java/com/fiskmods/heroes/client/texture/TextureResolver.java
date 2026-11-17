@@ -66,6 +66,13 @@ public final class TextureResolver
     @Nullable
     public static ResourceLocation resolve(String resource, Entity entity, int armorSlot)
     {
+        return resolveForContext(resource, new JSEntity(entity), armorSlot);
+    }
+
+    /** Resolve with the same script-facing entity used by the model's texture tree. */
+    @Nullable
+    public static ResourceLocation resolveForContext(String resource, JSEntity entity, int armorSlot)
+    {
         TextureRouteCache.Route route = ROUTES.resolve(resource, armorSlot);
         if (route == null) return null;
         if (!route.definition()) return route.id();
@@ -153,20 +160,20 @@ public final class TextureResolver
     }
 
     /** Evaluates the getter itself; values merely enumerates possible preloaded variants. */
-    private static Object select(JsonElement getter, Entity entity)
+    private static Object select(JsonElement getter, JSEntity entity)
     {
         return com.fiskmods.heroes.common.hero.render.TextureGetterValue.evaluate(getter, key -> evaluate(key, entity));
     }
 
     /** Reads a data variable, or evaluates the key as a script expression. */
-    private static Object evaluate(String key, Entity entity)
+    private static Object evaluate(String key, JSEntity entity)
     {
         if (key == null || key.isEmpty())
         {
             return 0;
         }
 
-        Object data = JSEntity.read(entity, key);
+        Object data = entity.getData(key);
 
         if (data != null)
         {
@@ -177,7 +184,7 @@ public final class TextureResolver
 
         if (function != null)
         {
-            Object result = function.call(new JSEntity(entity));
+            Object result = function.call(entity);
             if (DIAGNOSTICS && result instanceof Number && !CHANGING_VALUES.contains(key))
             {
                 Object first = FIRST_VALUES.putIfAbsent(key, result);

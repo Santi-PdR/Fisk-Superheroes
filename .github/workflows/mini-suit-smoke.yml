@@ -5,6 +5,10 @@ on:
     branches: ['arena/**']
     paths:
       - '.ci/mini_suit_smoke.py'
+      - '.ci/mini_suit_texture_fixture.py'
+      - 'src/main/java/com/fiskmods/heroes/client/render/HeroModelData.java'
+      - 'src/main/java/com/fiskmods/heroes/client/texture/TextureResolver.java'
+      - 'src/main/java/com/fiskmods/heroes/pack/js/JSMiniatureDisplayEntity.java'
       - '.ci/tonfa_visual_smoke.py'
       - '.ci/client_identity.gradle'
       - '.github/workflows/mini-suit-smoke.yml'
@@ -51,6 +55,7 @@ jobs:
           # Tint the real base texture to expose the full-body chest mask;
           # leave the shipped model's texture-selection tree unchanged.
           convert src/main/resources/assets/fiskheroes/textures/heroes/iron_man_mk50.png -channel RGB -fill '#00ffff' -colorize 100% +channel src/main/resources/assets/fiskheroes/textures/heroes/iron_man_mk50.png
+          python3 .ci/mini_suit_texture_fixture.py
           ./gradlew classes --no-daemon --console=plain
       - name: Check miniature suit preview and deployment
         env:
@@ -70,7 +75,7 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          git restore src/main/resources/assets/fiskheroes/textures/heroes/{atom_layer1,atom_layer2,the_flash_layer1,iron_man_mk50}.png
+          git restore src/main/resources/assets/fiskheroes/textures/heroes/{atom_layer1,atom_layer2,the_flash_layer1,iron_man_mk50}.png src/main/resources/assets/fiskheroes/models/heroes/the_flash.json
           { cat ci-mini-suit-test.log 2>/dev/null || true; echo '==== client ===='; grep -E 'Mini suit (preview|mask|texture)|Exception|FATAL' ci-mini-suit-client.log 2>/dev/null | tail -80 || true; echo '==== server ===='; tail -50 ci-mini-suit-server.log 2>/dev/null || true; } > .ci/mini-suit-log.txt
           git config user.name 'github-actions[bot]'
           git config user.email 'github-actions[bot]@users.noreply.github.com'

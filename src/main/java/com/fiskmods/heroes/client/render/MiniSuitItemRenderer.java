@@ -121,9 +121,14 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
                 ResourceLocation baseTex = modelData.getMiniatureTexture(slot, Minecraft.getInstance().player, stored, false);
                 if (Boolean.getBoolean("fiskheroes.ciMiniSuitDiagnostics"))
                 {
-                    String key = "texture|" + context + "|" + iter.getRegistryName() + "|" + slot + "|" + baseTex;
+                    var holder = Minecraft.getInstance().player;
+                    Object holderMask = com.fiskmods.heroes.pack.js.JSEntity.read(holder, "fiskheroes:mask_open");
+                    Object holderTimer = com.fiskmods.heroes.pack.js.JSEntity.read(holder, "fiskheroes:mask_open_timer2");
+                    boolean holderMaskAnimating = holderTimer instanceof Number n && n.floatValue() > 0.0F;
+                    String key = "texture|" + context + "|" + iter.getRegistryName() + "|" + slot + "|" + baseTex + "|" + holderMask + "|" + holderMaskAnimating;
                     if (DIAGNOSTICS.add(key)) com.fiskmods.heroes.FiskHeroes.LOGGER.info(
-                            "Mini suit texture: context={}, hero={}, slot={}, texture={}", context, iter.getRegistryName(), slot, baseTex);
+                            "Mini suit texture: context={}, hero={}, slot={}, texture={}, holderMaskOpen={}, holderMaskTimer={}",
+                            context, iter.getRegistryName(), slot, baseTex, holderMask, holderTimer);
                 }
                 if (baseTex != null)
                 {

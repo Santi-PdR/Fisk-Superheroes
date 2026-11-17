@@ -272,9 +272,9 @@ public class HeroModelData
             if (worn >= 0) return worn < stored.length ? suitType(stored[worn]) : "null";
             return selector.equals("heldItem") ? "minecraft:air" : null;
         });
-        // Resource-specific .tx.json getters still use the holder; static display
-        // semantics here apply to the model tree and its script variables.
-        return resolveResource(key, holder, slot);
+        // The model tree and its .tx.json getter expressions must see the same
+        // neutral display state, not the player holding the item.
+        return key != null ? TextureResolver.resolveForContext(resources.getOrDefault(key, key), display, slot) : null;
     }
 
     private boolean evaluateMiniature(String name, com.fiskmods.heroes.pack.js.JSMiniatureDisplayEntity display)

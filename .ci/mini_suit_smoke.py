@@ -13,7 +13,7 @@ from tonfa_visual_smoke import wait_for, xdo
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciMiniSuitDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciMiniSuitDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true')
     server_log, client_log = Path('ci-mini-suit-server.log'), Path('ci-mini-suit-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
@@ -80,10 +80,21 @@ def main():
                           if r > 90 and b > 90 and g < 50 and abs(r - b) < 50)
             if clipped > 10: raise RuntimeError(f'First-person miniature is clipped at the bottom: {clipped} diagnostic pixels')
             print('PASS: complete first-person miniature fits above bottom edge', flush=True)
+            # The fixture maps Flash's layer1 to a getter-driven texture. Set the
+            # holder to a visibly different mask state before resolving its preview.
+            command('execute as Dev run suit fiskheroes:iron_man')
+            xdo('keydown', 'x')
+            try:
+                wait_for(server_log, r'Mask toggled: player=Dev, open=true', 45,
+                         'holder mask opened on the server', server)
+            finally: xdo('keyup', 'x')
+            time.sleep(2)
             flash_chest = '{Slot:1b,id:"fiskheroes:superhero_chestplate",Count:1b,tag:{HeroType:"fiskheroes:the_flash"}}'
             command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit{Items:[' + head + ',' + flash_chest + ']}')
             wait_for(client_log, r'Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=0=fiskheroes:atom;1=fiskheroes:the_flash;',
                      60, 'mixed miniature resolves each actual hero piece', client)
+            wait_for(client_log, r'Mini suit texture: context=FIRST_PERSON_RIGHT_HAND, hero=fiskheroes:the_flash, slot=1, texture=fiskheroes:textures/heroes/ci_mini_display_true_false_false\.png, holderMaskOpen=true, holderMaskTimer=(?:1(?:\.0+)?|0\.\d*[1-9]\d*)',
+                     60, 'texture getters use display data while the holder mask is open', client)
             capture('mixed')
             mixed = Image.open('ci-mini-suit-mixed.png').convert('RGB').crop((600, 200, 1067, 550))
             cyan = sum(1 for r, g, b in mixed.get_flattened_data() if g > 90 and b > 90 and r < 50)
