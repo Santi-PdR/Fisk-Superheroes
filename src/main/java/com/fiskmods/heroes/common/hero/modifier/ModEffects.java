@@ -23,6 +23,15 @@ public final class ModEffects
     public static final RegistryObject<MobEffect> TUTRIDIUM = REGISTRY.register("tutridium",
             () -> new MobEffect(MobEffectCategory.HARMFUL, 0x7B4BA8) { });
 
+    public static final RegistryObject<MobEffect> VELOCITY_NINE = REGISTRY.register("velocity_nine",
+            () -> new MobEffect(MobEffectCategory.BENEFICIAL, 0x610000) {
+                @Override public String getDescriptionId() { return "statusEffect.fiskheroes.velocity_nine"; }
+            });
+    public static final RegistryObject<MobEffect> SPEED_SICKNESS = REGISTRY.register("speed_sickness",
+            () -> new MobEffect(MobEffectCategory.HARMFUL, 0x66575D) {
+                @Override public String getDescriptionId() { return "statusEffect.fiskheroes.speed_sickness"; }
+            });
+
     private ModEffects()
     {
     }

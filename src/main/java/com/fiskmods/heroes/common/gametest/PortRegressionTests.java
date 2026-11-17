@@ -4694,6 +4694,75 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void velocityNineDrinkAddsSpeedLevelsAndPreservesDuration(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var attribute = player.getAttribute(com.fiskmods.heroes.common.hero.attribute.SHAttributes.BASE_SPEED_LEVELS.get());
+        if (data == null || hero == null || attribute == null) { helper.fail("Velocity 9 setup missing"); return; }
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("super_speed"));
+        if (entry == null) { helper.fail("Flash speed modifier missing"); return; }
+        attribute.setBaseValue(5);
+        var bottle = com.fiskmods.heroes.common.item.ModItems.VELOCITY_NINE.get();
+        var effects = com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get();
+        var sickness = com.fiskmods.heroes.common.hero.modifier.ModEffects.SPEED_SICKNESS.get();
+        var stack = new net.minecraft.world.item.ItemStack(bottle);
+        if (bottle.getUseDuration(stack) != 32 || bottle.getUseAnimation(stack) != net.minecraft.world.item.UseAnim.DRINK
+                || !bottle.isFoil(stack)) { helper.fail("Velocity 9 must be a glinting 32-tick drink"); return; }
+        var empty = bottle.finishUsingItem(stack, helper.getLevel(), player);
+        var first = player.getEffect(effects);
+        if (!empty.is(net.minecraft.world.item.Items.GLASS_BOTTLE) || first == null || first.getAmplifier() != 0
+                || first.getDuration() != 6000
+                || com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.maxSpeed(player, entry, data) != 8)
+        { helper.fail("First drink should return a bottle and add three speed levels for 6000 ticks"); return; }
+        bottle.finishUsingItem(new net.minecraft.world.item.ItemStack(bottle), helper.getLevel(), player);
+        var second = player.getEffect(effects);
+        if (second == null || second.getAmplifier() != 1 || second.getDuration() != 6000
+                || com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.maxSpeed(player, entry, data) != 11)
+        { helper.fail("Redosing should increase amplifier without shortening the active effect"); return; }
+        player.removeEffect(effects);
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(sickness, -1, 1));
+        if (com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.maxSpeed(player, entry, data) != 3)
+        { helper.fail("Speed sickness should remove a level per amplifier"); return; }
+        player.getAbilities().instabuild = true;
+        var creativeBottle = new net.minecraft.world.item.ItemStack(bottle);
+        if (bottle.finishUsingItem(creativeBottle, helper.getLevel(), player) != creativeBottle
+                || player.hasEffect(sickness) || player.getEffect(effects) == null
+                || player.getEffect(effects).getAmplifier() != 2 || player.getEffect(effects).getDuration() != 2000)
+        { helper.fail("Drinking should cure sickness, increase its amplifier and retain creative items"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void velocityNineOnlyNaturalExpiryCausesSickness(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var expired = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        var cleared = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (expired == null || cleared == null) { helper.fail("Could not create effect targets"); return; }
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 80, 1));
+        expired.setPos(pos.getX(), pos.getY(), pos.getZ()); cleared.setPos(pos.getX() + 1, pos.getY(), pos.getZ());
+        expired.setNoAi(true); cleared.setNoAi(true);
+        level.addFreshEntity(expired); level.addFreshEntity(cleared);
+        var velocity = com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get();
+        var sickness = com.fiskmods.heroes.common.hero.modifier.ModEffects.SPEED_SICKNESS.get();
+        expired.addEffect(new net.minecraft.world.effect.MobEffectInstance(velocity, 2, 2));
+        cleared.addEffect(new net.minecraft.world.effect.MobEffectInstance(velocity, 2, 1));
+        cleared.removeEffect(velocity);
+        helper.runAfterDelay(8, () -> {
+            var result = expired.getEffect(sickness);
+            if (result == null || result.getAmplifier() != 2 || !result.isInfiniteDuration() || cleared.hasEffect(sickness))
+            { helper.fail("Only natural expiry must produce indefinite sickness of matching strength"); return; }
+            com.fiskmods.heroes.common.hero.speedster.VelocityNine.dose(expired);
+            if (expired.hasEffect(sickness) || expired.getEffect(velocity) == null
+                    || expired.getEffect(velocity).getAmplifier() != 3 || expired.getEffect(velocity).getDuration() != 1500)
+            { helper.fail("A new dose should replace sickness at the next strength"); return; }
+            expired.discard(); cleared.discard(); helper.succeed();
+        });
+    }
+
+    @GameTest(template = "test_empty")
     public static void velocityNineDisintegratesTheUserNotTheTerrain(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

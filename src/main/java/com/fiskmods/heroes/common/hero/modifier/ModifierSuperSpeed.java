@@ -63,12 +63,16 @@ public class ModifierSuperSpeed extends Modifier
                 });
     }
 
-    /** Base suit levels plus earned treadmill levels. Tachyon and Velocity 9 bonuses are separate. */
+    /** Original suit and trained levels, Velocity 9 bonuses and speed-sickness penalties. */
     public static int maxSpeed(Player player, ModifierEntry entry, SHPlayerData data)
     {
         int levels = (int) Math.floor(player.getAttributeValue(SHAttributes.BASE_SPEED_LEVELS.get()));
-        if (entry.getBoolean(player, PowerProperty.CAN_USE_TREADMILL))
+        var velocity = player.getEffect(ModEffects.VELOCITY_NINE.get());
+        var sickness = player.getEffect(ModEffects.SPEED_SICKNESS.get());
+        if (entry.getBoolean(player, PowerProperty.CAN_USE_TREADMILL) || velocity != null)
             levels += Math.max(0, (int) data.getData().get(Vars.SPEED_EXPERIENCE_LEVEL));
+        if (velocity != null) levels += (velocity.getAmplifier() + 1) * 3;
+        if (sickness != null) levels -= sickness.getAmplifier() + 1;
         return Mth.clamp(levels, 1, Byte.MAX_VALUE);
     }
 

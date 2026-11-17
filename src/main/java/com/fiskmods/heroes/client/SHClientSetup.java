@@ -37,6 +37,13 @@ public class SHClientSetup
     }
 
     @SubscribeEvent
+    public static void registerItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event)
+    {
+        event.register((stack, tint) -> tint == 0 ? 0x610000 : 0xFFFFFF,
+                com.fiskmods.heroes.common.item.ModItems.VELOCITY_NINE.get());
+    }
+
+    @SubscribeEvent
     public static void registerKeyMappings(RegisterKeyMappingsEvent event)
     {
         SHKeyBinds.register(event);

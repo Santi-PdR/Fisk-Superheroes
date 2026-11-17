@@ -40,6 +40,8 @@ public class ModItems
     public static ItemHeroArmor[] heroArmor;
 
     /* --- Crafting materials --- */
+    public static final RegistryObject<Item> VELOCITY_NINE = REGISTRY.register("velocity_nine",
+            () -> new ItemVelocityNine(new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> SUIT_CORE = REGISTRY.register("suit_core", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SUIT_UPGRADE = REGISTRY.register("suit_upgrade", () -> new ItemSuitUpgrade(0, new Item.Properties()));
     public static final RegistryObject<Item> SUIT_UPGRADE_GOLD = REGISTRY.register("suit_upgrade_gold", () -> new ItemSuitUpgrade(1, new Item.Properties()));
@@ -184,6 +186,7 @@ public class ModItems
                 .icon(() -> new net.minecraft.world.item.ItemStack(SUIT_CORE.get()))
                 .displayItems((params, output) ->
                 {
+                    output.accept(VELOCITY_NINE.get());
                     output.accept(SUIT_CORE.get());
                     output.accept(SUIT_UPGRADE.get());
                     output.accept(SUIT_UPGRADE_GOLD.get());
