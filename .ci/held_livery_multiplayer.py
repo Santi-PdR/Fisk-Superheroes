@@ -109,6 +109,10 @@ def main():
                     subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
                 wait_for_new(wearer_log, r'Velocity 9 synchronized: entity=Partner, amplifier=0',
                              client_start, 45, 'Velocity 9 status reaches the drinking client', wearer)
+                wait_for_new(server_log, r'Velocity 9 automatic speed: entity=Partner, level=3',
+                             dose_start, 30, 'Velocity 9 automatically grants unsuited speed on server', server)
+                wait_for_new(wearer_log, r'Velocity 9 synchronized speed: entity=Partner, level=3',
+                             client_start, 30, 'unsuited speed level reaches the drinking client', wearer)
                 bottle_start = len(server_log.read_text(errors='replace'))
                 command('execute if data entity Partner SelectedItem{id:"minecraft:glass_bottle"} run say VELOCITY_BOTTLE_RETURNED')
                 wait_for_new(server_log, r'\[Server\] VELOCITY_BOTTLE_RETURNED', bottle_start, 30,

@@ -41,6 +41,7 @@ public class ClientEventHandler
     private static boolean beamInputDown;
     private static boolean abilityClickMode;
     private static int diagnosticVelocityAmplifier = -1;
+    private static boolean diagnosticVelocitySpeed;
     private static long nextGunShotTick = Long.MIN_VALUE;
     private static net.minecraft.world.item.Item lastGunItem;
     private static int lastGunSlot = -1;
@@ -204,6 +205,7 @@ public class ClientEventHandler
             beamInputDown = false;
             abilityClickMode = false;
             diagnosticVelocityAmplifier = -1;
+            diagnosticVelocitySpeed = false;
             nextGunShotTick = Long.MIN_VALUE;
             lastGunItem = null;
             lastGunSlot = -1;
@@ -226,6 +228,12 @@ public class ClientEventHandler
                 com.fiskmods.heroes.FiskHeroes.LOGGER.info("Velocity 9 synchronized: entity={}, amplifier={}",
                         player.getName().getString(), amplifier);
             diagnosticVelocityAmplifier = amplifier;
+            var velocityData = SHDataCapabilities.getPlayer(player);
+            boolean speeding = effect != null && velocityData != null && velocityData.getData().get(Vars.SPEEDING);
+            if (speeding && !diagnosticVelocitySpeed)
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Velocity 9 synchronized speed: entity={}, level={}",
+                        player.getName().getString(), velocityData.getData().get(Vars.SPEED));
+            diagnosticVelocitySpeed = speeding;
         }
         Minecraft mc = Minecraft.getInstance();
         // Vanilla GUI screens own the pointer while open and re-capture it when they close.

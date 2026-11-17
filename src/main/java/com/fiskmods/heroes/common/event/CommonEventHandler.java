@@ -237,6 +237,7 @@ public class CommonEventHandler
 
         if (!entity.level().isClientSide)
         {
+            com.fiskmods.heroes.common.hero.speedster.VelocityNine.tickPlayer(event.player, SHDataCapabilities.getPlayer(event.player));
             SHAttributes.applyModifiers(entity);
         }
     }

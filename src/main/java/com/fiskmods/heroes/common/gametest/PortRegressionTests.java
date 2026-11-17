@@ -4735,6 +4735,33 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void velocityNineProvidesSpeedWithoutSuit(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var movement = player.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED);
+        if (data == null || movement == null) { helper.fail("Velocity 9 player setup missing"); return; }
+        double base = movement.getValue();
+        com.fiskmods.heroes.common.hero.speedster.VelocityNine.dose(player);
+        com.fiskmods.heroes.common.hero.speedster.VelocityNine.tickPlayer(player, data);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (!data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED) != 3 || movement.getValue() <= base)
+        { helper.fail("Velocity 9 must automatically grant three moving-speed levels without a suit"); return; }
+        double first = movement.getValue();
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (Math.abs(movement.getValue() - first) > 1e-6)
+        { helper.fail("Reapplying attributes must not stack the Velocity 9 bonus"); return; }
+        player.removeEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get());
+        com.fiskmods.heroes.common.hero.speedster.VelocityNine.tickPlayer(player, data);
+        com.fiskmods.heroes.common.hero.attribute.SHAttributes.applyModifiers(player);
+        if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+                || Math.abs(movement.getValue() - base) > 1e-6)
+        { helper.fail("Removing Velocity 9 must retire its automatic speed bonus"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void velocityNineOnlyNaturalExpiryCausesSickness(GameTestHelper helper)
     {
         var level = helper.getLevel();

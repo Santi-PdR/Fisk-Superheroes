@@ -129,7 +129,9 @@ public class SHAttributes
 
         if (iteration == null)
         {
-            clearModifiers(entity);
+            boolean velocity = entity.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get());
+            clearModifiers(entity, !velocity);
+            if (velocity) updateSpeedsterModifier(entity, data);
             return;
         }
 
@@ -209,7 +211,8 @@ public class SHAttributes
             int clamped = net.minecraft.util.Mth.clamp(selected, 1, maximum);
             if (selected != clamped) data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SPEED, (byte) clamped);
         }
-        boolean enabled = entry != null && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+        boolean enabled = (entry != null || entity.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()))
+                && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
                 && com.fiskmods.heroes.common.config.SHConfig.ALLOW_SUPER_SPEED.get();
         double amount = enabled ? speedsterBonus(data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEED)) : 0.0D;
         AttributeModifier existing = speed.getModifier(SPEEDSTER_SPEED);
@@ -256,11 +259,19 @@ public class SHAttributes
 
     public static void clearModifiers(LivingEntity entity)
     {
+        clearModifiers(entity, true);
+    }
+
+    private static void clearModifiers(LivingEntity entity, boolean clearSpeed)
+    {
         com.fiskmods.heroes.common.hero.ability.MeleeCombat.clearAttackBonus(entity);
-        AttributeInstance movement = entity.getAttribute(Attributes.MOVEMENT_SPEED);
-        if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
-        AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
-        if (step != null) step.removeModifier(SPEEDSTER_STEP);
+        if (clearSpeed)
+        {
+            AttributeInstance movement = entity.getAttribute(Attributes.MOVEMENT_SPEED);
+            if (movement != null) movement.removeModifier(SPEEDSTER_SPEED);
+            AttributeInstance step = entity.getAttribute(ForgeMod.STEP_HEIGHT_ADDITION.get());
+            if (step != null) step.removeModifier(SPEEDSTER_STEP);
+        }
         SHPlayerData data = SHDataCapabilities.getPlayer(entity);
         for (HeroAttribute attribute : HeroAttribute.values())
         {
