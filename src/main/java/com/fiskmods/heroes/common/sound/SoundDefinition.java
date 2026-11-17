@@ -29,12 +29,13 @@ public class SoundDefinition
     private SoundValue pitch = SoundValue.unset();
     private SoundCondition condition = SoundCondition.ALWAYS;
 
-    private boolean loop;
-    private boolean scale = true;
-    private boolean isStatic;
-    private int fadeIn;
-    private int fadeOut;
-    private int delay;
+    // Unset must remain distinct from explicit false/zero until inheritance completes.
+    @Nullable private Boolean loop;
+    @Nullable private Boolean scale;
+    @Nullable private Boolean isStatic;
+    @Nullable private Integer fadeIn;
+    @Nullable private Integer fadeOut;
+    @Nullable private Integer delay;
     private double range = 16.0D;
     private Target target = Target.ALL_IN_RANGE;
 
@@ -65,9 +66,9 @@ public class SoundDefinition
             case "condition" -> definition.condition = SoundCondition.read(value);
             case "volume" -> definition.volume = SoundValue.parse(value);
             case "pitch" -> definition.pitch = SoundValue.parse(value);
-            case "loop" -> definition.loop = value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean() && value.getAsBoolean();
-            case "scale" -> definition.scale = !value.isJsonPrimitive() || value.getAsBoolean();
-            case "isStatic" -> definition.isStatic = value.isJsonPrimitive() && value.getAsJsonPrimitive().isBoolean() && value.getAsBoolean();
+            case "loop" -> definition.loop = asBoolean(value);
+            case "scale" -> definition.scale = asBoolean(value);
+            case "isStatic" -> definition.isStatic = asBoolean(value);
             case "fadeIn" -> definition.fadeIn = asInt(value);
             case "fadeOut" -> definition.fadeOut = asInt(value);
             case "delay" -> definition.delay = asInt(value);
@@ -101,19 +102,22 @@ public class SoundDefinition
         return ResourceLocation.tryParse(text);
     }
 
-    private static int asInt(@Nullable JsonElement json)
+    @Nullable
+    private static Integer asInt(@Nullable JsonElement json)
     {
-        return json != null && json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber() ? json.getAsInt() : 0;
+        return json != null && json.isJsonPrimitive() && json.getAsJsonPrimitive().isNumber() ? json.getAsInt() : null;
+    }
+
+    @Nullable
+    private static Boolean asBoolean(@Nullable JsonElement json)
+    {
+        return json != null && json.isJsonPrimitive() && json.getAsJsonPrimitive().isBoolean() ? json.getAsBoolean() : null;
     }
 
     /** Applies the values of a parent definition to everything this one does not override. */
     public void inherit(SoundDefinition parent)
     {
-        if (sound == null)
-        {
-            sound = parent.sound;
-        }
-
+        // The original inherits playback properties, but not the sound path itself.
         if (!volume.isSet())
         {
             volume = parent.volume;
@@ -129,22 +133,21 @@ public class SoundDefinition
             condition = parent.condition;
         }
 
-        if (!loop)
-        {
-            loop = parent.loop;
-        }
+        if (loop == null) loop = parent.loop;
+        if (scale == null) scale = parent.scale;
+        if (isStatic == null) isStatic = parent.isStatic;
 
-        if (fadeIn == 0)
+        if (fadeIn == null)
         {
             fadeIn = parent.fadeIn;
         }
 
-        if (fadeOut == 0)
+        if (fadeOut == null)
         {
             fadeOut = parent.fadeOut;
         }
 
-        if (delay == 0)
+        if (delay == null)
         {
             delay = parent.delay;
         }
@@ -188,32 +191,32 @@ public class SoundDefinition
 
     public int getFadeIn()
     {
-        return fadeIn;
+        return fadeIn != null ? fadeIn : 0;
     }
 
     public int getFadeOut()
     {
-        return fadeOut;
+        return fadeOut != null ? fadeOut : 0;
     }
 
     public int getDelay()
     {
-        return delay;
+        return delay != null ? delay : 0;
     }
 
     public boolean isLoop()
     {
-        return loop;
+        return Boolean.TRUE.equals(loop);
     }
 
     public boolean isScale()
     {
-        return scale;
+        return scale == null || scale;
     }
 
     public boolean isStatic()
     {
-        return isStatic;
+        return Boolean.TRUE.equals(isStatic);
     }
 
     public double getRange()

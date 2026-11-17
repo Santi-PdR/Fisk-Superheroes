@@ -140,6 +140,9 @@ def main():
                 wait_for_new(wearer_log, r'Playing pack sound definition fiskheroes:slow_motion_enable_cw as',
                              wearer_start, 60, 'wearer receives speed profile slow-motion enable sound', wearer)
             finally: subprocess.run(['xdotool', 'keyup', 'v'], check=True, timeout=30)
+            if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                wait_for_new(wearer_log, r'Sound packet: id=fiskheroes:slow_motion_enable_cw, loop=false, volume=0\.4',
+                             wearer_start, 30, 'one-shot keeps explicit false and inherits grandparent volume', wearer)
             time.sleep(1)
             subprocess.run(['xdotool', 'keydown', 'v'], check=True, timeout=30)
             try:

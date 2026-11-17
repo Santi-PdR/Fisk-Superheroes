@@ -42,6 +42,8 @@ public final class SHSoundPlayer
         }
 
         com.fiskmods.heroes.FiskHeroes.LOGGER.debug("Playing pack sound definition {} as {}", packet.getId(), event.getLocation());
+        if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound packet: id={}, loop={}, volume={}", packet.getId(), packet.isLoop(), packet.getVolume());
         if (Boolean.getBoolean("fiskheroes.ciColdGunSoundDiagnostics") && packet.getId().getNamespace().equals("fiskheroes")
                 && packet.getId().getPath().startsWith("item.coldgun."))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold gun one-shot: {}, volume={}, pitch={}",

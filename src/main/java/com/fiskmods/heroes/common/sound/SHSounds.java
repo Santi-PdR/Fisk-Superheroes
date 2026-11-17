@@ -53,23 +53,46 @@ public final class SHSounds
         DEFINITIONS.put(definition.getId(), definition);
     }
 
-    /** Resolves inheritance for every definition of the current pack. */
+    /** Resolves parent chains in dependency order, independent of resource load order. */
     public static void resolveInheritance()
     {
-        for (SoundDefinition definition : DEFINITIONS.values())
+        resolveInheritance(DEFINITIONS);
+    }
+
+    /** Also used with isolated definitions by regression tests; cyclic chains are ignored. */
+    public static void resolveInheritance(Map<ResourceLocation, SoundDefinition> definitions)
+    {
+        Map<ResourceLocation, Integer> states = new HashMap<>();
+        for (ResourceLocation id : definitions.keySet()) resolveParent(id, definitions, states);
+    }
+
+    private static boolean resolveParent(ResourceLocation id, Map<ResourceLocation, SoundDefinition> definitions,
+            Map<ResourceLocation, Integer> states)
+    {
+        int state = states.getOrDefault(id, 0);
+        if (state == 2) return true;
+        if (state == 3) return false;
+        if (state == 1)
         {
-            ResourceLocation parentId = definition.getParent();
-
-            if (parentId != null)
-            {
-                SoundDefinition inherited = DEFINITIONS.get(parentId);
-
-                if (inherited != null)
-                {
-                    definition.inherit(inherited);
-                }
-            }
+            FiskHeroes.LOGGER.warn("Cyclic sound inheritance involving {}", id);
+            return false;
         }
+        states.put(id, 1);
+        SoundDefinition definition = definitions.get(id);
+        ResourceLocation parentId = definition.getParent();
+        SoundDefinition parent = parentId != null ? definitions.get(parentId) : null;
+        if (parent != null)
+        {
+            if (!resolveParent(parentId, definitions, states))
+            {
+                states.put(id, 3);
+                return false;
+            }
+            definition.inherit(parent);
+        }
+        else if (parentId != null) FiskHeroes.LOGGER.warn("Missing sound parent {} for {}", parentId, id);
+        states.put(id, 2);
+        return true;
     }
 
     public static int size()

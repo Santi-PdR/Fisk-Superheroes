@@ -7215,6 +7215,41 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void soundInheritancePreservesExplicitValuesAndOrder(GameTestHelper helper)
+    {
+        var rootId = FiskHeroes.id("test_sound_root");
+        var middleId = FiskHeroes.id("test_sound_middle");
+        var leafId = FiskHeroes.id("test_sound_leaf");
+        var root = com.fiskmods.heroes.common.sound.SoundDefinition.parse(rootId,
+                com.google.gson.JsonParser.parseString("{\"sound\":\"fiskheroes:base_sound\",\"loop\":true,\"scale\":false,\"isStatic\":true,\"delay\":8,\"fadeIn\":9,\"fadeOut\":10,\"volume\":0.5,\"condition\":false,\"override\":\"fiskheroes:test_script\"}").getAsJsonObject());
+        root.setOverrideSource("function continuePlaying() { return true; }");
+        var middle = com.fiskmods.heroes.common.sound.SoundDefinition.parse(middleId,
+                com.google.gson.JsonParser.parseString("{\"parent\":\"fiskheroes:test_sound_root\"}").getAsJsonObject());
+        var leaf = com.fiskmods.heroes.common.sound.SoundDefinition.parse(leafId,
+                com.google.gson.JsonParser.parseString("{\"parent\":\"fiskheroes:test_sound_middle\",\"loop\":false,\"scale\":true,\"isStatic\":false,\"delay\":0,\"fadeIn\":0,\"fadeOut\":0,\"volume\":0,\"condition\":true}").getAsJsonObject());
+        var definitions = new java.util.LinkedHashMap<net.minecraft.resources.ResourceLocation, com.fiskmods.heroes.common.sound.SoundDefinition>();
+        definitions.put(leafId, leaf); definitions.put(middleId, middle); definitions.put(rootId, root);
+        com.fiskmods.heroes.common.sound.SHSounds.resolveInheritance(definitions);
+        if (!middle.isLoop() || middle.isScale() || !middle.isStatic() || middle.getDelay() != 8
+                || middle.getFadeIn() != 9 || middle.getFadeOut() != 10
+                || middle.getVolume().getFloat(null, 1) != 0.5F || middle.getCondition().shouldStart(null)
+                || !FiskHeroes.id("test_script").equals(middle.getOverridePath()) || middle.getOverrideSource() == null
+                || leaf.isLoop() || !leaf.isScale() || leaf.isStatic() || leaf.getDelay() != 0
+                || leaf.getFadeIn() != 0 || leaf.getFadeOut() != 0 || leaf.getVolume().getFloat(null, 1) != 0
+                || !leaf.getCondition().shouldStart(null) || leaf.getSound() != null)
+        { helper.fail("Sound inheritance lost explicit values, transitive properties or source semantics"); return; }
+        var aId = FiskHeroes.id("test_cycle_a");
+        var bId = FiskHeroes.id("test_cycle_b");
+        var a = com.fiskmods.heroes.common.sound.SoundDefinition.parse(aId,
+                com.google.gson.JsonParser.parseString("{\"parent\":\"fiskheroes:test_cycle_b\"}").getAsJsonObject());
+        var b = com.fiskmods.heroes.common.sound.SoundDefinition.parse(bId,
+                com.google.gson.JsonParser.parseString("{\"parent\":\"fiskheroes:test_cycle_a\",\"loop\":true}").getAsJsonObject());
+        com.fiskmods.heroes.common.sound.SHSounds.resolveInheritance(java.util.Map.of(aId, a, bId, b));
+        if (a.isLoop() || !b.isLoop()) { helper.fail("Cyclic sound parents must not partially inherit"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void speedSoundTransitionsMatchOriginal(GameTestHelper helper)
     {
         var state = new com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState();
