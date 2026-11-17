@@ -103,10 +103,10 @@ def main():
             if count != 1: raise RuntimeError(f'Expected one launch, saw {count}')
             print('PASS: real', 'keyboard' if keyboard else 'mouse', 'attack requires held ability and returns shield', flush=True)
             if not keyboard:
-                # Hold a server-owned projectile in a controlled front-facing pose. A
-                # runner-only magenta texture makes actual model pixels distinguishable
-                # from the background and the player's HUD. Keep some speed so the
-                # velocity-driven spin does not freeze on a random edge-on angle.
+                # Sample actual server-owned projectiles with a runner-only magenta
+                # texture. Fresh spawns prevent client-side gravity prediction from
+                # drifting the probe out of view even when server teleports repeat.
+                # The nonzero velocity also advances the randomly initialized spin.
                 from PIL import Image
                 command('item replace entity Dev weapon.mainhand with minecraft:air')
                 command('fill -3 179 6 3 184 6 minecraft:black_concrete')
@@ -122,12 +122,13 @@ def main():
                         '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.35d,0.0d],Rotation:[0.0f,90.0f]}\n')
                 server.stdin.flush()
                 stop = threading.Event()
-                def anchor():
-                    while not stop.wait(.12):
-                        server.stdin.write('tp @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] 0.5 181.62 3.5 0 90\n')
-                        server.stdin.write('data merge entity @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] {Motion:[0.0d,0.35d,0.0d]}\n')
+                def refresh_probe():
+                    while not stop.wait(.75):
+                        server.stdin.write('kill @e[type=fiskheroes:thrown_shield,tag=visual_probe]\n')
+                        server.stdin.write('summon fiskheroes:thrown_shield 0.5 181.62 3.5 '
+                                '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.35d,0.0d],Rotation:[0.0f,90.0f]}\n')
                         server.stdin.flush()
-                thread = threading.Thread(target=anchor, daemon=True); thread.start()
+                thread = threading.Thread(target=refresh_probe, daemon=True); thread.start()
                 try:
                     deadline = time.monotonic() + 30
                     while time.monotonic() < deadline:
