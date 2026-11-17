@@ -160,11 +160,16 @@ def main():
             xdo('key', 'F5')
             wait_for(client_log, r'Drawing suit fiskheroes:iron_man_mk45 slot', 45,
                      'Iron Man Mk 45 iteration synchronized to client', client)
-            xdo('key', 'x')
+            xdo('keydown', 'x')
+            try:
+                wait_for(client_log, r'Ability input sent from client: index=0', 30,
+                         'mask key reaches the real client', client)
+            finally:
+                xdo('keyup', 'x')
             wait_for(client_log, r'Texture selector resolved: definition=fiskheroes:iron_man_mk45_mask\.tx\.json, texture=fiskheroes:textures/heroes/iron_man_mk45_mask_true\.png',
                      45, 'Mk 45 open mask resolves boolean true texture without crashing', client)
             subprocess.run(['scrot', '-o', 'ci-arrow-mk45-mask.png'], check=True, timeout=30)
-            xdo('key', 'x')
+            xdo('keydown', 'x'); time.sleep(.5); xdo('keyup', 'x')
             time.sleep(2)  # The opening-mask mesh is hidden when progress reaches zero.
             command('execute as Dev run suit fiskheroes:iron_man_mk85')
             model_pattern = r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)'

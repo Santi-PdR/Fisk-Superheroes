@@ -92,7 +92,7 @@ jobs:
       - name: Publish diagnostic summary
         if: always()
         run: |
-          { cat ci-arrow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'ARROW_|Exception|Error|FATAL' "ci-arrow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-arrow-$f.log" 2>/dev/null || true; done; } > /tmp/arrow-log.txt
+          { cat ci-arrow-test.log 2>/dev/null || true; for f in server client; do echo "==== $f diagnostics ===="; grep -E 'ARROW_|Texture selector resolved|Ability input.*index=0|iron_man_mk45|Exception|Error|FATAL' "ci-arrow-$f.log" 2>/dev/null | tail -100 || true; echo "==== $f tail ===="; tail -80 "ci-arrow-$f.log" 2>/dev/null || true; done; } > /tmp/arrow-log.txt
           # Small diagnostic thumbnails travel with the existing log when artifact storage is
           # unreachable; full-resolution captures remain in the uploaded artifact.
           python3 .ci/particle_thumbnails.py >> /tmp/arrow-log.txt
