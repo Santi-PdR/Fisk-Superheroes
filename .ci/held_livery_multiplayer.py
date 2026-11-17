@@ -250,6 +250,9 @@ def main():
             # Do not obstruct the long-range teleport exercised later in this test.
             command('fill -4 180 20 4 184 20 minecraft:air')
             command('tp Partner 0 180 4 180 0')
+            # Reset the observer as well: the range test moved it beside the wall,
+            # facing away from the quiver and the subsequent visual checks.
+            command('tp Dev 0 180 0 0 0')
             command('execute as Dev run suit fiskheroes:the_flash')
             # Clear the remote suit so the original unsuited quiver control remains valid.
             command('item replace entity Partner armor.head with minecraft:air')
