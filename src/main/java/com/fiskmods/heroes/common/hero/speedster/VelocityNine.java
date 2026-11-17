@@ -37,6 +37,18 @@ public final class VelocityNine
         entity.removeEffect(ModEffects.SPEED_SICKNESS.get());
         EXPIRED.remove(entity);
         entity.addEffect(new MobEffectInstance(ModEffects.VELOCITY_NINE.get(), duration, amplifier, false, false, true));
+        if (Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Velocity 9 dose: entity={}, amplifier={}, duration={}",
+                    entity.getName().getString(), amplifier, duration);
+    }
+
+    @SubscribeEvent
+    public static void onAdded(MobEffectEvent.Added event)
+    {
+        if (event.getEntity().level().isClientSide && Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics")
+                && event.getEffectInstance().getEffect() == ModEffects.VELOCITY_NINE.get())
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Velocity 9 synchronized: entity={}, amplifier={}",
+                    event.getEntity().getName().getString(), event.getEffectInstance().getAmplifier());
     }
 
     @SubscribeEvent

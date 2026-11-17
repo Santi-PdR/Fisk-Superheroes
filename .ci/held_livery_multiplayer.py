@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true -Dfiskheroes.ciVelocityDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -92,6 +92,30 @@ def main():
             command('fill -5 179 -5 5 179 10 minecraft:stone')
             command('tp Dev 0 180 0 0 0')
             command('tp Partner 0 180 4 180 0')
+            if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                # Exercise an actual held drink through a client and dedicated server.
+                command('gamemode survival Partner')
+                command('item replace entity Partner hotbar.0 with fiskheroes:velocity_nine')
+                subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+                subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
+                subprocess.run(['xdotool', 'key', '1'], check=True, timeout=30)
+                dose_start = len(server_log.read_text(errors='replace'))
+                client_start = len(wearer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'mousedown', '3'], check=True, timeout=30)
+                try:
+                    wait_for_new(server_log, r'Velocity 9 dose: entity=Partner, amplifier=0, duration=6000',
+                                 dose_start, 45, 'held Velocity 9 finishes drinking on server', server)
+                finally:
+                    subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
+                wait_for_new(wearer_log, r'Velocity 9 synchronized: entity=Partner, amplifier=0',
+                             client_start, 45, 'Velocity 9 status reaches the drinking client', wearer)
+                bottle_start = len(server_log.read_text(errors='replace'))
+                command('execute if data entity Partner SelectedItem{id:"minecraft:glass_bottle"} run say VELOCITY_BOTTLE_RETURNED')
+                wait_for_new(server_log, r'\[Server\] VELOCITY_BOTTLE_RETURNED', bottle_start, 30,
+                             'survival drink returns a glass bottle', server)
+                command('effect clear Partner fiskheroes:velocity_nine')
+                command('item replace entity Partner hotbar.0 with minecraft:air')
+                command('gamemode creative Partner')
             command('execute as Partner run suit fiskheroes:iron_man')
             wait_for(observer_log, r'Drawing suit fiskheroes:iron_man slot', 60,
                      'observer sees remote Iron Man suit', observer)
