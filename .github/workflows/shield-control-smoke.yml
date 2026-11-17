@@ -76,6 +76,8 @@ jobs:
           { cat ci-shield-control-${{ matrix.input }}-test.log 2>/dev/null || true
             echo '==== relevant server events ===='
             grep -E 'Shield throw|Ability input|SHIELD_|Exception|ERROR' ci-shield-control-${{ matrix.input }}-server.log 2>/dev/null | tail -100 || true
+            echo '==== projectile diagnostics ===='
+            grep 'Thrown shield visual sample:' ci-shield-control-${{ matrix.input }}-client.log 2>/dev/null | tail -30 || true
             echo '==== client tail ===='
             tail -80 ci-shield-control-${{ matrix.input }}-client.log 2>/dev/null || true
           } > "$log"
