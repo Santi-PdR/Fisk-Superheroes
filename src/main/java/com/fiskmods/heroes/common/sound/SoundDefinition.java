@@ -258,6 +258,12 @@ public class SoundDefinition
         return target == Target.ALL || target == Target.ALL_OTHERS || distanceSquared <= range * range;
     }
 
+    /** Audience for an attached loop delivered to a tracking client; distance is applied locally. */
+    public boolean acceptsTrackedLoopListener(boolean self)
+    {
+        return self ? target != Target.OTHERS_IN_RANGE && target != Target.ALL_OTHERS : target != Target.ONLY_SELF;
+    }
+
     public Target getTarget() { return target; }
 
     @Nullable

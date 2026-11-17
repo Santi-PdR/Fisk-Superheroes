@@ -75,6 +75,12 @@ public class SHNetwork
         CHANNEL.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> entity), packet);
     }
 
+    /** Server -> tracking players only (not the entity itself). */
+    public static void sendToTrackingOthers(SHPacket packet, net.minecraft.world.entity.Entity entity)
+    {
+        CHANNEL.send(PacketDistributor.TRACKING_ENTITY.with(() -> entity), packet);
+    }
+
     /** Server -> everyone within range of a point. */
     public static void sendToNearby(SHPacket packet, net.minecraft.world.level.Level level, double x, double y, double z, double range)
     {

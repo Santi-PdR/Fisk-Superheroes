@@ -7286,7 +7286,10 @@ public final class PortRegressionTests
         if (selfOnly == null || all == null || !selfOnly.acceptsListener(true, 0) || selfOnly.acceptsListener(false, 0)
                 || !all.acceptsListener(false, 1000000) || !defaultRange.acceptsListener(true, 1000000)
                 || !defaultRange.acceptsListener(false, 16 * 16) || defaultRange.acceptsListener(false, 257)
-                || others.acceptsListener(true, 0) || !others.acceptsListener(false, 64) || others.acceptsListener(false, 65))
+                || others.acceptsListener(true, 0) || !others.acceptsListener(false, 64) || others.acceptsListener(false, 65)
+                || !selfOnly.acceptsTrackedLoopListener(true) || selfOnly.acceptsTrackedLoopListener(false)
+                || others.acceptsTrackedLoopListener(true) || !others.acceptsTrackedLoopListener(false)
+                || !defaultRange.acceptsTrackedLoopListener(true) || !defaultRange.acceptsTrackedLoopListener(false))
         { helper.fail("Sound manifest target and distance rules differ from original"); return; }
         helper.succeed();
     }

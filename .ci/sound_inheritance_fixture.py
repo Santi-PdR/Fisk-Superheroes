@@ -22,5 +22,5 @@ path.write_text(json.dumps(child, indent=2))
 # leaving entity tracking range. This change exists only on the CI runner.
 manifest_path = Path('src/main/resources/heropack.json')
 manifest = json.loads(manifest_path.read_text())
-manifest['sounds']['range']['super_speed_move_loop_savitar_rgb']['distance'] = 4.0
+manifest['sounds']['range']['super_speed_move_loop_savitar_rgb'] = {'distance': 4.0, 'target': 'ALL_IN_RANGE'}
 manifest_path.write_text(json.dumps(manifest, indent=2))

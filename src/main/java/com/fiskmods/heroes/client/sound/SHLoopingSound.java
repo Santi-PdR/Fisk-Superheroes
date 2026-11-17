@@ -64,7 +64,8 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
         this.x = x;
         this.y = y;
         this.z = z;
-        this.volume = fadeIn > 0 ? 0.0F : volume;
+        // Do not play a frame at full volume if the listener starts outside range.
+        setVolumeForRange(fadeIn > 0 ? 0.0F : volume);
         this.pitch = pitch;
         this.looping = true;
         this.delay = Math.max(0, delay);

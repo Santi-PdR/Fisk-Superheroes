@@ -187,6 +187,10 @@ def main():
                                  stop_start, 60, 'observer receives ' + sound, observer)
                 # Re-enable while the movement keys are still held, then change
                 # suits without a movement-release event. Old profile loops must stop.
+                if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                    # Keep tracking Partner, but start the next loop outside its
+                    # four-block audio range; no later MOVE event will be sent.
+                    command('execute at Partner run tp Dev ~12 ~ ~')
                 restart_start = len(observer_log.read_text(errors='replace'))
                 subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
                 time.sleep(.4)
@@ -197,11 +201,12 @@ def main():
                 if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
                     # The fixture shortens this loop's range to four blocks. Move
                     # across the audio boundary without stopping entity tracking.
-                    command('execute at Partner run tp Dev ~12 ~ ~')
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=false, volume=0\.0',
+                                 restart_start, 30, 'new out-of-range loop is initially silent', observer)
                     near_start = len(observer_log.read_text(errors='replace'))
                     command('execute at Partner run tp Dev ~3 ~ ~')
                     wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=true, volume=(?!0\.0(?:\s|$))',
-                                 near_start, 30, 'moving observer hears the in-range loop', observer)
+                                 near_start, 30, 'initially out-of-range tracked loop becomes audible after moving closer', observer)
                     far_start = len(observer_log.read_text(errors='replace'))
                     command('execute at Partner run tp Dev ~12 ~ ~')
                     wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=false, volume=0\.0',
@@ -217,12 +222,22 @@ def main():
                 time.sleep(3)
                 server_start = len(server_log.read_text(errors='replace'))
                 returning_start = len(observer_log.read_text(errors='replace'))
-                command('tp Dev 3 180 2 0 0')
+                if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                    command('execute at Partner run tp Dev ~12 ~ ~')
+                else:
+                    command('tp Dev 3 180 2 0 0')
                 for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
                     wait_for_new(server_log, r'Active loop synced: sound=fiskheroes:' + sound + r', subject=Partner, listener=Dev',
                                  server_start, 60, 'server resynchronizes active ' + sound, server)
                     wait_for_new(observer_log, r'Sound loop active: id=fiskheroes:' + sound + r', entity=',
                                  returning_start, 60, 'returning observer retains active ' + sound, observer)
+                if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=false, volume=0\.0',
+                                 returning_start, 30, 'new tracker receives the loop silently outside range', observer)
+                    near_start = len(observer_log.read_text(errors='replace'))
+                    command('execute at Partner run tp Dev ~3 ~ ~')
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=true, volume=(?!0\.0(?:\s|$))',
+                                 near_start, 30, 'new tracker hears synced loop on entering range', observer)
                 switch_start = len(observer_log.read_text(errors='replace'))
                 command('execute as Partner run suit fiskheroes:iron_man_mk50')
                 for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):

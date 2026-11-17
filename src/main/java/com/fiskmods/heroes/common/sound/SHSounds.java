@@ -240,7 +240,7 @@ public final class SHSounds
         SoundDefinition definition = DEFINITIONS.get(id);
         if (definition == null || !definition.isLoop() || !definition.getCondition().shouldStart(entity)
                 || !definition.getCondition().shouldContinue(entity)
-                || !definition.acceptsListener(listener == entity, listener.distanceToSqr(entity))) return;
+                || !definition.acceptsTrackedLoopListener(listener == entity)) return;
         PacketPlaySound packet = new PacketPlaySound(id, entity.getId(), entity.getX(), entity.getY(), entity.getZ(),
                 SoundSource.PLAYERS, 1.0F, 1.0F, true, definition.getFadeIn(), definition.getFadeOut(),
                 definition.getDelay(), (float) definition.getRange());
@@ -280,6 +280,20 @@ public final class SHSounds
 
         PacketPlaySound packet = new PacketPlaySound(id, entity != null ? entity.getId() : 0, x, y, z, source,
                 volume, pitch, loop, fadeIn, fadeOut, delay, range);
+
+        // A tracked entity loop may become audible later without another start
+        // event. Send it once to the permitted tracking audience, even outside
+        // its audio radius; the client keeps it silent until in range. One-shots
+        // still use the manifest's distance at the instant of playback.
+        if (loop && entity != null)
+        {
+            if (definition == null || definition.acceptsTrackedLoopListener(false))
+                SHNetwork.sendToTrackingOthers(packet, entity);
+            if (entity instanceof net.minecraft.server.level.ServerPlayer self
+                    && (definition == null || definition.acceptsTrackedLoopListener(true)))
+                SHNetwork.sendToPlayer(packet, self);
+            return;
+        }
 
         ServerLevel serverLevel = (ServerLevel) level;
         for (var player : serverLevel.players())
