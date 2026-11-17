@@ -105,7 +105,8 @@ def main():
             if not keyboard:
                 # Hold a server-owned projectile in a controlled front-facing pose. A
                 # runner-only magenta texture makes actual model pixels distinguishable
-                # from the background and the player's HUD.
+                # from the background and the player's HUD. Keep some speed so the
+                # velocity-driven spin does not freeze on a random edge-on angle.
                 from PIL import Image
                 command('item replace entity Dev weapon.mainhand with minecraft:air')
                 command('fill -3 179 6 3 184 6 minecraft:black_concrete')
@@ -118,13 +119,13 @@ def main():
                 owner_tag = '[I;' + ','.join(str(value) for value in chunks) + ']'
                 log_offset = client_log.stat().st_size
                 server.stdin.write('summon fiskheroes:thrown_shield 0.5 181.62 3.5 '
-                        '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.03d,0.0d],Rotation:[0.0f,90.0f]}\n')
+                        '{Owner:' + owner_tag + ',Tags:["visual_probe"],Motion:[0.0d,0.35d,0.0d],Rotation:[0.0f,90.0f]}\n')
                 server.stdin.flush()
                 stop = threading.Event()
                 def anchor():
                     while not stop.wait(.12):
                         server.stdin.write('tp @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] 0.5 181.62 3.5 0 90\n')
-                        server.stdin.write('data merge entity @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] {Motion:[0.0d,0.02d,0.0d]}\n')
+                        server.stdin.write('data merge entity @e[type=fiskheroes:thrown_shield,tag=visual_probe,limit=1] {Motion:[0.0d,0.35d,0.0d]}\n')
                         server.stdin.flush()
                 thread = threading.Thread(target=anchor, daemon=True); thread.start()
                 try:

@@ -53,7 +53,7 @@ def main():
                      'five-slot quiver HUD displays ammunition', client)
             subprocess.run(['scrot', 'ci-bow-idle-first.png'], check=True, timeout=30)
             # A quick but valid shot should not play the extra full-draw sound.
-            xdo('mousedown', '3'); time.sleep(.30); xdo('mouseup', '3')
+            xdo('mousedown', '3'); time.sleep(.20); xdo('mouseup', '3')
             wait_for(server_log, r'Compound bow shot: power=[0-9.]+, specialSound=false', 30,
                      'weak bow shot omits the special sound', server)
             time.sleep(1)
