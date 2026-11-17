@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
 /** Client side execution of the original data driven suit particle emitters. */
 final class ParticleEmitterRenderer
@@ -42,7 +41,8 @@ final class ParticleEmitterRenderer
     private static final Map<ResourceLocation, List<Emitter>> EMITTERS = new HashMap<>();
     private static final Map<ResourceLocation, JsonObject> CLOUDS = new HashMap<>();
     private static final Map<String, ScriptFunction> CONDITIONS = new HashMap<>();
-    private static final Map<UUID, Integer> LAST_TICK = new HashMap<>();
+    private static final com.fiskmods.heroes.common.util.WeakTickGate<Player> LAST_TICK =
+            new com.fiskmods.heroes.common.util.WeakTickGate<>();
     private static final java.util.Set<String> FIRST_PERSON_CLOUD_DIAGNOSTICS = new java.util.HashSet<>();
     private static final boolean PARTICLE_DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciParticleDiagnostics");
     private static final java.util.Set<String> EMITTER_DIAGNOSTICS = new java.util.HashSet<>();
@@ -66,13 +66,10 @@ final class ParticleEmitterRenderer
 
     static void tick(Player player, PlayerModel<?> model, HeroModelData suit, float suitScale, PoseStack renderPose)
     {
-        if (LAST_TICK.getOrDefault(player.getUUID(), Integer.MIN_VALUE) == player.tickCount) return;
-        LAST_TICK.put(player.getUUID(), player.tickCount);
-        if (LAST_TICK.size() > 256)
-        {
-            int cutoff = player.tickCount - 80;
-            LAST_TICK.entrySet().removeIf(entry -> entry.getValue() < cutoff);
-        }
+        // Each player has a different tick age. Comparing one player's age with
+        // another's can evict active players and emit twice in the same frame.
+        // Weak keys avoid retaining players that have left the client world.
+        if (!LAST_TICK.enter(player, player.tickCount)) return;
 
         Minecraft mc = Minecraft.getInstance();
         emitCloud(player, suit);

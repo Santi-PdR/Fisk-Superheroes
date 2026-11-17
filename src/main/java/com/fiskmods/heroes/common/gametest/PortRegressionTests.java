@@ -7196,6 +7196,32 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void particleTickGateKeepsDifferentEntityAgesIndependent(GameTestHelper helper)
+    {
+        var gate = new com.fiskmods.heroes.common.util.WeakTickGate<Object>();
+        var objects = new java.util.ArrayList<Object>();
+        for (int i = 0; i < 300; ++i)
+        {
+            Object entity = new Object();
+            objects.add(entity);
+            if (!gate.enter(entity, i == 0 ? 1_000_000 : i))
+            { helper.fail("Each entity must emit on its first visit"); return; }
+        }
+        for (int i = 0; i < objects.size(); ++i)
+            if (gate.enter(objects.get(i), i == 0 ? 1_000_000 : i))
+            { helper.fail("Other entities' tick ages must not evict an active entity"); return; }
+        if (!gate.enter(objects.get(1), 2) || gate.enter(objects.get(1), 2))
+        { helper.fail("A new entity tick must emit exactly once"); return; }
+        Object replacement = new Object();
+        if (!gate.enter(replacement, 1_000_000))
+        { helper.fail("A replacement entity must not inherit another entity's tick"); return; }
+        gate.clear();
+        if (!gate.enter(objects.get(0), 1_000_000))
+        { helper.fail("Clearing the gate must allow the next emission"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void boStaffSweepUsesWielderDamageAndEnchantments(GameTestHelper helper)
     {
         var level = helper.getLevel();
