@@ -83,7 +83,9 @@ def main():
                 best = -1
                 xdo('mousedown', '1')
                 try:
-                    for _ in range(28):
+                    # Sample more of the real burst: software-rendered CI can
+                    # miss the few-tick flash in the first short capture window.
+                    for _ in range(45):
                         time.sleep(0.06)
                         Path('ci-beretta-sample.png').unlink(missing_ok=True)
                         subprocess.run(['scrot', 'ci-beretta-sample.png'], check=True, timeout=30)
@@ -204,9 +206,9 @@ def main():
             wait_for(client_log, r'Beretta reload pose: wearer=Dev, hand=MAIN_HAND, context=FIRST_PERSON_RIGHT_HAND', 60, 'Beretta main reload', client)
             wait_for(client_log, r'Beretta reload pose: wearer=Dev, hand=OFF_HAND, context=FIRST_PERSON_LEFT_HAND', 60, 'Beretta offhand reload', client)
             command('execute if data entity Dev SelectedItem.tag{Ammo:30} run say BERETTA_DUAL_RELOAD_OK')
-            wait_for(server_log, r'BERETTA_DUAL_RELOAD_OK', 30, 'dual reload restores both magazines', server)
+            wait_for(server_log, r'\[Server\] BERETTA_DUAL_RELOAD_OK', 30, 'dual reload restores both magazines', server)
             command('execute unless data entity Dev Inventory[{Slot:-106b}] run say BERETTA_OFFHAND_EMPTY_OK')
-            wait_for(server_log, r'BERETTA_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
+            wait_for(server_log, r'\[Server\] BERETTA_OFFHAND_EMPTY_OK', 30, 'dual offhand is visual only', server)
             xdo('key', 'e')
             screenshot('inventory-dual')
             xdo('key', 'e')
@@ -225,7 +227,7 @@ def main():
             before = len(client_log.read_text(errors='replace'))
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:28} run say BERETTA_OCCUPIED_SHOT_OK')
-            wait_for(server_log, r'BERETTA_OCCUPIED_SHOT_OK', 30, 'occupied-offhand Beretta fired', server)
+            wait_for(server_log, r'\[Server\] BERETTA_OCCUPIED_SHOT_OK', 30, 'occupied-offhand Beretta fired', server)
             received = client_log.read_text(errors='replace')[before:]
             if 'Gun shot effect received: wearer=Dev, hand=MAIN_HAND' not in received or 'Gun shot effect received: wearer=Dev, hand=OFF_HAND' in received:
                 raise RuntimeError('Occupied offhand did not force the Beretta shot effect to the main hand')
@@ -237,15 +239,15 @@ def main():
             time.sleep(1)
             command('data get entity Dev SelectedItem.tag')
             command('execute if data entity Dev SelectedItem.tag{Ammo:9} run say BERETTA_BURST_OK')
-            wait_for(server_log, r'BERETTA_BURST_OK', 30, 'burst consumes three rounds', server)
+            wait_for(server_log, r'\[Server\] BERETTA_BURST_OK', 30, 'burst consumes three rounds', server)
             xdo('key', 'c')
             time.sleep(2)
             command('execute if data entity Dev SelectedItem.tag{Ammo:15} run say BERETTA_RELOAD_OK')
-            wait_for(server_log, r'BERETTA_RELOAD_OK', 30, 'reload restores magazine', server)
+            wait_for(server_log, r'\[Server\] BERETTA_RELOAD_OK', 30, 'reload restores magazine', server)
             command('item replace entity Dev weapon.mainhand with fiskheroes:beretta_93r{Ammo:12,BurstMode:0b}')
             xdo('click', '1')
             command('execute if data entity Dev SelectedItem.tag{Ammo:11} run say BERETTA_SINGLE_OK')
-            wait_for(server_log, r'BERETTA_SINGLE_OK', 30, 'single mode consumes one round', server)
+            wait_for(server_log, r'\[Server\] BERETTA_SINGLE_OK', 30, 'single mode consumes one round', server)
             xdo('keydown', 'Shift_L')
             try:
                 time.sleep(0.6)  # Allow the client and server to observe crouching before use.
@@ -255,7 +257,7 @@ def main():
                 xdo('keyup', 'Shift_L')
             time.sleep(1)
             command('execute if data entity Dev SelectedItem.tag{BurstMode:1b} run say BERETTA_MODE_OK')
-            wait_for(server_log, r'BERETTA_MODE_OK', 30, 'sneak-use switches firing mode', server)
+            wait_for(server_log, r'\[Server\] BERETTA_MODE_OK', 30, 'sneak-use switches firing mode', server)
             xdo('key', 'e')
             screenshot('inventory-single')
             xdo('key', 'e')
