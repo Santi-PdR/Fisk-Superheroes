@@ -143,7 +143,12 @@ public final class HeroTracker
         if (previous != null && !player.level().isClientSide)
         {
             for (var entry : previous.getHero().getPowerContainer().getEntries())
+            {
                 com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(player, entry, "ENABLE");
+                if (entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("super_speed")))
+                    com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(player, entry, "MOVE");
+            }
+            data.getSpeedsterSounds().reset();
         }
         data.getSoundStates().clear();
         data.setHero(current);

@@ -41,6 +41,8 @@ public class SHPlayerData implements IDataHolder
     private final java.util.Set<ResourceLocation> toggles = new java.util.LinkedHashSet<>();
     private java.util.Set<ResourceLocation> toggleSnapshot;
     private final java.util.Map<ResourceLocation, Boolean> soundStates = new java.util.HashMap<>();
+    private final com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState speedsterSounds =
+            new com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState();
     private final java.util.Map<ResourceLocation, Long> spellCooldowns = new java.util.HashMap<>();
 
     /** Ticks the suit has been unusable (all pieces removed while powers were active). */
@@ -81,6 +83,11 @@ public class SHPlayerData implements IDataHolder
     public DataContainer getData()
     {
         return data;
+    }
+
+    public com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState getSpeedsterSounds()
+    {
+        return speedsterSounds;
     }
 
     /** Last seen sound state of a modifier, so transitions can be detected across ticks. */

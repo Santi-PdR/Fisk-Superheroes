@@ -123,6 +123,14 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
         }
     }
 
+    /** A fresh start during fade-out should revive this loop instead of being ignored. */
+    public boolean resume()
+    {
+        if (stopped) return false;
+        fadingOut = -1;
+        return true;
+    }
+
     /** How far the sound is through its fade in (1 = fully audible), as the pack scripts read it. */
     public float getFadeProgress()
     {

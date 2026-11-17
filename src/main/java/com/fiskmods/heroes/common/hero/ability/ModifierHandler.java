@@ -90,6 +90,12 @@ public final class ModifierHandler
             {
                 if (entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("wall_crawling")))
                     data.getData().set(Vars.WALL_CRAWLING, (byte) 0);
+                if (integrated && data.getSpeedsterSounds().isMoving()
+                        && entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("super_speed")))
+                {
+                    com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(entity, entry, "MOVE");
+                    data.getSpeedsterSounds().reset();
+                }
                 continue;
             }
 

@@ -51,8 +51,11 @@ public final class SHSoundPlayer
         {
             for (SHLoopingSound existing : LOOPS)
             {
-                if (existing.getDefinitionId().equals(packet.getId()) && existing.getEntityId() == packet.getEntityId())
+                if (existing.getDefinitionId().equals(packet.getId()) && existing.getEntityId() == packet.getEntityId()
+                        && existing.resume())
                 {
+                    if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+                        com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop resumed: id={}, entity={}", packet.getId(), packet.getEntityId());
                     return;
                 }
             }
@@ -62,6 +65,8 @@ public final class SHSoundPlayer
                     packet.getDelay(), packet.getRange());
 
             LOOPS.add(sound);
+            if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop started: id={}, entity={}", packet.getId(), packet.getEntityId());
             mc.getSoundManager().play(sound);
         }
         else
@@ -78,6 +83,8 @@ public final class SHSoundPlayer
             if (sound.getDefinitionId().equals(packet.getId())
                     && (packet.getEntityId() == 0 || sound.getEntityId() == packet.getEntityId()))
             {
+                if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop stopping: id={}, entity={}", packet.getId(), packet.getEntityId());
                 sound.fadeOut();
             }
         }

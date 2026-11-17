@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -151,6 +151,42 @@ def main():
                          observer_log.read_text(errors='replace')[observer_start:]):
                 raise RuntimeError('ONLY_SELF slow-motion sound leaked to nearby observer')
             print('PASS: slow-motion sounds remain private to the wearer', flush=True)
+            # Drive the actual server-side motion transitions and check both
+            # layers of the RGB profile on the nearby observing client.
+            command('fill -4 179 -4 4 179 25 minecraft:stone')
+            command('fill -4 180 20 4 184 20 minecraft:stone')
+            command('tp Partner 0.5 180 3.5 0 0')
+            subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+            time.sleep(.4)
+            subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+            wait_for(server_log, r'Ability modifier executed: hero=fiskheroes:savitar, key=SUPER_SPEED, modifier=fiskheroes:super_speed',
+                     30, 'speed enabled on server', server)
+            time.sleep(1)
+            start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'keydown', 'w'], check=True, timeout=30)
+            subprocess.run(['xdotool', 'keydown', 'Control_L'], check=True, timeout=30)
+            try:
+                for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb',
+                              'super_speed_sprint_savitar', 'super_speed_sprint_savitar_noise'):
+                    wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:' + sound + r' as',
+                                 start, 60, 'observer receives ' + sound, observer)
+                # Disabling while still moving must stop both loops and play the
+                # profile's two stop cues (their condition requires !speeding).
+                stop_start = len(observer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+                time.sleep(.4)
+                subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+                for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
+                    wait_for_new(observer_log, r'Sound loop stopping: id=fiskheroes:' + sound + r', entity=',
+                                 stop_start, 60, 'observer stops ' + sound, observer)
+                for sound in ('super_speed_stop_savitar', 'super_speed_stop_savitar_noise'):
+                    wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:' + sound + r' as',
+                                 stop_start, 60, 'observer receives ' + sound, observer)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'w'], check=True, timeout=30)
+                subprocess.run(['xdotool', 'keyup', 'Control_L'], check=True, timeout=30)
+                subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+            command('tp Partner 0 180 4 180 0')
             command('execute as Dev run suit fiskheroes:the_flash')
             # Clear the remote suit so the original unsuited quiver control remains valid.
             command('item replace entity Partner armor.head with minecraft:air')

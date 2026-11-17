@@ -43,14 +43,24 @@ public class ModifierSuperSpeed extends Modifier
         if (!SHConfig.ALLOW_SUPER_SPEED.get())
         {
             disable(entity);
+            updateSounds(entity, entry, data);
             return;
         }
         boolean moving = PlayerInputTracker.forward(player) != 0 || PlayerInputTracker.strafe(player) != 0;
         boolean speeding = data.getData().get(Vars.SPEEDING);
         data.getData().set(Vars.MOVING, moving);
         data.getData().set(Vars.SPEED_SPRINTING, speeding && moving && player.isSprinting());
+        updateSounds(entity, entry, data);
+    }
 
-
+    private static void updateSounds(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (entity.level().isClientSide) return;
+        data.getSpeedsterSounds().update(data.getData().get(Vars.SPEEDING), data.getData().get(Vars.MOVING),
+                data.getData().get(Vars.SPEED_SPRINTING), trigger -> {
+                    if ("STOP".equals(trigger)) AbilityData.stopSoundLoops(entity, entry, "MOVE");
+                    AbilityData.playSound(entity, entry, trigger);
+                });
     }
 
     /** Base suit levels plus earned treadmill levels. Tachyon and Velocity 9 bonuses are separate. */

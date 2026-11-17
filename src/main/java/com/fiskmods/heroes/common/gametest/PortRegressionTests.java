@@ -7215,6 +7215,32 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void speedSoundTransitionsMatchOriginal(GameTestHelper helper)
+    {
+        var state = new com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState();
+        var events = new java.util.ArrayList<String>();
+        state.update(false, true, true, events::add);
+        state.update(true, false, false, events::add);
+        state.update(true, true, false, events::add);
+        state.update(true, true, false, events::add);
+        state.update(true, true, true, events::add);
+        state.update(true, true, true, events::add);
+        state.update(true, true, false, events::add);
+        state.update(true, true, true, events::add);
+        state.update(true, false, false, events::add);
+        state.update(true, true, true, events::add);
+        state.update(false, true, true, events::add);
+        state.update(false, true, true, events::add);
+        if (!events.equals(java.util.List.of("MOVE", "SPRINT", "SPRINT", "STOP", "SPRINT", "MOVE", "STOP"))
+                || state.isMoving())
+        { helper.fail("Speed sound transitions must fire once per change: " + events); return; }
+        state.update(true, true, true, events::add);
+        state.reset();
+        if (state.isMoving()) { helper.fail("Suit change must reset transient speed sound state"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void soundRangeTargetsMatchPackRules(GameTestHelper helper)
     {
         var selfOnly = com.fiskmods.heroes.common.sound.SHSounds.getDefinition(FiskHeroes.id("slow_motion_enable_cw"));
