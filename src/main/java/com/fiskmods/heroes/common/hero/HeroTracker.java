@@ -148,6 +148,21 @@ public final class HeroTracker
         data.getSoundStates().clear();
         data.setHero(current);
 
+        // The original resets suit-scoped data when leaving a hero, including a direct
+        // switch to a different hero. Iterations of the same hero retain their state.
+        // Only the server clears these: a suit packet can arrive after the data packet.
+        if (!player.level().isClientSide && previous != null
+                && (current == null || previous.getHero() != current.getHero()))
+        {
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER, (byte) 0);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PREV_MASK_OPEN_TIMER2, 0.0F);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN, false);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN_TIMER, (byte) 0);
+            data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("sentry_mode"), false);
+        }
+
         // Suit-dependent states must not leak into a hero without the relevant power. In
         // particular, a speed toggle left behind used to survive taking the suit off.
         if (!hasModifier(current, "super_speed"))

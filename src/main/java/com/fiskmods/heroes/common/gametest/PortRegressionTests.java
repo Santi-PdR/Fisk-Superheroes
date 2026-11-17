@@ -7196,6 +7196,45 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void changingHeroClearsMaskAndSentryState(GameTestHelper helper)
+    {
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var iron = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:iron_man");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || iron == null || flash == null || iron.getIteration("mk45") == iron.getDefaultIteration())
+        { helper.fail("Mask transition test setup missing"); return; }
+        var slot = net.minecraft.world.entity.EquipmentSlot.CHEST;
+        player.setItemSlot(slot, com.fiskmods.heroes.common.hero.ItemHeroArmor.create(iron.getDefaultIteration(),
+                com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER, (byte) 5);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2, 0.5F);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN, true);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN_TIMER, (byte) 3);
+        data.setToggleEnabled(FiskHeroes.id("sentry_mode"), true);
+        player.setItemSlot(slot, com.fiskmods.heroes.common.hero.ItemHeroArmor.create(iron.getIteration("mk45"),
+                com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        if (!vars.get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN)
+                || !vars.get(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN))
+        { helper.fail("Changing an iteration of the same hero must preserve suit state"); return; }
+        player.setItemSlot(slot, com.fiskmods.heroes.common.hero.ItemHeroArmor.create(flash.getDefaultIteration(),
+                com.fiskmods.heroes.common.item.ModItems.heroArmor[1]));
+        com.fiskmods.heroes.common.hero.HeroTracker.update(player, false);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER) != 0
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2) != 0.0F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN)
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN_TIMER) != 0
+                || data.isToggleEnabled(FiskHeroes.id("sentry_mode")))
+        { helper.fail("Changing heroes must reset the old mask and sentry state"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void maskAnimationUsesIterationDurationAndReverses(GameTestHelper helper)
     {
         var data = new com.fiskmods.heroes.common.data.var.DataContainer();

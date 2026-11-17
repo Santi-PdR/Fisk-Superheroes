@@ -78,6 +78,14 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             return;
         }
 
+        if (Boolean.getBoolean("fiskheroes.ciMaskDiagnostics") && !player.isLocalPlayer()
+                && !data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN)
+                && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER) == 0
+                && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2) == 0.0F
+                && RENDER_DIAGNOSTICS.add("mask-reset:" + player.getUUID() + ":" + iteration.getRegistryName()))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote mask reset: wearer={}, hero={}, open=false, timer=0, progress=0",
+                    player.getGameProfile().getName(), iteration.getRegistryName());
+
         PlayerModel<AbstractClientPlayer> playerModel = getParentModel();
         float scale = com.fiskmods.heroes.common.data.var.Vars.getScale(player);
         ParticleEmitterRenderer.tick(player, playerModel, model, scale, poseStack);

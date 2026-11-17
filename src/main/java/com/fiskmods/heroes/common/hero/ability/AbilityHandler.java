@@ -103,6 +103,9 @@ public final class AbilityHandler
             {
                 boolean open = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN);
                 data.getData().set(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN, !open);
+                if (Boolean.getBoolean("fiskheroes.ciMaskDiagnostics"))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Mask toggled: player={}, open={}",
+                            player.getGameProfile().getName(), !open);
             }
             return;
         }

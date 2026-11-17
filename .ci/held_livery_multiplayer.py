@@ -110,6 +110,20 @@ def main():
                          60, 'observer sees the remote mask close', observer)
             finally:
                 subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
+            # Reopen before switching to a different hero: the new suit must not
+            # inherit the old mask state on either the server or the observer.
+            time.sleep(1)
+            start = len(server_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'keydown', 'x'], check=True, timeout=30)
+            try:
+                wait_for_new(server_log, r'Mask toggled: player=Partner, open=true', start,
+                             30, 'server reopens the old mask before changing hero', server)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
+            time.sleep(2)
+            command('execute as Partner run suit fiskheroes:iron_man_mk50')
+            wait_for(observer_log, r'Remote mask reset: wearer=Partner, hero=fiskheroes:iron_man_mk50, open=false, timer=0, progress=0',
+                     60, 'observer sees the new hero with a reset mask', observer)
             command('execute as Dev run suit fiskheroes:the_flash')
             # Clear the remote suit so the original unsuited quiver control remains valid.
             command('item replace entity Partner armor.head with minecraft:air')
