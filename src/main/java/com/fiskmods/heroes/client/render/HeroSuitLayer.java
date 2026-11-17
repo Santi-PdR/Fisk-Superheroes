@@ -879,6 +879,15 @@ public class HeroSuitLayer extends RenderLayer<AbstractClientPlayer, PlayerModel
             float progress = net.minecraft.util.Mth.clamp(
                     model.evaluateRenderData(effect.get("data"), player, 0.0F), 0.0F, 1.0F);
             if (progress <= 0.001F) continue;
+            if (Boolean.getBoolean("fiskheroes.ciMaskDiagnostics") && !player.isLocalPlayer())
+            {
+                SHPlayerData maskData = SHDataCapabilities.getPlayer(player);
+                boolean open = maskData != null && maskData.getData().get(com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN);
+                String phase = open && progress >= 0.7F ? "open" : !open && progress < 0.9F ? "closing" : "";
+                if (!phase.isEmpty() && RENDER_DIAGNOSTICS.add("mask:" + player.getUUID() + ":" + phase))
+                    com.fiskmods.heroes.FiskHeroes.LOGGER.info("Remote mask animation: wearer={}, phase={}, progress={}",
+                            player.getGameProfile().getName(), phase, progress);
+            }
 
             String anchorName = effect.has("anchor") ? effect.get("anchor").getAsString() : "head";
             ModelPart anchor = anchor(playerModel, anchorName);

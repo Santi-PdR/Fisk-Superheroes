@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -92,7 +92,30 @@ def main():
             command('fill -5 179 -5 5 179 10 minecraft:stone')
             command('tp Dev 0 180 0 0 0')
             command('tp Partner 0 180 4 180 0')
+            command('execute as Partner run suit fiskheroes:iron_man')
+            wait_for(observer_log, r'Drawing suit fiskheroes:iron_man slot', 60,
+                     'observer sees remote Iron Man suit', observer)
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'mousemove', '--window', partner_window, '640', '360', 'click', '1'], check=True, timeout=30)
+            subprocess.run(['xdotool', 'keydown', 'x'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Remote mask animation: wearer=Partner, phase=open, progress=',
+                         60, 'observer sees the remote mask open', observer)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
+            time.sleep(1)
+            subprocess.run(['xdotool', 'keydown', 'x'], check=True, timeout=30)
+            try:
+                wait_for(observer_log, r'Remote mask animation: wearer=Partner, phase=closing, progress=',
+                         60, 'observer sees the remote mask close', observer)
+            finally:
+                subprocess.run(['xdotool', 'keyup', 'x'], check=True, timeout=30)
             command('execute as Dev run suit fiskheroes:the_flash')
+            # Clear the remote suit so the original unsuited quiver control remains valid.
+            command('item replace entity Partner armor.head with minecraft:air')
+            command('item replace entity Partner armor.chest with minecraft:air')
+            command('item replace entity Partner armor.legs with minecraft:air')
+            command('item replace entity Partner armor.feet with minecraft:air')
             command('item replace entity Partner hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:8b,tag:{ArrowType:"cactus"}},{Slot:1,id:"minecraft:arrow",Count:22b}]}}')
             wait_for(observer_log, r'Quiver appearance: wearer=Partner, equipped=true, foil=true, visible=true, hero=false',
                      60, 'observer sees enchanted quiver on unsuited player', observer)

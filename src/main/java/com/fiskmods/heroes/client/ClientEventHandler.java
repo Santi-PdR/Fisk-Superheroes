@@ -306,15 +306,6 @@ public class ClientEventHandler
             SHNetwork.sendToServer(new com.fiskmods.heroes.common.network.PacketInput(jump, sneak, forward, strafe, use));
         }
 
-        SHPlayerData data = SHDataCapabilities.getPlayer(player);
-
-        if (data == null)
-        {
-            return;
-        }
-
-        // Interpolate the values the HUD animates
-        interpolate(data, Vars.MASK_OPEN_TIMER2, data.getData().get(Vars.MASK_OPEN) ? 1.0F : 0.0F);
     }
 
     /** Sends only transitions, including very short presses received between client ticks. */
@@ -609,12 +600,6 @@ public class ClientEventHandler
         if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS
                 && (mc.screen == null || mc.screen instanceof com.fiskmods.heroes.client.gui.EquipmentWheelScreen)) weaponKeyHeld = true;
         else if (event.getAction() == org.lwjgl.glfw.GLFW.GLFW_RELEASE) weaponKeyHeld = false;
-    }
-
-    private static void interpolate(SHPlayerData data, com.fiskmods.heroes.common.data.var.DataVar<Float> var, float target)
-    {
-        float value = data.getData().get(var);
-        data.getData().set(var, value + (target - value) * 0.15F);
     }
 
     private static void stopBeamInput(LocalPlayer player)

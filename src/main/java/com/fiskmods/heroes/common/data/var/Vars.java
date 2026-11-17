@@ -83,7 +83,7 @@ public final class Vars
     public static final DataVar<Float> LIGHTSOUT_TIMER = register("lightsout_timer", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Boolean> MASK_OPEN = register("mask_open", DataType.BOOLEAN, false, false);
     public static final DataVar<Byte> MASK_OPEN_TIMER = register("mask_open_timer", DataType.BYTE, (byte) 0, false);
-    public static final DataVar<Float> MASK_OPEN_TIMER2 = register("mask_open_timer2", DataType.FLOAT, 0.0F, false);
+    public static final DataVar<Float> MASK_OPEN_TIMER2 = register("mask_open_timer2", DataType.FLOAT_INTERP, 0.0F, false);
     public static final DataVar<Float> METAL_HEAT = register("metal_heat", DataType.FLOAT, 0.0F, false);
     public static final DataVar<Short> METAL_HEAT_COOLDOWN = register("metal_heat_cooldown", DataType.SHORT, (short) 0, false);
     public static final DataVar<Boolean> MOVING = register("moving", DataType.BOOLEAN, false, false);

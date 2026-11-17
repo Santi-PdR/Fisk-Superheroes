@@ -204,6 +204,12 @@ public class CommonEventHandler
         }
 
         HeroTracker.update(entity);
+        if (!entity.level().isClientSide)
+        {
+            var maskData = SHDataCapabilities.getPlayer(entity);
+            if (maskData != null && maskData.getHero() != null)
+                com.fiskmods.heroes.common.hero.ability.MaskAnimation.tick(maskData.getData(), maskData.getHero().getMaskToggleTicks());
+        }
         if (entity instanceof net.minecraft.world.entity.player.Player)
         {
             var data = SHDataCapabilities.getPlayer(entity);

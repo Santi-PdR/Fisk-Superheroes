@@ -7196,6 +7196,29 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void maskAnimationUsesIterationDurationAndReverses(GameTestHelper helper)
+    {
+        var data = new com.fiskmods.heroes.common.data.var.DataContainer();
+        var mask = com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN;
+        var timer = com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER;
+        var progress = com.fiskmods.heroes.common.data.var.Vars.MASK_OPEN_TIMER2;
+        data.set(mask, true);
+        for (int i = 0; i < 5; ++i) com.fiskmods.heroes.common.hero.ability.MaskAnimation.tick(data, 10);
+        if (data.get(timer) != 5 || Math.abs(data.get(progress) - 0.5F) > 0.0001F)
+        { helper.fail("Mask must advance linearly using the iteration duration"); return; }
+        data.set(mask, false);
+        for (int i = 0; i < 5; ++i) com.fiskmods.heroes.common.hero.ability.MaskAnimation.tick(data, 10);
+        if (data.get(timer) != 0 || data.get(progress) != 0.0F)
+        { helper.fail("Reversed mask must close in the same number of ticks"); return; }
+        data.set(mask, true);
+        for (int i = 0; i < 15; ++i) com.fiskmods.heroes.common.hero.ability.MaskAnimation.tick(data, 15);
+        if (data.get(timer) != 15 || data.get(progress) != 1.0F
+                || progress.getType() != com.fiskmods.heroes.common.data.DataType.FLOAT_INTERP)
+        { helper.fail("Mask must reach its endpoint and be interpolated for rendering"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void textureGetterUsesActualValueNotPermutationIndex(GameTestHelper helper)
     {
         var getter = com.google.gson.JsonParser.parseString(
