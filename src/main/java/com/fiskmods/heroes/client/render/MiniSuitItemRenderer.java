@@ -107,10 +107,20 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
                         || iter == null || !iter.hasPieceOfSet(slot)) continue;
                 HeroModelData modelData = HeroModelRegistry.get(iter);
                 if (modelData == null) continue;
+                setVisibleForSlot(slot, modelData);
+                if (Boolean.getBoolean("fiskheroes.ciMiniSuitDiagnostics"))
+                {
+                    String key = "mask|" + context + "|" + iter.getRegistryName() + "|" + slot;
+                    if (DIAGNOSTICS.add(key))
+                        com.fiskmods.heroes.FiskHeroes.LOGGER.info(
+                                "Mini suit mask: context={}, hero={}, slot={}, head={}, body={}, rightArm={}, leftArm={}, rightLeg={}, leftLeg={}",
+                                context, iter.getRegistryName(), slot, playerModel.head.visible, playerModel.body.visible,
+                                playerModel.rightArm.visible, playerModel.leftArm.visible,
+                                playerModel.rightLeg.visible, playerModel.leftLeg.visible);
+                }
                 ResourceLocation baseTex = modelData.getTexture(slot, Minecraft.getInstance().player);
                 if (baseTex != null)
                 {
-                    setVisibleForSlot(slot);
                     playerModel.renderToBuffer(pose, buffers.getBuffer(RenderType.entityTranslucent(baseTex)),
                             light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
                     rendered = true;
@@ -118,7 +128,6 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
                 ResourceLocation lightsTex = modelData.getLights(slot, Minecraft.getInstance().player);
                 if (lightsTex != null)
                 {
-                    setVisibleForSlot(slot);
                     playerModel.renderToBuffer(pose, buffers.getBuffer(RenderType.eyes(lightsTex)),
                             LightTexture.FULL_BRIGHT, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
                 }
@@ -142,40 +151,23 @@ public final class MiniSuitItemRenderer extends BlockEntityWithoutLevelRenderer
         pose.popPose();
     }
 
-    private void setVisibleForSlot(int slot)
+    private void setVisibleForSlot(int slot, HeroModelData data)
     {
+        // Some suits (for example Iron Man Mk 50) use one chest item for the
+        // entire body. Follow the pack's per-piece mask just like the worn suit.
         playerModel.setAllVisible(false);
-        switch (slot)
-        {
-            case 0 ->
-            {
-                playerModel.head.visible = true;
-                playerModel.hat.visible = true;
-            }
-            case 1 ->
-            {
-                playerModel.body.visible = true;
-                playerModel.jacket.visible = true;
-                playerModel.rightArm.visible = true;
-                playerModel.rightSleeve.visible = true;
-                playerModel.leftArm.visible = true;
-                playerModel.leftSleeve.visible = true;
-            }
-            case 2 ->
-            {
-                playerModel.body.visible = true;
-                playerModel.rightLeg.visible = true;
-                playerModel.rightPants.visible = true;
-                playerModel.leftLeg.visible = true;
-                playerModel.leftPants.visible = true;
-            }
-            case 3 ->
-            {
-                playerModel.rightLeg.visible = true;
-                playerModel.rightPants.visible = true;
-                playerModel.leftLeg.visible = true;
-                playerModel.leftPants.visible = true;
-            }
-        }
+        playerModel.head.visible = data.showsModelPart(slot, "head");
+        playerModel.hat.visible = playerModel.head.visible && data.showsModelPart(slot, "headwear")
+                && !data.shouldFixHatLayer(slot);
+        playerModel.body.visible = data.showsModelPart(slot, "body");
+        playerModel.jacket.visible = playerModel.body.visible;
+        playerModel.rightArm.visible = data.showsModelPart(slot, "rightArm");
+        playerModel.rightSleeve.visible = playerModel.rightArm.visible;
+        playerModel.leftArm.visible = data.showsModelPart(slot, "leftArm");
+        playerModel.leftSleeve.visible = playerModel.leftArm.visible;
+        playerModel.rightLeg.visible = data.showsModelPart(slot, "rightLeg");
+        playerModel.rightPants.visible = playerModel.rightLeg.visible;
+        playerModel.leftLeg.visible = data.showsModelPart(slot, "leftLeg");
+        playerModel.leftPants.visible = playerModel.leftLeg.visible;
     }
 }

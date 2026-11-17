@@ -89,6 +89,17 @@ def main():
             cyan = sum(1 for r, g, b in mixed.get_flattened_data() if g > 90 and b > 90 and r < 50)
             if cyan < 25: raise RuntimeError(f'Mixed miniature is missing the Flash chest texture: {cyan} cyan pixels')
             print(f'PASS: mixed miniature displays the second hero texture: {cyan} cyan pixels', flush=True)
+            iron_chest = '{Slot:1b,id:"fiskheroes:superhero_chestplate",Count:1b,tag:{HeroType:"fiskheroes:iron_man_mk50"}}'
+            command('item replace entity Dev weapon.mainhand with fiskheroes:mini_suit{Items:[' + iron_chest + ']}')
+            wait_for(client_log, r'Mini suit preview: context=FIRST_PERSON_RIGHT_HAND, pieces=1=fiskheroes:iron_man_mk50;',
+                     60, 'single-piece Iron Man miniature is resolved', client)
+            wait_for(client_log, r'Mini suit mask: context=FIRST_PERSON_RIGHT_HAND, hero=fiskheroes:iron_man_mk50, slot=1, head=true, body=true, rightArm=true, leftArm=true, rightLeg=true, leftLeg=true',
+                     60, 'Iron Man chest piece renders the full body mask', client)
+            capture('iron-man')
+            iron = Image.open('ci-mini-suit-iron-man.png').convert('RGB').crop((600, 200, 1067, 550))
+            cyan_iron = sum(1 for r, g, b in iron.get_flattened_data() if g > 90 and b > 90 and r < 50)
+            if cyan_iron < 2000: raise RuntimeError(f'Iron Man miniature lacks visible body: {cyan_iron} cyan pixels')
+            print(f'PASS: single-piece Iron Man suit visibly renders: {cyan_iron} cyan pixels', flush=True)
             if partial_pixels < 25 or full_pixels < partial_pixels * 1.4 or empty_pixels > partial_pixels * .25:
                 raise RuntimeError(f'Preview pixels not proportional to stored armor: empty={empty_pixels}, head={partial_pixels}, full={full_pixels}')
             print(f'PASS: only stored pieces are visible: empty={empty_pixels}, head={partial_pixels}, full={full_pixels} diagnostic pixels', flush=True)
