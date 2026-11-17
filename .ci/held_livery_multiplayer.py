@@ -156,7 +156,7 @@ def main():
             print('PASS: slow-motion sounds remain private to the wearer', flush=True)
             # Drive the actual server-side motion transitions and check both
             # layers of the RGB profile on the nearby observing client.
-            command('fill -4 179 -4 4 179 25 minecraft:stone')
+            command('fill -4 179 -4 20 179 25 minecraft:stone')
             command('fill -4 180 20 4 184 20 minecraft:stone')
             command('tp Partner 0.5 180 3.5 0 0')
             subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
@@ -194,6 +194,23 @@ def main():
                 for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
                     wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:' + sound + r', entity=',
                                  restart_start, 60, 'observer restarts ' + sound, observer)
+                if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                    # The fixture shortens this loop's range to four blocks. Move
+                    # across the audio boundary without stopping entity tracking.
+                    command('execute at Partner run tp Dev ~12 ~ ~')
+                    near_start = len(observer_log.read_text(errors='replace'))
+                    command('execute at Partner run tp Dev ~3 ~ ~')
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=true, volume=(?!0\.0(?:\s|$))',
+                                 near_start, 30, 'moving observer hears the in-range loop', observer)
+                    far_start = len(observer_log.read_text(errors='replace'))
+                    command('execute at Partner run tp Dev ~12 ~ ~')
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=false, volume=0\.0',
+                                 far_start, 30, 'out-of-range loop becomes silent', observer)
+                    time.sleep(2)  # Longer than the loop fade-out; it must remain alive.
+                    near_start = len(observer_log.read_text(errors='replace'))
+                    command('execute at Partner run tp Dev ~3 ~ ~')
+                    wait_for_new(observer_log, r'Sound loop range: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=\d+, audible=true, volume=(?!0\.0(?:\s|$))',
+                                 near_start, 30, 'same loop becomes audible again within tracking range', observer)
                 # The observer leaves tracking range and returns while Partner
                 # continues moving, without another MOVE transition on the server.
                 command('tp Dev 250 200 0 0 0')

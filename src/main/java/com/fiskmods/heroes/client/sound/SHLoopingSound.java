@@ -42,6 +42,7 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
     private float dynamicVolume = 1.0F;
     private float dynamicPitch = 1.0F;
     private float rangeScale = 1.0F;
+    @Nullable private Boolean withinRange;
 
     private int ticks;
     private int fadingOut = -1;
@@ -183,7 +184,7 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
                 return;
             }
 
-            volume = baseVolume * dynamicVolume * (1.0F - (float) fadingOut / fadeOut);
+            setVolumeForRange(baseVolume * dynamicVolume * (1.0F - (float) fadingOut / fadeOut));
             return;
         }
 
@@ -234,19 +235,22 @@ public class SHLoopingSound extends AbstractSoundInstance implements TickableSou
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop active: id={}, entity={}", definitionId, entityId);
 
         float fade = getFadeProgress();
-        volume = baseVolume * dynamicVolume * fade;
+        setVolumeForRange(baseVolume * dynamicVolume * fade);
         pitch = basePitch * dynamicPitch;
+    }
 
-        // Stop when the listener has walked out of the sound's range
-        if (range > 0.0F && Minecraft.getInstance().player != null)
-        {
-            double distance = Minecraft.getInstance().player.distanceToSqr(x, y, z);
-
-            if (distance > (double) range * range * rangeScale * rangeScale)
-            {
-                fadeOut();
-            }
-        }
+    /** Distance mutes a loop but does not terminate it: listeners may move back into range. */
+    private void setVolumeForRange(float value)
+    {
+        var listener = Minecraft.getInstance().player;
+        boolean audible = range <= 0.0F || listener == null
+                || listener.distanceToSqr(x, y, z) <= (double) range * range * rangeScale * rangeScale;
+        volume = audible ? value : 0.0F;
+        if (Boolean.getBoolean("fiskheroes.ciSpeedSoundDiagnostics")
+                && (withinRange == null || withinRange != audible))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Sound loop range: id={}, entity={}, audible={}, volume={}",
+                    definitionId, entityId, audible, volume);
+        withinRange = audible;
     }
 
     @Override

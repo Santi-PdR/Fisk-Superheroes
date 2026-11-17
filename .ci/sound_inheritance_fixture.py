@@ -17,3 +17,10 @@ child['parent'] = 'fiskheroes:ci_sound_middle'
 child['loop'] = False
 child['fadeOut'] = 0
 path.write_text(json.dumps(child, indent=2))
+
+# A short range lets the multiplayer test cross the audio boundary without
+# leaving entity tracking range. This change exists only on the CI runner.
+manifest_path = Path('src/main/resources/heropack.json')
+manifest = json.loads(manifest_path.read_text())
+manifest['sounds']['range']['super_speed_move_loop_savitar_rgb']['distance'] = 4.0
+manifest_path.write_text(json.dumps(manifest, indent=2))
