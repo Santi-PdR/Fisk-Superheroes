@@ -43,15 +43,6 @@ public final class VelocityNine
     }
 
     @SubscribeEvent
-    public static void onAdded(MobEffectEvent.Added event)
-    {
-        if (event.getEntity().level().isClientSide && Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics")
-                && event.getEffectInstance().getEffect() == ModEffects.VELOCITY_NINE.get())
-            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Velocity 9 synchronized: entity={}, amplifier={}",
-                    event.getEntity().getName().getString(), event.getEffectInstance().getAmplifier());
-    }
-
-    @SubscribeEvent
     public static void onExpired(MobEffectEvent.Expired event)
     {
         var entity = event.getEntity();
