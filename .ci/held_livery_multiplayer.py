@@ -186,6 +186,8 @@ def main():
                 subprocess.run(['xdotool', 'keyup', 'w'], check=True, timeout=30)
                 subprocess.run(['xdotool', 'keyup', 'Control_L'], check=True, timeout=30)
                 subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+            # Do not obstruct the long-range teleport exercised later in this test.
+            command('fill -4 180 20 4 184 20 minecraft:air')
             command('tp Partner 0 180 4 180 0')
             command('execute as Dev run suit fiskheroes:the_flash')
             # Clear the remote suit so the original unsuited quiver control remains valid.
