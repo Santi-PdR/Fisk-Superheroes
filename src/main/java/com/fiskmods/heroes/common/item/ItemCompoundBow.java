@@ -170,6 +170,17 @@ public class ItemCompoundBow extends BowItem
             bow.hurtAndBreak(1, player, user -> user.broadcastBreakEvent(player.getUsedItemHand()));
             float pitch = 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F;
             player.playSound(SoundEvents.ARROW_SHOOT, 1.0F, pitch);
+            // The original layers its distinct compound-bow sound over vanilla
+            // only after a draw stronger than one half; weaker shots remain quiet.
+            if (power > 0.5F)
+            {
+                float specialPitch = 1.0F / (level.getRandom().nextFloat() * 0.4F + 1.2F) + power * 0.5F;
+                com.fiskmods.heroes.common.sound.SHSounds.play(level, player.getX(), player.getY(), player.getZ(),
+                        com.fiskmods.heroes.FiskHeroes.id("item.bow.shoot"), net.minecraft.sounds.SoundSource.PLAYERS,
+                        power, specialPitch);
+            }
+            if (Boolean.getBoolean("fiskheroes.ciBowDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Compound bow shot: power={}, specialSound={}", power, power > 0.5F);
             player.awardStat(Stats.ITEM_USED.get(this));
             player.gameEvent(GameEvent.PROJECTILE_SHOOT);
         }

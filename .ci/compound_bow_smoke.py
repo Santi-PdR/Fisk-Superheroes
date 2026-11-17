@@ -49,6 +49,14 @@ def main():
                      'unbroken bow inventory icon is loaded', client)
             wait_for(client_log, r'Quiver HUD rendered: selected=0, occupied=2', 30,
                      'five-slot quiver HUD displays ammunition', client)
+            # A quick but valid shot should not play the extra full-draw sound.
+            xdo('mousedown', '3'); time.sleep(.30); xdo('mouseup', '3')
+            wait_for(server_log, r'Compound bow shot: power=[0-9.]+, specialSound=false', 30,
+                     'weak bow shot omits the special sound', server)
+            time.sleep(1)
+            if 'Playing pack sound definition fiskheroes:item.bow.shoot' in client_log.read_text(errors='replace'):
+                raise RuntimeError('Weak bow shot unexpectedly played the full-draw sound')
+            command('kill @e[type=fiskheroes:trick_arrow]')
             xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '5'); time.sleep(.8); xdo('keyup', 'Shift_L')
             wait_for(client_log, r'Quiver HUD rendered: selected=1, occupied=2', 30,
                      'scrolling changes the highlighted quiver slot', client)
@@ -57,6 +65,10 @@ def main():
             command('execute if entity @e[type=fiskheroes:trick_arrow,nbt={ArrowType:"cactus"}] run say QUIVER_CACTUS_PASS')
             wait_for(server_log, r'\[Server\] QUIVER_CACTUS_PASS', 15,
                      'scroll selection reaches server and fires the chosen arrow', server)
+            wait_for(server_log, r'Compound bow shot: power=[0-9.]+, specialSound=true', 30,
+                     'full bow draw requests the special sound', server)
+            wait_for(client_log, r'Playing pack sound definition fiskheroes:item\.bow\.shoot as fiskheroes:item\.bow\.shoot', 30,
+                     'client receives the original bow sound', client)
             command('kill @e[type=fiskheroes:trick_arrow]')
             xdo('keydown', 'Shift_L'); time.sleep(.5); xdo('click', '5'); time.sleep(.8); xdo('keyup', 'Shift_L')
             wait_for(client_log, r'Quiver HUD rendered: selected=2, occupied=2, name=Normal Arrow', 30,
