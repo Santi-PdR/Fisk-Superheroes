@@ -45,6 +45,8 @@ def main():
             command('item replace entity Dev hotbar.1 with fiskheroes:quiver{Enchantments:[{id:"fiskheroes:capacity",lvl:1s}],QuiverInventory:{Size:5,Items:[{Slot:0,id:"fiskheroes:trick_arrow",Count:22b},{Slot:1,id:"fiskheroes:trick_arrow",Count:3b,tag:{ArrowType:"cactus"}}]}}')
             wait_for(client_log, r'Compound bow 3D model rendered: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, drawing=false', 30,
                      'first-person compound bow model', client)
+            wait_for(client_log, r'First-person compound bow arm rendered: RIGHT', 30,
+                     'compound bow renders right hand', client)
             wait_for(client_log, r'Compound bow icon rendered: context=GUI, broken=false, missing=false', 30,
                      'unbroken bow inventory icon is loaded', client)
             wait_for(client_log, r'Quiver HUD rendered: selected=0, occupied=2', 30,
@@ -156,6 +158,13 @@ def main():
             wait_for(server_log, r'\[Server\] BOW_MELEE_DAMAGE_PASS', 20, 'bow melee hit includes Green Arrow weapon bonus', server)
             command('execute if entity @a[name=Dev,nbt={SelectedItem:{id:"fiskheroes:compound_bow",tag:{Damage:1}}}] run say BOW_MELEE_DURABILITY_PASS')
             wait_for(server_log, r'\[Server\] BOW_MELEE_DURABILITY_PASS', 20, 'bow melee hit consumes one durability', server)
+            command('gamemode creative Dev')
+            command('item replace entity Dev weapon.mainhand with minecraft:air')
+            command('item replace entity Dev weapon.offhand with fiskheroes:compound_bow')
+            wait_for(client_log, r'First-person compound bow arm rendered: LEFT', 30,
+                     'compound bow renders offhand', client)
+            time.sleep(1)
+            subprocess.run(['scrot', 'ci-bow-offhand.png'], check=True, timeout=30)
             print('PASS: real client renders and fires the 3D compound bow in both views', flush=True)
         finally:
             for process in reversed(processes):
