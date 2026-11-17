@@ -93,12 +93,15 @@ public final class CompoundBowItemRenderer extends BlockEntityWithoutLevelRender
                 // Recenter it and move it away from the camera: the old 1.7 transform alone
                 // intersects the camera and clips most of the model in 1.20's perspective.
                 if (drawing) pose.translate(left ? .42 : -.42, .40, -1.1);
-                pose.translate(left ? .25 : .75, .5, .5);
+                // The undrawn bow otherwise sits partly outside the viewport and
+                // away from the hand; drawing has its own vanilla recentering above.
+                pose.translate(drawing ? (left ? .25 : .75) : (left ? .58 : .42), drawing ? .5 : .70, .5);
                 pose.mulPose(Axis.XP.rotationDegrees(-5));
                 pose.mulPose(Axis.ZP.rotationDegrees(left ? -230 : 230));
                 pose.mulPose(Axis.YP.rotationDegrees(left ? -100 : 100));
                 pose.mulPose(Axis.XP.rotationDegrees(-5));
-                pose.scale(.375F, -.375F, -.375F);
+                float scale = drawing ? .375F : .27F;
+                pose.scale(scale, -scale, -scale);
                 pose.translate(-.2F * horizontal, -.4F * horizontal, -.1F * horizontal);
                 pose.mulPose(Axis.ZP.rotationDegrees(70 * horizontal));
                 pose.mulPose(Axis.YP.rotationDegrees(-10 * horizontal));
