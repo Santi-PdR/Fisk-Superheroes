@@ -182,6 +182,20 @@ def main():
                 for sound in ('super_speed_stop_savitar', 'super_speed_stop_savitar_noise'):
                     wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:' + sound + r' as',
                                  stop_start, 60, 'observer receives ' + sound, observer)
+                # Re-enable while the movement keys are still held, then change
+                # suits without a movement-release event. Old profile loops must stop.
+                restart_start = len(observer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+                time.sleep(.4)
+                subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+                for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
+                    wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:' + sound + r', entity=',
+                                 restart_start, 60, 'observer restarts ' + sound, observer)
+                switch_start = len(observer_log.read_text(errors='replace'))
+                command('execute as Partner run suit fiskheroes:iron_man_mk50')
+                for sound in ('super_speed_move_loop_cw', 'super_speed_move_loop_savitar_rgb'):
+                    wait_for_new(observer_log, r'Sound loop stopping: id=fiskheroes:' + sound + r', entity=',
+                                 switch_start, 60, 'suit change stops old profile ' + sound, observer)
             finally:
                 subprocess.run(['xdotool', 'keyup', 'w'], check=True, timeout=30)
                 subprocess.run(['xdotool', 'keyup', 'Control_L'], check=True, timeout=30)
