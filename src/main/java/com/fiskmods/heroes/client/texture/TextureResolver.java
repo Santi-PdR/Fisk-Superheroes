@@ -66,12 +66,19 @@ public final class TextureResolver
     @Nullable
     public static ResourceLocation resolve(String resource, Entity entity, int armorSlot)
     {
-        return resolveForContext(resource, new JSEntity(entity), armorSlot);
+        return resolveInternal(resource, entity, null, armorSlot);
     }
 
     /** Resolve with the same script-facing entity used by the model's texture tree. */
     @Nullable
     public static ResourceLocation resolveForContext(String resource, JSEntity entity, int armorSlot)
+    {
+        return resolveInternal(resource, null, entity, armorSlot);
+    }
+
+    @Nullable
+    private static ResourceLocation resolveInternal(String resource, @Nullable Entity rawEntity,
+            @Nullable JSEntity context, int armorSlot)
     {
         TextureRouteCache.Route route = ROUTES.resolve(resource, armorSlot);
         if (route == null) return null;
@@ -89,9 +96,12 @@ public final class TextureResolver
 
         if (json.has("getters"))
         {
+            // Most suit resources are plain sprites: only allocate a script wrapper
+            // when a texture definition actually needs getter evaluation.
+            JSEntity scriptEntity = context != null ? context : new JSEntity(rawEntity);
             for (Map.Entry<String, JsonElement> e : json.getAsJsonObject("getters").entrySet())
             {
-                values.put(e.getKey(), String.valueOf(select(e.getValue(), entity)));
+                values.put(e.getKey(), String.valueOf(select(e.getValue(), scriptEntity)));
             }
         }
 
