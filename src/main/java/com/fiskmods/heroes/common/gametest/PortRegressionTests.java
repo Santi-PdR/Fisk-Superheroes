@@ -7215,6 +7215,62 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void soundRangeTargetsMatchPackRules(GameTestHelper helper)
+    {
+        var selfOnly = com.fiskmods.heroes.common.sound.SHSounds.getDefinition(FiskHeroes.id("slow_motion_enable_cw"));
+        var all = com.fiskmods.heroes.common.sound.SHSounds.getDefinition(FiskHeroes.id("super_speed_move_loop_cw"));
+        var defaultRange = new com.fiskmods.heroes.common.sound.SoundDefinition(FiskHeroes.id("range_test"));
+        var others = new com.fiskmods.heroes.common.sound.SoundDefinition(FiskHeroes.id("others_test"));
+        others.setRangeSpec(com.google.gson.JsonParser.parseString("{\"distance\":8,\"target\":\"OTHERS_IN_RANGE\"}"));
+        if (selfOnly == null || all == null || !selfOnly.acceptsListener(true, 0) || selfOnly.acceptsListener(false, 0)
+                || !all.acceptsListener(false, 1000000) || !defaultRange.acceptsListener(true, 1000000)
+                || !defaultRange.acceptsListener(false, 16 * 16) || defaultRange.acceptsListener(false, 257)
+                || others.acceptsListener(true, 0) || !others.acceptsListener(false, 64) || others.acceptsListener(false, 65))
+        { helper.fail("Sound manifest target and distance rules differ from original"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void modifierSoundsHonorPowerCardAndIterationProfile(GameTestHelper helper)
+    {
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        var reverse = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:reverse_flash");
+        var player = helper.makeMockPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (flash == null || reverse == null || data == null) { helper.fail("Sound profile setup missing"); return; }
+        var speed = flash.getPowerContainer().getEntry(FiskHeroes.id("super_speed"));
+        var slow = flash.getPowerContainer().getEntry(FiskHeroes.id("slow_motion"));
+        var reverseSpeed = reverse.getPowerContainer().getEntry(FiskHeroes.id("super_speed"));
+        if (speed == null || slow == null || reverseSpeed == null) { helper.fail("Speed force cards missing"); return; }
+        data.setHero(flash.getDefaultIteration());
+        if (!com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(player, speed, "SPRINT")
+                        .equals(java.util.List.of(FiskHeroes.id("super_speed_sprint_barry")))
+                || !com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(player, slow, "ENABLE")
+                        .equals(java.util.List.of(FiskHeroes.id("slow_motion_enable_cw")))
+                || !com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(player, speed, "ENABLE").isEmpty())
+        { helper.fail("Flash override or fallback trigger was not selected"); return; }
+        data.setHero(flash.getIteration("test"));
+        if (!com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(player, speed, "SPRINT")
+                .equals(java.util.List.of(FiskHeroes.id("super_speed_sprint_barry_test"))))
+        { helper.fail("Iteration must switch speed sound profile"); return; }
+        data.setHero(reverse.getDefaultIteration());
+        var layered = com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(player, reverseSpeed, "SPRINT");
+        if (!layered.contains(FiskHeroes.id("super_speed_sprint_negative"))
+                || !layered.contains(FiskHeroes.id("super_speed_sprint_negative_roar")) || layered.size() != 2)
+        { helper.fail("Negative speed profile must retain both sound layers"); return; }
+        var isolated = new com.fiskmods.heroes.common.hero.Hero(FiskHeroes.id("sound_target_test"));
+        isolated.addModifierSoundOverride("TEST", FiskHeroes.id("wrong_power"), speed.getCard(), "SPRINT", java.util.List.of(FiskHeroes.id("wrong")));
+        isolated.addModifierSoundOverride("TEST", FiskHeroes.id("speed_force"), speed.getCard() + "|other", "SPRINT", java.util.List.of(FiskHeroes.id("wrong")));
+        if (isolated.getModifierSoundOverride("TEST", speed, "SPRINT") != null)
+        { helper.fail("A different power or card must not match"); return; }
+        isolated.addModifierSoundOverride("TEST", FiskHeroes.id("speed_force"), speed.getCard(), "SPRINT", java.util.List.of());
+        if (!java.util.List.of().equals(isolated.getModifierSoundOverride("TEST", speed, "SPRINT"))
+                || isolated.getModifierSoundOverride("TEST", speed, "STOP") != null)
+        { helper.fail("Empty override must suppress, while missing trigger falls back"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void changingHeroClearsMaskAndSentryState(GameTestHelper helper)
     {
         var player = helper.makeMockPlayer();

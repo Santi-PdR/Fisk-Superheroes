@@ -312,11 +312,17 @@ public class JSHero
 
     public void addSoundOverrides(String name, Object overrides)
     {
-        // The original format nests suit triggers under "suit". Power-target
-        // overrides are separate and are not interpreted by this suit dispatcher.
-        Object suit = JSContext.asMap(overrides).get("suit");
-        for (Map.Entry<String, Object> entry : JSContext.asMap(suit).entrySet())
+        Map<String, Object> profile = JSContext.asMap(overrides);
+        for (Map.Entry<String, Object> entry : JSContext.asMap(profile.get("suit")).entrySet())
             hero.addSuitSoundOverride(name, entry.getKey(), soundIds(entry.getValue()));
+        for (Map.Entry<String, Object> power : JSContext.asMap(profile.get("powers")).entrySet())
+        {
+            ResourceLocation powerId = ResourceLocation.tryParse(power.getKey());
+            if (powerId == null) continue;
+            for (Map.Entry<String, Object> card : JSContext.asMap(power.getValue()).entrySet())
+                for (Map.Entry<String, Object> trigger : JSContext.asMap(card.getValue()).entrySet())
+                    hero.addModifierSoundOverride(name, powerId, card.getKey(), trigger.getKey(), soundIds(trigger.getValue()));
+        }
     }
 
     private static java.util.List<ResourceLocation> soundIds(Object sounds)

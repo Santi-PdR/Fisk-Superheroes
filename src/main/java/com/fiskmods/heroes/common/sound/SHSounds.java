@@ -218,7 +218,10 @@ public final class SHSounds
             return;
         }
 
-        SHNetwork.sendToTracking(new PacketStopSound(id, entity.getId()), entity);
+        // A listener may have moved out of range since the loop started. Send
+        // the stop to the whole dimension so those clients cannot retain it.
+        if (entity.level() instanceof ServerLevel level)
+            for (var player : level.players()) SHNetwork.sendToPlayer(new PacketStopSound(id, entity.getId()), player);
     }
 
     private static void send(Level level, Entity entity, ResourceLocation id, double x, double y, double z,
@@ -238,13 +241,14 @@ public final class SHSounds
         PacketPlaySound packet = new PacketPlaySound(id, entity != null ? entity.getId() : 0, x, y, z, source,
                 volume, pitch, loop, fadeIn, fadeOut, delay, range);
 
-        if (entity != null)
+        ServerLevel serverLevel = (ServerLevel) level;
+        for (var player : serverLevel.players())
         {
-            SHNetwork.sendToTracking(packet, entity);
-        }
-        else
-        {
-            SHNetwork.sendToNearby(packet, level, x, y, z, range);
+            boolean self = player == entity;
+            double distanceSquared = player.distanceToSqr(x, y, z);
+            boolean accepted = definition != null ? definition.acceptsListener(self, distanceSquared)
+                    : self || distanceSquared <= range * range;
+            if (accepted) SHNetwork.sendToPlayer(packet, player);
         }
     }
 

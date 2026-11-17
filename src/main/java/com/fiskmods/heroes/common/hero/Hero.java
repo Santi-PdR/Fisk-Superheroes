@@ -86,6 +86,8 @@ public class Hero implements Comparable<Hero>
     private final Map<String, Map<Integer, String>> soundOverrides = new LinkedHashMap<>();
     private final Map<String, List<ResourceLocation>> suitSoundLayers = new LinkedHashMap<>();
     private final Map<String, Map<String, List<ResourceLocation>>> suitSoundProfiles = new LinkedHashMap<>();
+    private record SoundTarget(ResourceLocation power, String card) { }
+    private final Map<String, Map<SoundTarget, Map<String, List<ResourceLocation>>>> modifierSoundProfiles = new LinkedHashMap<>();
 
     private final Map<Integer, HeroIteration> iterations = new LinkedHashMap<>();
     private final Map<String, HeroIteration> iterationKeyMap = new HashMap<>();
@@ -328,6 +330,31 @@ public class Hero implements Comparable<Hero>
         Map<String, List<ResourceLocation>> overrides = profile != null ? suitSoundProfiles.get(profile) : null;
         return overrides != null && overrides.containsKey(trigger) ? overrides.get(trigger)
                 : suitSoundLayers.getOrDefault(trigger, List.of());
+    }
+
+    /** Profiles target a specific power and full modifier card (including its optional |id). */
+    public void addModifierSoundOverride(String profile, ResourceLocation power, String card,
+            String trigger, List<ResourceLocation> sounds)
+    {
+        modifierSoundProfiles.computeIfAbsent(profile, key -> new LinkedHashMap<>())
+                .computeIfAbsent(new SoundTarget(power, card), key -> new LinkedHashMap<>())
+                .put(trigger, List.copyOf(sounds));
+    }
+
+    /** Null means no profile override; an empty list explicitly suppresses the trigger. */
+    @Nullable
+    public List<ResourceLocation> getModifierSoundOverride(String profile,
+            com.fiskmods.heroes.common.hero.power.ModifierEntry entry, String trigger)
+    {
+        Map<SoundTarget, Map<String, List<ResourceLocation>>> targets = modifierSoundProfiles.get(profile);
+        if (targets == null) return null;
+        for (var target : targets.entrySet())
+        {
+            if (entry.getSourcePowers().contains(target.getKey().power())
+                    && java.util.Objects.equals(entry.getCard(), target.getKey().card())
+                    && target.getValue().containsKey(trigger)) return target.getValue().get(trigger);
+        }
+        return null;
     }
 
     public void addSoundOverrides(String name, Map<Integer, String> overrides)

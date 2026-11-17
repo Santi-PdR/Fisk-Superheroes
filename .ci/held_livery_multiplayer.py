@@ -128,6 +128,29 @@ def main():
             command('execute as Partner run suit fiskheroes:iron_man_mk50')
             wait_for(observer_log, r'Remote mask reset: wearer=Partner, hero=fiskheroes:iron_man_mk50, open=false, timer=0, progress=0',
                      60, 'observer sees the new hero with a reset mask', observer)
+            # Slow-motion sounds in the CW speed profile are ONLY_SELF. Verify
+            # the intended player hears both events and a nearby observer does not.
+            command('execute as Partner run suit fiskheroes:savitar rgb')
+            time.sleep(2)
+            wearer_start = len(wearer_log.read_text(errors='replace'))
+            observer_start = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'keydown', 'v'], check=True, timeout=30)
+            try:
+                wait_for_new(wearer_log, r'Playing pack sound definition fiskheroes:slow_motion_enable_cw as',
+                             wearer_start, 60, 'wearer receives speed profile slow-motion enable sound', wearer)
+            finally: subprocess.run(['xdotool', 'keyup', 'v'], check=True, timeout=30)
+            time.sleep(1)
+            subprocess.run(['xdotool', 'keydown', 'v'], check=True, timeout=30)
+            try:
+                wait_for_new(wearer_log, r'Playing pack sound definition fiskheroes:slow_motion_disable_cw as',
+                             wearer_start, 60, 'wearer receives speed profile slow-motion disable sound', wearer)
+            finally: subprocess.run(['xdotool', 'keyup', 'v'], check=True, timeout=30)
+            time.sleep(1)
+            if re.search(r'Playing pack sound definition fiskheroes:slow_motion_(?:enable|disable)_cw as',
+                         observer_log.read_text(errors='replace')[observer_start:]):
+                raise RuntimeError('ONLY_SELF slow-motion sound leaked to nearby observer')
+            print('PASS: slow-motion sounds remain private to the wearer', flush=True)
             command('execute as Dev run suit fiskheroes:the_flash')
             # Clear the remote suit so the original unsuited quiver control remains valid.
             command('item replace entity Partner armor.head with minecraft:air')

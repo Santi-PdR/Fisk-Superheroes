@@ -80,6 +80,7 @@ public class PowerContainer
                 for (Map.Entry<String, ModifierEntry> e : power.createEntries().entrySet())
                 {
                     ModifierEntry existing = byKey.get(e.getKey());
+                    e.getValue().addSourcePower(id);
 
                     if (existing == null)
                     {
@@ -89,6 +90,7 @@ public class PowerContainer
                     {
                         // Overlay the later power's properties onto the existing entry
                         existing.getProperties().putAll(e.getValue().getProperties());
+                        existing.addSourcePower(id);
                     }
                 }
             }

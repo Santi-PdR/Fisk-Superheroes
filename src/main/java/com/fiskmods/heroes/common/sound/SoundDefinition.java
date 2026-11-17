@@ -36,6 +36,9 @@ public class SoundDefinition
     private int fadeOut;
     private int delay;
     private double range = 16.0D;
+    private Target target = Target.ALL_IN_RANGE;
+
+    public enum Target { ONLY_SELF, OTHERS_IN_RANGE, ALL_IN_RANGE, ALL_OTHERS, ALL }
 
     private ResourceLocation overridePath;
     private String overrideSource;
@@ -222,6 +225,37 @@ public class SoundDefinition
     {
         this.range = range;
     }
+
+    /** Reads the pack manifest's numeric range or object with distance and target. */
+    public void setRangeSpec(JsonElement spec)
+    {
+        if (spec == null || spec.isJsonNull())
+        {
+            range = Double.POSITIVE_INFINITY;
+            target = Target.ALL;
+        }
+        else if (spec.isJsonObject())
+        {
+            JsonObject object = spec.getAsJsonObject();
+            if (object.has("distance")) range = object.get("distance").isJsonNull()
+                    ? Double.POSITIVE_INFINITY : object.get("distance").getAsDouble();
+            if (object.has("target"))
+                try { target = Target.valueOf(object.get("target").getAsString()); }
+                catch (IllegalArgumentException ignored) { target = Target.ALL_IN_RANGE; }
+        }
+        else if (spec.isJsonPrimitive()) range = spec.getAsDouble();
+        if (range < 0) range = Double.POSITIVE_INFINITY;
+    }
+
+    /** The source is self only when the listener is the entity that emitted the sound. */
+    public boolean acceptsListener(boolean self, double distanceSquared)
+    {
+        if (self) return target != Target.OTHERS_IN_RANGE && target != Target.ALL_OTHERS;
+        if (target == Target.ONLY_SELF) return false;
+        return target == Target.ALL || target == Target.ALL_OTHERS || distanceSquared <= range * range;
+    }
+
+    public Target getTarget() { return target; }
 
     @Nullable
     public ResourceLocation getOverridePath()

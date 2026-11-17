@@ -18,6 +18,7 @@ public class ModifierEntry
 {
     private final Modifier modifier;
     private final String card;
+    private final java.util.Set<net.minecraft.resources.ResourceLocation> sourcePowers = new java.util.LinkedHashSet<>();
     private final Map<PowerProperty<?>, PropertyValue<?>> properties = new LinkedHashMap<>();
     private boolean enabled = true;
 
@@ -40,6 +41,17 @@ public class ModifierEntry
     public String getCard()
     {
         return card;
+    }
+
+    /** Powers contributing this card after the container combines duplicate modifier keys. */
+    public java.util.Set<net.minecraft.resources.ResourceLocation> getSourcePowers()
+    {
+        return java.util.Collections.unmodifiableSet(sourcePowers);
+    }
+
+    void addSourcePower(net.minecraft.resources.ResourceLocation power)
+    {
+        sourcePowers.add(power);
     }
 
     public Map<PowerProperty<?>, PropertyValue<?>> getProperties()

@@ -56,56 +56,49 @@ public final class AbilityData
         return element != null && element.isJsonObject() ? element.getAsJsonObject() : null;
     }
 
+    /** Active profile override or the power's default trigger, including explicit empty lists. */
+    public static List<ResourceLocation> soundIds(LivingEntity entity, ModifierEntry entry, String trigger)
+    {
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(entity);
+        var iteration = data != null ? data.getHero() : null;
+        if (iteration != null && iteration.getSoundProfile() != null)
+        {
+            var override = iteration.getHero().getModifierSoundOverride(iteration.getSoundProfile(), entry, trigger);
+            if (override != null) return override;
+        }
+        JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
+        JsonElement sound = sounds != null && sounds.isJsonObject() ? sounds.getAsJsonObject().get(trigger) : null;
+        List<ResourceLocation> result = new ArrayList<>();
+        if (sound != null && sound.isJsonArray())
+            for (JsonElement element : sound.getAsJsonArray()) addSoundId(result, element);
+        else if (sound != null) addSoundId(result, sound);
+        return result;
+    }
+
+    private static void addSoundId(List<ResourceLocation> result, JsonElement sound)
+    {
+        if (!sound.isJsonPrimitive() || !sound.getAsJsonPrimitive().isString()) return;
+        ResourceLocation id = ResourceLocation.tryParse(sound.getAsString());
+        if (id != null) result.add(id);
+    }
+
     public static void playSound(LivingEntity entity, ModifierEntry entry, String trigger)
     {
-        JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
-
-        if (sounds == null || !sounds.isJsonObject())
-        {
-            return;
-        }
-
-        JsonElement sound = sounds.getAsJsonObject().get(trigger);
-
-        if (sound == null)
-        {
-            return;
-        }
-
-        // Arrays are layered sounds (often an enable cue plus one or more loops), not alternatives.
-        if (sound.isJsonArray())
-        {
-            for (JsonElement element : sound.getAsJsonArray()) playSoundElement(entity, element);
-        }
-        else playSoundElement(entity, sound);
+        for (ResourceLocation id : soundIds(entity, entry, trigger))
+            com.fiskmods.heroes.common.sound.SHSounds.play(entity, id, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 
-    private static void playSoundElement(LivingEntity entity, JsonElement sound)
-    {
-        if (!sound.isJsonPrimitive() || !sound.getAsJsonPrimitive().isString()) return;
-        ResourceLocation id = ResourceLocation.tryParse(sound.getAsString());
-        if (id != null) com.fiskmods.heroes.common.sound.SHSounds.play(entity, id, SoundSource.PLAYERS, 1.0F, 1.0F);
-    }
-
-    /** Stop any looping cues for a trigger when its state or suit goes away. */
+    /** Stop looping cues selected by the same profile as the original start. */
     public static void stopSoundLoops(LivingEntity entity, ModifierEntry entry, String trigger)
     {
-        JsonElement sounds = entry.get(PowerProperty.SOUND_EVENTS);
-        if (sounds == null || !sounds.isJsonObject()) return;
-        JsonElement sound = sounds.getAsJsonObject().get(trigger);
-        if (sound == null) return;
-        if (sound.isJsonArray())
-            for (JsonElement element : sound.getAsJsonArray()) stopLoopElement(entity, element);
-        else stopLoopElement(entity, sound);
+        for (ResourceLocation id : soundIds(entity, entry, trigger))
+        {
+            var definition = com.fiskmods.heroes.common.sound.SHSounds.getDefinition(id);
+            if (definition != null && definition.isLoop())
+                com.fiskmods.heroes.common.sound.SHSounds.stopLoop(entity, id);
+        }
     }
 
-    private static void stopLoopElement(LivingEntity entity, JsonElement sound)
-    {
-        if (!sound.isJsonPrimitive() || !sound.getAsJsonPrimitive().isString()) return;
-        ResourceLocation id = ResourceLocation.tryParse(sound.getAsString());
-        var definition = id == null ? null : com.fiskmods.heroes.common.sound.SHSounds.getDefinition(id);
-        if (definition != null && definition.isLoop()) com.fiskmods.heroes.common.sound.SHSounds.stopLoop(entity, id);
-    }
 }
 
 /** Transformation abilities (nanites, steel, shapeshifting): a timed toggle with cooldown. */

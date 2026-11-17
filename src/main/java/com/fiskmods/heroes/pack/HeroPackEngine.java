@@ -423,7 +423,7 @@ public class HeroPackEngine
         }
 
         // 3. sound definitions (events/sounds/*.json) and their ranges
-        Map<String, Double> ranges = new LinkedHashMap<>();
+        Map<String, JsonElement> ranges = new LinkedHashMap<>();
         String soundRepository = null;
         int soundVersion = 0;
 
@@ -450,24 +450,7 @@ public class HeroPackEngine
             {
                 for (Map.Entry<String, JsonElement> e : sounds.getAsJsonObject("range").entrySet())
                 {
-                    JsonElement value = e.getValue();
-                    double range = 16.0D;
-
-                    if (value.isJsonObject())
-                    {
-                        JsonObject object = value.getAsJsonObject();
-
-                        if (object.has("distance"))
-                        {
-                            range = object.get("distance").getAsDouble();
-                        }
-                    }
-                    else if (value.isJsonPrimitive())
-                    {
-                        range = value.getAsDouble();
-                    }
-
-                    ranges.put(e.getKey(), range);
+                    ranges.put(e.getKey(), e.getValue());
                 }
             }
         }
@@ -490,12 +473,7 @@ public class HeroPackEngine
                 com.fiskmods.heroes.common.sound.SoundDefinition definition = com.fiskmods.heroes.common.sound.SoundDefinition.parse(
                         new ResourceLocation(domain, soundId), JsonParser.parseString(e.getValue()).getAsJsonObject());
 
-                Double range = ranges.get(soundId);
-
-                if (range != null)
-                {
-                    definition.setRange(range);
-                }
+                if (ranges.containsKey(soundId)) definition.setRangeSpec(ranges.get(soundId));
 
                 // The optional JS function which drives the sound's volume and pitch while it plays
                 if (definition.getOverridePath() != null)
