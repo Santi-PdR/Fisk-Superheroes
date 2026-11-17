@@ -156,8 +156,17 @@ def main():
             # in the actual renderer. Diagnostic counters are enabled only in this test.
             command('kill @e[tag=fire_immune_target]')
             command('difficulty peaceful')
-            command('execute as Dev run suit fiskheroes:iron_man_mk85')
+            command('execute as Dev run suit fiskheroes:iron_man mk45')
             xdo('key', 'F5')
+            wait_for(client_log, r'Drawing suit fiskheroes:iron_man_mk45 slot', 45,
+                     'Iron Man Mk 45 iteration synchronized to client', client)
+            xdo('key', 'x')
+            wait_for(client_log, r'Texture selector resolved: definition=fiskheroes:iron_man_mk45_mask\.tx\.json, texture=fiskheroes:textures/heroes/iron_man_mk45_mask_true\.png',
+                     45, 'Mk 45 open mask resolves boolean true texture without crashing', client)
+            subprocess.run(['scrot', '-o', 'ci-arrow-mk45-mask.png'], check=True, timeout=30)
+            xdo('key', 'x')
+            time.sleep(2)  # The opening-mask mesh is hidden when progress reaches zero.
+            command('execute as Dev run suit fiskheroes:iron_man_mk85')
             model_pattern = r'Expression cache: owner=model:fiskheroes:iron_man_mk85, lookups=100, compilations=([0-9]+)'
             wait_for(client_log, model_pattern, 60, 'Iron Man model expressions are reused over 100 lookups', client)
             route_pattern = r'Texture route cache: lookups=100, resolutions=([0-9]+)'

@@ -7196,6 +7196,25 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void textureGetterUsesActualValueNotPermutationIndex(GameTestHelper helper)
+    {
+        var getter = com.google.gson.JsonParser.parseString(
+                "{\"key\":\"value\",\"values\":[1,2,3,4,5]}");
+        var boolGetter = com.google.gson.JsonParser.parseString(
+                "{\"key\":\"value\",\"values\":[\"true\",\"false\"]}");
+        var range = com.google.gson.JsonParser.parseString(
+                "{\"key\":\"value\",\"values\":{\"min\":1,\"max\":5}}");
+        var evaluate = (java.util.function.BiFunction<com.google.gson.JsonElement, Object, Object>) (json, value) ->
+                com.fiskmods.heroes.common.hero.render.TextureGetterValue.evaluate(json, ignored -> value);
+        if (!evaluate.apply(getter, 1).equals(1) || !evaluate.apply(getter, 5).equals(5)
+                || !evaluate.apply(getter, 7).equals(7) || !evaluate.apply(boolGetter, true).equals(true)
+                || !evaluate.apply(boolGetter, false).equals(false) || !evaluate.apply(range, 0).equals(0)
+                || !evaluate.apply(getter, "custom").equals("custom"))
+        { helper.fail("Getter values describe preloaded variants and must not remap runtime results"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void miniatureScriptUsesNeutralDisplayState(GameTestHelper helper)
     {
         var player = new net.minecraftforge.common.util.FakePlayer(helper.getLevel(),

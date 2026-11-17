@@ -38,6 +38,7 @@ public final class TextureResolver
     private static final boolean DIAGNOSTICS = Boolean.getBoolean("fiskheroes.ciPerformanceDiagnostics");
     private static final Map<String, Object> FIRST_VALUES = new HashMap<>();
     private static final java.util.Set<String> CHANGING_VALUES = new java.util.HashSet<>();
+    private static final java.util.Set<String> FIRST_TEXTURES = new java.util.HashSet<>();
 
     private TextureResolver()
     {
@@ -51,6 +52,7 @@ public final class TextureResolver
         EXPRESSIONS.clear();
         FIRST_VALUES.clear();
         CHANGING_VALUES.clear();
+        FIRST_TEXTURES.clear();
     }
 
     /** Resolves the texture a resource name points to for the given entity. */
@@ -97,7 +99,10 @@ public final class TextureResolver
         {
             // A selector: the template names the variant that a getter picked
             String path = substitute(texture.getAsString(), values);
-            return SHTextures.sprite(id.getNamespace(), path);
+            ResourceLocation resolved = SHTextures.sprite(id.getNamespace(), path);
+            if (DIAGNOSTICS && FIRST_TEXTURES.size() < 512 && FIRST_TEXTURES.add(id + "|" + resolved))
+                FiskHeroes.LOGGER.info("Texture selector resolved: definition={}, texture={}", id, resolved);
+            return resolved;
         }
 
         JsonObject stitch = texture.getAsJsonObject();
@@ -147,42 +152,10 @@ public final class TextureResolver
         return RESOURCE_EXISTS.computeIfAbsent(id, key -> Minecraft.getInstance().getResourceManager().getResource(key).isPresent());
     }
 
-    /** Evaluates one getter: a data variable, a script expression, or nothing. */
+    /** Evaluates the getter itself; values merely enumerates possible preloaded variants. */
     private static Object select(JsonElement getter, Entity entity)
     {
-        if (!getter.isJsonObject())
-        {
-            return 0;
-        }
-
-        JsonObject json = getter.getAsJsonObject();
-        String key = json.has("key") ? json.get("key").getAsString() : "";
-        int index = key.indexOf(':') == -1 ? -1 : key.substring(key.indexOf(':') + 1).indexOf(':');
-
-        // Longest-prefix match: anything that is not a known data variable is a script expression
-        Object value = evaluate(key, entity);
-
-        if (json.has("values"))
-        {
-            JsonElement values = json.get("values");
-
-            if (values.isJsonArray())
-            {
-                int i = value instanceof Number n ? n.intValue() : 0;
-                var array = values.getAsJsonArray();
-                return array.isEmpty() ? 0 : array.get(Math.max(0, Math.min(array.size() - 1, i))).getAsInt();
-            }
-
-            if (values.isJsonObject())
-            {
-                int min = values.getAsJsonObject().has("min") ? values.getAsJsonObject().get("min").getAsInt() : 0;
-                int max = values.getAsJsonObject().has("max") ? values.getAsJsonObject().get("max").getAsInt() : 0;
-                int i = value instanceof Number n ? n.intValue() : min;
-                return Math.max(min, Math.min(max, i));
-            }
-        }
-
-        return value != null ? value : index;
+        return com.fiskmods.heroes.common.hero.render.TextureGetterValue.evaluate(getter, key -> evaluate(key, entity));
     }
 
     /** Reads a data variable, or evaluates the key as a script expression. */
@@ -197,7 +170,7 @@ public final class TextureResolver
 
         if (data != null)
         {
-            return data instanceof Number || data instanceof Boolean ? data : 0;
+            return data instanceof Number || data instanceof Boolean || data instanceof String ? data : 0;
         }
 
         ScriptFunction function = EXPRESSIONS.get(key);
@@ -214,7 +187,7 @@ public final class TextureResolver
                     if (first != null) CHANGING_VALUES.add(key);
                 }
             }
-            return result instanceof Number || result instanceof Boolean ? result : 0;
+            return result instanceof Number || result instanceof Boolean || result instanceof String ? result : 0;
         }
 
         return 0;
