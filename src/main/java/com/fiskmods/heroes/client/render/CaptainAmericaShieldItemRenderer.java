@@ -18,7 +18,6 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
@@ -33,6 +32,7 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
     private static final float TEX_W = 32.0F;
     private static final float TEX_H = 32.0F;
     private static CaptainAmericaShieldItemRenderer instance;
+    private static final java.util.Map<String, Boolean> POSE_DIAGNOSTICS = new java.util.concurrent.ConcurrentHashMap<>();
 
     private final List<Quad> shapeQuads = new ArrayList<>();
     private final List<Quad> strapQuads = new ArrayList<>();
@@ -58,8 +58,20 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
     public void renderByItem(ItemStack stack, ItemDisplayContext context, PoseStack pose,
             MultiBufferSource buffers, int light, int overlay)
     {
-        Player player = Minecraft.getInstance().player;
-        boolean blocking = player != null && player.isUsingItem() && player.getUseItem() == stack;
+        var wearer = SuitItemRenderContext.wearer();
+        // Some first-person call sites lack a scoped wearer. Never substitute the
+        // local player for a remote, GUI or back-mounted render.
+        if (wearer == null && (context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                || context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND)) wearer = Minecraft.getInstance().player;
+        boolean blocking = wearer != null && wearer.isUsingItem() && wearer.getUseItem() == stack;
+        if (wearer != null && Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+        {
+            String key = wearer.getUUID() + "|" + context;
+            Boolean previous = POSE_DIAGNOSTICS.put(key, blocking);
+            if (previous == null || previous != blocking)
+                FiskHeroes.LOGGER.info("Shield item pose: wearer={}, context={}, blocking={}",
+                        wearer.getName().getString(), context, blocking);
+        }
         boolean showStraps = false;
 
         pose.pushPose();

@@ -48,7 +48,11 @@ public final class ShieldRecovery
         float damage = vars.get(Vars.SHIELD_DAMAGE);
         short cooldown = vars.get(Vars.SHIELD_COOLDOWN);
         if (damage <= 0.0F && cooldown <= 0) return;
-        if (elapsed < Short.MAX_VALUE) vars.set(Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) (elapsed + 1));
+        if (elapsed < Short.MAX_VALUE)
+        {
+            elapsed++;
+            vars.set(Vars.TICKS_SINCE_SHIELD_DAMAGED, elapsed);
+        }
         if (cooldown > 0)
         {
             vars.set(Vars.SHIELD_COOLDOWN, (short) (cooldown - 1));

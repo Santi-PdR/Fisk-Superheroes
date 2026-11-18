@@ -47,6 +47,9 @@ public final class ItemShieldBlocking
         vars.set(Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) 0);
         boolean broken = damage >= 80.0F;
         if (broken) vars.set(Vars.SHIELD_COOLDOWN, (short) 100);
+        if (Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+            FiskHeroes.LOGGER.info("Shield item block: player={}, hit={}, total={}, broken={}",
+                    player.getName().getString(), event.getAmount(), damage, broken);
 
         var source = event.getSource();
         if (source.getEntity() instanceof LivingEntity attacker

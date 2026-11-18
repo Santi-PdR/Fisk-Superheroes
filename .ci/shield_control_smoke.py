@@ -77,6 +77,8 @@ def main():
             wait_for(client_log, r'Shield use: player=Dev, side=client, allowed=false', 30,
                      'client denies blocking without a permitted suit', client)
             command('execute as Dev run suit fiskheroes:captain_america')
+            command('gamemode survival Dev')
+            command('summon minecraft:armor_stand 0.5 181.62 3.5 {Tags:["shield_attacker"],NoGravity:1b,Invisible:1b,Marker:1b}')
             time.sleep(2)
             xdo('mousedown', '3')
             try:
@@ -84,7 +86,20 @@ def main():
                          'client allows Captain America to raise the shield', client)
                 wait_for(server_log, r'Shield use: player=Dev, side=server, allowed=true', 30,
                          'dedicated server accepts permitted shield use', server)
+                command('damage Dev 4 minecraft:mob_attack by @e[type=minecraft:armor_stand,tag=shield_attacker,limit=1]')
+                wait_for(server_log, r'Shield item block: player=Dev, hit=4.0, total=4.0, broken=false',
+                         30, 'dedicated server blocks frontal damage with item shield', server)
+                command('execute if data entity Dev {Health:20.0f,SelectedItem:{tag:{Damage:1}}} run say SHIELD_FRONT_OK')
+                wait_for(server_log, r'\[Server\] SHIELD_FRONT_OK', 30,
+                         'frontal block preserves health and wears shield once', server)
+                command('tp @e[type=minecraft:armor_stand,tag=shield_attacker] 3.5 181.62 3.5')
+                command('damage Dev 4 minecraft:mob_attack by @e[type=minecraft:armor_stand,tag=shield_attacker,limit=1]')
+                command('execute unless data entity Dev {Health:20.0f} run say SHIELD_SIDE_HIT_OK')
+                wait_for(server_log, r'\[Server\] SHIELD_SIDE_HIT_OK', 30,
+                         '45 degree hit bypasses the raised shield in the real client', server)
             finally: xdo('mouseup', '3')
+            command('kill @e[type=minecraft:armor_stand,tag=shield_attacker]')
+            command('gamemode creative Dev')
             time.sleep(1)
             xdo('keydown', 'c')
             try:

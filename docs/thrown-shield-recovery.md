@@ -12,7 +12,7 @@ The original item throws on a primary-attack swing while `SHIELD_THROW` is held;
 
 ## Projectile rendering
 
-The original `RenderThrownShield` draws the shield mesh in flight orientation and spins it by 32 degrees per unit of velocity. The projectile now uses the existing shield geometry directly with interpolated yaw, pitch and spin instead of the generic camera-facing thrown-item renderer. Velocity-driven spin is tested server-side and the client smoke test uses a temporary diagnostic texture to verify rendered pixels. Suit-specific projectile liveries, electromagnetic model differences and enchantment glint are not yet reproduced.
+The original `RenderThrownShield` draws the shield mesh in flight orientation and spins it by 32 degrees per unit of velocity. The projectile now uses the existing shield geometry directly with interpolated yaw, pitch and spin instead of the generic camera-facing thrown-item renderer. Velocity-driven spin is tested server-side and the client smoke test uses a temporary diagnostic texture to verify rendered pixels. Held shield poses use the actual wearer, including remote players. Electromagnetic model differences remain incomplete.
 
 ## Blocking permission
 

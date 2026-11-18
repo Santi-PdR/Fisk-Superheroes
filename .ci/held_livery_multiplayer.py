@@ -36,7 +36,7 @@ def wait_for_new(path, pattern, start, seconds, label, process):
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true -Dfiskheroes.ciVelocityDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciAimDiagnostics=true -Dfiskheroes.ciColdBallDiagnostics=true -Dfiskheroes.ciBowDiagnostics=true -Dfiskheroes.ciParticleDiagnostics=true -Dfiskheroes.ciMaskDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true -Dfiskheroes.ciVelocityDiagnostics=true -Dfiskheroes.ciShieldDiagnostics=true')
     processes = []
     server_log = Path('ci-held-multiplayer-server.log')
     observer_log = Path('ci-held-multiplayer-observer.log')
@@ -141,6 +141,28 @@ def main():
                 command('tp Partner 0 180 4 180 0')
                 command('item replace entity Partner hotbar.0 with minecraft:air')
                 command('gamemode creative Partner')
+            # The shield's pose must use the remote wearer, not the observing
+            # client's own use state. Exercise its real held/released input.
+            command('tp Dev 0 180 0 0 0')
+            command('tp Partner 0 180 4 180 0')
+            command('execute as Partner run suit fiskheroes:captain_america')
+            pose_start = len(observer_log.read_text(errors='replace'))
+            command('item replace entity Partner hotbar.0 with fiskheroes:captain_americas_shield')
+            subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+            subprocess.run(['xdotool', 'key', '1'], check=True, timeout=30)
+            wait_for_new(observer_log, r'Shield item pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, blocking=false',
+                         pose_start, 60, 'observer sees the remote shield at rest', observer)
+            raised = len(observer_log.read_text(errors='replace'))
+            subprocess.run(['xdotool', 'mousedown', '3'], check=True, timeout=30)
+            try:
+                wait_for_new(observer_log, r'Shield item pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, blocking=true',
+                             raised, 60, 'observer sees the remote shield raised', observer)
+                released = len(observer_log.read_text(errors='replace'))
+            finally:
+                subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
+            wait_for_new(observer_log, r'Shield item pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, blocking=false',
+                         released, 60, 'observer sees the remote shield lowered', observer)
+            command('item replace entity Partner hotbar.0 with minecraft:air')
             command('execute as Partner run suit fiskheroes:iron_man')
             wait_for(observer_log, r'Drawing suit fiskheroes:iron_man slot', 60,
                      'observer sees remote Iron Man suit', observer)
