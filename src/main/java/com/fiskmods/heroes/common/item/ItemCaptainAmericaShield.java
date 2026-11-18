@@ -7,7 +7,28 @@ import net.minecraft.world.item.ShieldItem;
 /** Captain America's Vibranium shield with its original curved 3D ModelCapsShield renderer. */
 public final class ItemCaptainAmericaShield extends ShieldItem
 {
+    public static final String TAG_ELECTROMAGNETIC = "Electromagnetic";
     private static final java.util.UUID ATTACK_DAMAGE_ID = java.util.UUID.fromString("dc1b37ab-0ff1-44ea-9580-c1b2155c44ef");
+
+    public static boolean isElectromagnetic(ItemStack stack)
+    {
+        return stack.hasTag() && stack.getTag().getBoolean(TAG_ELECTROMAGNETIC);
+    }
+
+    public static ItemStack setElectromagnetic(ItemStack stack, boolean value)
+    {
+        stack.getOrCreateTag().putBoolean(TAG_ELECTROMAGNETIC, value);
+        return stack;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack stack, @javax.annotation.Nullable net.minecraft.world.level.Level level,
+            java.util.List<net.minecraft.network.chat.Component> tooltip, net.minecraft.world.item.TooltipFlag flag)
+    {
+        super.appendHoverText(stack, level, tooltip, flag);
+        if (isElectromagnetic(stack)) tooltip.add(net.minecraft.network.chat.Component.translatable("tooltip.shield.electromagnetic")
+                .withStyle(net.minecraft.ChatFormatting.GRAY));
+    }
 
     public ItemCaptainAmericaShield(Properties properties)
     {

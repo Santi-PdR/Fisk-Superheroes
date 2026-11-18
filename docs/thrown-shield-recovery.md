@@ -1,6 +1,8 @@
 # Thrown shield recovery
 
-The original `EntityThrownShield` has its own bounce and electromagnetic return rules; the port's existing projectile is simpler and always homes after impact or a long flight. The port does not yet implement the original ricochets or magnetic variants.
+The original `EntityThrownShield` has its own bounce and electromagnetic return rules; the port's existing projectile is simpler and always homes after impact or a long flight. Original ricochets and the electromagnetic projectile's distinct return behavior are not yet implemented.
+
+The electromagnetic attachment is craftable with iron blocks, vibranium alloy, dwarf star alloy and redstone in the original pattern. An anvil combines a normal shield on the left with one attachment on the right for 30 levels, preserving the shield's data and durability. The upgrade sets the original `Electromagnetic` NBT flag, adds its tooltip, and hides the wrist/grip straps as in the original. Both variants are available in creative. Until the projectile behavior is ported, the upgrade does not change the shield's flight.
 
 The port previously used the same 200-tick age both to start a long-flight return and to abort it. A shield that had not hit anything therefore dropped on the next tick rather than getting a chance to reach its owner. Outbound and return timeouts are now separate. The return timer is saved with the projectile and defaults to zero for older saves. Homing movement is capped at the remaining distance to avoid overshooting. If a non-player owner is assigned by another mod, the item is dropped instead of discarded. The alternate shield request packet also retains the item if entity spawning fails.
 

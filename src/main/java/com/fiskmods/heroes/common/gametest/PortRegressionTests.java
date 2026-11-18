@@ -4920,6 +4920,59 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void electromagnetRecipeMatchesOriginalIngredients(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "electromagnet-recipe-test"));
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 3, 3);
+        for (int i = 0; i < 3; i++)
+            grid.setItem(i, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_BLOCK));
+        grid.setItem(3, new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.VIBRANIUM_INGOT.get()));
+        grid.setItem(4, new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.DWARF_STAR_ALLOY.get()));
+        grid.setItem(5, new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.VIBRANIUM_INGOT.get()));
+        for (int i = 6; i < 9; i++)
+            grid.setItem(i, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.REDSTONE));
+        var loaded = level.getRecipeManager().byKey(FiskHeroes.id("electromagnet_attachment")).orElse(null);
+        if (!(loaded instanceof net.minecraft.world.item.crafting.CraftingRecipe recipe) || !recipe.matches(grid, level)
+                || !recipe.assemble(grid, level.registryAccess()).is(com.fiskmods.heroes.common.item.ModItems.ELECTROMAGNET_ATTACHMENT.get()))
+        { helper.fail("Electromagnet must use iron blocks, vibranium, dwarf star alloy and redstone"); return; }
+        grid.setItem(4, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_INGOT));
+        if (recipe.matches(grid, level)) { helper.fail("Iron must not replace dwarf star alloy"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void electromagnetAnvilPreservesShieldData(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var shield = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        shield.setDamageValue(37);
+        shield.enchant(net.minecraft.world.item.enchantment.Enchantments.UNBREAKING, 2);
+        shield.getOrCreateTag().putString("CustomMarker", "preserved");
+        var originalTag = shield.getTag().copy();
+        var attachment = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.ELECTROMAGNET_ATTACHMENT.get(), 3);
+        var event = new net.minecraftforge.event.AnvilUpdateEvent(shield, attachment, null, 0, player);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        var result = event.getOutput();
+        var expectedTag = originalTag.copy();
+        expectedTag.putBoolean(com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.TAG_ELECTROMAGNETIC, true);
+        if (event.isCanceled() || event.getCost() != 30 || event.getMaterialCost() != 1 || result.isEmpty()
+                || !expectedTag.equals(result.getTag()) || !originalTag.equals(shield.getTag()) || attachment.getCount() != 3)
+        { helper.fail("Anvil must copy all shield data, add electromagnetic flag, cost 30 levels and consume one attachment"); return; }
+        var duplicate = new net.minecraftforge.event.AnvilUpdateEvent(result, attachment, null, 0, player);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(duplicate);
+        if (!duplicate.getOutput().isEmpty()) { helper.fail("An already electromagnetic shield must not be upgraded again"); return; }
+        var wrongOrder = new net.minecraftforge.event.AnvilUpdateEvent(attachment, shield, null, 0, player);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(wrongOrder);
+        if (!wrongOrder.getOutput().isEmpty()) { helper.fail("Anvil inputs must not be reversible"); return; }
+        var restored = net.minecraft.world.item.ItemStack.of(result.save(new net.minecraft.nbt.CompoundTag()));
+        if (!com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(restored))
+        { helper.fail("Electromagnetic flag must survive saving"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void velocityNineRecipeMatchesOriginalIngredients(GameTestHelper helper)
     {
         var level = helper.getLevel();

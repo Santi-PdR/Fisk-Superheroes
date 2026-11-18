@@ -42,6 +42,7 @@ public class ModItems
     /* --- Crafting materials --- */
     public static final RegistryObject<Item> VELOCITY_NINE = REGISTRY.register("velocity_nine",
             () -> new ItemVelocityNine(new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> ELECTROMAGNET_ATTACHMENT = REGISTRY.register("electromagnet_attachment", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SUIT_CORE = REGISTRY.register("suit_core", () -> new Item(new Item.Properties()));
     public static final RegistryObject<Item> SUIT_UPGRADE = REGISTRY.register("suit_upgrade", () -> new ItemSuitUpgrade(0, new Item.Properties()));
     public static final RegistryObject<Item> SUIT_UPGRADE_GOLD = REGISTRY.register("suit_upgrade_gold", () -> new ItemSuitUpgrade(1, new Item.Properties()));
@@ -187,6 +188,7 @@ public class ModItems
                 .displayItems((params, output) ->
                 {
                     output.accept(VELOCITY_NINE.get());
+                    output.accept(ELECTROMAGNET_ATTACHMENT.get());
                     output.accept(SUIT_CORE.get());
                     output.accept(SUIT_UPGRADE.get());
                     output.accept(SUIT_UPGRADE_GOLD.get());
@@ -262,6 +264,7 @@ public class ModItems
                     output.accept(BO_STAFF.get());
                     output.accept(RUPTURES_SCYTHE.get());
                     output.accept(CAPTAIN_AMERICAS_SHIELD.get());
+                    output.accept(ItemCaptainAmericaShield.setElectromagnetic(new ItemStack(CAPTAIN_AMERICAS_SHIELD.get()), true));
                     output.accept(QUIVER.get());
                     output.accept(ItemQuiver.makeAutomatic(new ItemStack(QUIVER.get())));
                     output.accept(COMPOUND_BOW.get());

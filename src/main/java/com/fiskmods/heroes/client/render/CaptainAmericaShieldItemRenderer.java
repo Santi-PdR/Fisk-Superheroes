@@ -164,7 +164,7 @@ public final class CaptainAmericaShieldItemRenderer extends BlockEntityWithoutLe
         }
         pose.popPose();
 
-        if (showStraps)
+        if (showStraps && !com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(stack))
         {
             strapWrist.render(pose, consumer, light, overlay);
             strapGrip.render(pose, consumer, light, overlay);

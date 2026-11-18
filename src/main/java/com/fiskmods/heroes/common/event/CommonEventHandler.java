@@ -31,6 +31,19 @@ public class CommonEventHandler
 {
     private static final String CACTUS_COOLDOWN_UNTIL = "FiskHeroesCactusSummonUntil";
 
+    /** The original anvil upgrade costs 30 levels and consumes one electromagnet. */
+    @SubscribeEvent
+    public static void onShieldAnvil(net.minecraftforge.event.AnvilUpdateEvent event)
+    {
+        var shield = event.getLeft();
+        if (!shield.is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                || com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(shield)
+                || !event.getRight().is(com.fiskmods.heroes.common.item.ModItems.ELECTROMAGNET_ATTACHMENT.get())) return;
+        event.setOutput(com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.setElectromagnetic(shield.copy(), true));
+        event.setMaterialCost(1);
+        event.setCost(30);
+    }
+
     /** Install the current suit bonus before vanilla computes attack cooldown and critical damage. */
     @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
     public static void onAttackEntity(net.minecraftforge.event.entity.player.AttackEntityEvent event)
