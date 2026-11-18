@@ -198,6 +198,33 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void shieldUseRequiresPermissionAndNoCooldown(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var captain = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
+        if (data == null || captain == null || flash == null) { helper.fail("Shield permission setup missing"); return; }
+        var item = com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get();
+        var hand = net.minecraft.world.InteractionHand.MAIN_HAND;
+        player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(item));
+        if (item.use(helper.getLevel(), player, hand).getResult() != net.minecraft.world.InteractionResult.FAIL || player.isUsingItem())
+        { helper.fail("An unsuited player may not raise this shield"); return; }
+        data.setHero(flash.getDefaultIteration());
+        if (item.use(helper.getLevel(), player, hand).getResult() != net.minecraft.world.InteractionResult.FAIL || player.isUsingItem())
+        { helper.fail("An unrelated suit may not raise this shield"); return; }
+        data.setHero(captain.getDefaultIteration());
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN, (short) 2);
+        if (item.use(helper.getLevel(), player, hand).getResult() != net.minecraft.world.InteractionResult.FAIL || player.isUsingItem())
+        { helper.fail("The shield may not be raised during shield cooldown"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN, (short) 0);
+        if (!item.use(helper.getLevel(), player, hand).getResult().consumesAction() || !player.isUsingItem())
+        { helper.fail("A permitted player must be able to raise the shield after cooldown"); return; }
+        player.stopUsingItem();
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shieldWeaponDamageUsesEnchantmentsAndSuit(GameTestHelper helper)
     {
         var player = helper.makeMockSurvivalPlayer();

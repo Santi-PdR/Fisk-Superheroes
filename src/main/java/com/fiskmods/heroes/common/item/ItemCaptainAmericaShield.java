@@ -27,6 +27,18 @@ public final class ItemCaptainAmericaShield extends ShieldItem
     }
 
     @Override
+    public net.minecraft.world.InteractionResultHolder<ItemStack> use(net.minecraft.world.level.Level level,
+            net.minecraft.world.entity.player.Player player, net.minecraft.world.InteractionHand hand)
+    {
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = data != null ? data.getHeroType() : null;
+        if (hero == null || !hero.hasPermission(player, "USE_SHIELD")
+                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) > 0)
+            return net.minecraft.world.InteractionResultHolder.fail(player.getItemInHand(hand));
+        return super.use(level, player, hand);
+    }
+
+    @Override
     public boolean hurtEnemy(ItemStack stack, net.minecraft.world.entity.LivingEntity target,
             net.minecraft.world.entity.LivingEntity attacker)
     {

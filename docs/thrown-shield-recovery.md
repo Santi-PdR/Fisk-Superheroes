@@ -14,6 +14,10 @@ The original item throws on a primary-attack swing while `SHIELD_THROW` is held;
 
 The original `RenderThrownShield` draws the shield mesh in flight orientation and spins it by 32 degrees per unit of velocity. The projectile now uses the existing shield geometry directly with interpolated yaw, pitch and spin instead of the generic camera-facing thrown-item renderer. Velocity-driven spin is tested server-side and the client smoke test uses a temporary diagnostic texture to verify rendered pixels. Suit-specific projectile liveries, electromagnetic model differences and enchantment glint are not yet reproduced.
 
+## Blocking permission
+
+As in the original, raising Captain America's shield requires an active hero granting `USE_SHIELD` and no shared shield cooldown. This gate runs on both client and server. The port still uses vanilla shield blocking mechanics after it is raised, rather than the original item's 80-point shared shield health and directional coverage.
+
 ## Impact
 
 The original uses an indirect projectile damage source attributed to the thrower and wears the shield on a successful hit. The port uses a tagged shield-specific projectile source with the original translated death-message key, applies one durability point (including Unbreaking and creative rules), and applies the shield's Fire Aspect on successful hits. The original's impact damage calculation includes the shield's enchantment bonus, suit weapon attributes, strength and weakness, a 1.5 multiplier and speed scaling capped at full damage; the shield also adds six melee attack damage when held in the main hand and wears on a successful melee hit. Knockback and immediate homing return still differ from the original bounce-dependent flight.
