@@ -66,6 +66,38 @@ public final class MeleeCombat
         if (attack != null) attack.removeModifier(ATTACK_BONUS);
     }
 
+    /** Original shield impact calculation before its velocity multiplier and critical factor. */
+    public static float thrownShieldDamage(LivingEntity attacker, LivingEntity target, ItemStack shield)
+    {
+        float damage = 7.0F;
+        var strength = attacker.getEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST);
+        var weakness = attacker.getEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
+        if (strength != null) damage /= 1.0F + 1.3F * (1 + strength.getAmplifier());
+        if (weakness != null) damage += 0.5F;
+        damage += net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageBonus(shield, target.getMobType()) / 2.0F;
+
+        if (attacker instanceof Player player)
+        {
+            var data = SHDataCapabilities.getPlayer(player);
+            Hero hero = data != null ? data.getHeroType() : null;
+            if (hero != null)
+            {
+                SHAttributes.applyModifiers(player);
+                AttributeInstance suit = player.getAttribute(SHAttributes.WEAPON_DAMAGE.get());
+                if (suit != null)
+                {
+                    double difference = apply(suit, damage) - damage;
+                    boolean matching = hero.getEquipment().stream().anyMatch(e -> e.stack().getItem() == shield.getItem());
+                    if ((difference > 0.0D && !matching) || (difference < 0.0D && matching)) difference *= 0.5D;
+                    damage += (float) difference;
+                }
+            }
+        }
+        if (weakness != null) damage -= 0.5F;
+        if (strength != null) damage *= 1.0F + 0.5F * (1 + strength.getAmplifier());
+        return Math.max(0.0F, damage * 1.5F);
+    }
+
     /** Snapshot before outgoing modifiers consume a charged punch. */
     public static double extraKnockback(LivingEntity attacker, DamageSource source, boolean hooked)
     {

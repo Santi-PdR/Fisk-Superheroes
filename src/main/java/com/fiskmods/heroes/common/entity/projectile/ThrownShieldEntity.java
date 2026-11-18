@@ -29,7 +29,6 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SHIELD_DAMAGE =
             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                     com.fiskmods.heroes.FiskHeroes.id("thrown_shield"));
-    private static final float DAMAGE = 7.0F;
     private static final int MAX_FLIGHT_TICKS = 200;
     private static final int MAX_RETURN_TICKS = 200;
     private int returnTicks;
@@ -146,7 +145,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         {
             var damageType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(SHIELD_DAMAGE);
-            boolean damaged = living.hurt(new net.minecraft.world.damagesource.DamageSource(damageType, this, attacker), DAMAGE);
+            float baseDamage = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(attacker, living, getItem());
+            float damage = (float) (baseDamage * net.minecraft.util.Mth.clamp(getDeltaMovement().length(), 0.0D, 1.0D));
+            boolean damaged = living.hurt(new net.minecraft.world.damagesource.DamageSource(damageType, this, attacker), damage);
             if (damaged)
             {
                 Vec3 knockback = getDeltaMovement().normalize().scale(0.6D);

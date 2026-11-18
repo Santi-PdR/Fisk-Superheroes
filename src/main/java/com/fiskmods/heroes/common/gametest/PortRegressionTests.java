@@ -136,6 +136,8 @@ public final class PortRegressionTests
         var target = net.minecraft.world.entity.EntityType.COW.create(level);
         if (target == null) { helper.fail("Shield impact target missing"); return; }
         target.setNoAi(true); target.setNoGravity(true);
+        target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100);
+        target.setHealth(100);
         target.setPos(base.getX() + .5, base.getY(), base.getZ() + 2.5); level.addFreshEntity(target);
         var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
         stack.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
@@ -152,14 +154,20 @@ public final class PortRegressionTests
             if (source == null || source.getDirectEntity() != shield || source.getEntity() != owner
                     || !source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
                     || !source.is(com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.SHIELD_DAMAGE)
-                    || Math.abs(recorder.amount - 7.0F) > .01F)
-            { helper.fail("Shield impact must use its own projectile damage with owner attribution"); return; }
+                    || Math.abs(recorder.amount - 10.5F) > .01F)
+            { helper.fail("A fast shield impact must deal 10.5 projectile damage with owner attribution"); return; }
             if (!shield.isReturning() || shield.getItem().getDamageValue() != 1 || !target.isOnFire()
                     || !"impact".equals(shield.getItem().getTag().getString("RegressionMarker")))
             { helper.fail("Successful shield impact must apply fire aspect and one durability while preserving item data"); return; }
             shield.tick();
             if (recorder.count != 1) { helper.fail("Returning shield must not damage a target twice"); return; }
-            shield.discard(); target.clearFire(); target.setInvulnerable(true);
+            shield.discard(); target.clearFire(); target.invulnerableTime = 0;
+            var slow = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+            slow.setPos(target.getX(), target.getY() + 1, target.getZ() - .8);
+            slow.setDeltaMovement(0, 0, .5); level.addFreshEntity(slow); slow.tick();
+            if (recorder.source == null || recorder.source.getDirectEntity() != slow || Math.abs(recorder.amount - 5.25F) > .01F)
+            { slow.discard(); helper.fail("A slower shield must scale impact damage by its speed"); return; }
+            slow.discard(); target.clearFire(); target.setInvulnerable(true);
             var blocked = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
             blocked.setPos(base.getX() + .5, base.getY() + 1, base.getZ() + .5);
             blocked.setDeltaMovement(0, 0, 3); level.addFreshEntity(blocked); blocked.tick();
@@ -187,6 +195,35 @@ public final class PortRegressionTests
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
             shield.discard(); target.discard();
         }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldWeaponDamageUsesEnchantmentsAndSuit(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var target = net.minecraft.world.entity.EntityType.COW.create(helper.getLevel());
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
+        if (target == null || data == null || hero == null) { helper.fail("Shield damage setup missing"); return; }
+        var shield = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        var modifiers = shield.getAttributeModifiers(net.minecraft.world.entity.EquipmentSlot.MAINHAND)
+                .get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
+        if (modifiers.stream().noneMatch(m -> Math.abs(m.getAmount() - 6.0D) < .001D))
+        { helper.fail("Shield must add six melee attack damage in the main hand"); return; }
+        shield.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 1);
+        float enchanted = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(player, target, shield);
+        if (Math.abs(enchanted - 11.25F) > .01F)
+        { helper.fail("Thrown shield must apply half of its enchantment bonus before the critical multiplier"); return; }
+        data.setHero(hero.getDefaultIteration());
+        float suited = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(player, target, shield);
+        if (Math.abs(suited - 18.0F) > .01F)
+        { helper.fail("Captain America's shield must receive his full equipment weapon damage bonus"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST, 100, 0));
+        float strength = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(player, target, shield);
+        float expected = (7.0F / 2.3F + 0.5F + 4.5F) * 1.5F * 1.5F;
+        if (Math.abs(strength - expected) > .01F)
+        { helper.fail("Strength must use the original impact modifier order"); return; }
+        helper.succeed();
     }
 
     @GameTest(template = "test_empty")
