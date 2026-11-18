@@ -433,6 +433,93 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void thrownShieldBouncesOffSolidWall(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var wall = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var owner = helper.makeMockSurvivalPlayer(); owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+        shield.setDeltaMovement(0.0D, 0.0D, 2.0D); level.addFreshEntity(shield); shield.tick();
+        if (shield.isRemoved() || !shield.isReturning() || Math.abs(shield.getDeltaMovement().z + 1.485D) > .01D)
+        { shield.discard(); helper.fail("Solid impact must reflect and attenuate speed by 0.75 before air drag"); return; }
+        double before = shield.getX(); shield.tick();
+        if (shield.isRemoved() || Math.abs(shield.getX() - before) > .01D || shield.getDeltaMovement().z >= 0)
+        { shield.discard(); helper.fail("Ordinary shield must continue its ricochet rather than immediately home"); return; }
+        shield.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void slowOrdinaryShieldFallsOrReturnsNearby(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        level.setBlockAndUpdate(base.offset(0, 1, 2), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var owner = helper.makeMockSurvivalPlayer(); owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.getOrCreateTag().putString("RegressionMarker", "slow impact");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + 1.6D);
+        shield.setDeltaMovement(0, 0, .45D); level.addFreshEntity(shield); shield.tick();
+        var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class, shield.getBoundingBox().inflate(3));
+        boolean found = drops.stream().anyMatch(drop -> drop.getItem().hasTag()
+                && "slow impact".equals(drop.getItem().getTag().getString("RegressionMarker")));
+        drops.forEach(net.minecraft.world.entity.Entity::discard);
+        if (!shield.isRemoved() || !found)
+        { shield.discard(); helper.fail("A slow ordinary shield far from its owner must drop its original item"); return; }
+        owner.setPos(base.getX() + .5D, base.getY(), base.getZ());
+        var nearby = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        nearby.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + 1.6D);
+        nearby.setDeltaMovement(0, 0, .45D); level.addFreshEntity(nearby); nearby.tick();
+        if (!nearby.isRemoved() || owner.getInventory().items.stream().noneMatch(item -> item.hasTag()
+                && "slow impact".equals(item.getTag().getString("RegressionMarker"))))
+        { nearby.discard(); helper.fail("A slow ordinary shield must be recovered when its owner is within five blocks"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void magneticShieldDelayAndSlowImpactSurviveSave(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer(); owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.setElectromagnetic(stack, true);
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        var state = new net.minecraft.nbt.CompoundTag(); shield.addAdditionalSaveData(state);
+        state.putBoolean("Returning", true); shield.readAdditionalSaveData(state); shield.setOwner(owner);
+        shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+        shield.setDeltaMovement(0, 0, .1D); shield.tickCount = 49; level.addFreshEntity(shield);
+        double x = shield.getX(); shield.tick(); shield.tick();
+        if (Math.abs(shield.getX() - x) > .01D)
+        { shield.discard(); helper.fail("Magnetic return must not start before age exceeds 50"); return; }
+        shield.tick();
+        if (shield.getX() >= x - .1D)
+        { shield.discard(); helper.fail("Magnetic return must accelerate toward its owner after age 50"); return; }
+        shield.discard();
+
+        var wall = base.offset(0, 1, 2);
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var slow = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        slow.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + 1.6D);
+        slow.setDeltaMovement(0, 0, .6D); level.addFreshEntity(slow); slow.tick();
+        var saved = new net.minecraft.nbt.CompoundTag(); slow.addAdditionalSaveData(saved);
+        if (!slow.isReturning() || saved.getInt("FlightAge") < 50)
+        { slow.discard(); helper.fail("A slow magnetic collision must advance the return threshold"); return; }
+        var position = slow.position(); slow.discard();
+        var restored = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.THROWN_SHIELD.get(), level);
+        restored.readAdditionalSaveData(saved); restored.setOwner(owner); restored.setPos(position); level.addFreshEntity(restored);
+        restored.tick(); restored.tick();
+        if (restored.isRemoved() || restored.getX() >= position.x - .1D)
+        { restored.discard(); helper.fail("Accelerated magnetic return must survive a projectile save and reload"); return; }
+        restored.discard(); helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void thrownShieldReturnsAfterLongFlightWithItsData(GameTestHelper helper)
     {
         var level = helper.getLevel();
@@ -441,6 +528,7 @@ public final class PortRegressionTests
         owner.setPos(base.getX(), base.getY(), base.getZ());
         var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
         stack.getOrCreateTag().putString("RegressionMarker", "long flight");
+        com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.setElectromagnetic(stack, true);
         var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
         shield.setPos(owner.getX() + 12, owner.getEyeY() - .2D, owner.getZ());
         shield.tickCount = 201;
@@ -466,16 +554,14 @@ public final class PortRegressionTests
         var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
         var owner = helper.makeMockPlayer(); owner.setPos(base.getX(), base.getY(), base.getZ());
         var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.setElectromagnetic(stack, true);
         var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
         var state = new net.minecraft.nbt.CompoundTag(); shield.addAdditionalSaveData(state);
         state.putBoolean("Returning", true); shield.readAdditionalSaveData(state); shield.setOwner(owner);
         shield.setPos(owner.getX() + 1.3D, owner.getEyeY() - .2D, owner.getZ()); shield.tickCount = 100;
         level.addFreshEntity(shield); shield.tick();
-        if (shield.isRemoved() || shield.getX() < owner.getX() - .001D)
-        { helper.fail("Return velocity must not overshoot a nearby owner"); return; }
-        shield.tick();
         if (!shield.isRemoved() || owner.getInventory().items.stream().noneMatch(item -> item.is(stack.getItem())))
-        { helper.fail("A shield at the owner must be recovered on the next tick"); return; }
+        { helper.fail("A nearby magnetic shield must be recovered without overshooting the owner"); return; }
         helper.succeed();
     }
 

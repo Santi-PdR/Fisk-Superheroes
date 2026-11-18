@@ -26,6 +26,10 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             ThrownShieldEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> RETURNING = SynchedEntityData.defineId(
             ThrownShieldEntity.class, EntityDataSerializers.BOOLEAN);
+    // The original advances the projectile's age to 50 on a slow magnetic impact.
+    // Sync only the offset, not a changing timer every tick.
+    private static final EntityDataAccessor<Integer> AGE_OFFSET = SynchedEntityData.defineId(
+            ThrownShieldEntity.class, EntityDataSerializers.INT);
     public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SHIELD_DAMAGE =
             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                     com.fiskmods.heroes.FiskHeroes.id("thrown_shield"));
@@ -53,6 +57,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         super.defineSynchedData();
         entityData.define(SHIELD_STACK, new ItemStack(ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
         entityData.define(RETURNING, false);
+        entityData.define(AGE_OFFSET, 0);
     }
 
     @Override
@@ -95,6 +100,22 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         return 0.03F;
     }
 
+    private int flightAge()
+    {
+        return tickCount + entityData.get(AGE_OFFSET);
+    }
+
+    private boolean isMagneticallyAttracted()
+    {
+        return isReturning() && com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem())
+                && flightAge() > 50 && getOwner() instanceof Player;
+    }
+
+    private void accelerateMagneticReturn()
+    {
+        if (!level().isClientSide && flightAge() < 50) entityData.set(AGE_OFFSET, 50 - tickCount);
+    }
+
     @Override
     public void tick()
     {
@@ -110,37 +131,46 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
 
         if (isReturning() && owner != null)
         {
-            Vec3 offset = new Vec3(owner.getX(), owner.getEyeY() - 0.2D, owner.getZ()).subtract(position());
-            double distance = offset.length();
-            if (!level().isClientSide && distance <= 1.25D)
+            if (isMagneticallyAttracted())
+            {
+                Vec3 offset = new Vec3(owner.getX(), owner.getY() + owner.getBbHeight() * 0.6D, owner.getZ()).subtract(position());
+                double distance = offset.length();
+                if (distance > 0.001D)
+                {
+                    // Capping the last step avoids skipping over the owner's pickup volume.
+                    double speed = Math.min(0.2D + flightAge() / 15.0D, distance);
+                    setDeltaMovement(offset.scale(speed / distance));
+                    if (!level().isClientSide) hasImpulse = true;
+                }
+            }
+            if (!level().isClientSide && distanceTo(owner) <= net.minecraft.util.Mth.clamp(getDeltaMovement().length() * 3.0D, 1.0D, 5.0D))
             {
                 returnShield(owner);
                 return;
             }
-            if (distance > 0.001D)
+            if (!level().isClientSide && ++returnTicks > MAX_RETURN_TICKS)
             {
-                double speed = Math.min(1.0D + tickCount * 0.025D, 2.5D);
-                setDeltaMovement(offset.scale(Math.min(speed, distance) / distance));
+                dropShield();
+                return;
             }
-            setNoGravity(true);
-            if (!level().isClientSide && ++returnTicks > MAX_RETURN_TICKS) dropShield();
-            else super.tick();
-            return;
         }
 
-        setNoGravity(false);
+        // ThrowableProjectile supplies the same air/water drag and 0.03 gravity as the original.
         super.tick();
-        if (!level().isClientSide && tickCount > MAX_FLIGHT_TICKS) startReturning();
+        // Retain a bounded fallback for projectiles that never collide or cannot be recovered.
+        if (!level().isClientSide && !isRemoved() && tickCount > MAX_FLIGHT_TICKS) startReturning();
     }
 
     @Override
     protected void onHitEntity(EntityHitResult hit)
     {
         super.onHitEntity(hit);
-        if (level().isClientSide || isReturning()) return;
+        if (level().isClientSide) return;
 
         Entity owner = getOwner();
         Entity target = hit.getEntity();
+        if (owner == null || target == owner) return;
+        double impactSpeed = getDeltaMovement().length();
         if (target != owner && target instanceof LivingEntity living && owner instanceof LivingEntity attacker)
         {
             var damageType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
@@ -166,14 +196,52 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                 }
             }
         }
+        Vec3 towardOwner = new Vec3(owner.getX(), owner.getY() + owner.getBbHeight() * 0.5D, owner.getZ())
+                .subtract(getX(), getY() + getBbHeight() * 0.5D, getZ()).scale(impactSpeed * 0.075D);
+        setDeltaMovement(towardOwner.add(0.0D, 0.175D, 0.0D));
+        hasImpulse = true;
+        impactSound();
         startReturning();
     }
 
     @Override
     protected void onHitBlock(BlockHitResult hit)
     {
+        if (isMagneticallyAttracted()) return;
         super.onHitBlock(hit);
+        if (level().isClientSide || getOwner() == null) return;
+        boolean magnetic = com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem());
+        double speed = getDeltaMovement().length();
+        if (magnetic && speed < 0.75D)
+        {
+            accelerateMagneticReturn();
+        }
+        else if (speed > 0.5D)
+        {
+            var face = hit.getDirection();
+            if (level().isEmptyBlock(hit.getBlockPos().relative(face)))
+            {
+                Vec3 motion = getDeltaMovement();
+                setDeltaMovement(motion.x * (1 - 2 * Math.abs(face.getStepX())) * 0.75D,
+                        motion.y * (1 - 2 * Math.abs(face.getStepY())) * 0.75D,
+                        motion.z * (1 - 2 * Math.abs(face.getStepZ())) * 0.75D);
+                hasImpulse = true;
+            }
+        }
+        else if (!magnetic)
+        {
+            if (getOwner() instanceof Player && distanceTo(getOwner()) <= 5.0F) returnShield(getOwner());
+            else dropShield();
+            return;
+        }
+        impactSound();
         startReturning();
+    }
+
+    private void impactSound()
+    {
+        com.fiskmods.heroes.common.sound.SHSounds.play(this, com.fiskmods.heroes.FiskHeroes.id("item.shield.hit"),
+                net.minecraft.sounds.SoundSource.PLAYERS, 1.0F, 1.0F + (random.nextFloat() - 0.5F) * 0.2F);
     }
 
     private void returnShield(Entity owner)
@@ -210,6 +278,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         tag.put("Shield", getItem().save(new CompoundTag()));
         tag.putBoolean("Returning", isReturning());
         tag.putInt("ReturnTicks", returnTicks);
+        tag.putInt("FlightAge", flightAge());
     }
 
     @Override
@@ -219,5 +288,6 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         if (tag.contains("Shield", CompoundTag.TAG_COMPOUND)) setItem(ItemStack.of(tag.getCompound("Shield")));
         if (tag.contains("Returning")) entityData.set(RETURNING, tag.getBoolean("Returning"));
         returnTicks = Math.min(MAX_RETURN_TICKS + 1, Math.max(0, tag.getInt("ReturnTicks")));
+        if (tag.contains("FlightAge")) entityData.set(AGE_OFFSET, Math.max(0, tag.getInt("FlightAge") - tickCount));
     }
 }
