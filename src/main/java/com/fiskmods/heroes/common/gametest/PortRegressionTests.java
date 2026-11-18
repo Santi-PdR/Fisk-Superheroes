@@ -4697,7 +4697,8 @@ public final class PortRegressionTests
     public static void velocityNineRecipeMatchesOriginalIngredients(GameTestHelper helper)
     {
         var level = helper.getLevel();
-        var player = helper.makeMockSurvivalPlayer();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "velocity-nine-recipe-test"));
         var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 3, 3);
         grid.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_PEARL));
         grid.setItem(3, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GHAST_TEAR));
