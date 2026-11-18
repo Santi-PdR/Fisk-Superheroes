@@ -28,6 +28,8 @@ import com.mojang.math.Axis;
 @Mod.EventBusSubscriber(modid = FiskHeroes.MODID, value = Dist.CLIENT)
 public final class TrailRenderHandler
 {
+    private static final java.util.Map<UUID, String> VELOCITY_DIAGNOSTICS = new java.util.HashMap<>();
+
     private TrailRenderHandler() {}
 
     @SubscribeEvent
@@ -42,12 +44,22 @@ public final class TrailRenderHandler
         int density = Math.max(1, lightning.has("density") ? lightning.get("density").getAsInt() : 6);
         double differ = lightning.has("differ") ? lightning.get("differ").getAsDouble() : 0.435D;
         float opacity = lightning.has("opacity") ? lightning.get("opacity").getAsFloat() : 1.0F;
-        int color = resolveColor(trail, player, event.getPartialTick(), lightning.has("color") ? lightning.get("color").getAsString() : null);
+        int color = VelocityTrailColor.blend(resolveColor(trail, player, event.getPartialTick(),
+                lightning.has("color") ? lightning.get("color").getAsString() : null), player, event.getPartialTick());
         float red = ((color >> 16) & 255) / 255.0F;
         float green = ((color >> 8) & 255) / 255.0F;
         float blue = (color & 255) / 255.0F;
         List<TrailHandler.Sample> samples = TrailHandler.getSamples(player.getUUID());
         if (samples.isEmpty()) return;
+        if (Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics")
+                && player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()))
+        {
+            String state = trail.id() + ":" + String.format("%06X", color);
+            if (!state.equals(VELOCITY_DIAGNOSTICS.put(player.getUUID(), state)))
+                FiskHeroes.LOGGER.info("Velocity 9 trail rendered: player={}, trail={}, color={}, samples={}",
+                        player.getName().getString(), trail.id(), String.format("%06X", color), samples.size());
+        }
+        else VELOCITY_DIAGNOSTICS.remove(player.getUUID());
 
         double px = Mth.lerp(event.getPartialTick(), player.xo, player.getX());
         double py = Mth.lerp(event.getPartialTick(), player.yo, player.getY());
@@ -297,8 +309,7 @@ public final class TrailRenderHandler
     private static HeroIterationHolder activeTrail(Player player)
     {
         var iteration = com.fiskmods.heroes.common.hero.HeroTracker.getHero(player);
-        if (iteration == null) return null;
-        HeroModelData model = HeroModelRegistry.get(iteration);
+        HeroModelData model = iteration != null ? HeroModelRegistry.get(iteration) : null;
         TrailDefinition trail = model != null ? model.getTrail(player) : null;
         if (trail == null) trail = TrailHandler.getDefinition(player.getUUID());
         return trail != null ? new HeroIterationHolder(trail) : null;

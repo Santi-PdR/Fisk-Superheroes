@@ -425,13 +425,9 @@ public class CommonEventHandler
         {
             DataSyncer.sendFullSyncTo(tracker, subject);
             var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(subject);
-            if (data != null && data.getHeroType() != null && data.getSpeedsterSounds().isMoving())
-            {
-                var entry = data.getHeroType().getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("super_speed"));
-                if (entry != null && entry.isEnabled() && entry.isModifierEnabled(subject, data))
-                    for (var id : com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(subject, entry, "MOVE"))
-                        com.fiskmods.heroes.common.sound.SHSounds.syncLoopTo(subject, id, tracker);
-            }
+            if (data != null && data.getSpeedsterSounds().isMoving())
+                for (var id : data.getSpeedsterSounds().getMoveIds())
+                    com.fiskmods.heroes.common.sound.SHSounds.syncLoopTo(subject, id, tracker);
         }
     }
 

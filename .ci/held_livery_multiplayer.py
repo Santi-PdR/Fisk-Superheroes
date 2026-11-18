@@ -117,7 +117,28 @@ def main():
                 command('execute if data entity Partner SelectedItem{id:"minecraft:glass_bottle"} run say VELOCITY_BOTTLE_RETURNED')
                 wait_for_new(server_log, r'\[Server\] VELOCITY_BOTTLE_RETURNED', bottle_start, 30,
                              'survival drink returns a glass bottle', server)
-                command('effect clear Partner fiskheroes:velocity_nine')
+                # Original V9 supplies speed sounds and a blue trail without a suit.
+                command('fill -4 180 0 -4 183 8 minecraft:stone')
+                command('tp Partner 4 180 4 90 0')
+                v9_start = len(observer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'keydown', 'w'], check=True, timeout=30)
+                subprocess.run(['xdotool', 'keydown', 'Control_L'], check=True, timeout=30)
+                try:
+                    wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:super_speed_move_loop_cw as',
+                                 v9_start, 60, 'observer receives unsuited Velocity 9 movement loop', observer)
+                    wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:super_speed_sprint_zoom as',
+                                 v9_start, 60, 'observer receives unsuited Velocity 9 sprint sound', observer)
+                    wait_for_new(observer_log, r'Velocity 9 trail rendered: player=Partner, trail=fiskheroes:velocity_nine, color=0059FF, samples=[1-9]',
+                                 v9_start, 60, 'observer renders unsuited blue Velocity 9 trail', observer)
+                    stop_start = len(observer_log.read_text(errors='replace'))
+                    command('effect clear Partner fiskheroes:velocity_nine')
+                    wait_for_new(observer_log, r'Sound loop stopping: id=fiskheroes:super_speed_move_loop_cw, entity=',
+                                 stop_start, 30, 'unsuited V9 loop stops when the effect ends', observer)
+                finally:
+                    subprocess.run(['xdotool', 'keyup', 'w'], check=True, timeout=30)
+                    subprocess.run(['xdotool', 'keyup', 'Control_L'], check=True, timeout=30)
+                command('fill -4 180 0 -4 183 8 minecraft:air')
+                command('tp Partner 0 180 4 180 0')
                 command('item replace entity Partner hotbar.0 with minecraft:air')
                 command('gamemode creative Partner')
             command('execute as Partner run suit fiskheroes:iron_man')

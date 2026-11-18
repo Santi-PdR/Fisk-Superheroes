@@ -53,6 +53,10 @@ public final class VelocityNine
                 .anyMatch(entry -> entry.getModifier() instanceof com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed
                         && entry.isEnabled() && entry.isModifierEnabled(player, data));
         var velocity = player.getEffect(ModEffects.VELOCITY_NINE.get());
+        var vars = data.getData();
+        float conversion = vars.get(com.fiskmods.heroes.common.data.var.Vars.VEL9_CONVERT);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.VEL9_CONVERT,
+                net.minecraft.util.Mth.approach(conversion, velocity != null ? 1.0F : 0.0F, 0.1F));
         if (hasSpeedPower)
         {
             AUTOMATIC_SPEED.remove(player);
@@ -60,7 +64,6 @@ public final class VelocityNine
         else if (velocity != null && com.fiskmods.heroes.common.config.SHConfig.ALLOW_SUPER_SPEED.get())
         {
             boolean starting = AUTOMATIC_SPEED.put(player, Boolean.TRUE) == null;
-            var vars = data.getData();
             int maximum = Math.min(127, 3 * (velocity.getAmplifier() + 1));
             vars.set(com.fiskmods.heroes.common.data.var.Vars.SPEED, (byte) maximum);
             vars.set(com.fiskmods.heroes.common.data.var.Vars.SPEEDING, true);
@@ -76,6 +79,7 @@ public final class VelocityNine
         {
             com.fiskmods.heroes.common.hero.modifier.ModifierSuperSpeed.disable(player);
         }
+        if (!hasSpeedPower) SpeedsterSounds.tick(player, null, data);
     }
 
     @SubscribeEvent

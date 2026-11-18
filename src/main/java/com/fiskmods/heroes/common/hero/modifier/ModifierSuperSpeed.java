@@ -55,12 +55,7 @@ public class ModifierSuperSpeed extends Modifier
 
     private static void updateSounds(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        if (entity.level().isClientSide) return;
-        data.getSpeedsterSounds().update(data.getData().get(Vars.SPEEDING), data.getData().get(Vars.MOVING),
-                data.getData().get(Vars.SPEED_SPRINTING), trigger -> {
-                    if ("STOP".equals(trigger)) AbilityData.stopSoundLoops(entity, entry, "MOVE");
-                    AbilityData.playSound(entity, entry, trigger);
-                });
+        com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.tick(entity, entry, data);
     }
 
     /** Original suit and trained levels, Velocity 9 bonuses and speed-sickness penalties. */

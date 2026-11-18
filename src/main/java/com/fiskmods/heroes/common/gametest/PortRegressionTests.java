@@ -7346,6 +7346,34 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void velocityNineSoundsOverrideSuitProfile(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:reverse_flash");
+        if (data == null || hero == null) { helper.fail("V9 sound test setup missing"); return; }
+        var entry = hero.getPowerContainer().getEntry(FiskHeroes.id("super_speed"));
+        if (entry == null) { helper.fail("Speed modifier missing"); return; }
+        data.setHero(hero.getDefaultIteration());
+        var normal = com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.soundIds(player, entry, "SPRINT");
+        if (!normal.contains(FiskHeroes.id("super_speed_sprint_negative")) || normal.size() != 2)
+        { helper.fail("Suit profile setup did not produce its normal layers"); return; }
+        player.addEffect(new net.minecraft.world.effect.MobEffectInstance(
+                com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get(), 6000, 0));
+        if (!com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.soundIds(player, entry, "MOVE").equals(
+                        java.util.List.of(FiskHeroes.id("super_speed_move_loop_cw")))
+                || !com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.soundIds(player, null, "SPRINT").equals(
+                        java.util.List.of(FiskHeroes.id("super_speed_sprint_zoom")))
+                || !com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.soundIds(player, entry, "STOP").equals(
+                        java.util.List.of(FiskHeroes.id("super_speed_stop_zoom"))))
+        { helper.fail("Original V9 dispatcher must replace the suit sounds, with or without suit"); return; }
+        player.removeEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get());
+        if (!com.fiskmods.heroes.common.hero.speedster.SpeedsterSounds.soundIds(player, entry, "SPRINT").equals(normal))
+        { helper.fail("Suit sound profile must return after V9 ends"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void speedSoundTransitionsMatchOriginal(GameTestHelper helper)
     {
         var state = new com.fiskmods.heroes.common.hero.speedster.SpeedsterSoundState();

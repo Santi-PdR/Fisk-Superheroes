@@ -99,6 +99,12 @@ public final class TrailHandler
         HeroModelData model = HeroModelRegistry.get(iteration);
         TrailDefinition configured = model != null ? model.getTrail(player, false) : null;
         TrailDefinition active = model != null ? model.getTrail(player) : null;
+        if (configured == null && player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()))
+        {
+            configured = TrailRegistry.get(FiskHeroes.id("velocity_nine"));
+            var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            if (data != null && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)) active = configured;
+        }
         tick(player, active);
         tickFlicker(player, configured, active != null, iteration != null);
     }
@@ -127,7 +133,7 @@ public final class TrailHandler
         float width = player.getBbWidth();
         float height = player.getBbHeight();
         Random random = new Random();
-        int color = flickerColor(definition, player);
+        int color = VelocityTrailColor.blend(flickerColor(definition, player), player, 1.0F);
         float opacity = flicker.has("opacity") ? flicker.get("opacity").getAsFloat() : 1.0F;
         for (int i = 0; i < density; ++i)
         {
