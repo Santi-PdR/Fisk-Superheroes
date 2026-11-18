@@ -32,9 +32,12 @@ public final class ItemCaptainAmericaShield extends ShieldItem
     {
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
         var hero = data != null ? data.getHeroType() : null;
-        if (hero == null || !hero.hasPermission(player, "USE_SHIELD")
-                || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) > 0)
-            return net.minecraft.world.InteractionResultHolder.fail(player.getItemInHand(hand));
+        boolean allowed = hero != null && hero.hasPermission(player, "USE_SHIELD")
+                && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) == 0;
+        if (Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shield use: player={}, side={}, allowed={}",
+                    player.getName().getString(), level.isClientSide ? "client" : "server", allowed);
+        if (!allowed) return net.minecraft.world.InteractionResultHolder.fail(player.getItemInHand(hand));
         return super.use(level, player, hand);
     }
 

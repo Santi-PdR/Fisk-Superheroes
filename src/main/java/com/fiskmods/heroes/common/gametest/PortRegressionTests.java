@@ -205,6 +205,9 @@ public final class PortRegressionTests
         var captain = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:captain_america");
         var flash = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:the_flash");
         if (data == null || captain == null || flash == null) { helper.fail("Shield permission setup missing"); return; }
+        if (flash.hasPermission(player, "USE_SHIELD") || captain.hasProperty(player, "MASK_TOGGLE")
+                || !captain.hasPermission(player, "USE_SHIELD") || !flash.hasProperty(player, "MASK_TOGGLE"))
+        { helper.fail("Absent permission and property callbacks must default to false, while explicit callbacks still work"); return; }
         var item = com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get();
         var hand = net.minecraft.world.InteractionHand.MAIN_HAND;
         player.setItemInHand(hand, new net.minecraft.world.item.ItemStack(item));

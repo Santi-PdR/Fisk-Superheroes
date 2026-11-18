@@ -593,12 +593,12 @@ public class Hero implements Comparable<Hero>
 
     public boolean hasPermission(Entity entity, String permission)
     {
-        return permissionFunc == null || permissionFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), permission);
+        return permissionFunc != null && permissionFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), permission);
     }
 
     public boolean hasProperty(Entity entity, String property)
     {
-        return propertyFunc == null || propertyFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), property);
+        return propertyFunc != null && propertyFunc.callBoolean(new com.fiskmods.heroes.pack.js.JSEntity(entity), property);
     }
 
     public String getDamageProfile(Entity entity)

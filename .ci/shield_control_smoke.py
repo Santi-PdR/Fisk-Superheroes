@@ -72,8 +72,20 @@ def main():
             command('fill -5 179 -5 5 179 10 minecraft:stone')
             command('fill -2 180 6 2 183 6 minecraft:stone')
             command('tp Dev 0.5 180 0.5 0 0')
-            command('execute as Dev run suit fiskheroes:captain_america')
             command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{ControlMarker:42}')
+            xdo('click', '3')
+            wait_for(client_log, r'Shield use: player=Dev, side=client, allowed=false', 30,
+                     'client denies blocking without a permitted suit', client)
+            command('execute as Dev run suit fiskheroes:captain_america')
+            time.sleep(2)
+            xdo('mousedown', '3')
+            try:
+                wait_for(client_log, r'Shield use: player=Dev, side=client, allowed=true', 30,
+                         'client allows Captain America to raise the shield', client)
+                wait_for(server_log, r'Shield use: player=Dev, side=server, allowed=true', 30,
+                         'dedicated server accepts permitted shield use', server)
+            finally: xdo('mouseup', '3')
+            time.sleep(1)
             xdo('keydown', 'c')
             try:
                 wait_for(server_log, r'Ability input accepted: hero=fiskheroes:captain_america, index=1', 45,
