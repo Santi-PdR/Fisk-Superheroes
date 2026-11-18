@@ -251,6 +251,47 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void offhandShieldCoversFallAndFlightButNotArmorBypass(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var attacker = net.minecraft.world.entity.EntityType.ZOMBIE.create(helper.getLevel());
+        if (data == null || attacker == null) { helper.fail("Shield special-source setup missing"); return; }
+        var shield = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, shield);
+        player.startUsingItem(net.minecraft.world.InteractionHand.OFF_HAND);
+        player.setXRot(60.0F);
+        var fallAtBoundary = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, player.damageSources().fall(), 3.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(fallAtBoundary);
+        if (fallAtBoundary.isCanceled()) { helper.fail("Fall protection must require looking more than 60 degrees down"); return; }
+        player.setXRot(61.0F);
+        var fall = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, player.damageSources().fall(), 3.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(fall);
+        if (!fall.isCanceled() || shield.getDamageValue() != 1)
+        { helper.fail("A downward-facing offhand shield must absorb and wear on fall damage"); return; }
+        player.hurtTime = 0; player.setXRot(0);
+        var wall = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, player.damageSources().flyIntoWall(), 2.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(wall);
+        if (!wall.isCanceled() || shield.getDamageValue() != 2)
+        { helper.fail("An offhand shield must absorb a flight collision"); return; }
+        player.hurtTime = 0;
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        var type = helper.getLevel().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(net.minecraft.world.damagesource.DamageTypes.MAGIC);
+        var magic = new net.minecraftforge.event.entity.living.LivingAttackEvent(player,
+                new net.minecraft.world.damagesource.DamageSource(type, attacker), 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(magic);
+        if (magic.isCanceled()) { helper.fail("Armor-bypassing magic must not be blocked"); return; }
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_BLOCKING, true);
+        float before = data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE);
+        var suitPriority = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, player.damageSources().mobAttack(attacker), 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(suitPriority);
+        if (suitPriority.isCanceled() || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != before)
+        { helper.fail("An active suit shield takes precedence over the held item's shield"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void heldShieldRespectsCoverageInActualDamagePipeline(GameTestHelper helper)
     {
         var level = helper.getLevel();
