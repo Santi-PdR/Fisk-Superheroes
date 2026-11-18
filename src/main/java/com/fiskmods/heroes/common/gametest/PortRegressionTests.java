@@ -198,6 +198,122 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void heldShieldBlocksOnlyWithinOriginalCoverage(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var attacker = net.minecraft.world.entity.EntityType.ZOMBIE.create(helper.getLevel());
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (attacker == null || data == null) { helper.fail("Shield block setup missing"); return; }
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack);
+        player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+        player.setYRot(0); player.setXRot(0);
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        var source = player.damageSources().mobAttack(attacker);
+        var vars = data.getData();
+        var front = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, source, 10.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(front);
+        if (!front.isCanceled() || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 10.0F
+                || stack.getDamageValue() != 1 || player.hurtTime != 7)
+        { helper.fail("Frontal hits must be absorbed and consume shield health and durability"); return; }
+        var repeated = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, source, 5.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(repeated);
+        if (!repeated.isCanceled() || stack.getDamageValue() != 1
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 10.0F)
+        { helper.fail("Repeated hits during the seven-tick guard must not wear the shield twice"); return; }
+        player.hurtTime = 0;
+        attacker.setPos(player.getX() + 2, player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        var side = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, source, 2.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(side);
+        if (side.isCanceled()) { helper.fail("A hit 45 degrees from the front must bypass the 35 degree shield arc"); return; }
+        var vanilla = new net.minecraftforge.event.entity.living.ShieldBlockEvent(player, source, 2.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldBlock(vanilla);
+        if (!vanilla.isCanceled()) { helper.fail("Vanilla's wider shield arc must not override the item shield rules"); return; }
+        var lava = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, player.damageSources().lava(), 2.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(lava);
+        if (lava.isCanceled()) { helper.fail("Source-less fire must not be blocked"); return; }
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        var breaking = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, source, 70.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(breaking);
+        if (breaking.isCanceled() || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 80.0F
+                || vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 100 || stack.getDamageValue() != 2)
+        { helper.fail("A hit reaching 80 must pass through and start the 100-tick shield cooldown"); return; }
+        var cooldown = new net.minecraftforge.event.entity.living.LivingAttackEvent(player, source, 1.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldAttack(cooldown);
+        if (cooldown.isCanceled()) { helper.fail("A depleted shield must not block during cooldown"); return; }
+        player.stopUsingItem();
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SHIELD));
+        player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+        var ordinary = new net.minecraftforge.event.entity.living.ShieldBlockEvent(player, source, 2.0F);
+        com.fiskmods.heroes.common.event.CommonEventHandler.onShieldBlock(ordinary);
+        if (ordinary.isCanceled()) { helper.fail("Ordinary vanilla shields must remain unaffected"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heldShieldRespectsCoverageInActualDamagePipeline(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-block-test"));
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var attacker = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
+        if (data == null || attacker == null) { helper.fail("Shield damage pipeline setup missing"); return; }
+        var origin = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        player.setPos(origin.getX(), origin.getY(), origin.getZ());
+        player.setYRot(0); player.setXRot(0);
+        player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+        player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
+        for (int i = 0; i < 6; ++i) player.tick();
+        if (!player.isBlocking()) { helper.fail("Test must exercise vanilla's fully raised shield"); return; }
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        var source = player.damageSources().mobAttack(attacker);
+        float initial = player.getHealth();
+        player.hurt(source, 4.0F);
+        if (player.getHealth() != initial || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 4.0F)
+        { helper.fail("The actual Forge damage pipeline must absorb a frontal hit"); return; }
+        player.hurtTime = 0; player.invulnerableTime = 0;
+        attacker.setPos(player.getX() + 2, player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        player.hurt(source, 4.0F);
+        if (player.getHealth() >= initial)
+        { helper.fail("A 45 degree hit must damage the player even though vanilla would block it"); return; }
+        player.hurtTime = 0; player.invulnerableTime = 0;
+        data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE, 79.0F);
+        attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
+        float beforeBreak = player.getHealth();
+        player.hurt(source, 2.0F);
+        if (player.getHealth() >= beforeBreak || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_COOLDOWN) != 100)
+        { helper.fail("The hit that depletes the shield must get through the actual damage pipeline"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void heldShieldDelaysRecoveryEvenWhenNotRaised(GameTestHelper helper)
+    {
+        var player = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        if (data == null) { helper.fail("Shield recovery setup missing"); return; }
+        var vars = data.getData();
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE, 4.0F);
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) 0);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+        for (int i = 0; i < 20; ++i) com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tick(player, data);
+        if (vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 4.0F)
+        { helper.fail("Held shield recovery must wait through the 20-tick delay"); return; }
+        com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tick(player, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) - 3.5F) > .001F)
+        { helper.fail("The held shield must recover ten health per second after the delay"); return; }
+        vars.set(com.fiskmods.heroes.common.data.var.Vars.TICKS_SINCE_SHIELD_DAMAGED, (short) 0);
+        player.setItemInHand(net.minecraft.world.InteractionHand.OFF_HAND, net.minecraft.world.item.ItemStack.EMPTY);
+        com.fiskmods.heroes.common.hero.modifier.ShieldRecovery.tick(player, data);
+        if (Math.abs(vars.get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) - 3.0F) > .001F)
+        { helper.fail("Recovery should resume immediately without a shield"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shieldUseRequiresPermissionAndNoCooldown(GameTestHelper helper)
     {
         var player = helper.makeMockSurvivalPlayer();

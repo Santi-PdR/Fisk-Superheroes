@@ -14,6 +14,8 @@ import net.minecraft.world.entity.LivingEntity;
 /** Shield damage and cooldown persist and recover even while no suit shield is equipped. */
 public final class ShieldRecovery
 {
+    private static final JsonObject DEFAULT_SHIELD = new JsonObject();
+
     private ShieldRecovery() {}
 
     public static void tick(LivingEntity entity, SHPlayerData data)
@@ -26,9 +28,15 @@ public final class ShieldRecovery
             {
                 shield = AbilityData.object(entry.get(entity, PowerProperty.SHIELD));
                 // An entry without JSON uses the original default shield configuration.
-                if (shield == null) shield = new JsonObject();
+                if (shield == null) shield = DEFAULT_SHIELD;
             }
         }
+        // Item shield info exists while held, even between blocks. Its default
+        // profile waits 20 ticks before recovery, just like the original.
+        if (shield == null && entity instanceof net.minecraft.world.entity.player.Player player
+                && (player.getMainHandItem().is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())
+                        || player.getOffhandItem().is(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get())))
+            shield = DEFAULT_SHIELD;
         tickState(data, shield);
     }
 

@@ -282,6 +282,18 @@ public class CommonEventHandler
         }
     }
 
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void onShieldAttack(net.minecraftforge.event.entity.living.LivingAttackEvent event)
+    {
+        com.fiskmods.heroes.common.hero.modifier.ItemShieldBlocking.onAttack(event);
+    }
+
+    @SubscribeEvent(priority = net.minecraftforge.eventbus.api.EventPriority.LOWEST)
+    public static void onShieldBlock(net.minecraftforge.event.entity.living.ShieldBlockEvent event)
+    {
+        com.fiskmods.heroes.common.hero.modifier.ItemShieldBlocking.onVanillaBlock(event);
+    }
+
     @SubscribeEvent
     public static void onLivingHurt(LivingHurtEvent event)
     {

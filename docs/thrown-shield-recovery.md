@@ -16,7 +16,7 @@ The original `RenderThrownShield` draws the shield mesh in flight orientation an
 
 ## Blocking permission
 
-As in the original, raising Captain America's shield requires an active hero granting `USE_SHIELD` and no shared shield cooldown. This gate runs on both client and server. The port still uses vanilla shield blocking mechanics after it is raised, rather than the original item's 80-point shared shield health and directional coverage.
+As in the original, raising Captain America's shield requires an active hero granting `USE_SHIELD` and no shared shield cooldown. The gate runs on both client and server. When raised, the item uses the original 35-degree yaw and pitch coverage, 80 shared shield health, 100-tick cooldown, durability loss and seven-tick repeat-hit guard. The hit that depletes the shield passes through. Vanilla's wider blocking arc is disabled for this item only. Held shields wait 20 ticks before regenerating ten shield health per second; without an active or held shield, recovery starts immediately. Fall damage while looking down and flight-into-wall damage are also blockable as in the original. The port supports both hands; the original predates vanilla offhand items.
 
 ## Impact
 
