@@ -54,7 +54,9 @@ public final class TrailRenderHandler
         if (Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics")
                 && VelocityTrailColor.isActive(player))
         {
-            String state = trail.id() + ":" + String.format("%06X", color);
+            // Log each new movement sample, not just each color: a teleport before a
+            // test's start marker must not suppress the later actual movement sample.
+            String state = trail.id() + ":" + String.format("%06X", color) + ":" + samples.get(samples.size() - 1).position();
             if (!state.equals(VELOCITY_DIAGNOSTICS.put(player.getUUID(), state)))
                 FiskHeroes.LOGGER.info("Velocity 9 trail rendered: player={}, trail={}, color={}, samples={}",
                         player.getName().getString(), trail.id(), String.format("%06X", color), samples.size());
