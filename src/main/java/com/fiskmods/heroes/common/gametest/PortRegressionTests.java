@@ -4694,6 +4694,40 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void velocityNineRecipeMatchesOriginalIngredients(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var player = helper.makeMockSurvivalPlayer();
+        var grid = new net.minecraft.world.inventory.TransientCraftingContainer(player.inventoryMenu, 3, 3);
+        grid.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.ENDER_PEARL));
+        grid.setItem(3, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GHAST_TEAR));
+        grid.setItem(4, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.NETHER_STAR));
+        grid.setItem(5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER));
+        var potion = net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.POTION),
+                net.minecraft.world.item.alchemy.Potions.STRONG_SWIFTNESS);
+        potion.getOrCreateTag().putInt("CustomPotionColor", 42);
+        grid.setItem(7, potion);
+        var loaded = level.getRecipeManager().byKey(FiskHeroes.id("velocity_nine")).orElse(null);
+        if (!(loaded instanceof net.minecraft.world.item.crafting.CraftingRecipe recipe) || !recipe.matches(grid, level)
+                || !recipe.assemble(grid, level.registryAccess()).is(com.fiskmods.heroes.common.item.ModItems.VELOCITY_NINE.get()))
+        { helper.fail("V9 must craft with ender pearl, ghast tear, nether star, blaze powder and strong swiftness"); return; }
+        grid.setItem(7, net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.POTION),
+                net.minecraft.world.item.alchemy.Potions.SWIFTNESS));
+        if (recipe.matches(grid, level)) { helper.fail("Regular swiftness must not replace swiftness II"); return; }
+        grid.setItem(7, net.minecraft.world.item.alchemy.PotionUtils.setPotion(
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SPLASH_POTION),
+                net.minecraft.world.item.alchemy.Potions.STRONG_SWIFTNESS));
+        if (recipe.matches(grid, level)) { helper.fail("Splash potion must not replace the drinkable potion"); return; }
+        grid.setItem(7, potion);
+        grid.setItem(3, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BLAZE_POWDER));
+        grid.setItem(5, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.GHAST_TEAR));
+        if (!recipe.matches(grid, level)) { helper.fail("The original shaped recipe also accepts a horizontal mirror"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void velocityNineDrinkAddsSpeedLevelsAndPreservesDuration(GameTestHelper helper)
     {
         var player = helper.makeMockSurvivalPlayer();
