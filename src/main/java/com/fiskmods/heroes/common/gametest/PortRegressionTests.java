@@ -493,10 +493,11 @@ public final class PortRegressionTests
         state.putBoolean("Returning", true); shield.readAdditionalSaveData(state); shield.setOwner(owner);
         shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
         shield.setDeltaMovement(0, 0, .1D); shield.tickCount = 49; level.addFreshEntity(shield);
-        double x = shield.getX(); shield.tick(); shield.tick();
+        // ServerLevel normally advances tickCount before invoking Entity.tick().
+        double x = shield.getX(); shield.tick(); shield.tickCount = 50; shield.tick();
         if (Math.abs(shield.getX() - x) > .01D)
         { shield.discard(); helper.fail("Magnetic return must not start before age exceeds 50"); return; }
-        shield.tick();
+        shield.tickCount = 51; shield.tick();
         if (shield.getX() >= x - .1D)
         { shield.discard(); helper.fail("Magnetic return must accelerate toward its owner after age 50"); return; }
         shield.discard();
@@ -513,7 +514,7 @@ public final class PortRegressionTests
         var restored = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(
                 com.fiskmods.heroes.common.entity.ModEntities.THROWN_SHIELD.get(), level);
         restored.readAdditionalSaveData(saved); restored.setOwner(owner); restored.setPos(position); level.addFreshEntity(restored);
-        restored.tick(); restored.tick();
+        restored.tickCount = 1; restored.tick();
         if (restored.isRemoved() || restored.getX() >= position.x - .1D)
         { restored.discard(); helper.fail("Accelerated magnetic return must survive a projectile save and reload"); return; }
         restored.discard(); helper.succeed();

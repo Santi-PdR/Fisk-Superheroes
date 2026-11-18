@@ -131,6 +131,11 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
 
         if (isReturning() && owner != null)
         {
+            if (!level().isClientSide && !(owner instanceof Player))
+            {
+                dropShield();
+                return;
+            }
             if (isMagneticallyAttracted())
             {
                 Vec3 offset = new Vec3(owner.getX(), owner.getY() + owner.getBbHeight() * 0.6D, owner.getZ()).subtract(position());
