@@ -210,6 +210,8 @@ public final class PortRegressionTests
                 .get(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE);
         if (modifiers.stream().noneMatch(m -> Math.abs(m.getAmount() - 6.0D) < .001D))
         { helper.fail("Shield must add six melee attack damage in the main hand"); return; }
+        shield.getItem().hurtEnemy(shield, target, player);
+        if (shield.getDamageValue() != 1) { helper.fail("A melee hit must wear the shield"); return; }
         shield.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 1);
         float enchanted = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(player, target, shield);
         if (Math.abs(enchanted - 11.25F) > .01F)

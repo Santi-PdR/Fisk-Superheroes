@@ -27,6 +27,14 @@ public final class ItemCaptainAmericaShield extends ShieldItem
     }
 
     @Override
+    public boolean hurtEnemy(ItemStack stack, net.minecraft.world.entity.LivingEntity target,
+            net.minecraft.world.entity.LivingEntity attacker)
+    {
+        stack.hurtAndBreak(1, attacker, entity -> entity.broadcastBreakEvent(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
+        return true;
+    }
+
+    @Override
     public boolean isValidRepairItem(ItemStack toRepair, ItemStack repair)
     {
         return repair.is(ModItems.VIBRANIUM_INGOT.get()) || repair.is(ModItems.VIBRANIUM_DISC.get());
