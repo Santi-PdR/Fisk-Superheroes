@@ -254,11 +254,7 @@ public final class PortRegressionTests
     public static void heldShieldRespectsCoverageInActualDamagePipeline(GameTestHelper helper)
     {
         var level = helper.getLevel();
-        var player = new net.minecraftforge.common.util.FakePlayer(level,
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-block-test"))
-        {
-            @Override public boolean isInvulnerableTo(net.minecraft.world.damagesource.DamageSource source) { return false; }
-        };
+        var player = helper.makeMockSurvivalPlayer();
         var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
         var attacker = net.minecraft.world.entity.EntityType.ZOMBIE.create(level);
         if (data == null || attacker == null) { helper.fail("Shield damage pipeline setup missing"); return; }
@@ -268,15 +264,15 @@ public final class PortRegressionTests
         player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
         player.startUsingItem(net.minecraft.world.InteractionHand.MAIN_HAND);
-        // FakePlayer.tick is deliberately empty; doTick executes the real player use-item tick.
-        for (int i = 0; i < 6; ++i) player.doTick();
+        for (int i = 0; i < 6; ++i) player.tick();
         if (!player.isBlocking()) { helper.fail("Test must exercise vanilla's fully raised shield, remaining=" + player.getUseItemRemainingTicks()); return; }
         attacker.setPos(player.getX(), player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
         var source = player.damageSources().mobAttack(attacker);
         float initial = player.getHealth();
         player.hurt(source, 4.0F);
         if (player.getHealth() != initial || data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE) != 4.0F)
-        { helper.fail("The actual Forge damage pipeline must absorb a frontal hit"); return; }
+        { helper.fail("The actual Forge damage pipeline must absorb a frontal hit: health=" + player.getHealth()
+                + ", initial=" + initial + ", shield=" + data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SHIELD_DAMAGE)); return; }
         player.hurtTime = 0; player.invulnerableTime = 0;
         attacker.setPos(player.getX() + 2, player.getEyeY() - attacker.getBbHeight() * .5, player.getZ() + 2);
         player.hurt(source, 4.0F);

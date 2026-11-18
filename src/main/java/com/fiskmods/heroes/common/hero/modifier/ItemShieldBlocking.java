@@ -29,7 +29,13 @@ public final class ItemShieldBlocking
         var data = SHDataCapabilities.getPlayer(player);
         if (data == null || data.getData().get(Vars.SHIELD_COOLDOWN) > 0
                 || data.getData().get(Vars.SHIELD_BLOCKING)) return;
-        if (!inCoverage(player, event.getSource())) return;
+        if (!inCoverage(player, event.getSource()))
+        {
+            if (Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+                FiskHeroes.LOGGER.info("Shield item coverage rejected: player={}, source={}, position={}",
+                        player.getName().getString(), event.getSource().getDirectEntity(), player.position());
+            return;
+        }
 
         // The old shield cancels repeat hits during the short hit animation, but
         // neither wears the item nor charges shield damage a second time.

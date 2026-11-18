@@ -77,6 +77,9 @@ def main():
             wait_for(client_log, r'Shield use: player=Dev, side=client, allowed=false', 30,
                      'client denies blocking without a permitted suit', client)
             command('execute as Dev run suit fiskheroes:captain_america')
+            command('gamerule doMobSpawning false')
+            command('gamerule naturalRegeneration false')
+            command('difficulty normal')
             command('gamemode survival Dev')
             command('summon minecraft:armor_stand 0.5 181.62 3.5 {Tags:["shield_attacker"],NoGravity:1b,Invisible:1b,Marker:1b}')
             time.sleep(2)
@@ -92,8 +95,9 @@ def main():
                 command('execute if data entity Dev {Health:20.0f,SelectedItem:{tag:{Damage:1}}} run say SHIELD_FRONT_OK')
                 wait_for(server_log, r'\[Server\] SHIELD_FRONT_OK', 30,
                          'frontal block preserves health and wears shield once', server)
-                command('tp @e[type=minecraft:armor_stand,tag=shield_attacker] 3.5 181.62 3.5')
+                command('execute at Dev run tp @e[type=minecraft:armor_stand,tag=shield_attacker] ~3 ~1.62 ~3')
                 command('damage Dev 4 minecraft:mob_attack by @e[type=minecraft:armor_stand,tag=shield_attacker,limit=1]')
+                command('data get entity Dev Health')
                 command('execute unless data entity Dev {Health:20.0f} run say SHIELD_SIDE_HIT_OK')
                 wait_for(server_log, r'\[Server\] SHIELD_SIDE_HIT_OK', 30,
                          '45 degree hit bypasses the raised shield in the real client', server)
