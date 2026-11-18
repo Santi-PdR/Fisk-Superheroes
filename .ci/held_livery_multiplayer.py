@@ -222,6 +222,36 @@ def main():
                               'super_speed_sprint_savitar', 'super_speed_sprint_savitar_noise'):
                     wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:' + sound + r' as',
                                  start, 60, 'observer receives ' + sound, observer)
+                if os.environ.get('CI_SOUND_INHERITANCE_FIXTURE') == '1':
+                    # Changing V9 while already moving must replace the suit's
+                    # loop and change its RGB trail, not wait for a new MOVE edge.
+                    v9_profile = len(observer_log.read_text(errors='replace'))
+                    command('effect give Partner fiskheroes:velocity_nine 30 0 true')
+                    wait_for_new(observer_log, r'Sound loop stopping: id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=',
+                                 v9_profile, 30, 'V9 retires the running suit-specific loop', observer)
+                    wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:super_speed_move_loop_cw, entity=',
+                                 v9_profile, 30, 'V9 selects its movement loop during an existing run', observer)
+                    time.sleep(1)  # Original conversion reaches blue over ten ticks.
+                    trail_start = len(observer_log.read_text(errors='replace'))
+                    command('tp Partner 0.5 180 12 0 0')
+                    wait_for_new(observer_log, r'Velocity 9 trail rendered: player=Partner, trail=fiskheroes:builtin/lightning_rgb_6, color=0059FF, samples=[1-9]',
+                                 trail_start, 60, 'V9 converts the suited RGB trail to blue', observer)
+                    v9_stop = len(observer_log.read_text(errors='replace'))
+                    subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+                    time.sleep(.4)
+                    subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+                    wait_for_new(observer_log, r'Playing pack sound definition fiskheroes:super_speed_stop_zoom as',
+                                 v9_stop, 30, 'suited V9 emits the original stop sound', observer)
+                    v9_restart = len(observer_log.read_text(errors='replace'))
+                    subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+                    time.sleep(.4)
+                    subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+                    wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:super_speed_move_loop_cw, entity=',
+                                 v9_restart, 30, 'V9 loop restarts after toggling speed', observer)
+                    restored = len(observer_log.read_text(errors='replace'))
+                    command('effect clear Partner fiskheroes:velocity_nine')
+                    wait_for_new(observer_log, r'Sound loop (?:started|resumed): id=fiskheroes:super_speed_move_loop_savitar_rgb, entity=',
+                                 restored, 30, 'suit-specific movement loop returns after V9', observer)
                 # Disabling while still moving must stop both loops and play the
                 # profile's two stop cues (their condition requires !speeding).
                 stop_start = len(observer_log.read_text(errors='replace'))
