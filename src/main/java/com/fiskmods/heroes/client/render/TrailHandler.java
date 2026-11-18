@@ -99,7 +99,7 @@ public final class TrailHandler
         HeroModelData model = HeroModelRegistry.get(iteration);
         TrailDefinition configured = model != null ? model.getTrail(player, false) : null;
         TrailDefinition active = model != null ? model.getTrail(player) : null;
-        if (configured == null && player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()))
+        if (configured == null && VelocityTrailColor.isActive(player))
         {
             configured = TrailRegistry.get(FiskHeroes.id("velocity_nine"));
             var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);

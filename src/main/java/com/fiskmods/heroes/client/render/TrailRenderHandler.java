@@ -52,7 +52,7 @@ public final class TrailRenderHandler
         List<TrailHandler.Sample> samples = TrailHandler.getSamples(player.getUUID());
         if (samples.isEmpty()) return;
         if (Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics")
-                && player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()))
+                && VelocityTrailColor.isActive(player))
         {
             String state = trail.id() + ":" + String.format("%06X", color);
             if (!state.equals(VELOCITY_DIAGNOSTICS.put(player.getUUID(), state)))

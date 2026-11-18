@@ -12,6 +12,14 @@ final class VelocityTrailColor
 {
     private VelocityTrailColor() { }
 
+    /** Vanilla does not reliably expose another player's hidden effect to observers. */
+    static boolean isActive(Player player)
+    {
+        var data = SHDataCapabilities.getPlayer(player);
+        return player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get())
+                || data != null && data.getData().get(Vars.VEL9_CONVERT) > 0.0F;
+    }
+
     static int blend(int base, Player player, float partialTick)
     {
         var data = SHDataCapabilities.getPlayer(player);
