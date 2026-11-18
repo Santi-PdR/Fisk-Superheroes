@@ -118,8 +118,8 @@ def main():
                 wait_for_new(server_log, r'\[Server\] VELOCITY_BOTTLE_RETURNED', bottle_start, 30,
                              'survival drink returns a glass bottle', server)
                 # Original V9 supplies speed sounds and a blue trail without a suit.
-                command('fill -4 180 0 -4 183 8 minecraft:stone')
-                command('tp Partner 4 180 4 90 0')
+                command('fill -5 180 9 5 183 9 minecraft:stone')
+                command('tp Partner 0 180 5 0 0')
                 v9_start = len(observer_log.read_text(errors='replace'))
                 subprocess.run(['xdotool', 'keydown', 'w'], check=True, timeout=30)
                 subprocess.run(['xdotool', 'keydown', 'Control_L'], check=True, timeout=30)
@@ -137,7 +137,7 @@ def main():
                 finally:
                     subprocess.run(['xdotool', 'keyup', 'w'], check=True, timeout=30)
                     subprocess.run(['xdotool', 'keyup', 'Control_L'], check=True, timeout=30)
-                command('fill -4 180 0 -4 183 8 minecraft:air')
+                command('fill -5 180 9 5 183 9 minecraft:air')
                 command('tp Partner 0 180 4 180 0')
                 command('item replace entity Partner hotbar.0 with minecraft:air')
                 command('gamemode creative Partner')

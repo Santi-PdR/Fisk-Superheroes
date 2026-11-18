@@ -106,6 +106,17 @@ public final class TrailHandler
             if (data != null && data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)) active = configured;
         }
         tick(player, active);
+        if (Boolean.getBoolean("fiskheroes.ciVelocityDiagnostics") && !player.isLocalPlayer() && player.tickCount % 40 == 0)
+        {
+            var d = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+            if (d != null && (d.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING)
+                    || player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get())))
+                FiskHeroes.LOGGER.info("Velocity trail state: player={}, effect={}, speeding={}, conversion={}, configured={}, active={}, samples={}",
+                        player.getName().getString(), player.hasEffect(com.fiskmods.heroes.common.hero.modifier.ModEffects.VELOCITY_NINE.get()),
+                        d.getData().get(com.fiskmods.heroes.common.data.var.Vars.SPEEDING),
+                        d.getData().get(com.fiskmods.heroes.common.data.var.Vars.VEL9_CONVERT),
+                        configured != null ? configured.id() : "none", active != null ? active.id() : "none", getSamples(player.getUUID()).size());
+        }
         tickFlicker(player, configured, active != null, iteration != null);
     }
 
