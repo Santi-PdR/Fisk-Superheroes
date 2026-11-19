@@ -16,126 +16,126 @@ PASS: real shield throw breaks only the permitted glass plane
 PASS: real shield throw cuts the vine without breaking its support
 PASS: real shield throw cuts both halves of tall grass
 ==== relevant server events ====
-[02:42:16] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_arrow_damage_source with Javascript path coremods/arrow_damage_source.js
-[02:42:16] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/arrow_damage_source.js
-[02:42:16] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/arrow_damage_source.js
+[03:14:26] [main/DEBUG] [ne.mi.fm.lo.mo.ModFileParser/LOADING]: Found coremod fiskheroes_arrow_damage_source with Javascript path coremods/arrow_damage_source.js
+[03:14:26] [main/DEBUG] [ne.mi.fm.lo.mo.ModFile/LOADING]: Found coremod coremods/arrow_damage_source.js
+[03:14:26] [main/DEBUG] [ne.mi.co.CoreModEngine/COREMOD]: Loading CoreMod from coremods/arrow_damage_source.js
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[02:42:24] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key suits.damageReductionBaseline was corrected from null to its default, 75.0. 
-[02:42:24] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key suits.damageReductionBaseline does not match the spec. This may create a backup.
-[02:42:24] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key suits.damageReductionFactor was corrected from null to its default, 1.3. 
-[02:42:24] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key suits.damageReductionFactor does not match the spec. This may create a backup.
-[02:42:24] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key powers.damageMultiplier was corrected from null to its default, 1.0. 
-[02:42:24] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key powers.damageMultiplier does not match the spec. This may create a backup.
-[02:42:29] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[02:43:42] [Server thread/INFO] [Fisk's Superheroes/]: Shield item block: player=Dev, hit=4.0, total=4.0, broken=false
-[02:43:42] [Server thread/INFO] [minecraft/MinecraftServer]: Target is invulnerable to the given damage type
-[02:43:43] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_FRONT_OK
-[02:43:45] [Server thread/INFO] [Fisk's Superheroes/]: Shield item coverage rejected: player=Dev, source=ArmorStand['Armor Stand'/86, l='ServerLevel[world]', x=3.50, y=181.62, z=3.50], position=(0.5, 180.0, 0.5)
-[02:43:45] [Server thread/INFO] [minecraft/MinecraftServer]: Applied 4.0 damage to Dev
-[02:43:47] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_SIDE_HIT_OK
-[02:43:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[02:43:51] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_HOLD_ONLY_OK
-[02:43:54] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_ATTACK_ONLY_OK
-[02:43:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[02:43:55] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
-[02:44:00] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_RETURN_DATA_OK
-[02:44:03] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[02:44:04] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
-[02:44:07] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_GLASS_PLANE_OK
-[02:44:13] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[02:44:14] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
-[02:44:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=-1, matching=[]
-[02:44:16] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_VINE_OK
-[02:44:24] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[02:44:25] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
-[02:44:27] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_DOUBLE_PLANT_OK
+[03:14:32] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key suits.damageReductionBaseline was corrected from null to its default, 75.0. 
+[03:14:32] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key suits.damageReductionBaseline does not match the spec. This may create a backup.
+[03:14:32] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key suits.damageReductionFactor was corrected from null to its default, 1.3. 
+[03:14:32] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key suits.damageReductionFactor does not match the spec. This may create a backup.
+[03:14:32] [main/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key powers.damageMultiplier was corrected from null to its default, 1.0. 
+[03:14:32] [main/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key powers.damageMultiplier does not match the spec. This may create a backup.
+[03:14:36] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[03:15:39] [Server thread/INFO] [Fisk's Superheroes/]: Shield item block: player=Dev, hit=4.0, total=4.0, broken=false
+[03:15:39] [Server thread/INFO] [minecraft/MinecraftServer]: Target is invulnerable to the given damage type
+[03:15:41] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_FRONT_OK
+[03:15:44] [Server thread/INFO] [Fisk's Superheroes/]: Shield item coverage rejected: player=Dev, source=ArmorStand['Armor Stand'/92, l='ServerLevel[world]', x=3.50, y=181.62, z=3.50], position=(0.5, 180.0, 0.5)
+[03:15:44] [Server thread/INFO] [minecraft/MinecraftServer]: Applied 4.0 damage to Dev
+[03:15:46] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_SIDE_HIT_OK
+[03:15:50] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[03:15:52] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_HOLD_ONLY_OK
+[03:15:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=-1, matching=[]
+[03:15:56] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_ATTACK_ONLY_OK
+[03:15:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[03:15:57] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
+[03:16:02] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_RETURN_DATA_OK
+[03:16:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[03:16:06] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
+[03:16:09] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_GLASS_PLANE_OK
+[03:16:14] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[03:16:15] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
+[03:16:18] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_VINE_OK
+[03:16:25] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[03:16:26] [Server thread/INFO] [Fisk's Superheroes/]: Shield throw completed: player=Dev
+[03:16:29] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SHIELD_DOUBLE_PLANT_OK
 ==== projectile diagnostics ====
-[02:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=87, tick=0, pos=(-0.9057119092945429, 181.47000000476837, -0.9057119092945429), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(-0.9057119092945429, 181.61999988555908, -0.9057119092945429)
-[02:44:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=88, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=88, tick=20, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=89, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:25] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=90, tick=1, pos=(0.5, 181.43087500476835, 3.0), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.06873374970257282, 2.475000023841858), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:26] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=90, tick=21, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
+[03:15:57] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=93, tick=0, pos=(-0.9057119092945429, 181.47000000476837, -0.9057119092945429), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(-0.9057119092945429, 181.61999988555908, -0.9057119092945429)
+[03:16:06] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=94, tick=1, pos=(0.5, 181.43087500476835, 3.0), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.06873374970257282, 2.475000023841858), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:07] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=94, tick=21, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:15] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=95, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:26] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=96, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:27] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=96, tick=20, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
 ==== client tail ====
-[02:43:20] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
+[03:15:15] [Render thread/WARN] [minecraft/SoundEngine]: Missing sound for event: minecraft:entity.goat.screaming.horn_break
 [ALSOFT] (EE) Failed to set real-time priority for thread: Operation not permitted (1)
-[02:43:20] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
-[02:43:20] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
-[02:43:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
-[02:43:20] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
-[02:43:20] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
-[02:43:20] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
-[02:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
-[02:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
-[02:43:20] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
-[02:43:27] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[02:43:32] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: RIGHT
-[02:43:32] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
-[02:43:32] [Render thread/INFO] [Fisk's Superheroes/]: Shield use: player=Dev, side=client, allowed=false
-[02:43:33] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_america, texture=fiskheroes:textures/heroes/captain_america_layer1.png, poseAligned=true
-[02:43:33] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[02:43:37] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Survival Mode
-[02:43:37] [Render thread/INFO] [Fisk's Superheroes/]: Suit protection HUD: hero=fiskheroes:captain_america, fill=74, armor=false, x=122, y=191, screen=427x240, metalOverlay=0
-[02:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Shield use: player=Dev, side=client, allowed=true
-[02:43:40] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=true
-[02:43:42] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
-[02:43:42] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
-[02:43:42] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=true
-[02:43:43] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_FRONT_OK
-[02:43:47] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_SIDE_HIT_OK
-[02:43:47] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
-[02:43:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[02:43:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:43:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:43:51] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_HOLD_ONLY_OK
-[02:43:51] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:43:54] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_ATTACK_ONLY_OK
-[02:43:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:43:54] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:43:55] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
-[02:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=87
-[02:43:55] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=87, tick=0, pos=(-0.9057119092945429, 181.47000000476837, -0.9057119092945429), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(-0.9057119092945429, 181.61999988555908, -0.9057119092945429)
-[02:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
-[02:43:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:44:00] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_RETURN_DATA_OK
-[02:44:03] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:44:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:44:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
-[02:44:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=88
-[02:44:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=88, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
-[02:44:05] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=88, tick=20, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:44:07] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_GLASS_PLANE_OK
-[02:44:13] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:44:13] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[02:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[02:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
-[02:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=89
-[02:44:14] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=89, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[02:44:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
-[02:44:16] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:44:16] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_VINE_OK
-[02:44:24] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
-[02:44:24] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
-[02:44:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
-[02:44:25] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=90
-[02:44:25] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=90, tick=1, pos=(0.5, 181.43087500476835, 3.0), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.06873374970257282, 2.475000023841858), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:26] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=90, tick=21, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
-[02:44:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
-[02:44:27] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_DOUBLE_PLANT_OK
+[03:15:15] [Render thread/INFO] [mojang/Library]: OpenAL initialized on device No Output
+[03:15:15] [Render thread/INFO] [minecraft/SoundEngine]: Sound engine started
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/blocks.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/signs.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/shield_patterns.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x512x4 minecraft:textures/atlas/banner_patterns.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 1024x1024x4 minecraft:textures/atlas/armor_trims.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 128x64x4 minecraft:textures/atlas/decorated_pot.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x4 minecraft:textures/atlas/chest.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/beds.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x4 minecraft:textures/atlas/shulker_boxes.png-atlas
+[03:15:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'default'
+[03:15:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Attached hero suit renderer to player skin 'slim'
+[03:15:15] [Render thread/WARN] [minecraft/ShaderInstance]: Shader rendertype_entity_translucent_emissive could not find sampler named Sampler2 in the specified shader program.
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 512x256x0 minecraft:textures/atlas/particles.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x256x0 minecraft:textures/atlas/paintings.png-atlas
+[03:15:15] [Render thread/INFO] [minecraft/TextureAtlas]: Created: 256x128x0 minecraft:textures/atlas/mob_effects.png-atlas
+[03:15:15] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 113 hero suit models
+[03:15:15] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 9 suit effect shapes
+[03:15:15] [Render thread/INFO] [Fisk's Superheroes/]: Loaded 17 trail resources
+[03:15:23] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[03:15:28] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: RIGHT
+[03:15:28] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
+[03:15:29] [Render thread/INFO] [Fisk's Superheroes/]: Shield use: player=Dev, side=client, allowed=false
+[03:15:30] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_america, texture=fiskheroes:textures/heroes/captain_america_layer1.png, poseAligned=true
+[03:15:30] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_america, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[03:15:33] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Survival Mode
+[03:15:33] [Render thread/INFO] [Fisk's Superheroes/]: Suit protection HUD: hero=fiskheroes:captain_america, fill=74, armor=false, x=122, y=191, screen=427x240, metalOverlay=0
+[03:15:37] [Render thread/INFO] [Fisk's Superheroes/]: Shield use: player=Dev, side=client, allowed=true
+[03:15:37] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=true
+[03:15:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
+[03:15:39] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
+[03:15:39] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=true
+[03:15:41] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_FRONT_OK
+[03:15:46] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_SIDE_HIT_OK
+[03:15:47] [Render thread/INFO] [Fisk's Superheroes/]: Shield item pose: wearer=Dev, context=FIRST_PERSON_RIGHT_HAND, blocking=false
+[03:15:49] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[03:15:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:15:50] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:15:52] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_HOLD_ONLY_OK
+[03:15:53] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:15:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[03:15:54] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[03:15:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[03:15:56] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_ATTACK_ONLY_OK
+[03:15:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:15:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:15:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
+[03:15:57] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=93
+[03:15:57] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=93, tick=0, pos=(-0.9057119092945429, 181.47000000476837, -0.9057119092945429), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(-0.9057119092945429, 181.61999988555908, -0.9057119092945429)
+[03:15:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
+[03:15:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:16:02] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_RETURN_DATA_OK
+[03:16:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:16:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:16:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
+[03:16:06] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=94
+[03:16:06] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=94, tick=1, pos=(0.5, 181.43087500476835, 3.0), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.06873374970257282, 2.475000023841858), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:06] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
+[03:16:07] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=94, tick=21, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:16:09] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_GLASS_PLANE_OK
+[03:16:14] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:16:14] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:16:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
+[03:16:15] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=95
+[03:16:15] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=95, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:15] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.shield.hit as fiskheroes:item.shield.hit
+[03:16:17] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:16:18] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_VINE_OK
+[03:16:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=true
+[03:16:25] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=1
+[03:16:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:shield_throw as fiskheroes:item.shield.throw
+[03:16:26] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield model rendered: entity=96
+[03:16:26] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=96, tick=0, pos=(0.5, 181.47000000476837, 0.5), yaw=0.0, pitch=-0.89660364, velocity=(0.0, -0.039125, 2.5), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:27] [Render thread/INFO] [Fisk's Superheroes/]: Thrown shield visual sample: entity=96, tick=20, pos=(0.5, 175.38411328125, 46.023138671875), yaw=0.0, pitch=-12.479426, velocity=(0.0, -0.5783362546116114, 2.044721269696951), camera=(0.5, 181.61999988555908, 0.5)
+[03:16:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=1, pressed=false
+[03:16:29] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SHIELD_DOUBLE_PLANT_OK
