@@ -58,4 +58,5 @@ Its range and damage are configurable through `powers.heatGunRange` and `powers.
 with the original defaults of 32 blocks and 5 damage. The range is bounded to 0.01–256 blocks
 for server safety; the original's per-hero rule overrides are not yet ported. Block melting and ignition respect the
 general `allowGriefing` and separate `allowHeatGunGriefing` settings, player edit and world
-border checks, and cancellable Forge break/place events.
+border checks, and cancellable Forge break/place events. Melting ice to water requires both
+break and placement approval; a canceled water placement restores the ice before neighbor updates.

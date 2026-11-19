@@ -142,7 +142,10 @@ public final class ItemHeatGun extends ItemGun
         if (state.is(Blocks.ICE) || state.is(Blocks.FROSTED_ICE))
         {
             if (ProtectedBlockChanges.canBreak(shooter, pos, state))
-                level.setBlockAndUpdate(pos, level.dimensionType().ultraWarm() ? Blocks.AIR.defaultBlockState() : Blocks.WATER.defaultBlockState());
+            {
+                if (level.dimensionType().ultraWarm()) level.removeBlock(pos, false);
+                else ProtectedBlockChanges.placeBlock(shooter, pos, block.getDirection(), Blocks.WATER.defaultBlockState());
+            }
             return;
         }
         if (state.is(Blocks.SNOW) || state.is(Blocks.SNOW_BLOCK) || state.is(Blocks.POWDER_SNOW))

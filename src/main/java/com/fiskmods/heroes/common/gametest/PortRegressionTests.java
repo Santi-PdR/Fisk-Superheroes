@@ -7974,6 +7974,38 @@ public final class PortRegressionTests
         { if (event.getPos().equals(fire)) ++fireNotifications; }
     }
 
+    @GameTest(template = "test_empty")
+    public static void heatGunMeltHonorsWaterPlacementProtection(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var shooter = heatGunShooter(helper, "heat-melt-placement");
+        var pos = shooter.blockPosition().offset(0, 1, 4);
+        try
+        {
+            for (var ice : new net.minecraft.world.level.block.Block[] {
+                    net.minecraft.world.level.block.Blocks.ICE, net.minecraft.world.level.block.Blocks.FROSTED_ICE})
+            {
+                level.setBlockAndUpdate(pos, ice.defaultBlockState());
+                // Deny only placement, not the preceding break event.
+                var guard = new HeatGunProtectionGuard(pos.above(40), pos);
+                net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+                try
+                {
+                    testGunBlockHit(com.fiskmods.heroes.common.item.ItemHeatGun.class, shooter, pos, true);
+                    if (guard.placeEvents != 1 || guard.fireNotifications != 0 || !level.getBlockState(pos).is(ice))
+                    { helper.fail("Canceled melt-water placement must restore " + ice + " without neighbor updates"); return; }
+                }
+                finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+                testGunBlockHit(com.fiskmods.heroes.common.item.ItemHeatGun.class, shooter, pos, true);
+                if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.WATER))
+                { helper.fail("Allowed ice melt must place water for " + ice); return; }
+            }
+            helper.succeed();
+        }
+        catch (ReflectiveOperationException e) { helper.fail("Could not test melt-water placement: " + e); }
+        finally { level.removeBlock(pos, false); }
+    }
+
     @GameTest(template = "test_empty", timeoutTicks = 100)
     public static void heatGunRespectsProtectionAndExpires(GameTestHelper helper)
     {
