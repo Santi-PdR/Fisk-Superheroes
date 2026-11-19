@@ -3851,6 +3851,90 @@ public final class PortRegressionTests
         helper.succeed();
     }
 
+    private static final class CactusImpactArrow extends com.fiskmods.heroes.common.entity.arrow.TrickArrowEntity
+    {
+        CactusImpactArrow(net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.LivingEntity owner)
+        {
+            super(com.fiskmods.heroes.common.entity.ModEntities.TRICK_ARROW.get(), level, owner, "cactus");
+        }
+        void hitEntity(net.minecraft.world.entity.Entity target)
+        {
+            onHitEntity(new net.minecraft.world.phys.EntityHitResult(target));
+        }
+        void hitBlock(net.minecraft.core.BlockPos block, Vec3 hit)
+        {
+            onHitBlock(new net.minecraft.world.phys.BlockHitResult(hit, net.minecraft.core.Direction.WEST, block, false));
+        }
+    }
+
+    public static final class CactusArrowSpawnRecorder
+    {
+        private final net.minecraft.world.entity.Entity owner;
+        private final java.util.List<Vec3> velocities = new java.util.ArrayList<>();
+        private final java.util.List<Vec3> positions = new java.util.ArrayList<>();
+        CactusArrowSpawnRecorder(net.minecraft.world.entity.Entity owner) { this.owner = owner; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onSpawn(net.minecraftforge.event.entity.EntityJoinLevelEvent event)
+        {
+            if (event.getEntity() instanceof com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity spike
+                    && spike.getOwner() == owner)
+            {
+                velocities.add(spike.getDeltaMovement()); positions.add(spike.position());
+                event.setCanceled(true); // capture initial motion before the explosion changes it
+            }
+        }
+        void clear() { velocities.clear(); positions.clear(); }
+        boolean matches(Vec3 origin, Vec3 expected)
+        {
+            return (velocities.size() == 20 || velocities.size() == 21)
+                    && positions.stream().allMatch(p -> p.distanceTo(origin) < 1.0E-5D)
+                    && velocities.stream().allMatch(v -> Math.abs(v.x - expected.x) <= .201D
+                            && Math.abs(v.y - expected.y) <= .201D && Math.abs(v.z - expected.z) <= .201D);
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusArrowBurstsOnAllImpactsWithLegacyDisplacement(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockPlayer(); owner.setPos(base.getX() - 12, base.getY(), base.getZ());
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        var golem = net.minecraft.world.entity.EntityType.IRON_GOLEM.create(level);
+        if (boat == null || golem == null) { helper.fail("Could not create cactus arrow targets"); return; }
+        golem.setInvulnerable(true);
+        var origin = new Vec3(base.getX() + 1, base.getY() + 1.5, base.getZ() + .5);
+        boat.setPos(origin.add(3, 0, 0)); golem.setPos(origin.add(3, 0, 0));
+        var recorder = new CactusArrowSpawnRecorder(owner);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            for (var target : java.util.List.of(boat, golem))
+            {
+                var arrow = new CactusImpactArrow(level, owner);
+                arrow.setPos(origin); arrow.setDeltaMovement(4, 0, 0);
+                arrow.hitEntity(target);
+                if (!arrow.isRemoved() || !recorder.matches(origin, Vec3.ZERO))
+                { helper.fail("Cactus arrow must burst on nonliving and rejected hits with only uniform spread: " + target.getType()); return; }
+                recorder.clear();
+            }
+            var wall = base.offset(4, 1, 0);
+            level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+            var arrow = new CactusImpactArrow(level, owner);
+            arrow.setPos(origin); arrow.setDeltaMovement(4, 0, 0);
+            arrow.hitBlock(wall, new Vec3(wall.getX(), origin.y, origin.z));
+            var expectedOrigin = origin.add(-(double) 0.05F, 0, 0);
+            if (!arrow.isRemoved() || !recorder.matches(expectedOrigin, new Vec3(-1, 0, 0)))
+            { helper.fail("Wall burst must use the 0.05-block backward displacement, not incoming arrow velocity"); return; }
+            level.removeBlock(wall, false);
+            helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+            boat.discard(); golem.discard();
+        }
+    }
+
     @GameTest(template = "test_empty")
     public static void ownerlessCactusArrowStillBursts(GameTestHelper helper)
     {

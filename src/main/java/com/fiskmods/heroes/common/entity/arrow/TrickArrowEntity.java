@@ -556,6 +556,14 @@ public class TrickArrowEntity extends Arrow
             teleportShooter(result);
             setArrowType(ItemTrickArrow.NORMAL);
         }
+        if ("cactus".equals(getArrowType()) && !level().isClientSide)
+        {
+            // Legacy baseTick resets prevPos before impact, and entity impacts do not move
+            // the arrow. Even a rejected hit therefore bursts with only random spread.
+            spawnCactusSpikes(Vec3.ZERO);
+            detonate(1.999F, false);
+            return;
+        }
         if (!(result.getEntity() instanceof LivingEntity target))
         {
             if (boxingGlove) finishBoxingGloveHit(incomingMotion);
@@ -568,13 +576,6 @@ public class TrickArrowEntity extends Arrow
         if (level().isClientSide) return;
 
         if (boxingGlove) finishBoxingGloveHit(incomingMotion);
-        if ("cactus".equals(getArrowType()))
-        {
-            // The original cactus arrow bursts on every impact, including living targets.
-            spawnCactusSpikes();
-            detonate(2.0F, false);
-            return;
-        }
         detonateIfExplosive();
         if ("fireball".equals(getArrowType()))
         {
@@ -659,6 +660,7 @@ public class TrickArrowEntity extends Arrow
             return;
         }
         Vec3 incomingMotion = getDeltaMovement();
+        Vec3 impactStart = position();
         super.onHitBlock(result);
         String type = getArrowType();
         if (level().isClientSide) return;
@@ -704,8 +706,10 @@ public class TrickArrowEntity extends Arrow
         }
         else if ("cactus".equals(type))
         {
-            spawnCactusSpikes();
-            detonate(2.0F, false);
+            // The base block handler backs the arrow up 0.05 blocks from its tick
+            // start. Legacy uses that position change, not the incoming velocity.
+            spawnCactusSpikes(position().subtract(impactStart).scale(1.0D / (double) 0.05F));
+            detonate(1.999F, false);
         }
         else if ("pufferfish".equals(type) || "explosive_pufferfish".equals(type) || "slime".equals(type))
         {
@@ -1170,12 +1174,11 @@ public class TrickArrowEntity extends Arrow
         }
     }
 
-    private void spawnCactusSpikes()
+    private void spawnCactusSpikes(Vec3 displacementVelocity)
     {
         if (!(level() instanceof net.minecraft.server.level.ServerLevel serverLevel)) return;
         // The reference arrow bursts into twenty or twenty-one cactus spikes.
         int count = 20 + random.nextInt(2);
-        Vec3 incomingMotion = getDeltaMovement();
         for (int i = 0; i < count; ++i)
         {
             com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity spike = getOwner() instanceof LivingEntity owner
@@ -1183,12 +1186,11 @@ public class TrickArrowEntity extends Arrow
                     : new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(
                             com.fiskmods.heroes.common.entity.ModEntities.CACTUS_SPIKE.get(), serverLevel);
             spike.setPos(getX(), getY(), getZ());
-            // The reference spike inherits the Cactus Arrow's travel direction and adds a small
-            // random spread; firing evenly in random directions made the burst look unrelated.
-            spike.setDeltaMovement(incomingMotion.scale(20.0D).add(
-                    random.nextDouble() * 0.4D - 0.2D,
-                    random.nextDouble() * 0.4D - 0.2D,
-                    random.nextDouble() * 0.4D - 0.2D));
+            // Legacy adds independent uniform noise to (pos - prevPos) / 0.05F.
+            spike.setDeltaMovement(displacementVelocity.add(
+                    (random.nextDouble() * 2.0D - 1.0D) * (double) 0.2F,
+                    (random.nextDouble() * 2.0D - 1.0D) * (double) 0.2F,
+                    (random.nextDouble() * 2.0D - 1.0D) * (double) 0.2F));
             spike.hasImpulse = true;
             serverLevel.addFreshEntity(spike);
         }

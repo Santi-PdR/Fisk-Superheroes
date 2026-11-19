@@ -27,3 +27,11 @@ client/dedicated-server smoke test checks aiming, actual target damage, the ring
 72 accepted spawns and projectile rendering. The ring count is recorded at spawn:
 counting surviving entities later is unreliable because fast spikes can collide,
 despawn or be removed before a console command executes.
+
+The cactus trick arrow bursts after a block or entity impact, including a nonliving
+entity or a target that rejects damage. It creates 20–21 spikes and a non-terrain
+explosion of radius 1.999. The original resets previous position at the start of
+its tick: an entity impact therefore gives the spikes only uniform ±0.2 motion,
+while a wall impact first moves the arrow 0.05 blocks backwards, yielding an
+approximately backward unit vector plus that spread. These are initial velocities;
+the subsequent explosion and modern collision physics can change them.
