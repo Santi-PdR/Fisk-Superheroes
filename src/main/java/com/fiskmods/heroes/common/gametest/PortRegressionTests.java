@@ -485,6 +485,46 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void shieldGlassPlaneFollowsImpactAxis(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-glass-axis-test"));
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        for (boolean floor : new boolean[] {false, true})
+        {
+            var center = floor ? base.offset(0, 1, 0) : base.offset(2, 1, 0);
+            for (int a = -1; a <= 1; ++a) for (int b = -1; b <= 1; ++b)
+                level.setBlockAndUpdate(floor ? center.offset(a, 0, b) : center.offset(0, a, b),
+                        net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+            var outside = floor ? center.offset(2, 0, 0) : center.offset(0, 2, 0);
+            level.setBlockAndUpdate(outside, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+            var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+            shield.setCanDoGriefing(true);
+            if (floor)
+            {
+                shield.setPos(base.getX() + .5D, base.getY() + 3.5D, base.getZ() + .5D);
+                shield.setDeltaMovement(0, -2, 0);
+            }
+            else
+            {
+                shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+                shield.setDeltaMovement(2, 0, 0);
+            }
+            level.addFreshEntity(shield); shield.tick();
+            var sideA = floor ? center.east() : center.above();
+            var sideB = center.south();
+            if (!level.isEmptyBlock(center) || !level.isEmptyBlock(sideA) || !level.isEmptyBlock(sideB)
+                    || !level.getBlockState(outside).is(net.minecraft.world.level.block.Blocks.GLASS))
+            { shield.discard(); helper.fail("Glass plane must follow the hit face for " + (floor ? "vertical" : "horizontal") + " impacts"); return; }
+            shield.discard(); level.removeBlock(outside, false);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void shieldGlassGriefingFlagSurvivesSaveAndControlsImpact(GameTestHelper helper)
     {
         var level = helper.getLevel();

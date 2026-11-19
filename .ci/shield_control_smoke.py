@@ -133,6 +133,23 @@ def main():
             count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
             if count != 1: raise RuntimeError(f'Expected one launch, saw {count}')
             print('PASS: real', 'keyboard' if keyboard else 'mouse', 'attack requires held ability and returns shield', flush=True)
+            # Throw the real equipped item through a glass wall. The center and
+            # adjacent block must break, but a block outside the 3x3 plane must remain.
+            command('fill -2 180 6 2 183 6 minecraft:glass')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{GlassProbe:1b}')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1)
+                attack()
+                time.sleep(2)
+            finally: xdo('keyup', 'c')
+            command('execute if block 0 181 6 minecraft:air if block 1 181 6 minecraft:air '
+                    'if block 2 181 6 minecraft:glass run say SHIELD_GLASS_PLANE_OK')
+            wait_for(server_log, r'\[Server\] SHIELD_GLASS_PLANE_OK', 30,
+                     'real shield throw breaks only the permitted glass plane', server)
+            count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
+            if count != 2: raise RuntimeError(f'Expected two shield launches, saw {count}')
+            command('kill @e[type=fiskheroes:thrown_shield]')
             if not keyboard:
                 # Sample actual server-owned projectiles with a runner-only magenta
                 # texture. Fresh spawns prevent client-side gravity prediction from
