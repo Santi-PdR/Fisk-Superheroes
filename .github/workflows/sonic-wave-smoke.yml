@@ -1,0 +1,72 @@
+name: Sonic Wave Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: ['arena/**']
+    paths:
+      - '.ci/sonic_wave_smoke.py'
+      - '.ci/tonfa_visual_smoke.py'
+      - '.ci/client_identity.gradle'
+      - '.github/workflows/sonic-wave-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/SonicWaveEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/IcicleEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/ThrownShieldEntity.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/modifier/ModifierProjectiles.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
+      - 'src/main/resources/assets/fiskheroes/data/powers/canary_cry.json'
+      - 'src/main/resources/assets/fiskheroes/data/heroes/black_canary.js'
+concurrency:
+  group: sonic-wave-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sonic:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Install headless client dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri
+          python3 -m pip install --user 'pillow>=13,<14'
+      - name: Prepare server and client
+        run: |
+          chmod +x gradlew
+          mkdir -p run-sonic-server run-sonic-client/config
+          printf 'earlyWindowControl = false\n' > run-sonic-client/config/fml.toml
+          echo 'eula=true' > run-sonic-server/eula.txt
+          printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-sonic-server/server.properties
+          ./gradlew classes --no-daemon --console=plain
+      - name: Verify cry with a real client
+        run: |
+          set -o pipefail
+          xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/sonic_wave_smoke.py 2>&1 | tee ci-sonic-test.log
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonic-wave-diagnostics
+          path: ci-sonic-*.log
+          if-no-files-found: ignore
+      - name: Publish concise diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .ci
+          { cat ci-sonic-test.log 2>/dev/null || true; echo '==== server tail ===='; tail -120 ci-sonic-server.log 2>/dev/null || true; echo '==== client tail ===='; tail -60 ci-sonic-client.log 2>/dev/null || true; } > .ci/sonic-wave-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/sonic-wave-log.txt
+          git diff --cached --quiet || git commit -m 'ci: sonic wave diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then exit 0; fi
+            sleep 5
+          done
+          exit 1
