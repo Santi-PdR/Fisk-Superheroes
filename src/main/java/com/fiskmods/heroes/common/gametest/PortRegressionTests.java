@@ -634,6 +634,58 @@ public final class PortRegressionTests
         finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
     }
 
+    public static final class ShieldPlantPlaceGuard
+    {
+        private final net.minecraft.core.BlockPos pos;
+        int events;
+        ShieldPlantPlaceGuard(net.minecraft.core.BlockPos pos) { this.pos = pos; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onPlace(net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent event)
+        { if (event.getPos().equals(pos)) { events++; event.setCanceled(true); } }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldDoublePlantHonorsBothHalvesAndReplacementClaims(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var lower = base.offset(0, 1, 2); var upper = lower.above();
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-double-plant-test"));
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        level.setBlockAndUpdate(lower.below(), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
+        net.minecraft.world.level.block.DoublePlantBlock.placeAt(level, net.minecraft.world.level.block.Blocks.TALL_GRASS.defaultBlockState(), lower, 3);
+        var guard = new ShieldGlassGuard(upper);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            var shield = vineShieldProbe(level, owner, base, true, .5D); shield.discard();
+            if (guard.events != 1 || !level.getBlockState(lower).is(net.minecraft.world.level.block.Blocks.TALL_GRASS)
+                    || !level.getBlockState(upper).is(net.minecraft.world.level.block.Blocks.TALL_GRASS))
+            { helper.fail("Protected upper half must preserve the entire double plant"); return; }
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+        var shield = vineShieldProbe(level, owner, base, true, .5D);
+        if (!level.isEmptyBlock(lower) || !level.isEmptyBlock(upper) || shield.isReturning())
+        { shield.discard(); helper.fail("An allowed lower-half impact must remove both halves without a return"); return; }
+        shield.discard();
+        net.minecraft.world.level.block.DoublePlantBlock.placeAt(level, net.minecraft.world.level.block.Blocks.TALL_GRASS.defaultBlockState(), lower, 3);
+        var placeGuard = new ShieldPlantPlaceGuard(lower);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(placeGuard);
+        try
+        {
+            shield = vineShieldProbe(level, owner, base.above(), true, .5D); shield.discard();
+            if (placeGuard.events != 1 || !level.getBlockState(lower).is(net.minecraft.world.level.block.Blocks.TALL_GRASS)
+                    || !level.getBlockState(upper).is(net.minecraft.world.level.block.Blocks.TALL_GRASS))
+            { helper.fail("A canceled replacement must leave both halves intact"); return; }
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(placeGuard); }
+        shield = vineShieldProbe(level, owner, base.above(), true, .5D);
+        if (!level.getBlockState(lower).is(net.minecraft.world.level.block.Blocks.GRASS) || !level.isEmptyBlock(upper) || shield.isReturning())
+        { shield.discard(); helper.fail("An allowed upper-half impact must leave short grass below and continue flying"); return; }
+        shield.discard(); helper.succeed();
+    }
+
     @GameTest(template = "test_empty")
     public static void thrownShieldBouncesOffSolidWall(GameTestHelper helper)
     {

@@ -218,7 +218,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
 
         // Vanilla 1.20 traces collision shapes, so plants with no collision need a
         // separate, bounded outline trace before the ordinary projectile movement.
-        if (!level().isClientSide) breakVinesAlongFlight();
+        if (!level().isClientSide) breakFoliageAlongFlight();
         // ThrowableProjectile supplies the same air/water drag and 0.03 gravity as the original.
         super.tick();
         // Retain a bounded fallback for projectiles that never collide or cannot be recovered.
@@ -343,8 +343,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                 && level().mayInteract(player, pos) && player.mayUseItemAt(pos, face, getItem());
     }
 
-    /** The original cuts vines, whose modern collision shape is empty. */
-    private void breakVinesAlongFlight()
+    /** The original cuts vines and double plants, whose modern collision shapes are empty. */
+    private void breakFoliageAlongFlight()
     {
         if (!griefingAllowed() || !(getOwner() instanceof ServerPlayer player)
                 || getDeltaMovement().lengthSqr() < 1.0E-7D) return;
@@ -356,7 +356,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             var pos = cursor.immutable();
             if (!level().hasChunkAt(pos)) return null;
             var state = level().getBlockState(pos);
-            if (!state.is(net.minecraft.world.level.block.Blocks.VINE)) return null;
+            if (!state.is(net.minecraft.world.level.block.Blocks.VINE) && !isOriginalDoublePlant(state)) return null;
             return state.getShape(level(), pos).clip(start, end, pos);
         }, projectile -> null);
         if (hit == null || net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hit)) return;
@@ -366,6 +366,45 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         if (state.is(net.minecraft.world.level.block.Blocks.VINE) && state.getDestroySpeed(level(), pos) >= 0.0F
                 && com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, state))
             level().destroyBlock(pos, true, player);
+        else if (isOriginalDoublePlant(state)) breakDoublePlant(player, hit, state);
+    }
+
+    private static boolean isOriginalDoublePlant(net.minecraft.world.level.block.state.BlockState state)
+    {
+        // The six double-plant variants present in 1.7.10.
+        return state.is(net.minecraft.world.level.block.Blocks.TALL_GRASS)
+                || state.is(net.minecraft.world.level.block.Blocks.LARGE_FERN)
+                || state.is(net.minecraft.world.level.block.Blocks.SUNFLOWER)
+                || state.is(net.minecraft.world.level.block.Blocks.LILAC)
+                || state.is(net.minecraft.world.level.block.Blocks.ROSE_BUSH)
+                || state.is(net.minecraft.world.level.block.Blocks.PEONY);
+    }
+
+    private void breakDoublePlant(ServerPlayer player, BlockHitResult hit, net.minecraft.world.level.block.state.BlockState state)
+    {
+        var half = net.minecraft.world.level.block.DoublePlantBlock.HALF;
+        boolean upperHit = state.getValue(half) == net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER;
+        var lower = upperHit ? hit.getBlockPos().below() : hit.getBlockPos();
+        var upper = lower.above();
+        var lowState = level().getBlockState(lower);
+        var highState = level().getBlockState(upper);
+        if (!lowState.is(state.getBlock()) || !highState.is(state.getBlock())
+                || lowState.getValue(half) != net.minecraft.world.level.block.state.properties.DoubleBlockHalf.LOWER
+                || highState.getValue(half) != net.minecraft.world.level.block.state.properties.DoubleBlockHalf.UPPER
+                || !mayEdit(player, lower, hit.getDirection()) || !mayEdit(player, upper, hit.getDirection())
+                || lowState.getDestroySpeed(level(), lower) < 0.0F || highState.getDestroySpeed(level(), upper) < 0.0F
+                || !com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, lower, lowState)
+                || !com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, upper, highState)
+                || !level().getBlockState(lower).equals(lowState) || !level().getBlockState(upper).equals(highState)) return;
+        if (upperHit)
+        {
+            // The usual 1.7 upper-half metadata is 8 (variant zero): it leaves short grass below.
+            // The replacement goes through Forge's placement transaction, so a canceled claim
+            // does not leave half a plant or notify neighbors before approval.
+            com.fiskmods.heroes.common.util.ProtectedBlockChanges.placeBlock(player, lower, hit.getDirection(),
+                    net.minecraft.world.level.block.Blocks.GRASS.defaultBlockState());
+        }
+        else level().destroyBlock(lower, true, player);
     }
 
     private static boolean isGlass(net.minecraft.world.level.block.state.BlockState state)
