@@ -20,6 +20,8 @@ jobs:
   beams:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
@@ -62,3 +64,20 @@ jobs:
             cat ci-gun-grief-test.log 2>/dev/null || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+      - name: Publish concise diagnostics
+        if: always()
+        continue-on-error: true
+        run: |
+          mkdir -p .ci
+          { cat ci-gun-grief-test.log 2>/dev/null || true; echo '==== server tail ===='; tail -120 ci-gun-grief-server.log 2>/dev/null || true; echo '==== client tail ===='; tail -80 ci-gun-grief-client.log 2>/dev/null || true; } > .ci/gun-griefing-log.txt
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add -f .ci/gun-griefing-log.txt
+          git diff --cached --quiet || git commit -m 'ci: beam griefing diagnostics [skip ci]' --no-verify
+          for i in $(seq 1 20); do
+            if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" && git push; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
