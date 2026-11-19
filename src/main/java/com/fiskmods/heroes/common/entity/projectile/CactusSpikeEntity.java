@@ -87,6 +87,15 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
     }
 
     @Override
+    protected boolean canHitEntity(net.minecraft.world.entity.Entity target)
+    {
+        // In 1.7 EntityThrowable ignores only its thrower for the first four
+        // airborne ticks. Modern projectiles instead wait until they leave the
+        // owner's vehicle and can then hit the owner immediately, even at age 2.
+        return target.canBeHitByProjectile() && (target != getOwner() || tickCount >= 5);
+    }
+
+    @Override
     protected void onHitEntity(EntityHitResult hit)
     {
         if (!(level() instanceof ServerLevel)) return;

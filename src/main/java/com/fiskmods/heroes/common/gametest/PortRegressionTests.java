@@ -3952,6 +3952,62 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void cactusSpikeUsesLegacyThrowerGracePeriod(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (owner == null) { helper.fail("Could not create spike owner"); return; }
+        owner.setNoAi(true); owner.setNoGravity(true);
+        owner.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(owner);
+        var start = new Vec3(base.getX() + 1, base.getY() + .5, base.getZ() + .5);
+        var early = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
+        var mature = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
+        try
+        {
+            // Let the first spike leave the owner's vicinity so vanilla's leftOwner flag is set,
+            // then return it to the shooter before the old four-tick grace period ends.
+            early.setPos(base.getX() - 8, base.getY() + .5, base.getZ() + .5);
+            early.setDeltaMovement(0, 0, 0); level.addFreshEntity(early); early.tickCount = 1; early.tick();
+            early.setPos(start); early.setDeltaMovement(4, 0, 0); early.tickCount = 4;
+            float health = owner.getHealth(); early.tick();
+            if (early.isRemoved() || owner.getHealth() != health)
+            { helper.fail("The owner must remain immune through flight tick four, even after the spike leaves them"); return; }
+            early.discard();
+
+            // This projectile has never left the owner according to vanilla's flag;
+            // at tick five the legacy thrower exclusion nevertheless expires.
+            mature.setPos(start); mature.setDeltaMovement(4, 0, 0);
+            level.addFreshEntity(mature); mature.tickCount = 5; mature.tick();
+            if (!mature.isRemoved() || owner.getHealth() >= health)
+            { helper.fail("A cactus spike must be able to hit its owner starting on flight tick five"); return; }
+            helper.succeed();
+        }
+        finally { early.discard(); mature.discard(); owner.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusSpikeCanHitThrowersVehicle(GameTestHelper helper)
+    {
+        var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = net.minecraft.world.entity.EntityType.COW.create(level);
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        if (owner == null || boat == null) { helper.fail("Could not create mounted spike fixture"); return; }
+        boat.setNoGravity(true); boat.setPos(base.getX() + 3, base.getY(), base.getZ() + .5); level.addFreshEntity(boat);
+        owner.setNoAi(true); owner.setNoGravity(true); owner.setPos(boat.position().add(0, 1, 0)); level.addFreshEntity(owner);
+        var spike = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
+        try
+        {
+            if (!owner.startRiding(boat, true)) { helper.fail("Owner could not mount boat"); return; }
+            spike.setPos(base.getX() + 1, base.getY() + .2, base.getZ() + .5);
+            spike.setDeltaMovement(4, 0, 0); spike.tickCount = 1; level.addFreshEntity(spike); spike.tick();
+            if (!spike.isRemoved() || boat.getDamage() <= 0)
+            { helper.fail("Only the thrower is excluded: their boat can be hit during the grace period"); return; }
+            helper.succeed();
+        }
+        finally { spike.discard(); owner.discard(); boat.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void ownerlessCactusSpikesSurviveRejectedHitsAndCanDamage(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));

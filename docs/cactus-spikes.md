@@ -35,3 +35,9 @@ its tick: an entity impact therefore gives the spikes only uniform ±0.2 motion,
 while a wall impact first moves the arrow 0.05 blocks backwards, yielding an
 approximately backward unit vector plus that spread. These are initial velocities;
 the subsequent explosion and modern collision physics can change them.
+
+For spike collisions, the thrower is ignored for the first four flight ticks,
+then becomes a valid target on tick five even if the projectile is still nearby.
+Unlike modern vanilla's owner-vehicle exclusion, other collidable entities,
+including the thrower's vehicle, are not covered by this grace period. The flight
+age restarts after a reload, as the old throwable's unsaved air counter did.
