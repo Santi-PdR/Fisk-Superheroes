@@ -70,8 +70,12 @@ downloaded Fisk sound repository. The loop follows server-validated use, ramps
 up over three ticks, and can be heard by tracking players within 64 blocks. The
 original stereo recording is attenuated by distance in software because OpenAL
 does not spatialize stereo; mono replacement recordings use native positioning.
-The brief start clip is currently played at the starting position, rather than
-following the player and cutting off on early release as in 1.7.10.
-A client that begins tracking an active beam starts the loop too. As with other
-Fisk sounds, the external sound pack must be available and loaded; the gameplay
-does not depend on its download.
+The start clip follows the shooter and stops when the beam stops, the held item
+changes, or the shooter is no longer tracked. The server's start packet may arrive
+before the active state; the client waits briefly for that state and cancels a
+queued start if the stop arrives first. Starting to track an already-active beam
+restores the loop but does not replay the start clip. The real-client multiplayer
+test uses a runner-only longer start recording to verify movement and early cutoff;
+it also checks the loop's audible distance falloff. As with other Fisk sounds,
+the external sound pack must be available and loaded; gameplay does not depend
+on its download.

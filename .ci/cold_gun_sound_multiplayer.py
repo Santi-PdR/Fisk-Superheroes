@@ -87,11 +87,28 @@ def main():
             command('item replace entity Partner weapon.mainhand with fiskheroes:cold_gun')
             focus(window)
             time.sleep(2)
+            # The runner-only cache replaces the start with an eight-second
+            # one-shot, so movement and early cutoff can be verified while the
+            # real sound engine still has it active on both clients.
+            xdo('mousedown', '1')
+            try:
+                wait_for(shooter_log, r'Cold gun start attached: Partner', 60, 'shooter start follows the validated beam', shooter)
+                wait_for(observer_log, r'Cold gun start attached: Partner', 60, 'observer start follows the validated beam', observer)
+                command('tp Partner 4 180 0 0 0')
+                wait_for(shooter_log, r'Cold gun start moved: Partner, x=[234]', 20, 'shooter start follows movement', shooter)
+                wait_for(observer_log, r'Cold gun start moved: Partner, x=[234]', 20, 'observer start follows movement', observer)
+            finally:
+                xdo('mouseup', '1')
+            wait_for(shooter_log, r'Cold gun start stopped: Partner, reason=(?:release|inactive), playing=true',
+                     30, 'early release cuts off the active shooter start', shooter)
+            wait_for(observer_log, r'Cold gun start stopped: Partner, reason=(?:release|inactive), playing=true',
+                     30, 'early release cuts off the active observer start', observer)
+            command('tp Partner 0 180 0 0 0')
             xdo('mousedown', '1')
             try:
                 wait_for(shooter_log, r'Cold gun loop ticked: Partner, volume=1\.0, active=true', 60, 'shooter loop plays', shooter)
                 wait_for(observer_log, r'Cold gun loop ticked: Partner, volume=0\.[0-9]+, active=true', 60, 'remote loop plays with distance attenuation', observer)
-                time.sleep(3)  # Exclude the short beam-start one-shot from both recordings.
+                time.sleep(10)  # Exclude the runner's deliberately long start recording.
                 near_rms = capture_rms('near')
                 start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 72 180 0')
@@ -112,6 +129,9 @@ def main():
                 start = len(observer_log.read_text(errors='replace'))
                 command('tp Dev 2 180 0')
                 wait_for_new(observer_log, r'Cold gun loop ticked: Partner, volume=0\.[0-9]+, active=true', start, 60, 'late tracking synchronizes active beam', observer)
+                if 'Cold gun start attached: Partner' in observer_log.read_text(errors='replace')[start:]:
+                    raise RuntimeError('Late tracking must not replay the beam start')
+                print('PASS: late tracking does not replay the start sound', flush=True)
                 start = len(observer_log.read_text(errors='replace'))
                 command('item replace entity Partner weapon.mainhand with minecraft:stick')
                 wait_for_new(observer_log, r'Cold gun loop stopped: Partner', start, 60, 'changing held item stops remote loop', observer)

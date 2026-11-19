@@ -34,6 +34,10 @@ public final class SHSoundPlayer
             return;
         }
 
+        // The start packet precedes the synced beam state; the stop cue also
+        // cancels pending starts, even if its own recording is unavailable.
+        if (packet.getEntityId() != 0 && packet.getId().equals(com.fiskmods.heroes.FiskHeroes.id("item.coldgun.beam.stop")))
+            ColdGunStartSound.stop(packet.getEntityId(), "release");
         SoundEvent event = SHSounds.get(packet.getId());
 
         if (event == null || packet.getVolume() <= 0.0F)
@@ -48,6 +52,13 @@ public final class SHSoundPlayer
                 && packet.getId().getPath().startsWith("item.coldgun."))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cold gun one-shot: {}, volume={}, pitch={}",
                     packet.getId(), packet.getVolume(), packet.getPitch());
+
+        if (!packet.isLoop() && packet.getEntityId() != 0
+                && packet.getId().equals(com.fiskmods.heroes.FiskHeroes.id("item.coldgun.beam.start")))
+        {
+            ColdGunStartSound.queue(packet);
+            return;
+        }
 
         if (packet.isLoop())
         {
