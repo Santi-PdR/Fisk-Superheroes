@@ -218,7 +218,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
 
         // Vanilla 1.20 traces collision shapes, so plants with no collision need a
         // separate, bounded outline trace before the ordinary projectile movement.
-        if (!level().isClientSide) breakShortGrassAlongFlight();
+        if (!level().isClientSide) breakVinesAlongFlight();
         // ThrowableProjectile supplies the same air/water drag and 0.03 gravity as the original.
         super.tick();
         // Retain a bounded fallback for projectiles that never collide or cannot be recovered.
@@ -343,8 +343,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                 && level().mayInteract(player, pos) && player.mayUseItemAt(pos, face, getItem());
     }
 
-    /** 1.7 tallgrass corresponds to 1.20 grass and ferns; double plants need separate handling. */
-    private void breakShortGrassAlongFlight()
+    /** The original cuts vines, whose modern collision shape is empty. */
+    private void breakVinesAlongFlight()
     {
         if (!griefingAllowed() || !(getOwner() instanceof ServerPlayer player)
                 || getDeltaMovement().lengthSqr() < 1.0E-7D) return;
@@ -356,15 +356,14 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             var pos = cursor.immutable();
             if (!level().hasChunkAt(pos)) return null;
             var state = level().getBlockState(pos);
-            if (!state.is(net.minecraft.world.level.block.Blocks.GRASS) && !state.is(net.minecraft.world.level.block.Blocks.FERN)) return null;
+            if (!state.is(net.minecraft.world.level.block.Blocks.VINE)) return null;
             return state.getShape(level(), pos).clip(start, end, pos);
         }, projectile -> null);
         if (hit == null || net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hit)) return;
         var pos = hit.getBlockPos();
         if (!mayEdit(player, pos, hit.getDirection())) return;
         var state = level().getBlockState(pos);
-        if ((state.is(net.minecraft.world.level.block.Blocks.GRASS) || state.is(net.minecraft.world.level.block.Blocks.FERN))
-                && state.getDestroySpeed(level(), pos) >= 0.0F
+        if (state.is(net.minecraft.world.level.block.Blocks.VINE) && state.getDestroySpeed(level(), pos) >= 0.0F
                 && com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, state))
             level().destroyBlock(pos, true, player);
     }

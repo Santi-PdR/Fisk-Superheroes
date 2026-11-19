@@ -574,59 +574,62 @@ public final class PortRegressionTests
         }
     }
 
-    private static com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity grassShieldProbe(
+    private static com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity vineShieldProbe(
             net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.player.Player owner,
-            net.minecraft.core.BlockPos base, boolean griefing)
+            net.minecraft.core.BlockPos base, boolean griefing, double xOffset)
     {
         var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner,
                 new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
         shield.setCanDoGriefing(griefing);
-        shield.setPos(base.getX() + .5D, base.getY() + 1.25D, base.getZ() + .5D);
+        shield.setPos(base.getX() + xOffset, base.getY() + 1.25D, base.getZ() + .5D);
         shield.setDeltaMovement(0, 0, 3); level.addFreshEntity(shield); shield.tick();
         return shield;
     }
 
     @GameTest(template = "test_empty")
-    public static void shieldCutsShortGrassWithoutCrossingProtectionOrWalls(GameTestHelper helper)
+    public static void shieldCutsVinesWithoutCrossingProtectionOrWalls(GameTestHelper helper)
     {
         var level = helper.getLevel();
         var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
         var plant = base.offset(0, 1, 2); var wall = base.offset(0, 1, 1);
         var owner = new net.minecraftforge.common.util.FakePlayer(level,
-                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-foliage-test"));
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-vine-test"));
         owner.setPos(base.getX() - 15, base.getY(), base.getZ());
-        level.setBlockAndUpdate(plant.below(), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
-        level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.GRASS.defaultBlockState());
+        level.setBlockAndUpdate(plant.east(), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.VINE.defaultBlockState()
+                .setValue(net.minecraft.world.level.block.VineBlock.EAST, true));
         level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
-        var shield = grassShieldProbe(level, owner, base, true); shield.discard();
-        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
-        { helper.fail("The outline trace must not cut grass behind a solid wall"); return; }
+        var shield = vineShieldProbe(level, owner, base, true, .97D); shield.discard();
+        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
+        { helper.fail("The outline trace must not cut vines behind a solid wall"); return; }
         level.removeBlock(wall, false);
-        shield = grassShieldProbe(level, owner, base, false); shield.discard();
-        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
-        { helper.fail("Disabled projectile griefing must preserve grass"); return; }
+        shield = vineShieldProbe(level, owner, base, false, .97D); shield.discard();
+        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
+        { helper.fail("Disabled projectile griefing must preserve vines"); return; }
         var guard = new ShieldFoliageGuard(plant);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
         try
         {
             guard.cancelImpact = true;
-            shield = grassShieldProbe(level, owner, base, true); shield.discard();
-            if (guard.impactEvents != 1 || guard.breakEvents != 0 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
-            { helper.fail("Canceled projectile impact must preserve grass without a break event"); return; }
+            shield = vineShieldProbe(level, owner, base, true, .97D); shield.discard();
+            if (guard.impactEvents != 1 || guard.breakEvents != 0 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
+            { helper.fail("Canceled projectile impact must preserve vines without a break event"); return; }
             guard.cancelImpact = false; guard.cancelBreak = true;
-            shield = grassShieldProbe(level, owner, base, true); shield.discard();
-            if (guard.breakEvents != 1 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
-            { helper.fail("A canceled block break must preserve grass"); return; }
+            shield = vineShieldProbe(level, owner, base, true, .97D); shield.discard();
+            if (guard.breakEvents != 1 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
+            { helper.fail("A canceled block break must preserve vines"); return; }
             guard.cancelBreak = false;
-            shield = grassShieldProbe(level, owner, base, true);
+            shield = vineShieldProbe(level, owner, base, true, .97D);
             if (!level.isEmptyBlock(plant) || shield.isReturning() || shield.getDeltaMovement().z <= 0)
-            { shield.discard(); helper.fail("An allowed grass impact must cut grass and continue flying"); return; }
+            { shield.discard(); helper.fail("An allowed vine impact must cut the vine and continue flying"); return; }
             shield.discard();
-            level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.FERN.defaultBlockState());
-            shield = grassShieldProbe(level, owner, base, true);
-            if (!level.isEmptyBlock(plant) || shield.isReturning())
-            { shield.discard(); helper.fail("Ferns must be cut without starting shield return"); return; }
-            shield.discard(); helper.succeed();
+            // Short grass is not an impact block in the original.
+            level.setBlockAndUpdate(plant.below(), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
+            level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.GRASS.defaultBlockState());
+            shield = vineShieldProbe(level, owner, base, true, .5D); shield.discard();
+            if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
+            { helper.fail("The shield must leave ordinary short grass intact"); return; }
+            helper.succeed();
         }
         finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
     }
