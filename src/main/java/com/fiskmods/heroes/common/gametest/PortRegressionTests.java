@@ -247,7 +247,8 @@ public final class PortRegressionTests
         stack.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
         stack.getOrCreateTag().putString("RegressionMarker", "boat");
         var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
-        shield.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - .85);
+        // Start outside the boat's expanded hitbox; the segment must cross its edge.
+        shield.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - 1.05);
         shield.setDeltaMovement(0, 0, .2); level.addFreshEntity(shield);
         try
         {
@@ -262,7 +263,7 @@ public final class PortRegressionTests
                     + ", shieldDamage=" + shield.getItem().getDamageValue() + ", marker=" + shield.getItem().getTag()); return; }
             shield.discard(); boat.clearFire(); boat.setInvulnerable(true); boat.setDamage(0.0F);
             var rejected = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
-            rejected.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - .85);
+            rejected.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - 1.05);
             rejected.setDeltaMovement(0, 0, .2); level.addFreshEntity(rejected);
             try
             {
