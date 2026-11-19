@@ -257,7 +257,9 @@ public final class PortRegressionTests
             if (boat.isRemoved() || Math.abs(boat.getDamage() - 21.0F) > .01F || !shield.isReturning()
                     || shield.getItem().getDamageValue() != 1
                     || !"boat".equals(shield.getItem().getTag().getString("RegressionMarker")))
-            { helper.fail("A slow shield must damage the boat by its speed, wear once and preserve its data"); return; }
+            { helper.fail("A slow shield must damage the boat by its speed, wear once and preserve its data: boatRemoved="
+                    + boat.isRemoved() + ", boatDamage=" + boat.getDamage() + ", returning=" + shield.isReturning()
+                    + ", shieldDamage=" + shield.getItem().getDamageValue() + ", marker=" + shield.getItem().getTag()); return; }
             shield.discard(); boat.clearFire(); boat.setInvulnerable(true); boat.setDamage(0.0F);
             var rejected = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
             rejected.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - .85);
