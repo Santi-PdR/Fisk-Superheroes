@@ -23,3 +23,10 @@ loaded, with approximate snowflake particles. Waves push living and non-living
 entities along their actual movement, scaled by size and age as in the original;
 a minimum mass prevents infinite impulses for zero-sized entities. The wave
 particles approximate the original visual.
+
+Server GameTests cover protected glass and panes, active versus fading effects,
+directional item impulse, icicle shattering, and shield item preservation when a
+spawn is canceled. A dedicated-server test with a real Black Canary client checks
+ability input, living-target damage, item impulse, icicle shattering and one
+shield drop retaining its data. The projectile probes in that test are summoned;
+the test is not a subjective visual or audio assessment.
