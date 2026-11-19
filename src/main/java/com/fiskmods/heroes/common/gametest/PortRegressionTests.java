@@ -231,6 +231,50 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void thrownShieldDamagesNonLivingEntitiesAndWearsOnlyOnAcceptedHits(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var boat = net.minecraft.world.entity.EntityType.BOAT.create(level);
+        if (boat == null) { helper.fail("Shield boat target missing"); return; }
+        boat.setNoGravity(true);
+        boat.setPos(base.getX() + .5, base.getY(), base.getZ() + 2.5);
+        level.addFreshEntity(boat);
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        stack.enchant(net.minecraft.world.item.enchantment.Enchantments.SHARPNESS, 5);
+        stack.enchant(net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, 1);
+        stack.getOrCreateTag().putString("RegressionMarker", "boat");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        shield.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - .85);
+        shield.setDeltaMovement(0, 0, .2); level.addFreshEntity(shield);
+        try
+        {
+            if (Math.abs(com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(owner, boat, stack) - 10.5F) > .001F)
+            { helper.fail("A non-living target must not receive a creature enchantment bonus"); return; }
+            shield.tick();
+            if (boat.isRemoved() || Math.abs(boat.getDamage() - 21.0F) > .01F || !shield.isReturning()
+                    || shield.getItem().getDamageValue() != 1
+                    || !"boat".equals(shield.getItem().getTag().getString("RegressionMarker")))
+            { helper.fail("A slow shield must damage the boat by its speed, wear once and preserve its data"); return; }
+            shield.discard(); boat.clearFire(); boat.setInvulnerable(true); boat.setDamage(0.0F);
+            var rejected = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+            rejected.setPos(boat.getX(), boat.getY() + .25, boat.getZ() - .85);
+            rejected.setDeltaMovement(0, 0, .2); level.addFreshEntity(rejected);
+            try
+            {
+                rejected.tick();
+                if (boat.getDamage() != 0.0F || boat.isOnFire() || !rejected.isReturning() || rejected.getItem().getDamageValue() != 0)
+                { helper.fail("A rejected non-living hit must not wear or ignite, but must still return"); return; }
+            }
+            finally { rejected.discard(); }
+            helper.succeed();
+        }
+        finally { shield.discard(); boat.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void heldShieldBlocksOnlyWithinOriginalCoverage(GameTestHelper helper)
     {
         var player = helper.makeMockSurvivalPlayer();

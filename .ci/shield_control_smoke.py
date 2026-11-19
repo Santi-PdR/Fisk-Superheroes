@@ -191,6 +191,30 @@ def main():
             count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
             if count != 4: raise RuntimeError(f'Expected four shield launches, saw {count}')
             command('kill @e[type=fiskheroes:thrown_shield]')
+            # Exercise a non-living target using an actual survival-mode throw.
+            # A full-speed hit exceeds a boat's damage threshold; the recovered
+            # shield must retain its marker and exactly one durability point.
+            command('fill -2 180 1 2 183 5 minecraft:air')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('gamemode survival Dev')
+            command('summon minecraft:boat 0.5 181.0 3.5 {NoGravity:1b,Tags:["shield_boat"]}')
+            command('execute if entity @e[type=minecraft:boat,tag=shield_boat] run say SHIELD_BOAT_READY')
+            wait_for(server_log, r'\[Server\] SHIELD_BOAT_READY', 30, 'boat target is present', server)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{BoatProbe:1b}')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1)
+                attack()
+                time.sleep(3)
+            finally: xdo('keyup', 'c')
+            command('execute unless entity @e[type=minecraft:boat,tag=shield_boat] '
+                    'if data entity Dev Inventory[{id:"fiskheroes:captain_americas_shield",tag:{BoatProbe:1b,Damage:1}}] '
+                    'run say SHIELD_BOAT_DAMAGE_OK')
+            wait_for(server_log, r'\[Server\] SHIELD_BOAT_DAMAGE_OK', 30,
+                     'real shield throw damages a boat and returns with one durability used', server)
+            count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
+            if count != 5: raise RuntimeError(f'Expected five shield launches, saw {count}')
+            command('gamemode creative Dev')
             if not keyboard:
                 # Sample actual server-owned projectiles with a runner-only magenta
                 # texture. Fresh spawns prevent client-side gravity prediction from

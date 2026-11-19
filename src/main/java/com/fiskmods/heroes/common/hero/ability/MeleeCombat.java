@@ -67,14 +67,15 @@ public final class MeleeCombat
     }
 
     /** Original shield impact calculation before its velocity multiplier and critical factor. */
-    public static float thrownShieldDamage(LivingEntity attacker, LivingEntity target, ItemStack shield)
+    public static float thrownShieldDamage(LivingEntity attacker, net.minecraft.world.entity.Entity target, ItemStack shield)
     {
         float damage = 7.0F;
         var strength = attacker.getEffect(net.minecraft.world.effect.MobEffects.DAMAGE_BOOST);
         var weakness = attacker.getEffect(net.minecraft.world.effect.MobEffects.WEAKNESS);
         if (strength != null) damage /= 1.0F + 1.3F * (1 + strength.getAmplifier());
         if (weakness != null) damage += 0.5F;
-        damage += net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageBonus(shield, target.getMobType()) / 2.0F;
+        if (target instanceof LivingEntity living)
+            damage += net.minecraft.world.item.enchantment.EnchantmentHelper.getDamageBonus(shield, living.getMobType()) / 2.0F;
 
         if (attacker instanceof Player player)
         {

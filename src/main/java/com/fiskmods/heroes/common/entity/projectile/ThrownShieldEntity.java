@@ -235,22 +235,25 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         Entity target = hit.getEntity();
         if (owner == null || target == owner) return;
         double impactSpeed = getDeltaMovement().length();
-        if (target != owner && target instanceof LivingEntity living && owner instanceof LivingEntity attacker)
+        if (owner instanceof LivingEntity attacker)
         {
             var damageType = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
                     .getHolderOrThrow(SHIELD_DAMAGE);
-            float baseDamage = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(attacker, living, getItem());
-            float damage = (float) (baseDamage * net.minecraft.util.Mth.clamp(getDeltaMovement().length(), 0.0D, 1.0D));
-            boolean damaged = living.hurt(new net.minecraft.world.damagesource.DamageSource(damageType, this, attacker), damage);
+            float baseDamage = com.fiskmods.heroes.common.hero.ability.MeleeCombat.thrownShieldDamage(attacker, target, getItem());
+            float damage = (float) (baseDamage * net.minecraft.util.Mth.clamp(impactSpeed, 0.0D, 1.0D));
+            boolean damaged = target.hurt(new net.minecraft.world.damagesource.DamageSource(damageType, this, attacker), damage);
             if (damaged)
             {
-                Vec3 knockback = getDeltaMovement().normalize().scale(0.6D);
-                living.knockback(0.6F, -knockback.x, -knockback.z);
-                if (attacker instanceof ServerPlayer serverPlayer) living.setLastHurtByPlayer(serverPlayer);
+                if (target instanceof LivingEntity living)
+                {
+                    Vec3 knockback = getDeltaMovement().normalize().scale(0.6D);
+                    living.knockback(0.6F, -knockback.x, -knockback.z);
+                    if (attacker instanceof ServerPlayer serverPlayer) living.setLastHurtByPlayer(serverPlayer);
+                }
                 ItemStack stack = getItem().copy();
                 int fireAspect = net.minecraft.world.item.enchantment.EnchantmentHelper.getItemEnchantmentLevel(
                         net.minecraft.world.item.enchantment.Enchantments.FIRE_ASPECT, stack);
-                if (fireAspect > 0) living.setSecondsOnFire(fireAspect * 2);
+                if (fireAspect > 0) target.setSecondsOnFire(fireAspect * 2);
                 stack.hurtAndBreak(1, attacker, ignored -> {});
                 setItem(stack);
                 if (stack.isEmpty())
