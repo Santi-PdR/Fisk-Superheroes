@@ -52,6 +52,18 @@ public final class ItemHeatGun extends ItemGun
         super(magazineSize, cooldownTicks, reloadTicks, range, damage, false, properties);
     }
 
+    @Override
+    protected double getRayRange(ServerPlayer shooter)
+    {
+        return com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_RANGE.get();
+    }
+
+    @Override
+    protected float getRayDamage(ServerPlayer shooter)
+    {
+        return com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_DAMAGE.get().floatValue();
+    }
+
     /** Arm/refresh a held attack; the server tick is the only place that casts the beam. */
     @Override
     public boolean fireFromAttack(Player player, ItemStack stack)

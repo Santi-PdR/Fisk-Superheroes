@@ -50,10 +50,11 @@ mod version.
   frozen ticks and a brief slowing effect, including contacts where damage was
   rejected. Frozen-tick gain compensates for vanilla thaw while the beam hits;
   it is not a recreation of the original temperature, HUD or speedster mechanics.
-* Original configuration and per-suit range/damage rules are not yet exposed:
-  32 blocks and 7 damage are the original default values. Recoil animation and
-  configurable ice-layer grief rules remain incomplete. The beam and hit
-  particles are approximations of the original.
+* `powers.coldGunRange` and `powers.coldGunDamage` set the global beam range and
+  damage; they default to the original 32 blocks and 7 damage. The range is
+  bounded to 0.01–256 blocks for server safety. Original per-suit rule
+  overrides are not yet exposed. Recoil animation and ice-layer grief rules
+  remain incomplete. The beam and hit particles approximate the original.
 
 The Cold Gun beam uses its original start, stop and moving loop events from the
 downloaded Fisk sound repository. The loop follows server-validated use, ramps

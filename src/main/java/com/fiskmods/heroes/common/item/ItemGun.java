@@ -263,9 +263,19 @@ public class ItemGun extends Item
         player.displayClientMessage(Component.translatable(translationKey), true);
     }
 
+    protected double getRayRange(ServerPlayer shooter)
+    {
+        return range;
+    }
+
+    protected float getRayDamage(ServerPlayer shooter)
+    {
+        return damage;
+    }
+
     protected void fire(ServerPlayer shooter, ItemStack stack)
     {
-        fireRay(shooter, stack, range);
+        fireRay(shooter, stack, getRayRange(shooter));
     }
 
     protected void fireRay(ServerPlayer shooter, ItemStack stack, double rayRange)
@@ -360,7 +370,7 @@ public class ItemGun extends Item
                 double length = hit != null ? Math.sqrt(nearest) : start.distanceTo(end);
                 data.getData().set(Vars.HEAT_VISION_LENGTH, Math.min(rayRange, length));
                 data.getData().set(Vars.ENERGY_PROJECTION_TIMER,
-                        net.minecraft.util.Mth.clamp((float) (rayRange / range), 0.0F, 1.0F));
+                        net.minecraft.util.Mth.clamp((float) (rayRange / getRayRange(shooter)), 0.0F, 1.0F));
             }
         }
 
@@ -380,7 +390,7 @@ public class ItemGun extends Item
             String dmgProfile = id.equals("cold_gun") ? "COLD" : (id.equals("heat_gun") ? "FIRE" : "BULLET");
             final boolean[] applied = { false };
             com.fiskmods.heroes.common.hero.modifier.DamageGroups.withDamageProfile(
-                    java.util.Map.of(dmgProfile, 1.0D), () -> applied[0] = target.hurt(source, damage));
+                    java.util.Map.of(dmgProfile, 1.0D), () -> applied[0] = target.hurt(source, getRayDamage(shooter)));
             acceptedHit = applied[0];
         }
 

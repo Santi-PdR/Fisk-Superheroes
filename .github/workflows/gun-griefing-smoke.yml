@@ -39,7 +39,7 @@ jobs:
           chmod +x gradlew
           mkdir -p run-gun-grief-server/config run-gun-grief-client/config
           printf 'earlyWindowControl = false\n' > run-gun-grief-client/config/fml.toml
-          printf '[powers]\nallowGriefing = true\nallowColdGunGriefing = false\nallowHeatGunGriefing = false\n' > run-gun-grief-server/config/fiskheroes-common.toml
+          printf '[powers]\nallowGriefing = true\nallowColdGunGriefing = false\nallowHeatGunGriefing = false\ncoldGunRange = 6.0\ncoldGunDamage = 23.0\nheatGunRange = 6.0\nheatGunDamage = 25.0\n' > run-gun-grief-server/config/fiskheroes-common.toml
           echo 'eula=true' > run-gun-grief-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-gun-grief-server/server.properties
           ./gradlew classes --no-daemon --console=plain

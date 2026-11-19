@@ -64,6 +64,18 @@ public final class ItemColdGun extends ItemGun
         super(magazineSize, cooldownTicks, reloadTicks, range, damage, false, properties);
     }
 
+    @Override
+    protected double getRayRange(ServerPlayer shooter)
+    {
+        return com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_RANGE.get();
+    }
+
+    @Override
+    protected float getRayDamage(ServerPlayer shooter)
+    {
+        return com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_DAMAGE.get().floatValue();
+    }
+
     public static boolean isGrenadeMode(ItemStack stack)
     {
         return stack.hasTag() && stack.getTag().getBoolean(TAG_GRENADE_MODE);
@@ -190,7 +202,7 @@ public final class ItemColdGun extends ItemGun
         if (request.ticks > CHARGE_TICKS)
         {
             float intensity = Math.min((request.ticks - CHARGE_TICKS) / 5.0F, 1.0F);
-            gun.fireRay(player, request.stack, gun.range * intensity);
+            gun.fireRay(player, request.stack, gun.getRayRange(player) * intensity);
         }
     }
 

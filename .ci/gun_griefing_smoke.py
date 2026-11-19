@@ -42,10 +42,10 @@ def main():
                 server.stdin.flush()
                 time.sleep(1.2)
 
-            def fire():
+            def fire(duration=3):
                 xdo('mousedown', '1')
                 try:
-                    time.sleep(3)
+                    time.sleep(duration)
                 finally:
                     xdo('mouseup', '1')
                 time.sleep(1)
@@ -57,9 +57,9 @@ def main():
             command('fill -5 179 -5 5 179 6 minecraft:stone')
             command('tp Dev 0.5 180 0.5 0 0')
             command('scoreboard objectives add beamHealth dummy')
-            for hero, item, target, marker in [
-                    ('heatwave', 'heat_gun', 'ice', 'HEAT'),
-                    ('captain_cold', 'cold_gun', 'water', 'COLD')]:
+            for hero, item, target, marker, max_health in [
+                    ('heatwave', 'heat_gun', 'ice', 'HEAT', 75),
+                    ('captain_cold', 'cold_gun', 'water', 'COLD', 77)]:
                 command('fill -2 180 1 2 183 6 minecraft:air')
                 command('tp Dev 0.5 180 0.5 0 0')
                 command(f'execute as Dev run suit fiskheroes:{hero}')
@@ -81,12 +81,23 @@ def main():
                 command('execute as @e[type=minecraft:cow,tag=beam_test,limit=1] store result score @s beamHealth run data get entity @s Health 1')
                 command(f'execute if entity @e[type=minecraft:cow,tag=beam_test,scores={{beamHealth=100..}}] run say {marker}_TARGET_READY')
                 wait_for(server_log, f'{marker}_TARGET_READY', 30, 'target starts at full health', server)
-                fire()
+                # One second is long enough for cold's charge, but short enough to
+                # distinguish the configured high damage from the vanilla defaults.
+                fire(1.0)
                 command('execute as @e[type=minecraft:cow,tag=beam_test,limit=1] store result score @s beamHealth run data get entity @s Health 1')
-                command(f'execute if entity @e[type=minecraft:cow,tag=beam_test,scores={{beamHealth=..95}}] run say {marker}_DAMAGE_OK')
-                wait_for(server_log, f'{marker}_DAMAGE_OK', 30, f'{item} still damages entities', server)
+                command(f'execute if entity @e[type=minecraft:cow,tag=beam_test,scores={{beamHealth=..{max_health}}}] run say {marker}_DAMAGE_OK')
+                wait_for(server_log, f'{marker}_DAMAGE_OK', 30, f'{item} uses configured damage', server)
                 command('kill @e[type=minecraft:cow,tag=beam_test]')
-            print('PASS: separate disabled rules preserve blocks without disabling either beam', flush=True)
+                # With range configured to six blocks, a target at ten must be
+                # unaffected even though a default 32-block beam would reach it.
+                command('summon minecraft:cow 0.5 180.5 10.5 {NoAI:1b,NoGravity:1b,Silent:1b,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["beam_far"]}')
+                command('data merge entity @e[type=minecraft:cow,tag=beam_far,limit=1] {Health:100.0f}')
+                fire()
+                command('execute as @e[type=minecraft:cow,tag=beam_far,limit=1] store result score @s beamHealth run data get entity @s Health 1')
+                command(f'execute if entity @e[type=minecraft:cow,tag=beam_far,scores={{beamHealth=100..}}] run say {marker}_RANGE_OK')
+                wait_for(server_log, f'{marker}_RANGE_OK', 30, f'{item} respects configured range', server)
+                command('kill @e[type=minecraft:cow,tag=beam_far]')
+            print('PASS: both beam rules, ranges and damage values take effect', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:

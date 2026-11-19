@@ -30,6 +30,10 @@ public class SHConfig
     public static ForgeConfigSpec.BooleanValue ALLOW_SUPER_SPEED;
     public static ForgeConfigSpec.DoubleValue ABILITY_COOLDOWN_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
+    public static ForgeConfigSpec.DoubleValue COLD_GUN_RANGE;
+    public static ForgeConfigSpec.DoubleValue COLD_GUN_DAMAGE;
+    public static ForgeConfigSpec.DoubleValue HEAT_GUN_RANGE;
+    public static ForgeConfigSpec.DoubleValue HEAT_GUN_DAMAGE;
 
     /* Entities */
     public static ForgeConfigSpec.IntValue CACTUS_HEAL_RATE;
@@ -81,6 +85,14 @@ public class SHConfig
                 .defineInRange("abilityCooldownMultiplier", 1.0D, 0.0D, 100.0D);
         DAMAGE_MULTIPLIER = builder.comment("Multiplier applied to hero melee damage")
                 .defineInRange("damageMultiplier", 1.0D, 0.0D, 100.0D);
+        COLD_GUN_RANGE = builder.comment("Cold Gun beam range in blocks (original default 32; capped at 256)")
+                .defineInRange("coldGunRange", 32.0D, 0.01D, 256.0D);
+        COLD_GUN_DAMAGE = builder.comment("Cold Gun beam damage per hit (original default 7)")
+                .defineInRange("coldGunDamage", 7.0D, 0.0D, 1000.0D);
+        HEAT_GUN_RANGE = builder.comment("Heat Gun beam range in blocks (original default 32; capped at 256)")
+                .defineInRange("heatGunRange", 32.0D, 0.01D, 256.0D);
+        HEAT_GUN_DAMAGE = builder.comment("Heat Gun beam damage per hit (original default 5)")
+                .defineInRange("heatGunDamage", 5.0D, 0.0D, 1000.0D);
         builder.pop();
 
         builder.comment("Entity options").push("entities");
