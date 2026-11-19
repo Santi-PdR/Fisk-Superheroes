@@ -36,6 +36,37 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
         setPos(owner.getX(), owner.getEyeY() - 0.1D, owner.getZ());
     }
 
+    /** Recreate the 1.7 throwable constructor for one aimed or radial spike. */
+    public void launchLikeLegacy(LivingEntity shooter, float pitch, float yaw)
+    {
+        float radians = yaw / 180.0F * (float) Math.PI;
+        setPos(shooter.getX() - net.minecraft.util.Mth.cos(radians) * 0.16F,
+                shooter.getEyeY() - 0.10000000149011612D,
+                shooter.getZ() - net.minecraft.util.Mth.sin(radians) * 0.16F);
+        var motion = legacyLaunchVelocity(pitch, yaw, random);
+        setDeltaMovement(motion);
+        setYRot((float) Math.toDegrees(Math.atan2(motion.x, motion.z)));
+        setXRot((float) Math.toDegrees(Math.atan2(motion.y, motion.horizontalDistance())));
+        yRotO = getYRot();
+        xRotO = getXRot();
+    }
+
+    /** Vanilla 1.7 normalizes first, then adds Gaussian spread, then scales by 4.5. */
+    public static net.minecraft.world.phys.Vec3 legacyLaunchVelocity(float pitch, float yaw, net.minecraft.util.RandomSource random)
+    {
+        float yr = yaw / 180.0F * (float) Math.PI;
+        float pr = pitch / 180.0F * (float) Math.PI;
+        double x = -net.minecraft.util.Mth.sin(yr) * net.minecraft.util.Mth.cos(pr) * 0.4F;
+        double y = -net.minecraft.util.Mth.sin(pr) * 0.4F;
+        double z = net.minecraft.util.Mth.cos(yr) * net.minecraft.util.Mth.cos(pr) * 0.4F;
+        float length = (float) Math.sqrt(x * x + y * y + z * z);
+        double spread = 0.007499999832361937D;
+        return new net.minecraft.world.phys.Vec3(
+                (x / length + random.nextGaussian() * spread) * 4.5D,
+                (y / length + random.nextGaussian() * spread) * 4.5D,
+                (z / length + random.nextGaussian() * spread) * 4.5D);
+    }
+
     @Override
     protected Item getDefaultItem()
     {

@@ -8,7 +8,6 @@ import com.fiskmods.heroes.common.hero.power.PowerProperty;
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -34,13 +33,15 @@ public final class ModifierSpikeBurst extends Modifier
         {
             CactusSpikeEntity spike = new CactusSpikeEntity(player);
             spike.setDamageProfile(profile);
-            spike.shootFromRotation(player, player.getXRot(), i * 5.0F, 0.0F, 4.5F, 0.0F);
+            spike.launchLikeLegacy(player, player.getXRot(), i * 5.0F);
             if (level.addFreshEntity(spike)) ++spawned;
         }
         if (Boolean.getBoolean("fiskheroes.ciCactusDiagnostics"))
             com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cactus ring spawned: player={}, count={}", player.getName().getString(), spawned);
         if (!player.getAbilities().instabuild) player.causeFoodExhaustion(6.0F);
-        level.playSound(null, player.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
+        float pitch = 1.0F / (player.getRandom().nextFloat() * 0.4F + 1.2F) + 0.75F;
+        com.fiskmods.heroes.common.sound.SHSounds.play(player, com.fiskmods.heroes.FiskHeroes.id("item.bow.shoot"),
+                SoundSource.PLAYERS, 1.0F, pitch);
     }
 
     /** Right click while aiming fires an eleven-spike spread in the look direction. */
@@ -53,12 +54,12 @@ public final class ModifierSpikeBurst extends Modifier
         {
             CactusSpikeEntity spike = new CactusSpikeEntity(player);
             spike.setDamageProfile(profile);
-            spike.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 4.5F, 0.0F);
+            spike.launchLikeLegacy(player, player.getXRot(), player.getYRot());
             if (i != 0)
                 spike.setDeltaMovement(spike.getDeltaMovement().add(
-                        (level.random.nextDouble() - .5D) * .9D,
-                        (level.random.nextDouble() - .5D) * .9D,
-                        (level.random.nextDouble() - .5D) * .9D));
+                        (level.random.nextDouble() - .5D) * .9F,
+                        (level.random.nextDouble() - .5D) * .9F,
+                        (level.random.nextDouble() - .5D) * .9F));
             level.addFreshEntity(spike);
         }
         if (!player.getAbilities().instabuild) player.causeFoodExhaustion(1.0F);

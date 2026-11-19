@@ -3793,6 +3793,65 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void cactusSpikeLaunchUsesLegacySpreadAndIgnoresOwnerMotion(GameTestHelper helper)
+    {
+        var expectedRandom = net.minecraft.util.RandomSource.create(6245L);
+        double noise = 0.007499999832361937D;
+        var expected = new Vec3(expectedRandom.nextGaussian() * noise * 4.5D,
+                expectedRandom.nextGaussian() * noise * 4.5D,
+                (1.0D + expectedRandom.nextGaussian() * noise) * 4.5D);
+        var actual = com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.legacyLaunchVelocity(
+                0, 0, net.minecraft.util.RandomSource.create(6245L));
+        if (actual.distanceTo(expected) > 1.0E-8D)
+        { helper.fail("Spike direction must use legacy Gaussian spread before speed scaling: " + actual); return; }
+
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var player = helper.makeMockPlayer();
+        player.setPos(base.getX() + .5, base.getY(), base.getZ() + .5);
+        player.getAbilities().instabuild = true;
+        player.setXRot(-21.0F); player.setYRot(37.0F);
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.SPIKES, null);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(player);
+        var area = player.getBoundingBox().inflate(12);
+        for (boolean grounded : new boolean[] {true, false})
+        {
+            player.setOnGround(grounded); player.setDeltaMovement(3.0, 2.0, -4.0);
+            entry.getModifier().onActivate(player, entry, data);
+            var spikes = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class,
+                    area, spike -> spike.getOwner() == player && !spike.isRemoved());
+            if (spikes.size() != 72 || player.getYRot() != 37.0F || player.getXRot() != -21.0F)
+            { spikes.forEach(net.minecraft.world.entity.Entity::discard); helper.fail("Radial shot must spawn 72 spikes and preserve player rotation"); return; }
+            for (var spike : spikes)
+            {
+                double dx = spike.getX() - player.getX(), dz = spike.getZ() - player.getZ();
+                double yaw = Math.atan2(-dz, -dx);
+                double pitch = Math.toRadians(player.getXRot());
+                var direction = new Vec3(-Math.sin(yaw) * Math.cos(pitch), -Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).scale(4.5D);
+                if (Math.abs(Math.hypot(dx, dz) - .16D) > .0001D
+                        || Math.abs(spike.getY() - (player.getEyeY() - .1D)) > .0001D
+                        || spike.getDeltaMovement().distanceTo(direction) > .35D)
+                { spikes.forEach(net.minecraft.world.entity.Entity::discard); helper.fail("Radial launch must use its own offset and Gaussian motion, not the moving wearer's velocity"); return; }
+            }
+            spikes.forEach(net.minecraft.world.entity.Entity::discard);
+            if (!com.fiskmods.heroes.common.hero.modifier.ModifierSpikeBurst.fireAimed(player, entry))
+            { helper.fail("Aimed spike launch failed"); return; }
+            spikes = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.class,
+                    area, spike -> spike.getOwner() == player && !spike.isRemoved());
+            double yr = Math.toRadians(player.getYRot());
+            Vec3 aim = player.getLookAngle().normalize().scale(4.5D);
+            if (spikes.size() != 11 || spikes.stream().noneMatch(spike -> spike.getDeltaMovement().distanceTo(aim) < .25D)
+                    || spikes.stream().anyMatch(spike -> Math.abs(spike.getX() - (player.getX() - Math.cos(yr) * .16D)) > .0001D
+                            || Math.abs(spike.getZ() - (player.getZ() - Math.sin(yr) * .16D)) > .0001D
+                            || spike.getDeltaMovement().distanceTo(aim) > 1.1D))
+            { spikes.forEach(net.minecraft.world.entity.Entity::discard); helper.fail("Aimed launch must use legacy offsets and spread without inherited motion"); return; }
+            spikes.forEach(net.minecraft.world.entity.Entity::discard);
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void ownerlessCactusArrowStillBursts(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 180, 1));
