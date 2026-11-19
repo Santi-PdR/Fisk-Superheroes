@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -41,8 +42,21 @@ public final class SonicWaveEntity extends ThrowableProjectile
         // independently of the wearer's velocity. Modern shootFromRotation adds
         // the wearer's horizontal and airborne vertical motion automatically.
         setPos(shooter.getX(), shooter.getEyeY() - 0.2D, shooter.getZ());
-        Vec3 aim = shooter.getLookAngle();
-        shoot(aim.x, aim.y, aim.z, 1.0F, 0.0F);
+        Vec3 velocity = legacyLaunchVelocity(shooter.getLookAngle(), random);
+        setDeltaMovement(velocity);
+        setYRot((float) Math.toDegrees(Math.atan2(velocity.x, velocity.z)));
+        setXRot((float) Math.toDegrees(Math.atan2(velocity.y, velocity.horizontalDistance())));
+        yRotO = getYRot();
+        xRotO = getXRot();
+    }
+
+    /** Legacy EntityThrowable normalizes before adding independent Gaussian spread. */
+    public static Vec3 legacyLaunchVelocity(Vec3 aim, RandomSource random)
+    {
+        Vec3 direction = aim.normalize();
+        double spread = 0.007499999832361937D;
+        return direction.add(random.nextGaussian() * spread, random.nextGaussian() * spread,
+                random.nextGaussian() * spread);
     }
 
     @Override

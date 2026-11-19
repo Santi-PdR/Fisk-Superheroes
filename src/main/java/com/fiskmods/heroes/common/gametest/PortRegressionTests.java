@@ -492,7 +492,12 @@ public final class PortRegressionTests
             var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, .025F, true);
             try
             {
-                if (wave.getDeltaMovement().distanceTo(owner.getLookAngle().normalize()) > .0001D
+                // Allow the original Gaussian spread while rejecting inherited motion.
+                var velocity = wave.getDeltaMovement();
+                double yaw = Math.toDegrees(Math.atan2(velocity.x, velocity.z));
+                double pitch = Math.toDegrees(Math.atan2(velocity.y, velocity.horizontalDistance()));
+                if (velocity.distanceTo(owner.getLookAngle().normalize()) > .2D
+                        || Math.abs(wave.getYRot() - yaw) > .001D || Math.abs(wave.getXRot() - pitch) > .001D
                         || Math.abs(wave.getX() - owner.getX()) > .0001D
                         || Math.abs(wave.getY() - (owner.getEyeY() - .2D)) > .0001D
                         || Math.abs(wave.getZ() - owner.getZ()) > .0001D)
@@ -500,6 +505,22 @@ public final class PortRegressionTests
             }
             finally { wave.discard(); }
         }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void sonicWaveUsesLegacyGaussianSpread(GameTestHelper helper)
+    {
+        var aim = new Vec3(3.0D, 4.0D, 12.0D);
+        var random = net.minecraft.util.RandomSource.create(12345L);
+        var expectedRandom = net.minecraft.util.RandomSource.create(12345L);
+        var expected = aim.normalize().add(expectedRandom.nextGaussian() * 0.007499999832361937D,
+                expectedRandom.nextGaussian() * 0.007499999832361937D,
+                expectedRandom.nextGaussian() * 0.007499999832361937D);
+        var actual = com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity.legacyLaunchVelocity(aim, random);
+        if (actual.distanceTo(expected) > 1.0E-12D || actual.distanceTo(aim.normalize()) < 1.0E-6D
+                || Math.abs(actual.length() - 1.0D) < 1.0E-6D)
+        { helper.fail("Sonic wave should use Gaussian spread after normalization without renormalizing: " + actual); return; }
         helper.succeed();
     }
 
