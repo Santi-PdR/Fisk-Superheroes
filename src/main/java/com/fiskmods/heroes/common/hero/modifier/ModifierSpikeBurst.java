@@ -29,13 +29,16 @@ public final class ModifierSpikeBurst extends Modifier
     {
         if (!(entity instanceof Player player) || !(player.level() instanceof ServerLevel level) || !canShoot(player)) return;
         JsonElement profile = entry.get(player, PowerProperty.DAMAGE_PROFILE);
+        int spawned = 0;
         for (int i = 0; i < 72; ++i)
         {
             CactusSpikeEntity spike = new CactusSpikeEntity(player);
             spike.setDamageProfile(profile);
             spike.shootFromRotation(player, player.getXRot(), i * 5.0F, 0.0F, 4.5F, 0.0F);
-            level.addFreshEntity(spike);
+            if (level.addFreshEntity(spike)) ++spawned;
         }
+        if (Boolean.getBoolean("fiskheroes.ciCactusDiagnostics"))
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Cactus ring spawned: player={}, count={}", player.getName().getString(), spawned);
         if (!player.getAbilities().instabuild) player.causeFoodExhaustion(6.0F);
         level.playSound(null, player.blockPosition(), SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0F, 1.0F);
     }

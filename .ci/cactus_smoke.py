@@ -59,10 +59,14 @@ def main():
             command('execute if entity @e[tag=cactus_close_target] unless entity @e[tag=cactus_close_target,nbt={Health:100.0f}] run say CACTUS_CLOSE_TARGET_PASS')
             wait_for(server_log, r'CACTUS_CLOSE_TARGET_PASS', 15, 'aimed burst hits a nearby target', server)
             command('kill @e[tag=cactus_close_target]')
-            command('kill @e[type=fiskheroes:cactus_spike]')
-            xdo('key', 'v'); time.sleep(0.15)
-            server.stdin.write('execute store result score spikes cactus_count run execute if entity @e[type=fiskheroes:cactus_spike]\nexecute if score spikes cactus_count matches 72 run say CACTUS_RING_SEVENTY_TWO_PASS\n'); server.stdin.flush()
-            wait_for(server_log, r'CACTUS_RING_SEVENTY_TWO_PASS', 15, 'ring has seventy-two projectiles', server)
+            # The console and client input arrive independently. Wait until the
+            # server actually processed cleanup before pressing the ring key.
+            server.stdin.write('kill @e[type=fiskheroes:cactus_spike]\nsay CACTUS_RING_CLEANUP_DONE\n'); server.stdin.flush()
+            wait_for(server_log, r'\[Server\] CACTUS_RING_CLEANUP_DONE', 15, 'previous spikes are cleared', server)
+            xdo('key', 'v')
+            # Count accepted spawns synchronously in onActivate: live projectiles
+            # can collide or despawn before a subsequent console command executes.
+            wait_for(server_log, r'Cactus ring spawned: player=Dev, count=72', 20, 'ring spawns seventy-two projectiles', server)
             subprocess.run(['scrot', 'ci-cactus-ring.png'], check=True, timeout=30)
             print('PASS: real client triggered aimed and radial cactus attacks on dedicated server', flush=True)
         finally:

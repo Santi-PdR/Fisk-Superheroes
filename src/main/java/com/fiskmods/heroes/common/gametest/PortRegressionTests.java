@@ -3822,10 +3822,74 @@ public final class PortRegressionTests
         level.addFreshEntity(spike); spike.tick();
         if (spike.isRemoved()) { helper.fail("Rejected damage must not consume the spike"); return; }
         target.setInvulnerable(false); target.invulnerableTime = 0; float health = target.getHealth();
-        spike.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); spike.setDeltaMovement(4, 0, 0); spike.tick();
-        if (!spike.isRemoved() || Math.abs(target.getHealth() - (health - 1.5F)) > .01)
-        { helper.fail("Ownerless spike must apply default damage and disappear on a successful hit"); return; }
-        target.discard(); helper.succeed();
+        var recorder = new DirectArrowDamageRecorder(target);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            spike.setPos(base.getX() + 1, base.getY() + 1, base.getZ() + .5); spike.setDeltaMovement(4, 0, 0); spike.tick();
+            if (!spike.isRemoved() || Math.abs(target.getHealth() - (health - 1.5F)) > .01
+                    || recorder.source == null || recorder.source.getDirectEntity() != spike || recorder.source.getEntity() != null
+                    || !recorder.source.is(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.SPIKE_DAMAGE))
+            { helper.fail("Ownerless spike must use its own projectile source, apply default damage and disappear on a successful hit"); return; }
+            helper.succeed();
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder); target.discard(); spike.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void cactusSpikeUsesAttributedBlockableProjectileDamage(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer(); owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var plain = net.minecraft.world.entity.EntityType.COW.create(level);
+        var armored = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (plain == null || armored == null) { helper.fail("Spike damage targets missing"); return; }
+        var targets = new net.minecraft.world.entity.animal.Cow[] { plain, armored };
+        for (int i = 0; i < targets.length; ++i)
+        {
+            var target = targets[i];
+            target.setNoAi(true); target.setNoGravity(true);
+            target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100);
+            target.setHealth(100);
+            target.setPos(base.getX() + 3, base.getY(), base.getZ() + .5 + i * 4); level.addFreshEntity(target);
+        }
+        armored.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR).setBaseValue(20);
+        armored.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS).setBaseValue(8);
+        var recorder = new DirectArrowDamageRecorder(plain);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity plainSpike = null;
+            for (var target : targets)
+            {
+                var spike = new com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity(owner);
+                spike.setPos(base.getX() + 1, base.getY() + .5, target.getZ());
+                spike.setDeltaMovement(4, 0, 0); level.addFreshEntity(spike); spike.tick();
+                if (target == plain) plainSpike = spike;
+                if (!spike.isRemoved()) { spike.discard(); helper.fail("Accepted spike hit must consume projectile"); return; }
+            }
+            var source = recorder.source;
+            float plainDamage = 100 - plain.getHealth(), armorDamage = 100 - armored.getHealth();
+            if (recorder.count != 1 || source == null || source.getDirectEntity() != plainSpike || source.getEntity() != owner
+                    || !source.is(com.fiskmods.heroes.common.entity.projectile.CactusSpikeEntity.SPIKE_DAMAGE)
+                    || !source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_EFFECTS)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ENCHANTMENTS)
+                    || Math.abs(source.getFoodExhaustion() - .3F) > .001F
+                    || !java.util.Map.of("CACTUS", 1.0D, "SHARP", 1.0D).equals(recorder.profile)
+                    || !hasDeathMessage(source, plain, "death.attack.fiskheroes.spike", 2)
+                    || Math.abs(plainDamage - 1.5F) > .01F || armorDamage <= 0 || armorDamage >= plainDamage)
+            { helper.fail("Spike must use the blockable attributed spike projectile profile: plain="
+                    + plainDamage + ", armored=" + armorDamage + ", source=" + source); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+            plain.discard(); armored.discard();
+        }
     }
 
     @GameTest(template = "test_empty")

@@ -16,6 +16,9 @@ import net.minecraft.world.phys.EntityHitResult;
 /** Spike projectile shared by Señor Cactus and Cactus Arrow. */
 public final class CactusSpikeEntity extends ThrowableItemProjectile
 {
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SPIKE_DAMAGE =
+            net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    com.fiskmods.heroes.FiskHeroes.id("cactus_spike"));
     private static final int MAX_AGE = 200;
     private static final float DAMAGE = 1.5F;
     private static final JsonObject DAMAGE_PROFILE = createDamageProfile();
@@ -60,7 +63,11 @@ public final class CactusSpikeEntity extends ThrowableItemProjectile
         // The original sometimes clears hurt resistance and only consumes the spike on a successful hit.
         if (random.nextBoolean()) target.invulnerableTime = 0;
         var owner = getOwner();
-        var source = level().damageSources().thrown(this, owner);
+        var type = level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                .getHolderOrThrow(SPIKE_DAMAGE);
+        // The legacy spike source is an indirect, armor-blockable projectile,
+        // attributed to its shooter and with the standard 0.3 exhaustion.
+        var source = new net.minecraft.world.damagesource.DamageSource(type, this, owner);
         float damage = DamageGroups.profileDamage(damageProfile, DAMAGE);
         boolean accepted;
         if (target instanceof LivingEntity living)
