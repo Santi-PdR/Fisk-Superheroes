@@ -103,7 +103,19 @@ def main():
             command('execute as @e[type=minecraft:item,tag=sonic_item,limit=1] store result score @s sonic run data get entity @s Pos[2] 100')
             command('execute if entity @e[type=minecraft:item,tag=sonic_item,scores={sonic=451..}] run say SONIC_PUSH_OK')
             wait_for(server_log, 'SONIC_PUSH_OK', 30, 'cry pushes an item along its direction', server)
-            print('PASS: real client cry affects entities and projectiles', flush=True)
+            command('kill @e[type=minecraft:item,tag=sonic_item]')
+            command('kill @e[type=fiskheroes:sonic_wave]')
+            command('fill -1 181 4 1 181 4 minecraft:glass_pane')
+            command('execute if block -1 181 4 minecraft:glass_pane if block 0 181 4 minecraft:glass_pane '
+                    'if block 1 181 4 minecraft:glass_pane run say SONIC_PANES_READY')
+            wait_for(server_log, 'SONIC_PANES_READY', 30, 'glass panes are present before the cry', server)
+            # Breaking is intentionally probabilistic. Multiple panes and sustained
+            # waves provide many independent chances, rather than relying on one tick.
+            cry(5)
+            for x in (-1, 0, 1):
+                command(f'execute if block {x} 181 4 minecraft:air run say SONIC_PANE_BROKEN')
+            wait_for(server_log, 'SONIC_PANE_BROKEN', 30, 'real cry breaks a glass pane', server)
+            print('PASS: real client cry affects glass, entities and projectiles', flush=True)
         finally:
             for process in reversed(processes):
                 if process.poll() is None:
