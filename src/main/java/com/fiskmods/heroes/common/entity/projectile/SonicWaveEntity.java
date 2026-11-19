@@ -92,6 +92,8 @@ public final class SonicWaveEntity extends ThrowableProjectile
     {
         Entity owner = getOwner();
         var affected = getBoundingBox().inflate(radius);
+        for (ThrownShieldEntity shield : level.getEntitiesOfClass(ThrownShieldEntity.class, affected, Entity::isAlive))
+            shield.dislodgeBySonicWave();
         for (IcicleEntity icicle : level.getEntitiesOfClass(IcicleEntity.class, affected, Entity::isAlive))
             icicle.shatter();
         for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, affected,

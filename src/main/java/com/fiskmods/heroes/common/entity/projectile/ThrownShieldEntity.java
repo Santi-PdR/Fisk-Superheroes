@@ -442,6 +442,22 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         discard();
     }
 
+    /** A sonic wave knocks the shield down as one item, without duplicating it. */
+    void dislodgeBySonicWave()
+    {
+        if (level().isClientSide || isRemoved()) return;
+        ItemStack stack = getItem().copy();
+        if (stack.isEmpty()) { discard(); return; }
+        var drop = new net.minecraft.world.entity.item.ItemEntity(level(), getX(), getY(), getZ(), stack);
+        drop.setDefaultPickUpDelay();
+        // Do not consume the projectile when an entity-spawn event cancels its item.
+        if (level().addFreshEntity(drop))
+        {
+            setItem(ItemStack.EMPTY);
+            discard();
+        }
+    }
+
     private void dropShield()
     {
         if (!level().isClientSide && !getItem().isEmpty())

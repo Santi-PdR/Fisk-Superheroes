@@ -477,6 +477,18 @@ public final class PortRegressionTests
         }
     }
 
+    public static final class SonicShieldDropGuard
+    {
+        int events;
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onSpawn(net.minecraftforge.event.entity.EntityJoinLevelEvent event)
+        {
+            if (event.getEntity() instanceof net.minecraft.world.entity.item.ItemEntity item && item.getItem().hasTag()
+                    && "preserved".equals(item.getItem().getTag().getString("SonicRegressionMarker")))
+            { events++; event.setCanceled(true); }
+        }
+    }
+
     @GameTest(template = "test_empty")
     public static void sonicWaveStopsAffectingTargetsDuringFade(GameTestHelper helper)
     {
@@ -497,18 +509,39 @@ public final class PortRegressionTests
         near.setPos(wave.position()); near.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(near);
         var far = new com.fiskmods.heroes.common.entity.projectile.IcicleEntity(owner, null, 4, 0);
         far.setPos(wave.position().add(5, 0, 0)); far.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(far);
+        var shieldStack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        shieldStack.getOrCreateTag().putString("SonicRegressionMarker", "preserved");
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, shieldStack);
+        shield.setPos(wave.position()); shield.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(shield);
         try
         {
             // ServerLevel normally increments tickCount before invoking tick().
             wave.tickCount = 11; wave.tick();
-            if (target.getHealth() != 100.0F || near.isRemoved())
+            if (target.getHealth() != 100.0F || near.isRemoved() || shield.isRemoved())
             { helper.fail("The last four sonic-wave ticks must be visual only"); return; }
-            wave.tickCount = 10; wave.tick();
-            if (!(target.getHealth() < 100.0F) || !near.isRemoved() || far.isRemoved())
-            { helper.fail("An active sonic wave must hit nearby targets and shatter only nearby icicles"); return; }
+            var dropGuard = new SonicShieldDropGuard();
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(dropGuard);
+            try
+            {
+                wave.tickCount = 10; wave.tick();
+                if (!(target.getHealth() < 100.0F) || !near.isRemoved() || far.isRemoved()
+                        || shield.isRemoved() || dropGuard.events != 1
+                        || !"preserved".equals(shield.getItem().getTag().getString("SonicRegressionMarker")))
+                { helper.fail("The wave must shatter nearby icicles, but preserve a shield if its drop is canceled"); return; }
+            }
+            finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(dropGuard); }
+            wave.tickCount = 9; wave.tick();
+            if (!shield.isRemoved()) { helper.fail("The shield must be dislodged after a successful item spawn"); return; }
+            wave.tickCount = 8; wave.tick();
+            var drops = level.getEntitiesOfClass(net.minecraft.world.entity.item.ItemEntity.class,
+                    wave.getBoundingBox().inflate(3), item -> item.getItem().hasTag()
+                            && "preserved".equals(item.getItem().getTag().getString("SonicRegressionMarker")));
+            boolean oneShield = drops.size() == 1 && drops.get(0).getItem().getCount() == 1;
+            drops.forEach(net.minecraft.world.entity.Entity::discard);
+            if (!oneShield) { helper.fail("A sonic wave must drop exactly one shield with its data"); return; }
             helper.succeed();
         }
-        finally { wave.discard(); target.discard(); near.discard(); far.discard(); }
+        finally { wave.discard(); target.discard(); near.discard(); far.discard(); shield.discard(); }
     }
 
     @GameTest(template = "test_empty")
