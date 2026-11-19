@@ -3,12 +3,12 @@ Daemon will be stopped at the end of the build
 > Task :prepareRunGameTestServer
 > Task :prepareRunGameTestServerCompile UP-TO-DATE
 > Task :runGameTestServer
-[19:36:25] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
-[19:36:25] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
-[19:36:25] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
-[19:36:25] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
-[19:36:28] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
-[19:36:28] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
+[20:03:54] [main/INFO] [cp.mo.mo.Launcher/MODLAUNCHER]: ModLauncher running: args [--launchTarget, forgegametestserveruserdev, --gameDir, ., --fml.forgeVersion, 47.4.10, --fml.mcVersion, 1.20.1, --fml.forgeGroup, net.minecraftforge, --fml.mcpVersion, 20230612.114412]
+[20:03:54] [main/DEBUG] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Found launch services [fmlclientdev,forgeclient,minecraft,forgegametestserverdev,fmlserveruserdev,fmlclient,fmldatauserdev,forgeserverdev,forgeserveruserdev,forgeclientdev,forgeclientuserdev,forgeserver,forgedatadev,fmlserver,fmlclientuserdev,fmlserverdev,forgedatauserdev,testharness,forgegametestserveruserdev]
+[20:03:54] [main/INFO] [ne.mi.fm.lo.ImmediateWindowHandler/]: ImmediateWindowProvider not loading because launch target is forgegametestserveruserdev
+[20:03:54] [main/DEBUG] [ne.mi.fm.lo.FMLLoader/CORE]: Using forgegametestserveruserdev as launch service
+[20:03:56] [main/INFO] [cp.mo.mo.LaunchServiceHandler/MODLAUNCHER]: Launching target 'forgegametestserveruserdev' with arguments [--gameDir, .]
+[20:03:56] [main/DEBUG] [mixin/]: Error cleaning class output directory: .mixin.out
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
@@ -16,153 +16,153 @@ java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
 	at net.minecraftforge.gametest.GameTestMain.main(GameTestMain.java:16) ~[forge-1.20.1-47.4.10_mapped_official_1.20.1.jar:?] {re:classloading}
 	at net.minecraftforge.fml.loading.targets.ForgeGametestUserdevLaunchHandler.devService(ForgeGametestUserdevLaunchHandler.java:16) ~[fmlloader-1.20.1-47.4.10.jar:?] {}
-[19:36:41] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
-[19:36:43] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
-[19:36:43] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
-[19:36:43] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
-[19:36:43] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
-[19:36:43] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
-[19:36:47] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
-[19:36:47] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'isolated_arrow_permissions:1' (1 tests)...
-[19:36:47] [Server thread/INFO] [minecraft/GameTestServer]: 276 tests are now running!
-[19:36:47] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (100 tests)...
-[19:36:49] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++_+++++++++++_++++++++_+++++++++_+++++++++++++++++++++++++++++++++++++                                                                                                                                                                               ]
-[19:36:50] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (100 tests)...
-[19:36:50] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++_+++++_++++++++++_++++++++__++_++++++_++++++++++++++++++++++++++_++++++++++++++++++++++++++                                                                           ]
-[19:36:50] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:51] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:52] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                           ]
-[19:36:53] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:3' (75 tests)...
-[19:36:53] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+_+++++++++_+++++++++++++++++++++++++++++++_++_+++++++++++_++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_+++++++++++_++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: ========= 276 GAME TESTS COMPLETE ======================
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: All 276 required tests passed :)
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[19:36:56] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1795116973943.json
-BUILD SUCCESSFUL in 46s
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.545
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.045
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.86607146 width=0.5196429 eye=1.4030358
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.7321429 width=0.43928578 eye=1.1860715
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.5982144 width=0.35892865 eye=0.96910733
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.46428582 width=0.27857152 eye=0.752143
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.33035725 width=0.19821437 eye=0.5351788
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.19642869 width=0.11785722 eye=0.31821448
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.06250012 width=0.037500072 eye=0.101250194
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.0625 width=0.0375 eye=0.10125
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:chronos, index=-1, matching=[AIM]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rip_hunter, index=-1, matching=[AIM]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[19:36:53] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
-[19:36:53] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+_+++++++++_+++++++++++++++++++++++++++++++_++_+++++++++++_++++++++]
-[19:36:53] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_+++++++++++_++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: ========= 276 GAME TESTS COMPLETE ======================
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: All 276 required tests passed :)
-[19:36:54] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
-[19:36:54] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
-[19:36:54] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
-[19:36:54] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
-[19:36:55] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
-[19:36:56] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
-[19:36:56] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
-[19:36:56] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[19:36:56] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
-[19:36:56] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
-[19:36:56] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
-gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1795116973943.json
+[20:04:03] [main/ERROR] [minecraft/DedicatedServerProperties]: No key layers in MapLike[{}]
+[20:04:04] [main/INFO] [ne.mi.ga.ForgeGameTestHooks/]: Enabled Gametest Namespaces: [fiskheroes]
+[20:04:04] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringBlockEntities was corrected from null to its default, false. 
+[20:04:04] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringBlockEntities does not match the spec. This may create a backup.
+[20:04:04] [Server thread/WARN] [ne.mi.co.ForgeConfigSpec/CORE]: Incorrect key server.removeErroringEntities was corrected from null to its default, false. 
+[20:04:04] [Server thread/DEBUG] [ne.mi.co.ForgeConfigSpec/CORE]: The comment on key server.removeErroringEntities does not match the spec. This may create a backup.
+[20:04:06] [Server thread/INFO] [minecraft/GameTestServer]: Started game test server
+[20:04:07] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'isolated_arrow_permissions:1' (1 tests)...
+[20:04:07] [Server thread/INFO] [minecraft/GameTestServer]: 277 tests are now running!
+[20:04:07] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:1' (100 tests)...
+[20:04:08] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++_++++++++++++_+++++++_+++++++++_++++++++++++++++++++++++++++++++++++                                                                                                                                                                                ]
+[20:04:08] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:2' (100 tests)...
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_+++_+++++_++++++++++_++++++++__++_++++++_++++++++++++++++++++++++++_+++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:09] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                            ]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestBatchRunner]: Running test batch 'defaultBatch:3' (76 tests)...
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++_++++++++_+++++++++++++++++++++++++++++++_++_+++++++++++_++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_+++++++++++_++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: ========= 277 GAME TESTS COMPLETE ======================
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: All 277 required tests passed :)
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[20:04:12] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1795118628061.json
+BUILD SUCCESSFUL in 26s
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.545
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Suit jump hero=fiskheroes:spider_man side=server vertical=1.045
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:mysterio, index=2, matching=[AIM, ENERGY_PROJECTION]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability not activated: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, reason=hero_condition
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability modifier executed: hero=fiskheroes:mysterio, key=ENERGY_PROJECTION, modifier=fiskheroes:energy_projection
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:wild_dog, index=-1, matching=[AIM]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_america, index=1, matching=[SHIELD_THROW]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.86607146 width=0.5196429 eye=1.4030358
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.7321429 width=0.43928578 eye=1.1860715
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.5982144 width=0.35892865 eye=0.96910733
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.46428582 width=0.27857152 eye=0.752143
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.33035725 width=0.19821437 eye=0.5351788
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.19642869 width=0.11785722 eye=0.31821448
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.06250012 width=0.037500072 eye=0.101250194
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=0.0625 width=0.0375 eye=0.10125
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:chronos, index=-1, matching=[AIM]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:rip_hunter, index=-1, matching=[AIM]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[20:04:10] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=test-mock-player side=server scale=1.0 width=0.6 eye=1.62
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:heatwave, index=-1, matching=[AIM]
+[20:04:10] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++_++++++++_+++++++++++++++++++++++++++++++_++_+++++++++++_++++++++]
+[20:04:10] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_+++++++++++_++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++_++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: [+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++]
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: ========= 277 GAME TESTS COMPLETE ======================
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: All 277 required tests passed :)
+[20:04:11] [Server thread/INFO] [minecraft/GameTestServer]: ====================================================
+[20:04:11] [Server thread/INFO] [minecraft/MinecraftServer]: Stopping server
+[20:04:11] [Server thread/INFO] [minecraft/MinecraftServer]: Saving players
+[20:04:11] [Server thread/INFO] [minecraft/MinecraftServer]: Saving worlds
+[20:04:11] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:overworld
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_nether
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: Saving chunks for level 'ServerLevel[world]'/minecraft:the_end
+[20:04:12] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: Gathering id map for writing to world save world
+[20:04:12] [Server thread/DEBUG] [ne.mi.co.ForgeHooks/WP]: ID Map collection complete world
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (world): All chunks are saved
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM-1): All chunks are saved
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage (DIM1): All chunks are saved
+[20:04:12] [Server thread/INFO] [minecraft/MinecraftServer]: ThreadedAnvilChunkStorage: All dimensions are saved
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: Reverting to FROZEN data state.
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:attribute Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:point_of_interest_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:memory_module_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sensor_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:schedule Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:activity Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/carver Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/feature Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:chunk_status Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/block_state_provider_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/foliage_placer_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/tree_decorator_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:worldgen/biome Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:global_loot_modifier_serializers Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:biome_modifier_serializers Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:structure_modifier_serializers Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:holder_set_type Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> FROZEN
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[20:04:12] [Server thread/DEBUG] [ne.mi.re.GameData/REGISTRIES]: FROZEN state restored.
+[20:04:12] [Server thread/DEBUG] [ne.mi.fm.co.ConfigTracker/CONFIG]: Unloading configs type SERVER
+[20:04:12] [Server thread/INFO] [minecraft/GameTestServer]: Game test server shutting down
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_5-1795118628061.json
 
 Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
 
@@ -170,5 +170,5 @@ You can use '--warning-mode all' to show the individual deprecation warnings and
 
 For more on this, please refer to https://docs.gradle.org/8.8/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
 
-BUILD SUCCESSFUL in 46s
+BUILD SUCCESSFUL in 26s
 11 actionable tasks: 7 executed, 4 up-to-date
