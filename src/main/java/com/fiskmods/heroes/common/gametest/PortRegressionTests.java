@@ -130,6 +130,38 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void shieldThrowInheritsHalfOfPlayerMotion(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-motion-test"));
+        player.setPos(base.getX(), base.getY(), base.getZ());
+        var modifier = (com.fiskmods.heroes.common.hero.modifier.ModifierShieldThrowing)
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.SHIELD_THROWING;
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(modifier, null);
+        var motion = new Vec3(0.8D, 0.6D, -0.4D);
+        for (boolean grounded : new boolean[] {true, false})
+        {
+            player.setYRot(37.0F); player.setXRot(-21.0F); player.setOnGround(grounded);
+            player.setDeltaMovement(motion);
+            player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
+                    new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+            var expected = player.getLookAngle().normalize().scale(2.5D).add(motion.scale(0.5D));
+            if (!modifier.throwShield(player, entry)) { helper.fail("Shield launch failed"); return; }
+            var projectiles = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.class,
+                    player.getBoundingBox().inflate(4), e -> e.getOwner() == player);
+            if (projectiles.size() != 1) { helper.fail("Expected one moving shield"); return; }
+            var shield = projectiles.get(0);
+            var actual = shield.getDeltaMovement(); shield.discard();
+            if (actual.distanceTo(expected) > 0.0001D)
+            { helper.fail("Shield must inherit half of each owner motion component when grounded=" + grounded
+                    + "; expected " + expected + ", got " + actual); return; }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void thrownShieldImpactUsesProjectileSourceAndWearsItem(GameTestHelper helper)
     {
         var level = helper.getLevel(); var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
