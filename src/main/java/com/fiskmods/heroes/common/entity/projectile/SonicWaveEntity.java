@@ -20,6 +20,9 @@ import net.minecraft.world.phys.Vec3;
 /** Expanding, short-lived sound wave used by Canary's cry. */
 public final class SonicWaveEntity extends ThrowableProjectile
 {
+    public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SOUND_DAMAGE =
+            net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
+                    com.fiskmods.heroes.FiskHeroes.id("sonic_wave"));
     private String damageProfile = "{}";
     private float damage = 7.0F;
     private float knockback = 0.025F;
@@ -105,8 +108,13 @@ public final class SonicWaveEntity extends ThrowableProjectile
             if (target instanceof LivingEntity living)
             {
                 float damageScale = Math.max(0.0F, 1.0F - tickCount / 25.0F);
+                // The original SOUND source is a blockable projectile attributed to
+                // the wearer, not the Warden's armor- and enchantment-bypassing sonic boom.
+                var type = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE)
+                        .getHolderOrThrow(SOUND_DAMAGE);
+                var source = new net.minecraft.world.damagesource.DamageSource(type, owner);
                 DamageGroups.applyProfileDamage(living, owner instanceof LivingEntity attacker ? attacker : null,
-                        level.damageSources().sonicBoom(owner), damage * damageScale, profile());
+                        source, damage * damageScale, profile());
             }
             if (knockback > 0.0F)
             {

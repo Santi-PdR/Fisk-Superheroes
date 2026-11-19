@@ -16,6 +16,8 @@ on:
       - 'src/main/java/com/fiskmods/heroes/common/hero/ability/AbilityHandler.java'
       - 'src/main/resources/assets/fiskheroes/data/powers/canary_cry.json'
       - 'src/main/resources/assets/fiskheroes/data/heroes/black_canary.js'
+      - 'src/main/resources/data/fiskheroes/damage_type/sonic_wave.json'
+      - 'src/main/resources/data/minecraft/tags/damage_type/is_projectile.json'
 concurrency:
   group: sonic-wave-${{ github.ref }}
   cancel-in-progress: true

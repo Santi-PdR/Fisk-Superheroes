@@ -525,6 +525,86 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void sonicWaveCollisionUsesBlockCollisionShapes(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var flower = base.offset(1, 0, 0);
+        var wall = base.offset(2, 0, 0);
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, 0, false);
+        wave.setPos(base.getX() + .2D, base.getY() + .5D, base.getZ() + .5D);
+        wave.setDeltaMovement(1, 0, 0);
+        level.setBlockAndUpdate(flower, net.minecraft.world.level.block.Blocks.DANDELION.defaultBlockState());
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        level.addFreshEntity(wave);
+        try
+        {
+            wave.tick();
+            if (wave.isRemoved() || wave.getX() < flower.getX())
+            { helper.fail("Sonic waves must pass through non-colliding plants"); return; }
+            wave.tick();
+            if (!wave.isRemoved()) { helper.fail("A solid wall must stop a sonic wave"); return; }
+            helper.succeed();
+        }
+        finally { wave.discard(); level.removeBlock(flower, false); level.removeBlock(wall, false); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void sonicWaveDamageUsesBlockableSoundProjectile(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() - 10, base.getY(), base.getZ());
+        var plain = net.minecraft.world.entity.EntityType.COW.create(level);
+        var armored = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (plain == null || armored == null) { helper.fail("Sonic damage targets missing"); return; }
+        for (var target : new net.minecraft.world.entity.LivingEntity[] {plain, armored})
+        {
+            target.setNoGravity(true);
+            ((net.minecraft.world.entity.Mob) target).setNoAi(true);
+            target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100);
+            target.setHealth(100);
+            target.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
+            level.addFreshEntity(target);
+        }
+        armored.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR).setBaseValue(20);
+        armored.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR_TOUGHNESS).setBaseValue(8);
+        var types = new com.google.gson.JsonObject(); types.addProperty("SOUND", 1.0F);
+        var profile = new com.google.gson.JsonObject(); profile.add("types", types);
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, profile, 7, 0, false);
+        wave.setPos(base.getX() + .5D, base.getY() + .5D, base.getZ() + .5D);
+        wave.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(wave);
+        var recorder = new DirectArrowDamageRecorder(plain);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(recorder);
+        try
+        {
+            wave.tickCount = 5; wave.tick();
+            var source = recorder.source;
+            float plainDamage = 100 - plain.getHealth(), armorDamage = 100 - armored.getHealth();
+            if (recorder.count != 1 || source == null || source.getEntity() != owner
+                    || source.getDirectEntity() != owner || !source.is(net.minecraft.tags.DamageTypeTags.IS_PROJECTILE)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ARMOR)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_EFFECTS)
+                    || source.is(net.minecraft.tags.DamageTypeTags.BYPASSES_ENCHANTMENTS)
+                    || Math.abs(source.getFoodExhaustion() - .3F) > .001F
+                    || !java.util.Map.of("SOUND", 1.0D).equals(recorder.profile)
+                    || !hasDeathMessage(source, plain, "death.attack.fiskheroes.sound", 2)
+                    || plainDamage <= 0 || armorDamage <= 0 || armorDamage >= plainDamage)
+            { helper.fail("Sonic damage must be a blockable SOUND projectile with armor reduction and wearer credit: plain="
+                    + plainDamage + ", armored=" + armorDamage + ", source=" + source); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(recorder);
+            wave.discard(); plain.discard(); armored.discard();
+        }
+    }
+
+    @GameTest(template = "test_empty")
     public static void sonicWavePushesItemsAlongItsMotion(GameTestHelper helper)
     {
         var level = helper.getLevel();

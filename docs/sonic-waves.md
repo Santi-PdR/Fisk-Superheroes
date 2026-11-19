@@ -17,6 +17,11 @@ Forge break event. Non-player or unresolved owners cannot break blocks because
 the port does not have an identity for claim checks. The current Forge glass tags
 may differ from the original material classification.
 
+The wave uses its own wearer-attributed SOUND damage source, tagged as a
+projectile like the original. Unlike the Warden's sonic boom, it does not bypass
+armor, enchantments or effects. Its center passes non-colliding plants and stops
+at blocks with a collision shape, using modern projectile collision rules.
+
 Waves shatter nearby icicle projectiles and dislodge thrown shields during their
 active phase. Dislodged shields become exactly one item with their original data;
 if the item spawn is canceled, the projectile is retained. The port does not
@@ -29,7 +34,8 @@ renders a white, translucent ring with a cylindrical outer wall and an annular
 face, following the original radius, thickness, length and opacity; the previous
 Minecraft sonic-boom particles have been removed.
 
-Server GameTests cover protected glass and panes, active versus fading effects,
+Server GameTests cover protected glass and panes, plant and wall collisions,
+SOUND damage attribution and armor reduction, active versus fading effects,
 directional item impulse, icicle shattering, and shield item preservation when a
 spawn is canceled. A dedicated-server test with a real Black Canary client checks
 ability input, living-target damage, item impulse, glass-pane breakage, icicle
