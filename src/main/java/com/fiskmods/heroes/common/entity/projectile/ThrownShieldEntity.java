@@ -30,6 +30,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     // Sync only the offset, not a changing timer every tick.
     private static final EntityDataAccessor<Integer> AGE_OFFSET = SynchedEntityData.defineId(
             ThrownShieldEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> MAGNETIC_ACTIVE = SynchedEntityData.defineId(
+            ThrownShieldEntity.class, EntityDataSerializers.BOOLEAN);
     public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SHIELD_DAMAGE =
             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                     com.fiskmods.heroes.FiskHeroes.id("thrown_shield"));
@@ -37,6 +39,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     private static final int MAX_RETURN_TICKS = 200;
     private int returnTicks;
     private float spinTime, previousSpinTime;
+    private boolean magneticDiagnosticLogged;
 
     public ThrownShieldEntity(EntityType<? extends ThrownShieldEntity> type, Level level)
     {
@@ -58,6 +61,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         entityData.define(SHIELD_STACK, new ItemStack(ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
         entityData.define(RETURNING, false);
         entityData.define(AGE_OFFSET, 0);
+        entityData.define(MAGNETIC_ACTIVE, false);
     }
 
     @Override
@@ -136,8 +140,11 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                 dropShield();
                 return;
             }
-            if (isMagneticallyAttracted())
+            // Entity tickCount starts at zero for a newly tracking client. Only the
+            // server can use it as the projectile's age; clients follow its motion.
+            if (!level().isClientSide && isMagneticallyAttracted())
             {
+                if (!entityData.get(MAGNETIC_ACTIVE)) entityData.set(MAGNETIC_ACTIVE, true);
                 Vec3 offset = new Vec3(owner.getX(), owner.getY() + owner.getBbHeight() * 0.6D, owner.getZ()).subtract(position());
                 double distance = offset.length();
                 if (distance > 0.001D)
@@ -145,8 +152,16 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                     // Capping the last step avoids skipping over the owner's pickup volume.
                     double speed = Math.min(0.2D + flightAge() / 15.0D, distance);
                     setDeltaMovement(offset.scale(speed / distance));
-                    if (!level().isClientSide) hasImpulse = true;
+                    hasImpulse = true;
                 }
+            }
+            if (!magneticDiagnosticLogged && entityData.get(MAGNETIC_ACTIVE)
+                    && Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+            {
+                magneticDiagnosticLogged = true;
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shield magnetic return: side={}, entity={}, owner={}, magnetic={}, age={}",
+                        level().isClientSide ? "client" : "server", getId(), owner.getName().getString(),
+                        com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem()), flightAge());
             }
             if (!level().isClientSide && distanceTo(owner) <= net.minecraft.util.Mth.clamp(getDeltaMovement().length() * 3.0D, 1.0D, 5.0D))
             {
@@ -212,7 +227,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     @Override
     protected void onHitBlock(BlockHitResult hit)
     {
-        if (isMagneticallyAttracted()) return;
+        if (entityData.get(MAGNETIC_ACTIVE) || (!level().isClientSide && isMagneticallyAttracted())) return;
         super.onHitBlock(hit);
         if (level().isClientSide || getOwner() == null) return;
         boolean magnetic = com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem());
@@ -253,6 +268,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     {
         if (owner instanceof Player player)
         {
+            if (Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+                com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shield recovered: entity={}, owner={}, magnetic={}", getId(),
+                        player.getName().getString(), com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem()));
             ItemStack stack = getItem().copy();
             if (!player.getInventory().add(stack)) player.drop(stack, false);
         }

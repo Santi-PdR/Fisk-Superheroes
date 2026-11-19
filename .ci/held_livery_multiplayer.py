@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Verify suit weapon liveries are resolved for the actual remote wearer."""
 import os
+import hashlib
+import uuid
 import re
 import signal
 import subprocess
@@ -162,7 +164,40 @@ def main():
                 subprocess.run(['xdotool', 'mouseup', '3'], check=True, timeout=30)
             wait_for_new(observer_log, r'Shield item pose: wearer=Partner, context=THIRD_PERSON_RIGHT_HAND, blocking=false',
                          released, 60, 'observer sees the remote shield lowered', observer)
+            # A late-tracking observer must not derive magnetic flight from its own
+            # younger entity tickCount. This deterministic probe uses the actual server
+            # projectile and the remote player's UUID; no client input is synthesized.
             command('item replace entity Partner hotbar.0 with minecraft:air')
+            command('fill -3 179 -18 3 179 -6 minecraft:stone')
+            command('tp Partner 0 180 -15 0 0')
+            command('tp Dev 0 180 -100 0 0')
+            identity = uuid.UUID(bytes=hashlib.md5(b'OfflinePlayer:Partner').digest(), version=3)
+            chunks = [int.from_bytes(identity.bytes[i:i + 4], 'big', signed=True) for i in range(0, 16, 4)]
+            owner_tag = '[I;' + ','.join(str(value) for value in chunks) + ']'
+            observer_start = len(observer_log.read_text(errors='replace'))
+            server_start = len(server_log.read_text(errors='replace'))
+            command('summon fiskheroes:thrown_shield 0 181.6 18 '
+                    '{Owner:' + owner_tag + ',NoGravity:1b,Returning:1b,FlightAge:0,'
+                    'Shield:{id:"fiskheroes:captain_americas_shield",Count:1b,'
+                    'tag:{Electromagnetic:1b,MagneticProbe:73}},Motion:[0.0d,0.0d,0.0d]}')
+            time.sleep(.5)
+            command('tp Dev 0 180 0 0 0')
+            wait_for_new(server_log, r'Shield magnetic return: side=server, entity=\d+, owner=Partner, magnetic=true',
+                         server_start, 30, 'server starts delayed magnetic return', server)
+            match = re.search(r'Shield magnetic return: side=server, entity=(\d+), owner=Partner, magnetic=true',
+                              server_log.read_text(errors='replace')[server_start:])
+            entity_id = match.group(1)
+            wait_for_new(observer_log, rf'Thrown shield model rendered: entity={entity_id}\b', observer_start, 30,
+                         'late observer renders the remote projectile', observer)
+            wait_for_new(observer_log, rf'Shield magnetic return: side=client, entity={entity_id}, owner=Partner, magnetic=true',
+                         observer_start, 30, 'late observer receives authoritative magnetic state', observer)
+            wait_for_new(server_log, rf'Shield recovered: entity={entity_id}, owner=Partner, magnetic=true',
+                         server_start, 30, 'server recovers the magnetic shield', server)
+            command('execute if data entity Partner Inventory[{id:"fiskheroes:captain_americas_shield",'
+                    'tag:{Electromagnetic:1b,MagneticProbe:73}}] run say SHIELD_MAGNETIC_DATA_OK')
+            wait_for_new(server_log, r'\[Server\] SHIELD_MAGNETIC_DATA_OK', server_start, 30,
+                         'magnetic recovery preserves item data in the owner inventory', server)
+            command('tp Partner 0 180 4 180 0')
             command('execute as Partner run suit fiskheroes:iron_man')
             wait_for(observer_log, r'Drawing suit fiskheroes:iron_man slot', 60,
                      'observer sees remote Iron Man suit', observer)
