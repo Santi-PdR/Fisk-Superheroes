@@ -55,8 +55,11 @@ the original required aiming and then holding item use. Item use also sustains t
 AIM key is held, including for packs that bind AIM to a different key. A short input heartbeat
 stops a stuck beam if input updates cease. Visual packets are throttled separately from the actual ray.
 Its range and damage are configurable through `powers.heatGunRange` and `powers.heatGunDamage`,
-with the original defaults of 32 blocks and 5 damage. The range is bounded to 0.01–256 blocks
-for server safety; the original's per-hero rule overrides are not yet ported. Block melting and ignition respect the
+with the original defaults of 32 blocks and 5 damage. Hero scripts may override them via
+`setRuleValueModifier` using `fiskheroes:range_heatgun` and `fiskheroes:dmg_heatgun`.
+Invalid or non-finite results fall back to the configured value; range is clamped to
+0.01–256 blocks and damage to 0–1000 for server safety. The callback currently supports
+these two rules and the three Cold Gun rules, not the full legacy rule set. Block melting and ignition respect the
 general `allowGriefing` and separate `allowHeatGunGriefing` settings, player edit and world
 border checks, and cancellable Forge break/place events. Melting ice to water requires both
 break and placement approval; a canceled water placement restores the ice before neighbor updates.

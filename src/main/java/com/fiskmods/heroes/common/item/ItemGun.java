@@ -132,6 +132,12 @@ public class ItemGun extends Item
         return isDual(stack) ? Math.round(cooldownTicks * 1.2F) : cooldownTicks;
     }
 
+    /** The server can apply per-wearer rules without trusting client-side prediction. */
+    protected int getServerShotCooldownTicks(Player player, ItemStack stack)
+    {
+        return getShotCooldownTicks(stack);
+    }
+
     /** Client heartbeat cadence; it may be faster than the authoritative shot cooldown. */
     public int getRequestCooldownTicks(ItemStack stack)
     {
@@ -200,7 +206,7 @@ public class ItemGun extends Item
         }
 
         long now = level.getGameTime();
-        int shotCooldown = getShotCooldownTicks(stack);
+        int shotCooldown = getServerShotCooldownTicks(player, stack);
         if (stack.getOrCreateTag().getLong(NEXT_SHOT_TAG) > now)
         {
             return false;

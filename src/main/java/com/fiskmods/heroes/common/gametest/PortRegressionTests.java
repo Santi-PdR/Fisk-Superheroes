@@ -1458,6 +1458,46 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void weaponRuleScriptReceivesLegacyAccessorAndSafeValues(GameTestHelper helper)
+    {
+        try
+        {
+            var engine = com.fiskmods.heroes.pack.js.JSContext.createEngine();
+            if (engine == null) { helper.fail("JavaScript engine unavailable"); return; }
+            var hero = new com.fiskmods.heroes.common.hero.Hero(com.fiskmods.heroes.FiskHeroes.id("ci_rule_test"));
+            var facade = new com.fiskmods.heroes.pack.js.JSHero(hero, engine);
+            facade.setRuleValueModifier(engine.eval("(function(entity, rule) { "
+                    + "if (rule.name() == 'fiskheroes:range_coldgun' && rule.isFloat() && !rule.isInteger() "
+                    + "&& !rule.isDouble() && !rule.isBoolean() && rule.defaultValue() == 32 && rule.value() == 10) return rule.value() + entity.ticksExisted(); "
+                    + "if (rule.name() == 'fiskheroes:dmg_coldgun') return 0; "
+                    + "if (rule.name() == 'fiskheroes:range_heatgun') return Infinity; "
+                    + "if (rule.name() == 'fiskheroes:dmg_heatgun') return -500; "
+                    + "if (rule.name() == 'fiskheroes:cooldown_coldgun' && rule.isInteger() && !rule.isFloat() "
+                    + "&& rule.defaultValue() == 20 && rule.value() == 30) return 999999; "
+                    + "return 'invalid'; })"));
+            var player = helper.makeMockSurvivalPlayer();
+            player.tickCount = 4;
+            var coldRange = com.fiskmods.heroes.common.config.WeaponRules.RANGE_COLDGUN;
+            var coldDamage = com.fiskmods.heroes.common.config.WeaponRules.DMG_COLDGUN;
+            var heatRange = com.fiskmods.heroes.common.config.WeaponRules.RANGE_HEATGUN;
+            var heatDamage = com.fiskmods.heroes.common.config.WeaponRules.DMG_HEATGUN;
+            var cooldown = com.fiskmods.heroes.common.config.WeaponRules.COOLDOWN_COLDGUN;
+            if (coldRange.resolve(player, hero, 10.0) != 14 || coldDamage.resolve(player, hero, 7.0) != 0
+                    || heatRange.resolve(player, hero, 12.0) != 12 || heatDamage.resolve(player, hero, 5.0) != 0
+                    || cooldown.resolve(player, hero, 30) != 12000 || coldRange.resolve(player, null, 8.0) != 8)
+            { helper.fail("Legacy rule accessor, dynamic values, fallback or safety bounds are incorrect"); return; }
+            facade.setRuleValueModifier(engine.eval("(function(entity, rule) { return NaN; })"));
+            if (coldDamage.resolve(player, hero, 9.0) != 9) { helper.fail("NaN must fall back to configured value"); return; }
+            facade.setRuleValueModifier(engine.eval("(function(entity, rule) { return 'invalid'; })"));
+            if (coldDamage.resolve(player, hero, 9.0) != 9) { helper.fail("Invalid type must fall back to configured value"); return; }
+            facade.setRuleValueModifier(engine.eval("(function(entity, rule) { return 3.9; })"));
+            if (cooldown.resolve(player, hero, 30) != 3) { helper.fail("Integer cooldown must truncate fractions"); return; }
+            helper.succeed();
+        }
+        catch (Exception e) { helper.fail("Weapon rule script test failed: " + e); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void scriptWrapperPreservesCallerArguments(GameTestHelper helper)
     {
         try

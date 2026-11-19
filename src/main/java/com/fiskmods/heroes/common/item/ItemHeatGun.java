@@ -55,13 +55,15 @@ public final class ItemHeatGun extends ItemGun
     @Override
     protected double getRayRange(ServerPlayer shooter)
     {
-        return com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_RANGE.get();
+        return com.fiskmods.heroes.common.config.WeaponRules.RANGE_HEATGUN.resolve(shooter,
+                com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_RANGE.get());
     }
 
     @Override
     protected float getRayDamage(ServerPlayer shooter)
     {
-        return com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_DAMAGE.get().floatValue();
+        return (float) com.fiskmods.heroes.common.config.WeaponRules.DMG_HEATGUN.resolve(shooter,
+                com.fiskmods.heroes.common.config.SHConfig.HEAT_GUN_DAMAGE.get());
     }
 
     /** Arm/refresh a held attack; the server tick is the only place that casts the beam. */

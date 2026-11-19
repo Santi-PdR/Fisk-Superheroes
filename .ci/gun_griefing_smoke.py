@@ -12,19 +12,22 @@ from tonfa_visual_smoke import wait_for, xdo
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
                JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true')
-    server_log = Path('ci-gun-grief-server.log')
-    client_log = Path('ci-gun-grief-client.log')
+    rule_fixture = os.environ.get('CI_WEAPON_RULE_FIXTURE') == '1'
+    suffix = '-hero' if rule_fixture else ''
+    server_log = Path(f'ci-gun-grief{suffix}-server.log')
+    client_log = Path(f'ci-gun-grief{suffix}-client.log')
+    run_prefix = f'run-gun-grief{suffix}'
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
     processes = []
     with server_log.open('w') as sout, client_log.open('w') as cout:
         try:
-            server = subprocess.Popen(['./gradlew', 'runServer', '-PciRunDir=run-gun-grief-server', *common],
+            server = subprocess.Popen(['./gradlew', 'runServer', f'-PciRunDir={run_prefix}-server', *common],
                                       stdin=subprocess.PIPE, stdout=sout, stderr=subprocess.STDOUT,
                                       text=True, env=env, start_new_session=True)
             processes.append(server)
             wait_for(server_log, r'Done \(', 360, 'dedicated server ready', server)
-            client = subprocess.Popen(['./gradlew', 'runClient', '-PciRunDir=run-gun-grief-client',
+            client = subprocess.Popen(['./gradlew', 'runClient', f'-PciRunDir={run_prefix}-client',
                                        '-PciUsername=Dev', '-PquickPlayServer=127.0.0.1:25565', *common],
                                       stdout=cout, stderr=subprocess.STDOUT, env=env, start_new_session=True)
             processes.append(client)

@@ -67,13 +67,15 @@ public final class ItemColdGun extends ItemGun
     @Override
     protected double getRayRange(ServerPlayer shooter)
     {
-        return com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_RANGE.get();
+        return com.fiskmods.heroes.common.config.WeaponRules.RANGE_COLDGUN.resolve(shooter,
+                com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_RANGE.get());
     }
 
     @Override
     protected float getRayDamage(ServerPlayer shooter)
     {
-        return com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_DAMAGE.get().floatValue();
+        return (float) com.fiskmods.heroes.common.config.WeaponRules.DMG_COLDGUN.resolve(shooter,
+                com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_DAMAGE.get());
     }
 
     public static boolean isGrenadeMode(ItemStack stack)
@@ -85,6 +87,14 @@ public final class ItemColdGun extends ItemGun
     public int getShotCooldownTicks(ItemStack stack)
     {
         return isGrenadeMode(stack) ? com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_GRENADE_COOLDOWN.get() : cooldownTicks;
+    }
+
+    @Override
+    protected int getServerShotCooldownTicks(Player player, ItemStack stack)
+    {
+        if (!isGrenadeMode(stack)) return cooldownTicks;
+        return (int) com.fiskmods.heroes.common.config.WeaponRules.COOLDOWN_COLDGUN.resolve(player,
+                com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_GRENADE_COOLDOWN.get());
     }
 
     @Override
@@ -148,7 +158,7 @@ public final class ItemColdGun extends ItemGun
         if (isGrenadeMode(stack))
         {
             boolean fired = super.fireFromAttack(player, stack);
-            if (fired) player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + getShotCooldownTicks(stack));
+            if (fired) player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, stack.getOrCreateTag().getLong(NEXT_SHOT_TAG));
             return fired;
         }
         BeamRequest request = REQUESTS.get(player.getUUID());

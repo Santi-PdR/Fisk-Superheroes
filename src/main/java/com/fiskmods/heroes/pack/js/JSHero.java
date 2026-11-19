@@ -197,6 +197,12 @@ public class JSHero
         }
     }
 
+    public void setRuleValueModifier(Object function)
+    {
+        ScriptFunction wrapper = JSContext.wrap(function);
+        if (wrapper != null) hero.setRuleValueModifier(wrapper);
+    }
+
     public void setHasPermission(Object function)
     {
         ScriptFunction wrapper = JSContext.wrap(function);

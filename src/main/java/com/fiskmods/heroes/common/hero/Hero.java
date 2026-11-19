@@ -71,6 +71,7 @@ public class Hero implements Comparable<Hero>
     private ScriptFunction keyBindEnabledFunc;
     private ScriptFunction modifierEnabledFunc;
     private ScriptFunction permissionFunc;
+    private ScriptFunction ruleValueModifier;
     private ScriptFunction propertyFunc;
     private ScriptFunction damageProfileFunc;
     private ScriptFunction tickHandler;
@@ -262,6 +263,11 @@ public class Hero implements Comparable<Hero>
     public void setPermissionFunc(ScriptFunction function)
     {
         permissionFunc = function;
+    }
+
+    public void setRuleValueModifier(ScriptFunction function)
+    {
+        ruleValueModifier = function;
     }
 
     public void setPropertyFunc(ScriptFunction function)
@@ -589,6 +595,12 @@ public class Hero implements Comparable<Hero>
     {
         return modifierEnabledFunc == null || modifierEnabledFunc.callBoolean(
                 new com.fiskmods.heroes.pack.js.JSEntity(entity), new com.fiskmods.heroes.pack.js.JSModifier(modifier));
+    }
+
+    public Object modifyRuleValue(Entity entity, com.fiskmods.heroes.pack.js.JSRule rule)
+    {
+        return ruleValueModifier == null ? rule.value()
+                : ruleValueModifier.call(new com.fiskmods.heroes.pack.js.JSEntity(entity), rule);
     }
 
     public boolean hasPermission(Entity entity, String permission)
