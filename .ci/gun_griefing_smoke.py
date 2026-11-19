@@ -10,7 +10,8 @@ from tonfa_visual_smoke import wait_for, xdo
 
 
 def main():
-    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
+    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciColdBallDiagnostics=true')
     server_log = Path('ci-gun-grief-server.log')
     client_log = Path('ci-gun-grief-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
@@ -97,6 +98,22 @@ def main():
                 command(f'execute if entity @e[type=minecraft:cow,tag=beam_far,scores={{beamHealth=100..}}] run say {marker}_RANGE_OK')
                 wait_for(server_log, f'{marker}_RANGE_OK', 30, f'{item} respects configured range', server)
                 command('kill @e[type=minecraft:cow,tag=beam_far]')
+            # Grenades use a per-player cooldown as well as the stack's cooldown.
+            # Keep firing and replace the stack before the configured 200 ticks
+            # elapse: exactly one impact proves neither input nor swapping bypass it.
+            command('fill -2 180 1 2 183 6 minecraft:air')
+            command('fill -2 180 5 2 183 5 minecraft:stone')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:cold_gun{GrenadeMode:1b}')
+            before = server_log.read_text(errors='replace').count('Cold ball impact:')
+            fire(1.5)
+            wait_for(server_log, r'Cold ball impact:', 30, 'first grenade impacts', server)
+            command('item replace entity Dev weapon.mainhand with fiskheroes:cold_gun{GrenadeMode:1b}')
+            fire(2.0)
+            impacts = server_log.read_text(errors='replace').count('Cold ball impact:') - before
+            if impacts != 1:
+                raise RuntimeError(f'Expected one grenade before the configured cooldown, saw {impacts}')
+            print('PASS: configured grenade cooldown survives item replacement', flush=True)
             print('PASS: both beam rules, ranges and damage values take effect', flush=True)
         finally:
             for process in reversed(processes):

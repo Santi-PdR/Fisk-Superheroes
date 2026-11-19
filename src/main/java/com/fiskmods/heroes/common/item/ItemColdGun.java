@@ -84,7 +84,7 @@ public final class ItemColdGun extends ItemGun
     @Override
     public int getShotCooldownTicks(ItemStack stack)
     {
-        return isGrenadeMode(stack) ? 20 : cooldownTicks;
+        return isGrenadeMode(stack) ? com.fiskmods.heroes.common.config.SHConfig.COLD_GUN_GRENADE_COOLDOWN.get() : cooldownTicks;
     }
 
     @Override
@@ -148,7 +148,7 @@ public final class ItemColdGun extends ItemGun
         if (isGrenadeMode(stack))
         {
             boolean fired = super.fireFromAttack(player, stack);
-            if (fired) player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + 20);
+            if (fired) player.getPersistentData().putLong(PLAYER_COOLDOWN_TAG, now + getShotCooldownTicks(stack));
             return fired;
         }
         BeamRequest request = REQUESTS.get(player.getUUID());

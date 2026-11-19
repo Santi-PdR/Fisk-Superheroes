@@ -20,8 +20,9 @@ reductions, but not armor. Vanilla hurt immunity still controls how often
 health can actually decrease. The cryo ball uses the original default base
 profile of 9 damage (60% COLD, 40% EXPLOSION). As in the original,
 blast damage and knockback depend on distance and sampled hitbox exposure; partial
-cover reduces the impact, and solid cover blocks it. Grenades have a 20-tick server-side per-player
-cooldown; releasing the beam has a four-tick cooldown. Replacing an item stack
+cover reduces the impact, and solid cover blocks it. Grenades have a server-side per-player
+cooldown, configurable with `powers.coldGunGrenadeCooldown` (default 20 ticks);
+releasing the beam has a four-tick cooldown. Replacing an item stack
 does not bypass these cooldowns.
 
 Beam world changes require both `powers.allowGriefing` and

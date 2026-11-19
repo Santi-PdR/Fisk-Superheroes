@@ -32,6 +32,7 @@ public class SHConfig
     public static ForgeConfigSpec.DoubleValue DAMAGE_MULTIPLIER;
     public static ForgeConfigSpec.DoubleValue COLD_GUN_RANGE;
     public static ForgeConfigSpec.DoubleValue COLD_GUN_DAMAGE;
+    public static ForgeConfigSpec.IntValue COLD_GUN_GRENADE_COOLDOWN;
     public static ForgeConfigSpec.DoubleValue HEAT_GUN_RANGE;
     public static ForgeConfigSpec.DoubleValue HEAT_GUN_DAMAGE;
 
@@ -89,6 +90,8 @@ public class SHConfig
                 .defineInRange("coldGunRange", 32.0D, 0.01D, 256.0D);
         COLD_GUN_DAMAGE = builder.comment("Cold Gun beam damage per hit (original default 7)")
                 .defineInRange("coldGunDamage", 7.0D, 0.0D, 1000.0D);
+        COLD_GUN_GRENADE_COOLDOWN = builder.comment("Cold Gun grenade cooldown in ticks (original default 20)")
+                .defineInRange("coldGunGrenadeCooldown", 20, 0, 12000);
         HEAT_GUN_RANGE = builder.comment("Heat Gun beam range in blocks (original default 32; capped at 256)")
                 .defineInRange("heatGunRange", 32.0D, 0.01D, 256.0D);
         HEAT_GUN_DAMAGE = builder.comment("Heat Gun beam damage per hit (original default 5)")
