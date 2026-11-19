@@ -408,14 +408,22 @@ class ModifierSonicWaves extends Modifier
     @Override
     public void onActivate(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        data.getData().set(Vars.SONIC_WAVES, true);
-        AbilityData.playSound(entity, entry, "SHOOT");
+        boolean active = !entry.getBoolean(entity, PowerProperty.IS_TOGGLE) || !data.getData().get(Vars.SONIC_WAVES);
+        setActive(entity, entry, data, active);
     }
 
     @Override
     public void onToggle(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
     {
-        data.getData().set(Vars.SONIC_WAVES, false);
+        if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE)) setActive(entity, entry, data, false);
+    }
+
+    private void setActive(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean active)
+    {
+        if (data.getData().get(Vars.SONIC_WAVES) == active) return;
+        data.getData().set(Vars.SONIC_WAVES, active);
+        if (!active) AbilityData.stopSoundLoops(entity, entry, "SHOOT");
+        AbilityData.playSound(entity, entry, active ? "SHOOT" : "SHOOT_STOP");
     }
 
     @Override
@@ -427,8 +435,8 @@ class ModifierSonicWaves extends Modifier
         }
 
         JsonElement damageProfile = entry.get(entity, PowerProperty.DAMAGE_PROFILE);
-        float damage = DamageGroups.profileDamage(damageProfile, entry.getFloat(entity, PowerProperty.AMOUNT));
-        if (damage <= 0.0F) damage = 7.0F;
+        // An explicitly configured zero is a valid harmless knockback-only cry.
+        float damage = DamageGroups.profileDamage(damageProfile, 7.0F);
 
         var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(entity,
                 damageProfile, damage, entry.getFloat(entity, PowerProperty.KNOCKBACK),

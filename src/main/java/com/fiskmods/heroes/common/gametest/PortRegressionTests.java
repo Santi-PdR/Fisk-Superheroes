@@ -525,6 +525,83 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void sonicWaveHeldAndToggleModesRespectReleaseAndSuitChange(GameTestHelper helper)
+    {
+        var owner = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(owner);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:black_canary");
+        if (data == null || hero == null) { helper.fail("Canary test data missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.SONIC_WAVES, null);
+        var toggle = com.fiskmods.heroes.common.hero.power.PowerProperty.IS_TOGGLE;
+        var state = com.fiskmods.heroes.common.data.var.Vars.SONIC_WAVES;
+        var modifier = entry.getModifier();
+        modifier.onActivate(owner, entry, data);
+        if (!data.getData().get(state)) { helper.fail("Holding must start the cry"); return; }
+        modifier.onToggle(owner, entry, data);
+        if (data.getData().get(state)) { helper.fail("Releasing a held cry must stop it"); return; }
+        entry.setProperty(toggle, true);
+        modifier.onActivate(owner, entry, data);
+        modifier.onToggle(owner, entry, data);
+        if (!data.getData().get(state)) { helper.fail("Releasing a toggled cry must not stop it"); return; }
+        modifier.onActivate(owner, entry, data);
+        if (data.getData().get(state)) { helper.fail("A second toggled press must stop the cry"); return; }
+        modifier.onActivate(owner, entry, data);
+        data.setHero(hero.getDefaultIteration());
+        com.fiskmods.heroes.common.hero.HeroTracker.update(owner, false);
+        if (data.getData().get(state)) { helper.fail("Removing the suit must clear a toggled cry"); return; }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
+    public static void sonicWaveDefaultsAndZeroDamageOverrideArePreserved(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(owner);
+        if (data == null) { helper.fail("Sonic player data missing"); return; }
+        var entry = new com.fiskmods.heroes.common.hero.power.ModifierEntry(
+                com.fiskmods.heroes.common.hero.modifier.Modifiers.SONIC_WAVES, null);
+        var state = com.fiskmods.heroes.common.data.var.Vars.SONIC_WAVES;
+        var profileProperty = com.fiskmods.heroes.common.hero.power.PowerProperty.DAMAGE_PROFILE;
+        var knockbackProperty = com.fiskmods.heroes.common.hero.power.PowerProperty.KNOCKBACK;
+        var glassProperty = com.fiskmods.heroes.common.hero.power.PowerProperty.CAN_BREAK_GLASS;
+        data.getData().set(state, true);
+        try
+        {
+            entry.getModifier().tick(owner, entry, data);
+            var waves = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity.class,
+                    owner.getBoundingBox().inflate(3), wave -> wave.getOwner() == owner && wave.isAlive());
+            if (waves.size() != 1) { helper.fail("Default sonic modifier must spawn one wave per tick"); return; }
+            var tag = new net.minecraft.nbt.CompoundTag(); waves.get(0).saveWithoutId(tag); waves.get(0).discard();
+            if (tag.getFloat("Damage") != 7.0F || Math.abs(tag.getFloat("Knockback") - .025F) > .0001F
+                    || !tag.getBoolean("BreakGlass") || !tag.getString("DamageProfile").contains("SOUND"))
+            { helper.fail("Default sonic profile, knockback or glass flag does not match the original: " + tag); return; }
+            var zero = com.google.gson.JsonParser.parseString("{\"damage\":0,\"types\":{\"SOUND\":1}}");
+            entry.setProperty(profileProperty, zero);
+            entry.setProperty(knockbackProperty, .1F);
+            entry.setProperty(glassProperty, false);
+            entry.getModifier().tick(owner, entry, data);
+            waves = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity.class,
+                    owner.getBoundingBox().inflate(3), wave -> wave.getOwner() == owner && wave.isAlive());
+            if (waves.size() != 1) { helper.fail("Custom sonic modifier must spawn one wave"); return; }
+            tag = new net.minecraft.nbt.CompoundTag(); waves.get(0).saveWithoutId(tag); waves.get(0).discard();
+            if (tag.getFloat("Damage") != 0.0F || Math.abs(tag.getFloat("Knockback") - .1F) > .0001F
+                    || tag.getBoolean("BreakGlass"))
+            { helper.fail("Explicit zero damage and other sonic overrides must survive spawning: " + tag); return; }
+            helper.succeed();
+        }
+        finally
+        {
+            data.getData().set(state, false);
+            level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity.class,
+                    owner.getBoundingBox().inflate(3), wave -> wave.getOwner() == owner).forEach(net.minecraft.world.entity.Entity::discard);
+        }
+    }
+
+    @GameTest(template = "test_empty")
     public static void sonicWaveCollisionUsesBlockCollisionShapes(GameTestHelper helper)
     {
         var level = helper.getLevel();

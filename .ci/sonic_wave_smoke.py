@@ -9,12 +9,13 @@ import uuid
 from pathlib import Path
 
 from PIL import Image
+from held_livery_multiplayer import wait_for_new
 from tonfa_visual_smoke import wait_for, xdo
 
 
 def main():
     env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
-               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciSonicWaveDiagnostics=true')
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciSonicWaveDiagnostics=true -Dfiskheroes.ciSpeedSoundDiagnostics=true')
     server_log, client_log = Path('ci-sonic-server.log'), Path('ci-sonic-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
@@ -73,6 +74,8 @@ def main():
             xdo('keydown', 'c')
             try:
                 wait_for(client_log, 'Sonic wave ring rendered', 30, 'wave renderer invoked', client)
+                wait_for(client_log, r'Sound loop started: id=fiskheroes:ci_sonic_loop', 30,
+                         'pack sonic loop starts while held', client)
                 brightened = 0
                 for sample in range(5):
                     path = f'ci-sonic-ring-{sample}.png'
@@ -88,6 +91,23 @@ def main():
             if brightened < 50:
                 raise RuntimeError(f'Sonic ring did not visibly brighten the background: {brightened} pixels')
             print(f'PASS: visible translucent sonic ring ({brightened} brighter pixels)', flush=True)
+            wait_for(client_log, r'Sound loop stopping: id=fiskheroes:ci_sonic_loop', 30,
+                     'release stops the pack sonic loop', client)
+            wait_for(client_log, r'Sound packet: id=fiskheroes:ci_sonic_stop, loop=false', 30,
+                     'release dispatches SHOOT_STOP', client)
+            # Start again, then switch suits before key-up: the old loop must be retired.
+            start = len(client_log.read_text(errors='replace'))
+            xdo('keydown', 'c')
+            try:
+                wait_for_new(client_log, r'Sound (?:loop started|loop resumed): id=fiskheroes:ci_sonic_loop',
+                             start, 30, 'sonic loop restarts', client)
+                start = len(client_log.read_text(errors='replace'))
+                command('execute as Dev run suit fiskheroes:black_canary_dinah')
+                wait_for_new(client_log, r'Sound loop stopping: id=fiskheroes:ci_sonic_loop',
+                             start, 30, 'suit switch stops the old sonic loop', client)
+            finally:
+                xdo('keyup', 'c')
+            command('execute as Dev run suit fiskheroes:black_canary')
             command('fill -6 176 8 6 186 8 minecraft:air')
             command('kill @e[type=fiskheroes:sonic_wave]')
             command('scoreboard objectives add sonic dummy')

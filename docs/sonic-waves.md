@@ -4,7 +4,16 @@ Canary's sustained ability emits expanding, short-lived waves. They start 0.2 bl
 below eye height, without inheriting the wearer's motion. The normalized aim is
 perturbed by independent Gaussian spread on all three axes as in the original;
 it is not renormalized afterward, so its speed is close to, but not exactly, 1.
-They affect targets during the first 11 ticks; their remaining four ticks are a visual fade. When a
+The default profile deals 7 SOUND damage, with 0.025 knockback and glass breaking;
+pack overrides can also set the damage to zero. By default the cry runs while the
+key is held; packs can set `isToggle` to switch it on and off with separate presses.
+Pack-provided `SHOOT` and `SHOOT_STOP` cues start and stop with the cry, including
+loop cleanup when changing suits. The bundled Canary power does not itself specify
+these cues. Currently a listener who starts tracking an already-active cry does not
+receive its loop until the next start; dynamic modifier disable is also not yet a
+sound-stop transition.
+
+Waves affect targets during the first 11 ticks; their remaining four ticks are a visual fade. When a
 wave permits glass breaking, the port can also break Forge-tagged glass blocks and
 panes, with the original distance-dependent chance. The wave's persisted
 `BreakGlass` flag, `powers.allowGriefing`, `powers.allowSonicWaveGriefing` and
@@ -34,12 +43,14 @@ renders a white, translucent ring with a cylindrical outer wall and an annular
 face, following the original radius, thickness, length and opacity; the previous
 Minecraft sonic-boom particles have been removed.
 
-Server GameTests cover protected glass and panes, plant and wall collisions,
-SOUND damage attribution and armor reduction, active versus fading effects,
+Server GameTests cover held and toggled controls, suit removal, profile defaults
+and overrides, protected glass and panes, plant and wall collisions, SOUND damage
+attribution and armor reduction, active versus fading effects,
 directional item impulse, icicle shattering, and shield item preservation when a
 spawn is canceled. A dedicated-server test with a real Black Canary client checks
 ability input, living-target damage, item impulse, glass-pane breakage, icicle
 shattering and one shield drop retaining its data. It also verifies that the
 renderer runs and brightens pixels against a dark background, retaining screenshots
-for inspection. This is not a subjective comparison with the original visual or
-audio. The projectile probes in that test are summoned.
+for inspection. A runner-only synthetic sound fixture checks loop start, release
+and suit-switch cleanup; it does not ship with the mod or verify subjective audio.
+The projectile probes in that test are summoned.

@@ -145,6 +145,13 @@ public final class HeroTracker
             for (var entry : previous.getHero().getPowerContainer().getEntries())
             {
                 com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(player, entry, "ENABLE");
+                if ((current == null || previous.getHero() != current.getHero())
+                        && entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("sonic_waves")))
+                {
+                    com.fiskmods.heroes.common.hero.modifier.AbilityData.stopSoundLoops(player, entry, "SHOOT");
+                    if (data.getData().get(com.fiskmods.heroes.common.data.var.Vars.SONIC_WAVES))
+                        com.fiskmods.heroes.common.hero.modifier.AbilityData.playSound(player, entry, "SHOOT_STOP");
+                }
             }
         }
         if (!player.level().isClientSide)
@@ -168,6 +175,7 @@ public final class HeroTracker
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.PREV_MASK_OPEN_TIMER2, 0.0F);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN, false);
             data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SUIT_OPEN_TIMER, (byte) 0);
+            data.getData().set(com.fiskmods.heroes.common.data.var.Vars.SONIC_WAVES, false);
             data.setToggleEnabled(com.fiskmods.heroes.FiskHeroes.id("sentry_mode"), false);
         }
 

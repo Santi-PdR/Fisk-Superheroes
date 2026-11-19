@@ -280,7 +280,12 @@ public final class Modifiers
                 .addProperty(PowerProperty.COOLDOWN_TIME, 5));
         SONIC_WAVES = registry.register(new ModifierSonicWaves(new ResourceLocation(FiskHeroes.MODID, "sonic_waves"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
-                .addProperty(PowerProperty.COOLDOWN_TIME, 0)).setSoundState(Vars.SONIC_WAVES);
+                .addProperty(PowerProperty.COOLDOWN_TIME, 0)
+                .addProperty(PowerProperty.IS_TOGGLE, false)
+                .addProperty(PowerProperty.KNOCKBACK, 0.025F)
+                .addProperty(PowerProperty.CAN_BREAK_GLASS, true)
+                .addProperty(PowerProperty.DAMAGE_PROFILE,
+                        com.google.gson.JsonParser.parseString("{\"damage\":7.0,\"types\":{\"SOUND\":1.0}}")));
         CANARY_CRY = registry.register(new ModifierEnergyProjection(new ResourceLocation(FiskHeroes.MODID, "canary_cry"))
                 .addProperty(PowerProperty.RANGE, 16.0F)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 60));
