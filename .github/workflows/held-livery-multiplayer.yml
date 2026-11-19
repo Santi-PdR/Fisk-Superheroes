@@ -7,6 +7,9 @@ on:
       - 'src/main/java/com/fiskmods/heroes/common/hero/Hero.java'
       - '.ci/held_livery_multiplayer.py'
       - '.ci/sound_inheritance_fixture.py'
+      - '.ci/sonic_sound_fixture.py'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/power/Modifier.java'
+      - 'src/main/java/com/fiskmods/heroes/common/hero/ability/ModifierHandler.java'
       - 'src/main/java/com/fiskmods/heroes/common/hero/speedster/**'
       - 'src/main/java/com/fiskmods/heroes/client/render/Trail*.java'
       - 'src/main/java/com/fiskmods/heroes/client/render/VelocityTrailColor.java'
@@ -98,10 +101,12 @@ jobs:
           echo 'eula=true' > run-livery-server/eula.txt
           printf 'online-mode=false\nlevel-type=flat\nmax-tick-time=-1\nspawn-protection=0\nallow-flight=true\nview-distance=3\nsimulation-distance=3\n' > run-livery-server/server.properties
           python3 .ci/sound_inheritance_fixture.py
+          python3 .ci/sonic_sound_fixture.py --toggle-and-gate
           ./gradlew classes --no-daemon --console=plain
       - name: Render two players with different suit liveries
         env:
           CI_SOUND_INHERITANCE_FIXTURE: '1'
+          CI_SONIC_MULTIPLAYER_FIXTURE: '1'
         run: |
           set -o pipefail
           xvfb-run -a -s '-screen 0 1280x720x24' python3 .ci/held_livery_multiplayer.py 2>&1 | tee ci-held-multiplayer-test.log

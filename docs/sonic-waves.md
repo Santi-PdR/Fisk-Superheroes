@@ -8,10 +8,10 @@ The default profile deals 7 SOUND damage, with 0.025 knockback and glass breakin
 pack overrides can also set the damage to zero. By default the cry runs while the
 key is held; packs can set `isToggle` to switch it on and off with separate presses.
 Pack-provided `SHOOT` and `SHOOT_STOP` cues start and stop with the cry, including
-loop cleanup when changing suits. The bundled Canary power does not itself specify
-these cues. Currently a listener who starts tracking an already-active cry does not
-receive its loop until the next start; dynamic modifier disable is also not yet a
-sound-stop transition.
+loop cleanup when changing suits. A newly tracking listener receives active
+loops subject to the pack's sound conditions and listener policy. Disabling the
+last enabled sonic card stops the cry and its loop; re-enabling it requires a new
+activation. The bundled Canary power does not itself specify these cues.
 
 Waves affect targets during the first 11 ticks; their remaining four ticks are a visual fade. When a
 wave permits glass breaking, the port can also break Forge-tagged glass blocks and
@@ -51,6 +51,7 @@ spawn is canceled. A dedicated-server test with a real Black Canary client check
 ability input, living-target damage, item impulse, glass-pane breakage, icicle
 shattering and one shield drop retaining its data. It also verifies that the
 renderer runs and brightens pixels against a dark background, retaining screenshots
-for inspection. A runner-only synthetic sound fixture checks loop start, release
-and suit-switch cleanup; it does not ship with the mod or verify subjective audio.
-The projectile probes in that test are summoned.
+for inspection. Runner-only synthetic sound fixtures check loop start, release,
+suit-switch cleanup, late multiplayer tracking and dynamic modifier disable. They
+do not ship with the mod or verify subjective audio. The projectile probes in
+the single-client test are summoned.

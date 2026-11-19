@@ -122,6 +122,11 @@ public class Modifier
     {
     }
 
+    /** Called on the server while this entry is disabled by its power or hero predicate. */
+    public void onDisabled(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+    }
+
     /** Allows a modifier to suppress an incoming damage source. */
     public boolean isImmuneTo(LivingEntity entity, ModifierEntry entry, net.minecraft.world.damagesource.DamageSource source, float amount)
     {

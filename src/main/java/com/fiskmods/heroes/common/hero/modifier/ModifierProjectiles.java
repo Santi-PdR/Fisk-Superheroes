@@ -418,6 +418,17 @@ class ModifierSonicWaves extends Modifier
         if (!entry.getBoolean(entity, PowerProperty.IS_TOGGLE)) setActive(entity, entry, data, false);
     }
 
+    @Override
+    public void onDisabled(LivingEntity entity, ModifierEntry entry, SHPlayerData data)
+    {
+        if (!data.getData().get(Vars.SONIC_WAVES)) return;
+        // Cards share one sonic state. Do not silence another enabled card.
+        boolean anotherEnabled = data.getHeroType() != null && data.getHeroType().getPowerContainer().getEntries().stream()
+                .anyMatch(other -> other != entry && other.getModifier() == this && other.isEnabled()
+                        && other.isModifierEnabled(entity, data));
+        if (!anotherEnabled) setActive(entity, entry, data, false);
+    }
+
     private void setActive(LivingEntity entity, ModifierEntry entry, SHPlayerData data, boolean active)
     {
         if (data.getData().get(Vars.SONIC_WAVES) == active) return;

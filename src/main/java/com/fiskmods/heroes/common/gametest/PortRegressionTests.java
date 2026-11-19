@@ -554,6 +554,34 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void disabledSonicModifierStopsAndDoesNotRestart(GameTestHelper helper)
+    {
+        var owner = helper.makeMockSurvivalPlayer();
+        var data = com.fiskmods.heroes.common.data.SHDataCapabilities.getPlayer(owner);
+        var hero = com.fiskmods.heroes.common.hero.Hero.REGISTRY.getHeroIgnoreCase("fiskheroes:black_canary");
+        if (data == null || hero == null) { helper.fail("Disabled sonic test setup missing"); return; }
+        var entry = hero.getPowerContainer().getEntry(com.fiskmods.heroes.FiskHeroes.id("sonic_waves"));
+        if (entry == null) { helper.fail("Black Canary sonic modifier missing"); return; }
+        boolean wasEnabled = entry.isEnabled();
+        var state = com.fiskmods.heroes.common.data.var.Vars.SONIC_WAVES;
+        data.setHero(hero.getDefaultIteration());
+        try
+        {
+            entry.setEnabled(true);
+            entry.getModifier().onActivate(owner, entry, data);
+            if (!data.getData().get(state)) { helper.fail("Sonic activation failed"); return; }
+            entry.setEnabled(false);
+            com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(owner);
+            if (data.getData().get(state)) { helper.fail("Disabled sonic modifier must stop the active cry"); return; }
+            entry.setEnabled(true);
+            com.fiskmods.heroes.common.hero.ability.ModifierHandler.tickTracked(owner);
+            if (data.getData().get(state)) { helper.fail("Re-enabling must not restart a stopped cry"); return; }
+            helper.succeed();
+        }
+        finally { entry.setEnabled(wasEnabled); data.getData().set(state, false); data.setHero(null); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void sonicWaveDefaultsAndZeroDamageOverrideArePreserved(GameTestHelper helper)
     {
         var level = helper.getLevel();

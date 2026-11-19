@@ -453,6 +453,18 @@ public class CommonEventHandler
             if (data != null && data.getSpeedsterSounds().isMoving())
                 for (var id : data.getSpeedsterSounds().getMoveIds())
                     com.fiskmods.heroes.common.sound.SHSounds.syncLoopTo(subject, id, tracker);
+            if (data != null && data.getHeroType() != null && data.getData().get(Vars.SONIC_WAVES))
+            {
+                java.util.Set<net.minecraft.resources.ResourceLocation> sounds = new java.util.LinkedHashSet<>();
+                for (var entry : data.getHeroType().getPowerContainer().getEntries())
+                {
+                    if (entry.getModifier().getId().equals(com.fiskmods.heroes.FiskHeroes.id("sonic_waves"))
+                            && entry.isEnabled() && entry.isModifierEnabled(subject, data))
+                        sounds.addAll(com.fiskmods.heroes.common.hero.modifier.AbilityData.soundIds(subject, entry, "SHOOT"));
+                }
+                // syncLoopTo filters one-shots, target policy and sound conditions.
+                for (var id : sounds) com.fiskmods.heroes.common.sound.SHSounds.syncLoopTo(subject, id, tracker);
+            }
         }
     }
 

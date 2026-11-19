@@ -579,6 +579,41 @@ def main():
             command('execute as Partner run suit fiskheroes:the_flash')
             wait_for(observer_log, r'Held weapon livery: wearer=Partner, hero=fiskheroes:the_flash, item=fiskheroes:desert_eagle, context=THIRD_PERSON_RIGHT_HAND, texture=default',
                      90, 'remote wearer without a livery restores the default', observer)
+            if os.environ.get('CI_SONIC_MULTIPLAYER_FIXTURE') == '1':
+                # Runner-only Canary pack uses a toggle loop gated by sneaking.
+                # Start outside tracking range, then bring the observer in after
+                # the cry is already active; no second SHOOT transition occurs.
+                command('tp Dev 256 180 0 0 0')
+                command('tp Partner 0 180 4 180 0')
+                command('execute as Partner run suit fiskheroes:black_canary')
+                command('item replace entity Partner weapon.mainhand with minecraft:air')
+                subprocess.run(['xdotool', 'windowfocus', '--sync', partner_window], check=True, timeout=30)
+                start = len(wearer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
+                time.sleep(.4)
+                subprocess.run(['xdotool', 'keyup', 'c'], check=True, timeout=30)
+                wait_for_new(wearer_log, r'Sound loop started: id=fiskheroes:ci_sonic_loop', start, 30,
+                             'wearer starts the toggled sonic loop', wearer)
+                start = len(observer_log.read_text(errors='replace'))
+                command('tp Dev 3 180 0 0 0')
+                wait_for_new(observer_log, r'Sound loop started: id=fiskheroes:ci_sonic_loop', start, 45,
+                             'late observer receives the active sonic loop', observer)
+                stop = len(observer_log.read_text(errors='replace'))
+                subprocess.run(['xdotool', 'keydown', 'Shift_L'], check=True, timeout=30)
+                try:
+                    wait_for_new(observer_log, r'Sound loop stopping: id=fiskheroes:ci_sonic_loop', stop, 30,
+                                 'dynamic modifier gate stops the tracked sonic loop', observer)
+                    command('kill @e[type=fiskheroes:sonic_wave]')
+                    command('execute unless entity @e[type=fiskheroes:sonic_wave] run say SONIC_DISABLED_NO_WAVES')
+                    wait_for(server_log, r'\[Server\] SONIC_DISABLED_NO_WAVES', 30,
+                             'disabled sonic modifier stops spawning waves', server)
+                finally:
+                    subprocess.run(['xdotool', 'keyup', 'Shift_L'], check=True, timeout=30)
+                time.sleep(2)
+                tail = observer_log.read_text(errors='replace')[stop:]
+                if re.search(r'Sound loop (?:started|resumed): id=fiskheroes:ci_sonic_loop', tail):
+                    raise RuntimeError('Re-enabling the modifier unexpectedly restarted the stopped cry')
+                print('PASS: re-enabling the sonic modifier does not restart the cry', flush=True)
             # A long teleport must reach each endpoint's observers independently,
             # including a destination observer who is not tracking the caster.
             command('forceload add -16 -16 16 96')
