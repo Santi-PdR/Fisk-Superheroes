@@ -14,6 +14,8 @@ Forge break event. Non-player or unresolved owners cannot break blocks because
 the port does not have an identity for claim checks. The current Forge glass tags
 may differ from the original material classification.
 
-Some original interactions remain unported: the wave does not currently shatter
-icicle projectiles or dislodge thrown shields, and its knockback treatment for
-non-living entities differs. The particles also approximate the original visual.
+Waves shatter nearby icicle projectiles during their active phase; the shatter
+uses the original impact sound event when the external sound pack is loaded, with
+approximate snowflake particles. Some original interactions remain unported:
+the wave does not currently dislodge thrown shields, and its knockback treatment
+for non-living entities differs. The wave particles also approximate the original visual.

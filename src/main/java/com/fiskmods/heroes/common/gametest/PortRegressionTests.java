@@ -493,18 +493,22 @@ public final class PortRegressionTests
         var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, 0, false);
         wave.setPos(base.getX() + .5D, base.getY() + 1.0D, base.getZ() + .5D);
         wave.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(wave);
+        var near = new com.fiskmods.heroes.common.entity.projectile.IcicleEntity(owner, null, 4, 0);
+        near.setPos(wave.position()); near.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(near);
+        var far = new com.fiskmods.heroes.common.entity.projectile.IcicleEntity(owner, null, 4, 0);
+        far.setPos(wave.position().add(5, 0, 0)); far.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(far);
         try
         {
             // ServerLevel normally increments tickCount before invoking tick().
             wave.tickCount = 11; wave.tick();
-            if (target.getHealth() != 100.0F)
+            if (target.getHealth() != 100.0F || near.isRemoved())
             { helper.fail("The last four sonic-wave ticks must be visual only"); return; }
             wave.tickCount = 10; wave.tick();
-            if (!(target.getHealth() < 100.0F))
-            { helper.fail("Sonic waves must still affect targets before the fade"); return; }
+            if (!(target.getHealth() < 100.0F) || !near.isRemoved() || far.isRemoved())
+            { helper.fail("An active sonic wave must hit nearby targets and shatter only nearby icicles"); return; }
             helper.succeed();
         }
-        finally { wave.discard(); target.discard(); }
+        finally { wave.discard(); target.discard(); near.discard(); far.discard(); }
     }
 
     @GameTest(template = "test_empty")

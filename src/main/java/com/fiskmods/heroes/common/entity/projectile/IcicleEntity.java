@@ -79,6 +79,17 @@ public final class IcicleEntity extends ThrowableProjectile
     {
         level.sendParticles(net.minecraft.core.particles.ParticleTypes.SNOWFLAKE,
                 position.x, position.y, position.z, 8, 0.04D, 0.04D, 0.04D, 0.015D);
+        com.fiskmods.heroes.common.sound.SHSounds.play(level, position.x, position.y, position.z,
+                com.fiskmods.heroes.FiskHeroes.id("entity.icicle.impact"), net.minecraft.sounds.SoundSource.NEUTRAL,
+                1.0F, 0.9F + level.random.nextFloat() * 0.1F);
+    }
+
+    /** Sonic waves shatter an icicle without applying an entity-impact hit. */
+    void shatter()
+    {
+        if (isRemoved() || !(level() instanceof ServerLevel server)) return;
+        impact(server, position());
+        discard();
     }
 
     private JsonElement profile()
