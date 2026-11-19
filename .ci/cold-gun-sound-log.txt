@@ -1,336 +1,350 @@
 PASS: dedicated server ready
 PASS: observer joined
 PASS: shooter joined
+PASS: shooter start follows the validated beam
+PASS: observer start follows the validated beam
+PASS: shooter start follows movement
+PASS: observer start follows movement
+PASS: early release cuts off the active shooter start
+PASS: early release cuts off the active observer start
 PASS: shooter loop plays
 PASS: remote loop plays with distance attenuation
-Observer audio near: RMS=0.070538
+Observer audio near: RMS=0.064532
 PASS: loop stops outside 64 blocks
 PASS: stereo loop resumes softly near range limit
-Observer audio far: RMS=0.006311
+Observer audio far: RMS=0.006254
 PASS: remote audio is quieter near the 64-block limit
 PASS: stereo loop gets louder approaching shooter
 PASS: loop stops when player untracks
 PASS: late tracking synchronizes active beam
+PASS: late tracking does not replay the start sound
 PASS: changing held item stops remote loop
 PASS: grenade mode enabled
 PASS: grenade mode does not start beam loop
 ==== ci-cold-sound-observer.log ====
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 10
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for forge:fluid_type
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 10
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 11
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:block_entity_type
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 11
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 12
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for forge:display_contexts
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 12
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 13
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:block
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 13
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 14
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for forge:entity_data_serializers
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 14
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 15
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:mob_effect
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 15
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 16
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:stat_type
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 16
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:menu
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 17
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:enchantment
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 18
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:fluid
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 19
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:entity_type
-[20:10:04] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Waiting for registries to load.
-[20:10:04] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Injecting registry snapshot from server.
-[20:10:04] [Render thread/INFO] [ne.mi.re.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
-[20:10:04] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
-[20:10:05] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[20:10:05] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[20:10:05] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[20:10:05] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
-[20:10:05] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[20:10:06] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[20:10:06] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@28fc7156 into net.minecraft.network.Connection@1c17d98c
-[20:10:07] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[20:10:08] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[20:10:50] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Partner joined the game
-[20:10:50] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=client scale=1.0 width=0.6 eye=1.62
-[20:10:58] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Spectator Mode
-[20:11:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=38, present=true, active=true
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:09] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:11] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:13] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
-[20:11:14] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
-[20:11:14] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.09375, active=true
-[20:11:16] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.09375, active=true
-[20:11:18] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.09375, active=true
-[20:11:20] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:22] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:22] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
-[20:11:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=38, present=true, active=true
-[20:11:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
-[20:11:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
-[20:11:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=38, present=true, active=false
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
-[20:11:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
-[20:11:30] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
-[20:11:31] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SOUND_GRENADE_MODE_OK
-[20:11:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[20:11:32] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
-[20:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[20:11:33] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:enchantment
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 18
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:fluid
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 19
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:entity_type
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Waiting for registries to load.
+[22:02:20] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Injecting registry snapshot from server.
+[22:02:20] [Render thread/INFO] [ne.mi.re.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[22:02:20] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[22:02:20] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
+[22:02:20] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
+[22:02:20] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[22:02:22] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[22:02:22] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@30b69dd into net.minecraft.network.Connection@1c244e31
+[22:02:25] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[22:02:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[22:03:39] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Partner joined the game
+[22:03:39] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=client scale=1.0 width=0.6 eye=1.62
+[22:03:47] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Spectator Mode
+[22:03:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=true
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start attached: Partner
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:03:58] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[22:03:58] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=THIRD_PERSON_RIGHT_HAND, texture=default
+[22:03:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:helmet from fiskheroes:textures/heroes/captain_cold_boots.png
+[22:03:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:chestplate from fiskheroes:textures/heroes/captain_cold_jacket_pants.png
+[22:03:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:leggings from fiskheroes:textures/heroes/captain_cold_pants_jacket.png
+[22:03:58] [Render thread/DEBUG] [Fisk's Superheroes/]: Drawing suit fiskheroes:captain_cold slot fiskheroes:boots from fiskheroes:textures/heroes/captain_cold_boots.png
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start moved: Partner, x=2.7222222222222223, y=180.0, z=0.5
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start stopped: Partner, reason=release, playing=true
+[22:03:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=false
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=true
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start attached: Partner
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:04] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:06] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:08] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:10] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:10] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start stopped: Partner, reason=finished, playing=false
+[22:04:12] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:14] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:14] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:16] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:04:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.09375, active=true
+[22:04:18] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.09375, active=true
+[22:04:20] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:22] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:23] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=true
+[22:04:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:04:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=0.96875, active=true
+[22:04:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=client scale=1.0 width=0.6 eye=1.62
+[22:04:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=false
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
+[22:04:28] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
+[22:04:29] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SOUND_GRENADE_MODE_OK
+[22:04:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[22:04:30] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[22:04:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[22:04:31] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
 ==== ci-cold-sound-server.log ====
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 4
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 4 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 5
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 5 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:villager_profession' to 'fml:handshake' sequence 6
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 6
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 6 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:item' to 'fml:handshake' sequence 7
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 7
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 7 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:potion' to 'fml:handshake' sequence 8
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 8
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 8 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:painting_variant' to 'fml:handshake' sequence 9
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 9
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 9 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:fluid_type' to 'fml:handshake' sequence 10
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 10
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 10 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:48] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block_entity_type' to 'fml:handshake' sequence 11
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 11
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 11 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:48] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:display_contexts' to 'fml:handshake' sequence 12
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 12
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 12 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block' to 'fml:handshake' sequence 13
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 13
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 13 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:entity_data_serializers' to 'fml:handshake' sequence 14
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 14
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 14 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:mob_effect' to 'fml:handshake' sequence 15
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 15
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 15 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:stat_type' to 'fml:handshake' sequence 16
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 16
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 16 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:menu' to 'fml:handshake' sequence 17
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
-[20:10:49] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
-[20:10:49] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
-[20:10:50] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:48436] logged in with entity id 38 at (-8.5, -60.0, 0.5)
-[20:10:50] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@91e6777 into net.minecraft.network.Connection@3f7be77e
-[20:10:50] [Server thread/INFO] [minecraft/MinecraftServer]: Partner joined the game
-[20:10:50] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=server scale=1.0 width=0.6 eye=1.62
-[20:10:58] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Spectator Mode
-[20:10:59] [Server thread/INFO] [minecraft/MinecraftServer]: Set Partner's game mode to Creative Mode
-[20:11:00] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
-[20:11:01] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
-[20:11:02] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 0.500000
-[20:11:03] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
-[20:11:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
-[20:11:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[20:11:05] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[20:11:07] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[20:11:07] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
-[20:11:13] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 72.500000, 180.000000, 0.500000
-[20:11:13] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 70.0,0.0,0.0
-[20:11:13] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 70.0,0.0,0.0
-[20:11:14] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 58.500000, 180.000000, 0.500000
-[20:11:14] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -14.0,0.0,0.0
-[20:11:18] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
-[20:11:22] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 220.500000, 180.000000, 0.500000
-[20:11:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 218.0,0.0,0.0
-[20:11:24] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
-[20:11:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Stick]
-[20:11:28] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
-[20:11:31] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SOUND_GRENADE_MODE_OK
-[20:11:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
-[20:11:31] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 5
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 5 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:37] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:villager_profession' to 'fml:handshake' sequence 6
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 6
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 6 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:37] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:item' to 'fml:handshake' sequence 7
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 7
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 7 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:37] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:potion' to 'fml:handshake' sequence 8
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 8
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 8 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:37] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:painting_variant' to 'fml:handshake' sequence 9
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 9
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 9 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:37] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:fluid_type' to 'fml:handshake' sequence 10
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 10
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 10 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:37] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block_entity_type' to 'fml:handshake' sequence 11
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 11
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 11 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:display_contexts' to 'fml:handshake' sequence 12
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 12
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 12 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:block' to 'fml:handshake' sequence 13
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 13
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 13 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry forge:entity_data_serializers' to 'fml:handshake' sequence 14
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 14
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 14 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:mob_effect' to 'fml:handshake' sequence 15
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 15
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 15 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:stat_type' to 'fml:handshake' sequence 16
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 16
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 16 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:menu' to 'fml:handshake' sequence 17
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 17 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:enchantment' to 'fml:handshake' sequence 18
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 18 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:fluid' to 'fml:handshake' sequence 19
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 19 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:38] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Registry minecraft:entity_type' to 'fml:handshake' sequence 20
+[22:03:38] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Sending ticking packet info 'Config forge-server.toml' to 'fml:handshake' sequence 21
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 20 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received client indexed reply 21 of type net.minecraftforge.network.HandshakeMessages$C2SAcknowledge
+[22:03:39] [Netty Epoll Server IO #2/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received acknowledgement from client
+[22:03:39] [Server thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Handshake complete!
+[22:03:39] [Server thread/INFO] [minecraft/PlayerList]: Partner[/127.0.0.1:60986] logged in with entity id 98 at (7.5, -60.0, -3.5)
+[22:03:39] [Server thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@3f4cf775 into net.minecraft.network.Connection@7aba3efd
+[22:03:39] [Server thread/INFO] [minecraft/MinecraftServer]: Partner joined the game
+[22:03:39] [Server thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=server scale=1.0 width=0.6 eye=1.62
+[22:03:47] [Server thread/INFO] [minecraft/MinecraftServer]: Set Dev's game mode to Spectator Mode
+[22:03:48] [Server thread/INFO] [minecraft/MinecraftServer]: Set Partner's game mode to Creative Mode
+[22:03:49] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 121 block(s)
+[22:03:50] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
+[22:03:51] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 0.500000
+[22:03:52] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Captain Cold.
+[22:03:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
+[22:03:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[22:03:54] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[22:03:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[22:03:56] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[22:03:58] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 4.500000, 180.000000, 0.500000
+[22:04:01] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Partner to 0.500000, 180.000000, 0.500000
+[22:04:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[22:04:01] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
+[22:04:14] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 72.500000, 180.000000, 0.500000
+[22:04:14] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 70.0,0.0,0.0
+[22:04:16] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 58.500000, 180.000000, 0.500000
+[22:04:20] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
+[22:04:20] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! -56.0,0.0,0.0
+[22:04:22] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 220.500000, 180.000000, 0.500000
+[22:04:22] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 218.0,0.0,0.0
+[22:04:23] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 2.500000, 180.000000, 0.500000
+[22:04:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Stick]
+[22:04:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Partner with [Cold Gun]
+[22:04:29] [Server thread/INFO] [minecraft/MinecraftServer]: [Not Secure] [Server] SOUND_GRENADE_MODE_OK
+[22:04:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability packet received: player=Partner, index=-1
+[22:04:30] [Server thread/INFO] [Fisk's Superheroes/]: Ability input accepted: hero=fiskheroes:captain_cold, index=-1, matching=[AIM]
 ==== ci-cold-sound-shooter.log ====
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 13
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 14
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for forge:entity_data_serializers
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 14
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 15
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:mob_effect
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 15
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 16
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:stat_type
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 16
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 17
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:menu
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 17
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 18
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:enchantment
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 18
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 19
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:fluid
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 19
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 20
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:entity_type
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Waiting for registries to load.
-[20:10:49] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Injecting registry snapshot from server.
-[20:10:49] [Render thread/INFO] [ne.mi.re.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
-[20:10:49] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
-[20:10:49] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
-[20:10:49] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
-[20:10:50] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
-[20:10:51] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
-[20:10:51] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@78a4764f into net.minecraft.network.Connection@ef10390
-[20:10:52] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
-[20:10:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=client scale=1.0 width=0.6 eye=1.62
-[20:10:52] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
-[20:10:59] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
-[20:11:03] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
-[20:11:03] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
-[20:11:04] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
-[20:11:04] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[20:11:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[20:11:05] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[20:11:05] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[20:11:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
-[20:11:07] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=38, present=true, active=true
-[20:11:07] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
-[20:11:08] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:09] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:11] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:13] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:15] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:17] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:19] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:21] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:23] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
-[20:11:26] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 9 advancements
-[20:11:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=38, present=true, active=false
-[20:11:26] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
-[20:11:27] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
-[20:11:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
-[20:11:30] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
-[20:11:31] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SOUND_GRENADE_MODE_OK
-[20:11:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
-[20:11:31] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
-[20:11:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[20:11:32] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
-[20:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
-[20:11:33] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
-[20:11:33] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[22:03:38] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received registry packet for minecraft:entity_type
+[22:03:38] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Waiting for registries to load.
+[22:03:38] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Injecting registry snapshot from server.
+[22:03:38] [Render thread/INFO] [ne.mi.re.GameData/REGISTRIES]: Injecting existing registry data into this CLIENT instance
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:fluid Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:item Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:mob_effect Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:sound_event Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:potion Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:enchantment Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:entity_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:block_entity_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:particle_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:menu Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:painting_variant Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:recipe_serializer Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:stat_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:command_argument_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry minecraft:villager_profession Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:entity_data_serializers Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:fluid_type Sync: ACTIVE -> STAGING
+[22:03:38] [Render thread/DEBUG] [ne.mi.re.ForgeRegistry/REGISTRIES]: Registry forge:display_contexts Sync: ACTIVE -> STAGING
+[22:03:39] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Applying holder lookups
+[22:03:39] [Render thread/DEBUG] [ne.mi.re.ObjectHolderRegistry/REGISTRIES]: Holder lookups applied
+[22:03:39] [Render thread/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Snapshot injected.
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Registry load complete, continuing handshake.
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 20
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Recieved login wrapper packet event for channel fml:handshake with index 21
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.HandshakeHandler/FMLHANDSHAKE]: Received config sync from server
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.co.ForgeConfig/FORGEMOD]: Forge config just got changed on the file system!
+[22:03:39] [Netty Epoll Client IO #0/DEBUG] [ne.mi.ne.LoginWrapper/FMLHANDSHAKE]: Dispatching wrapped packet reply for channel fml:handshake with index 21
+[22:03:39] [Netty Epoll Client IO #0/INFO] [ne.mi.ne.NetworkHooks/]: Connected to a modded server.
+[22:03:42] [Render thread/DEBUG] [ne.mi.co.tr.CoreModBaseTransformer/COREMOD]: Transforming net/minecraft/world/food/FoodData
+[22:03:42] [Render thread/DEBUG] [ne.mi.ne.fi.NetworkFilters/]: Injected net.minecraftforge.network.filters.ForgeConnectionNetworkFilter@6a8598e7 into net.minecraft.network.Connection@5e4c74ec
+[22:03:44] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 2 advancements
+[22:03:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Partner side=client scale=1.0 width=0.6 eye=1.62
+[22:03:44] [Render thread/DEBUG] [Fisk's Superheroes/]: Player dimensions entity=Dev side=client scale=1.0 width=0.6 eye=1.62
+[22:03:48] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] Your game mode has been updated to Creative Mode
+[22:03:52] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:captain_cold, texture=fiskheroes:textures/heroes/captain_cold_jacket_pants.png, poseAligned=true
+[22:03:53] [Render thread/INFO] [Fisk's Superheroes/]: Ability HUD layout: hero=fiskheroes:captain_cold, screen=427x240, titleY=157, rows=[Rect[x=4, y=168, width=90, height=10]]
+[22:03:54] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
+[22:03:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Partner, hero=fiskheroes:captain_cold, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[22:03:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[22:03:54] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[22:03:54] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[22:03:56] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[22:03:56] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[22:03:56] [Render thread/INFO] [Fisk's Superheroes/]: Shared suit arm pose applied: hero=fiskheroes:captain_cold, sleeveAligned=true
+[22:03:56] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun first-person aiming: arm=RIGHT
+[22:03:57] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=true
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start attached: Partner
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:03:57] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:03:58] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start moved: Partner, x=4.5, y=180.0, z=0.5
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:03:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start stopped: Partner, reason=release, playing=true
+[22:03:59] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=false
+[22:03:59] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:01] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[22:04:01] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[22:04:02] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.start as fiskheroes:item.coldgun.beam.start
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.start, volume=1.0, pitch=1.0
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=true
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start attached: Partner
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop started: Partner
+[22:04:02] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:04] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:06] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:08] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:10] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:10] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun start stopped: Partner, reason=finished, playing=false
+[22:04:12] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:14] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:16] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:18] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:20] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:22] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:24] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop ticked: Partner, volume=1.0, active=true
+[22:04:25] [Render thread/INFO] [minecraft/AdvancementList]: Loaded 9 advancements
+[22:04:25] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.beam.stop as fiskheroes:item.coldgun.beam.stop
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.beam.stop, volume=1.0, pitch=1.0
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun state sync: entity=98, present=true, active=false
+[22:04:25] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun loop stopped: Partner
+[22:04:26] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
+[22:04:28] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.aim as fiskheroes:item.coldgun.aim
+[22:04:28] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.aim, volume=1.0, pitch=0.8
+[22:04:29] [Render thread/INFO] [minecraft/ChatComponent]: [System] [CHAT] [Server] SOUND_GRENADE_MODE_OK
+[22:04:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=true
+[22:04:30] [Render thread/INFO] [Fisk's Superheroes/]: Ability input sent from client: index=-1
+[22:04:30] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[22:04:30] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[22:04:31] [Render thread/DEBUG] [Fisk's Superheroes/]: Playing pack sound definition fiskheroes:item.coldgun.grenade as fiskheroes:item.coldgun.grenade
+[22:04:31] [Render thread/INFO] [Fisk's Superheroes/]: Cold gun one-shot: fiskheroes:item.coldgun.grenade, volume=1.0, pitch=1.0
+[22:04:32] [Render thread/DEBUG] [Fisk's Superheroes/]: Ability input transition: index=-1, pressed=false
 ==== ci-cold-sound-test.log ====
 PASS: dedicated server ready
 PASS: observer joined
 PASS: shooter joined
+PASS: shooter start follows the validated beam
+PASS: observer start follows the validated beam
+PASS: shooter start follows movement
+PASS: observer start follows movement
+PASS: early release cuts off the active shooter start
+PASS: early release cuts off the active observer start
 PASS: shooter loop plays
 PASS: remote loop plays with distance attenuation
-Observer audio near: RMS=0.070538
+Observer audio near: RMS=0.064532
 PASS: loop stops outside 64 blocks
 PASS: stereo loop resumes softly near range limit
-Observer audio far: RMS=0.006311
+Observer audio far: RMS=0.006254
 PASS: remote audio is quieter near the 64-block limit
 PASS: stereo loop gets louder approaching shooter
 PASS: loop stops when player untracks
 PASS: late tracking synchronizes active beam
+PASS: late tracking does not replay the start sound
 PASS: changing held item stops remote loop
 PASS: grenade mode enabled
 PASS: grenade mode does not start beam loop
