@@ -267,6 +267,9 @@ def main():
             # Drive the actual server-side motion transitions and check both
             # layers of the RGB profile on the nearby observing client.
             command('fill -4 179 -4 20 179 25 minecraft:stone')
+            # The earlier unsuited-V9 wall would otherwise hide the remote
+            # player from the observer during the later suited trail check.
+            command('fill -5 180 9 5 183 9 minecraft:air')
             command('fill -4 180 20 4 184 20 minecraft:stone')
             command('tp Partner 0.5 180 3.5 0 0')
             subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
@@ -294,9 +297,17 @@ def main():
                                  v9_profile, 30, 'V9 selects its movement loop during an existing run', observer)
                     time.sleep(1)  # Original conversion reaches blue over ten ticks.
                     trail_start = len(observer_log.read_text(errors='replace'))
-                    command('tp Partner 0.5 180 12 0 0')
-                    wait_for_new(observer_log, r'Velocity 9 trail rendered: player=Partner, trail=fiskheroes:builtin/lightning_rgb_6, color=0059FF, samples=[1-9]',
-                                 trail_start, 60, 'V9 converts the suited RGB trail to blue', observer)
+                    blue_trail = r'Velocity 9 trail rendered: player=Partner, trail=fiskheroes:builtin/lightning_rgb_6, color=0059FF, samples=[1-9]'
+                    # Holding forward can leave Partner pressed against the wall
+                    # before the observer has collected any new trail samples.
+                    # Move through several visible positions while keeping the
+                    # real movement keys held, as in the original single-TP probe.
+                    for z in (4, 6, 8, 10, 12, 14):
+                        command(f'tp Partner 0.5 180 {z} 0 0')
+                        if re.search(blue_trail, observer_log.read_text(errors='replace')[trail_start:]):
+                            break
+                    wait_for_new(observer_log, blue_trail, trail_start, 60,
+                                 'V9 converts the suited RGB trail to blue', observer)
                     v9_stop = len(observer_log.read_text(errors='replace'))
                     subprocess.run(['xdotool', 'keydown', 'c'], check=True, timeout=30)
                     time.sleep(.4)
