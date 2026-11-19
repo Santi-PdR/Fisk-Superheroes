@@ -114,6 +114,13 @@ def main():
             if impacts != 1:
                 raise RuntimeError(f'Expected one grenade before the configured cooldown, saw {impacts}')
             print('PASS: configured grenade cooldown survives item replacement', flush=True)
+            # Allow extra wall time for a busy CI runner to advance 200 ticks.
+            time.sleep(15)
+            fire(1.5)
+            impacts = server_log.read_text(errors='replace').count('Cold ball impact:') - before
+            if impacts != 2:
+                raise RuntimeError(f'Expected a second grenade after the cooldown, saw {impacts}')
+            print('PASS: grenade fires again after the configured cooldown expires', flush=True)
             print('PASS: both beam rules, ranges and damage values take effect', flush=True)
         finally:
             for process in reversed(processes):
