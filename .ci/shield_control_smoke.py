@@ -152,6 +152,25 @@ def main():
             count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
             if count != 2: raise RuntimeError(f'Expected two shield launches, saw {count}')
             command('kill @e[type=fiskheroes:thrown_shield]')
+            # A vine has an outline but no projectile collision in 1.20; its
+            # supporting stone must remain after a real thrown shield cuts it.
+            command('setblock 0 181 5 minecraft:stone')
+            command('setblock 0 181 4 minecraft:vine[south=true]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{VineProbe:1b}')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1)
+                attack()
+                time.sleep(2)
+            finally: xdo('keyup', 'c')
+            command('execute if block 0 181 4 minecraft:air if block 0 181 5 minecraft:stone run say SHIELD_VINE_OK')
+            wait_for(server_log, r'\[Server\] SHIELD_VINE_OK', 30,
+                     'real shield throw cuts the vine without breaking its support', server)
+            count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
+            if count != 3: raise RuntimeError(f'Expected three shield launches, saw {count}')
+            command('kill @e[type=fiskheroes:thrown_shield]')
+            command('setblock 0 181 5 minecraft:air')
             if not keyboard:
                 # Sample actual server-owned projectiles with a runner-only magenta
                 # texture. Fresh spawns prevent client-side gravity prediction from
