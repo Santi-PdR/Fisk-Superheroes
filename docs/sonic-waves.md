@@ -1,7 +1,9 @@
 # Sonic waves
 
-Canary's sustained ability emits expanding, short-lived waves. They affect targets
-during the first 11 ticks; their remaining four ticks are a visual fade. When a
+Canary's sustained ability emits expanding, short-lived waves. They start 0.2 blocks
+below eye height at speed 1, without inheriting the wearer's motion. Their current
+launch is deterministic; the original also adds slight random spread. They affect
+targets during the first 11 ticks; their remaining four ticks are a visual fade. When a
 wave permits glass breaking, the port can also break Forge-tagged glass blocks and
 panes, with the original distance-dependent chance. The wave's persisted
 `BreakGlass` flag, `powers.allowGriefing`, `powers.allowSonicWaveGriefing` and

@@ -478,6 +478,32 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void sonicWaveLaunchIgnoresWearerVelocity(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
+        owner.setXRot(-20.0F); owner.setYRot(35.0F);
+        for (boolean grounded : new boolean[] {true, false})
+        {
+            owner.setOnGround(grounded);
+            owner.setDeltaMovement(.8D, .6D, -.4D);
+            var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, .025F, true);
+            try
+            {
+                if (wave.getDeltaMovement().distanceTo(owner.getLookAngle().normalize()) > .0001D
+                        || Math.abs(wave.getX() - owner.getX()) > .0001D
+                        || Math.abs(wave.getY() - (owner.getEyeY() - .2D)) > .0001D
+                        || Math.abs(wave.getZ() - owner.getZ()) > .0001D)
+                { helper.fail("Sonic wave must start below the eyes and not inherit wearer motion, grounded=" + grounded); return; }
+            }
+            finally { wave.discard(); }
+        }
+        helper.succeed();
+    }
+
+    @GameTest(template = "test_empty")
     public static void sonicWavePushesItemsAlongItsMotion(GameTestHelper helper)
     {
         var level = helper.getLevel();

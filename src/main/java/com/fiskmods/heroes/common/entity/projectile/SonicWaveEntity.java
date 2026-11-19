@@ -37,8 +37,12 @@ public final class SonicWaveEntity extends ThrowableProjectile
         this.damage = Math.max(0.0F, damage);
         this.knockback = Math.max(0.0F, knockback);
         this.breakGlass = breakGlass;
-        setPos(shooter.getX(), shooter.getEyeY() - 0.1D, shooter.getZ());
-        shootFromRotation(shooter, shooter.getXRot(), shooter.getYRot(), 0.0F, 1.0F, 0.0F);
+        // The original resets the wave to eye height minus 0.2 and shoots it
+        // independently of the wearer's velocity. Modern shootFromRotation adds
+        // the wearer's horizontal and airborne vertical motion automatically.
+        setPos(shooter.getX(), shooter.getEyeY() - 0.2D, shooter.getZ());
+        Vec3 aim = shooter.getLookAngle();
+        shoot(aim.x, aim.y, aim.z, 1.0F, 0.0F);
     }
 
     @Override
