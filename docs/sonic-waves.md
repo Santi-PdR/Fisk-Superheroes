@@ -19,5 +19,7 @@ active phase. Dislodged shields become exactly one item with their original data
 if the item spawn is canceled, the projectile is retained. The port does not
 reproduce any item duplication from the old removal path. Icicle
 shattering uses the original impact sound event when the external sound pack is
-loaded, with approximate snowflake particles. Knockback treatment for non-living
-entities still differs, and the wave particles approximate the original visual.
+loaded, with approximate snowflake particles. Waves push living and non-living
+entities along their actual movement, scaled by size and age as in the original;
+a minimum mass prevents infinite impulses for zero-sized entities. The wave
+particles approximate the original visual.

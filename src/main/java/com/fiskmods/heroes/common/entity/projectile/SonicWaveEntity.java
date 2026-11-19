@@ -55,6 +55,7 @@ public final class SonicWaveEntity extends ThrowableProjectile
     @Override
     public void tick()
     {
+        Vec3 previousPosition = position();
         super.tick();
         if (tickCount >= 15)
         {
@@ -81,35 +82,36 @@ public final class SonicWaveEntity extends ThrowableProjectile
         else if (tickCount < 11 && level() instanceof ServerLevel serverLevel)
         {
             // The final four ticks are visual fade only in the original wave.
-            applyWave(serverLevel, radius);
+            applyWave(serverLevel, radius, position().subtract(previousPosition));
             if (breakGlass) breakGlass(serverLevel, radius,
                     com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get(),
                     com.fiskmods.heroes.common.config.SHConfig.ALLOW_SONIC_WAVE_GRIEFING.get());
         }
     }
 
-    private void applyWave(ServerLevel level, float radius)
+    private void applyWave(ServerLevel level, float radius, Vec3 displacement)
     {
         Entity owner = getOwner();
         var affected = getBoundingBox().inflate(radius);
-        for (ThrownShieldEntity shield : level.getEntitiesOfClass(ThrownShieldEntity.class, affected, Entity::isAlive))
-            shield.dislodgeBySonicWave();
-        for (IcicleEntity icicle : level.getEntitiesOfClass(IcicleEntity.class, affected, Entity::isAlive))
-            icicle.shatter();
-        for (LivingEntity target : level.getEntitiesOfClass(LivingEntity.class, affected,
-                entity -> entity != owner && entity.isAlive()))
+        for (Entity target : level.getEntities(this, affected,
+                entity -> entity != owner && entity.isAlive() && !(entity instanceof SonicWaveEntity)))
         {
-            float damageScale = Math.max(0.0F, 1.0F - tickCount / 25.0F);
-            DamageGroups.applyProfileDamage(target, owner instanceof LivingEntity living ? living : null,
-                    level.damageSources().sonicBoom(owner), damage * damageScale, profile());
-
+            if (target instanceof ThrownShieldEntity shield) shield.dislodgeBySonicWave();
+            if (target instanceof IcicleEntity icicle) icicle.shatter();
+            if (target.isRemoved()) continue;
+            if (target instanceof LivingEntity living)
+            {
+                float damageScale = Math.max(0.0F, 1.0F - tickCount / 25.0F);
+                DamageGroups.applyProfileDamage(living, owner instanceof LivingEntity attacker ? attacker : null,
+                        level.damageSources().sonicBoom(owner), damage * damageScale, profile());
+            }
             if (knockback > 0.0F)
             {
                 double volume = target.getBbWidth() * target.getBbWidth() * target.getBbHeight();
-                double force = knockback / Math.max(0.25D, Math.sqrt(volume))
+                // Avoid infinite impulse for marker entities with a zero-sized hitbox.
+                double force = knockback / Math.sqrt(Math.max(0.0001D, volume))
                         * (1.0D - tickCount / 15.0D);
-                Vec3 away = target.position().subtract(xo, yo, zo).normalize();
-                target.setDeltaMovement(target.getDeltaMovement().add(away.scale(force)));
+                target.setDeltaMovement(target.getDeltaMovement().add(displacement.scale(force)));
                 target.hurtMarked = true;
             }
         }

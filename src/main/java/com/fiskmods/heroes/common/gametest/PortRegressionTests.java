@@ -477,6 +477,30 @@ public final class PortRegressionTests
         }
     }
 
+    @GameTest(template = "test_empty")
+    public static void sonicWavePushesItemsAlongItsMotion(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, .025F, false);
+        wave.setPos(base.getX() + .5D, base.getY() + 1.0D, base.getZ() + .5D);
+        wave.setDeltaMovement(0, 0, .5D); level.addFreshEntity(wave);
+        var item = new net.minecraft.world.entity.item.ItemEntity(level, base.getX() + 1.0D,
+                base.getY() + 1.0D, base.getZ() + 1.0D, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.STONE));
+        item.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(item);
+        try
+        {
+            wave.tickCount = 4; wave.tick();
+            var velocity = item.getDeltaMovement();
+            if (Math.abs(velocity.x) > .0001D || Math.abs(velocity.y) > .0001D || velocity.z <= .001D || velocity.z > .2D)
+            { helper.fail("Sonic waves must push non-living entities along the wave motion: " + velocity); return; }
+            helper.succeed();
+        }
+        finally { wave.discard(); item.discard(); }
+    }
+
     public static final class SonicShieldDropGuard
     {
         int events;
