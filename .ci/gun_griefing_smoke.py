@@ -75,7 +75,8 @@ def main():
                 # With the same disabled rule, a separate living target must still
                 # take damage. This also proves the beam actually fired.
                 command('fill -2 180 1 2 183 6 minecraft:air')
-                command('summon minecraft:cow 0.5 180 3.5 {NoAI:1b,NoGravity:1b,Silent:1b,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["beam_test"]}')
+                # A cow at foot level is shorter than the player's eye ray.
+                command('summon minecraft:cow 0.5 180.5 3.5 {NoAI:1b,NoGravity:1b,Silent:1b,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["beam_test"]}')
                 command('data merge entity @e[type=minecraft:cow,tag=beam_test,limit=1] {Health:100.0f}')
                 command('execute as @e[type=minecraft:cow,tag=beam_test,limit=1] store result score @s beamHealth run data get entity @s Health 1')
                 command(f'execute if entity @e[type=minecraft:cow,tag=beam_test,scores={{beamHealth=100..}}] run say {marker}_TARGET_READY')
