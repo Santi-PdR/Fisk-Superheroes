@@ -5,6 +5,7 @@ import com.fiskmods.heroes.common.command.CommandHero;
 import com.fiskmods.heroes.common.command.CommandSuit;
 import com.fiskmods.heroes.common.data.DataSyncer;
 import com.fiskmods.heroes.common.data.SHDataCapabilities;
+import com.fiskmods.heroes.common.data.var.Vars;
 import com.fiskmods.heroes.common.hero.HeroTracker;
 import com.fiskmods.heroes.common.hero.ability.ModifierHandler;
 import com.fiskmods.heroes.common.hero.attribute.SHAttributes;
