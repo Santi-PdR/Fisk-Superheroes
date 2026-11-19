@@ -23,6 +23,7 @@ public class SHConfig
     /* Powers */
     public static ForgeConfigSpec.BooleanValue ALLOW_FLIGHT;
     public static ForgeConfigSpec.BooleanValue ALLOW_GRIEFING;
+    public static ForgeConfigSpec.BooleanValue ALLOW_THROWN_SHIELD_GRIEFING;
     public static ForgeConfigSpec.BooleanValue ALLOW_FIRE_CHARGE_ARROW_PLACEMENT;
     public static ForgeConfigSpec.BooleanValue ALLOW_SUPER_SPEED;
     public static ForgeConfigSpec.DoubleValue ABILITY_COOLDOWN_MULTIPLIER;
@@ -64,6 +65,8 @@ public class SHConfig
                 .define("allowFlight", true);
         ALLOW_GRIEFING = builder.comment("Whether abilities may break blocks")
                 .define("allowGriefing", true);
+        ALLOW_THROWN_SHIELD_GRIEFING = builder.comment("Whether thrown shields may break glass; also requires allowGriefing")
+                .define("allowThrownShieldGriefing", true);
         ALLOW_FIRE_CHARGE_ARROW_PLACEMENT = builder.comment("Whether fire-charge arrows may place fire on impact")
                 .define("allowFireChargeArrowPlacement", true);
         ALLOW_SUPER_SPEED = builder.comment("Whether super speed is enabled")

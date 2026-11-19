@@ -28,6 +28,7 @@ public final class ModifierShieldThrowing extends Modifier
         ThrownShieldEntity projectile = new ThrownShieldEntity(ModEntities.THROWN_SHIELD.get(), player.level());
         projectile.setOwner(player);
         projectile.setItem(shield);
+        projectile.setCanDoGriefing(entry.getBoolean(player, com.fiskmods.heroes.common.hero.power.PowerProperty.CAN_DO_GRIEFING));
         projectile.setPos(player.getX(), player.getEyeY() - 0.15D, player.getZ());
         projectile.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 2.5F, 0.0F);
         projectile.setDeltaMovement(projectile.getDeltaMovement().add(player.getDeltaMovement().scale(0.5D)));

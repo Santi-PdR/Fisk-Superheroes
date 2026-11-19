@@ -109,8 +109,9 @@ public final class PortRegressionTests
             { helper.fail("Attack with held ability must create a shield and start cooldown"); return; }
             var projectiles = level.getEntitiesOfClass(com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity.class,
                     bounds, e -> e.getOwner() == player);
-            if (projectiles.size() != 1 || !"control".equals(projectiles.get(0).getItem().getTag().getString("RegressionMarker")))
-            { helper.fail("Exactly one projectile must carry the original shield data"); return; }
+            if (projectiles.size() != 1 || !projectiles.get(0).canDoGriefing()
+                    || !"control".equals(projectiles.get(0).getItem().getTag().getString("RegressionMarker")))
+            { helper.fail("Exactly one projectile must carry the original shield data and default griefing permission"); return; }
             player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack.copy());
             if (com.fiskmods.heroes.common.hero.ability.AbilityHandler.throwShield(player))
             { helper.fail("Cooldown must reject repeated requests"); return; }
@@ -430,6 +431,87 @@ public final class PortRegressionTests
         if (Math.abs(current - previous - 80.0F) > .01F || Math.abs(middle - (current + previous) / 2.0F) > .01F)
         { helper.fail("Shield must spin 32 degrees per block of speed with frame interpolation"); return; }
         shield.discard(); helper.succeed();
+    }
+
+    public static final class ShieldGlassGuard
+    {
+        private final net.minecraft.core.BlockPos protectedPos;
+        int events;
+        ShieldGlassGuard(net.minecraft.core.BlockPos pos) { protectedPos = pos; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onBreak(net.minecraftforge.event.level.BlockEvent.BreakEvent event)
+        {
+            if (event.getPos().equals(protectedPos)) { events++; event.setCanceled(true); }
+        }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void thrownShieldBreaksGlassPlaneButRespectsClaims(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var center = base.offset(0, 1, 2);
+        var protectedPos = center.offset(1, 1, 0);
+        var stonePos = center.offset(-1, -1, 0);
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-glass-test"));
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++)
+            level.setBlockAndUpdate(center.offset(x, y, 0),
+                    (x == 1 && y == 0 ? net.minecraft.world.level.block.Blocks.RED_STAINED_GLASS_PANE
+                            : net.minecraft.world.level.block.Blocks.GLASS).defaultBlockState());
+        level.setBlockAndUpdate(stonePos, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var outside = center.offset(2, 0, 0);
+        level.setBlockAndUpdate(outside, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+        var guard = new ShieldGlassGuard(protectedPos);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+        shield.setCanDoGriefing(true);
+        shield.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+        shield.setDeltaMovement(0, 0, 2); level.addFreshEntity(shield);
+        try
+        {
+            shield.tick();
+            if (!level.isEmptyBlock(center) || !level.isEmptyBlock(center.offset(1, 0, 0))
+                    || !level.getBlockState(protectedPos).is(net.minecraft.world.level.block.Blocks.GLASS)
+                    || !level.getBlockState(stonePos).is(net.minecraft.world.level.block.Blocks.STONE)
+                    || !level.getBlockState(outside).is(net.minecraft.world.level.block.Blocks.GLASS)
+                    || guard.events != 1 || !shield.isReturning() || shield.getDeltaMovement().z <= 0)
+            { helper.fail("Glass impact must break only the permitted 3x3 plane, preserve claims and pass through the broken center"); return; }
+            helper.succeed();
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); shield.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldGlassGriefingFlagSurvivesSaveAndControlsImpact(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var center = base.offset(0, 1, 2);
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-grief-flag-test"));
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var stack = new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get());
+        level.setBlockAndUpdate(center, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+        var denied = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        denied.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+        denied.setDeltaMovement(0, 0, 2); level.addFreshEntity(denied); denied.tick();
+        if (!level.getBlockState(center).is(net.minecraft.world.level.block.Blocks.GLASS) || denied.getDeltaMovement().z >= 0)
+        { denied.discard(); helper.fail("A shield without griefing permission must bounce without breaking glass"); return; }
+        denied.discard();
+        var savedShield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner, stack);
+        savedShield.setCanDoGriefing(true);
+        var tag = new net.minecraft.nbt.CompoundTag(); savedShield.addAdditionalSaveData(tag);
+        var restored = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(
+                com.fiskmods.heroes.common.entity.ModEntities.THROWN_SHIELD.get(), level);
+        restored.readAdditionalSaveData(tag); restored.setOwner(owner);
+        restored.setPos(base.getX() + .5D, base.getY() + 1.5D, base.getZ() + .5D);
+        restored.setDeltaMovement(0, 0, 2); level.addFreshEntity(restored); restored.tick();
+        if (!restored.canDoGriefing() || !level.isEmptyBlock(center))
+        { restored.discard(); helper.fail("A saved shield must retain its allowed glass-breaking permission"); return; }
+        restored.discard(); helper.succeed();
     }
 
     @GameTest(template = "test_empty")

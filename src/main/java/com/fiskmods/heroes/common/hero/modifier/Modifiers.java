@@ -301,6 +301,7 @@ public final class Modifiers
         SHIELD_THROWING = registry.register(new ModifierShieldThrowing(new ResourceLocation(FiskHeroes.MODID, "shield_throwing"))
                 .addProperty(PowerProperty.KEY, "SHIELD_THROW")
                 .addProperty(PowerProperty.RANGE, 24.0F)
+                .addProperty(PowerProperty.CAN_DO_GRIEFING, true)
                 .addProperty(PowerProperty.COOLDOWN_TIME, 10));
         SPEED_DISINTEGRATION = registry.register(new ModifierSpeedDisintegration(new ResourceLocation(FiskHeroes.MODID, "speed_disintegration"))
                 .addProperty(PowerProperty.FACTOR, 0.25F));

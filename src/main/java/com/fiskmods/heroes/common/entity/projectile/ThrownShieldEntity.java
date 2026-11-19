@@ -40,6 +40,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     private static final int MAX_FLIGHT_TICKS = 200;
     private static final int MAX_RETURN_TICKS = 200;
     private int returnTicks;
+    private boolean canDoGriefing;
     private float spinTime, previousSpinTime;
     private boolean magneticDiagnosticLogged;
     private boolean ownerDiagnosticLogged;
@@ -105,6 +106,16 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     public boolean isReturning()
     {
         return entityData.get(RETURNING);
+    }
+
+    public void setCanDoGriefing(boolean value)
+    {
+        canDoGriefing = value;
+    }
+
+    public boolean canDoGriefing()
+    {
+        return canDoGriefing;
     }
 
     private void startReturning()
@@ -260,6 +271,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         if (entityData.get(MAGNETIC_ACTIVE) || (!level().isClientSide && isMagneticallyAttracted())) return;
         super.onHitBlock(hit);
         if (level().isClientSide || getOwner() == null) return;
+        breakGlassAtImpact(hit);
         boolean magnetic = com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem());
         double speed = getDeltaMovement().length();
         if (magnetic && speed < 0.75D)
@@ -269,7 +281,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         else if (speed > 0.5D)
         {
             var face = hit.getDirection();
-            if (level().isEmptyBlock(hit.getBlockPos().relative(face)))
+            if (!level().getBlockState(hit.getBlockPos()).getCollisionShape(level(), hit.getBlockPos()).isEmpty()
+                    && level().isEmptyBlock(hit.getBlockPos().relative(face)))
             {
                 Vec3 motion = getDeltaMovement();
                 setDeltaMovement(motion.x * (1 - 2 * Math.abs(face.getStepX())) * 0.75D,
@@ -286,6 +299,41 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         }
         impactSound();
         startReturning();
+    }
+
+    /** The original breaks a 3x3 plane of glass around the impact face. */
+    private void breakGlassAtImpact(BlockHitResult hit)
+    {
+        if (!canDoGriefing || !com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get()
+                || !com.fiskmods.heroes.common.config.SHConfig.ALLOW_THROWN_SHIELD_GRIEFING.get()
+                || !(getOwner() instanceof ServerPlayer player)) return;
+        var center = hit.getBlockPos();
+        var state = level().getBlockState(center);
+        if (!isGlass(state) || state.getDestroySpeed(level(), center) < 0.0F) return;
+        var direction = hit.getDirection();
+        for (int a = -1; a <= 1; ++a)
+        {
+            for (int b = -1; b <= 1; ++b)
+            {
+                var pos = switch (direction.getAxis())
+                {
+                    case X -> center.offset(0, a, b);
+                    case Y -> center.offset(a, 0, b);
+                    case Z -> center.offset(a, b, 0);
+                };
+                if (!level().hasChunkAt(pos) || !level().getWorldBorder().isWithinBounds(pos)
+                        || !level().mayInteract(player, pos) || !player.mayUseItemAt(pos, direction, getItem())) continue;
+                var candidate = level().getBlockState(pos);
+                if (!isGlass(candidate) || candidate.getDestroySpeed(level(), pos) < 0.0F) continue;
+                if (com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, candidate))
+                    level().destroyBlock(pos, true, player);
+            }
+        }
+    }
+
+    private static boolean isGlass(net.minecraft.world.level.block.state.BlockState state)
+    {
+        return state.is(net.minecraftforge.common.Tags.Blocks.GLASS) || state.is(net.minecraftforge.common.Tags.Blocks.GLASS_PANES);
     }
 
     private void impactSound()
@@ -330,6 +378,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         super.addAdditionalSaveData(tag);
         tag.put("Shield", getItem().save(new CompoundTag()));
         tag.putBoolean("Returning", isReturning());
+        tag.putBoolean("CanDoGriefing", canDoGriefing);
         tag.putInt("ReturnTicks", returnTicks);
         tag.putInt("FlightAge", flightAge());
     }
@@ -340,6 +389,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         super.readAdditionalSaveData(tag);
         if (tag.contains("Shield", CompoundTag.TAG_COMPOUND)) setItem(ItemStack.of(tag.getCompound("Shield")));
         if (tag.contains("Returning")) entityData.set(RETURNING, tag.getBoolean("Returning"));
+        canDoGriefing = tag.getBoolean("CanDoGriefing");
         returnTicks = Math.min(MAX_RETURN_TICKS + 1, Math.max(0, tag.getInt("ReturnTicks")));
         if (tag.contains("FlightAge")) entityData.set(AGE_OFFSET, Math.max(0, tag.getInt("FlightAge") - tickCount));
     }
