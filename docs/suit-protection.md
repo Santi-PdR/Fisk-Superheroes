@@ -56,5 +56,5 @@ AIM key is held, including for packs that bind AIM to a different key. A short i
 stops a stuck beam if input updates cease. Visual packets are throttled separately from the actual ray.
 Its range and damage are fixed at 32 blocks and 5 damage, matching the original defaults; the
 original's per-hero rule overrides are not yet ported. Block melting and ignition respect the
-general `allowGriefing` setting, player edit and world border checks, and cancellable Forge
-break/place events rather than a separate Heat Gun griefing rule.
+general `allowGriefing` and separate `allowHeatGunGriefing` settings, player edit and world
+border checks, and cancellable Forge break/place events.

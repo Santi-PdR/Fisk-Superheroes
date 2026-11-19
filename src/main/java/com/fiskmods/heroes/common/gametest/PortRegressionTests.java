@@ -7179,11 +7179,46 @@ public final class PortRegressionTests
     private static void testGunBlockHit(Class<?> gunClass, net.minecraft.server.level.ServerPlayer shooter,
             net.minecraft.core.BlockPos pos, boolean allowGriefing) throws ReflectiveOperationException
     {
+        testGunBlockHit(gunClass, shooter, pos, allowGriefing, true);
+    }
+
+    private static void testGunBlockHit(Class<?> gunClass, net.minecraft.server.level.ServerPlayer shooter,
+            net.minecraft.core.BlockPos pos, boolean allowGriefing, boolean allowWeaponGriefing) throws ReflectiveOperationException
+    {
         var method = gunClass.getDeclaredMethod("applyBlockHit", net.minecraft.server.level.ServerPlayer.class,
-                net.minecraft.world.phys.BlockHitResult.class, boolean.class);
+                net.minecraft.world.phys.BlockHitResult.class, boolean.class, boolean.class);
         method.setAccessible(true);
         method.invoke(null, shooter, new net.minecraft.world.phys.BlockHitResult(Vec3.atCenterOf(pos),
-                net.minecraft.core.Direction.NORTH, pos, false), allowGriefing);
+                net.minecraft.core.Direction.NORTH, pos, false), allowGriefing, allowWeaponGriefing);
+    }
+
+    @GameTest(template = "test_empty")
+    public static void gunSpecificGriefingRequiresBothRules(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var player = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "gun-grief-rules"));
+        player.setPos(pos.getX() - 5, pos.getY(), pos.getZ());
+        try
+        {
+            for (boolean global : new boolean[] {false, true}) for (boolean specific : new boolean[] {false, true})
+            {
+                level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.WATER.defaultBlockState());
+                testGunBlockHit(com.fiskmods.heroes.common.item.ItemColdGun.class, player, pos, global, specific);
+                if (!level.getBlockState(pos).is(global && specific ? net.minecraft.world.level.block.Blocks.ICE
+                        : net.minecraft.world.level.block.Blocks.WATER))
+                { helper.fail("Cold Gun block rule mismatch: global=" + global + ", specific=" + specific); return; }
+                level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.ICE.defaultBlockState());
+                testGunBlockHit(com.fiskmods.heroes.common.item.ItemHeatGun.class, player, pos, global, specific);
+                if (!level.getBlockState(pos).is(global && specific ? net.minecraft.world.level.block.Blocks.WATER
+                        : net.minecraft.world.level.block.Blocks.ICE))
+                { helper.fail("Heat Gun block rule mismatch: global=" + global + ", specific=" + specific); return; }
+            }
+            helper.succeed();
+        }
+        catch (ReflectiveOperationException e) { helper.fail("Could not test gun grief rules: " + e); }
+        finally { level.removeBlock(pos, false); }
     }
 
     private static net.minecraftforge.common.util.FakePlayer coldGunShooter(GameTestHelper helper, String name)

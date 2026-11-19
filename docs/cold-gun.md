@@ -24,8 +24,10 @@ cover reduces the impact, and solid cover blocks it. Grenades have a 20-tick ser
 cooldown; releasing the beam has a four-tick cooldown. Replacing an item stack
 does not bypass these cooldowns.
 
-World changes require `powers.allowGriefing`, world-border and player edit
-permissions, plus cancellable Forge break/placement events. Placement uses
+Beam world changes require both `powers.allowGriefing` and
+`powers.allowColdGunGriefing`, world-border and player edit permissions, plus
+cancellable Forge break/placement events. The weapon-specific rule does not
+change the separately implemented cryo burst. Placement uses
 captured snapshots so a denied change is restored before neighbor notification.
 Player-owned cryo bursts use the same protections; bursts without a server
 player owner do not change blocks, because there is no identity for claim checks.

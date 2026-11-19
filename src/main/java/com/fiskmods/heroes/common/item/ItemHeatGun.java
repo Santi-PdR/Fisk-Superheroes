@@ -115,15 +115,16 @@ public final class ItemHeatGun extends ItemGun
     @Override
     protected void onRayBlockHit(ServerPlayer shooter, BlockHitResult block)
     {
-        applyBlockHit(shooter, block, com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get());
+        applyBlockHit(shooter, block, com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get(),
+                com.fiskmods.heroes.common.config.SHConfig.ALLOW_HEAT_GUN_GRIEFING.get());
     }
 
-    private static void applyBlockHit(ServerPlayer shooter, BlockHitResult block, boolean allowGriefing)
+    private static void applyBlockHit(ServerPlayer shooter, BlockHitResult block, boolean allowGriefing, boolean allowWeaponGriefing)
     {
         if (block.getType() == HitResult.Type.MISS) return;
         Level level = shooter.level();
         BlockPos pos = block.getBlockPos();
-        if (!allowGriefing || !level.getWorldBorder().isWithinBounds(pos) || !level.mayInteract(shooter, pos)
+        if (!allowGriefing || !allowWeaponGriefing || !level.getWorldBorder().isWithinBounds(pos) || !level.mayInteract(shooter, pos)
                 || !shooter.mayUseItemAt(pos, block.getDirection(), shooter.getMainHandItem())) return;
         BlockState state = level.getBlockState(pos);
         if (state.is(Blocks.ICE) || state.is(Blocks.FROSTED_ICE))
