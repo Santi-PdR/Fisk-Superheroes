@@ -24,6 +24,7 @@ public class SHConfig
     public static ForgeConfigSpec.BooleanValue ALLOW_FLIGHT;
     public static ForgeConfigSpec.BooleanValue ALLOW_GRIEFING;
     public static ForgeConfigSpec.BooleanValue ALLOW_THROWN_SHIELD_GRIEFING;
+    public static ForgeConfigSpec.BooleanValue ALLOW_SONIC_WAVE_GRIEFING;
     public static ForgeConfigSpec.BooleanValue ALLOW_COLD_GUN_GRIEFING;
     public static ForgeConfigSpec.BooleanValue ALLOW_HEAT_GUN_GRIEFING;
     public static ForgeConfigSpec.BooleanValue ALLOW_FIRE_CHARGE_ARROW_PLACEMENT;
@@ -74,6 +75,8 @@ public class SHConfig
                 .define("allowGriefing", true);
         ALLOW_THROWN_SHIELD_GRIEFING = builder.comment("Whether thrown shields may break glass, vines and double plants; also requires allowGriefing")
                 .define("allowThrownShieldGriefing", true);
+        ALLOW_SONIC_WAVE_GRIEFING = builder.comment("Whether sonic waves may break glass; also requires allowGriefing and mobGriefing")
+                .define("allowSonicWaveGriefing", true);
         ALLOW_COLD_GUN_GRIEFING = builder.comment("Whether Cold Gun beams may change blocks; also requires allowGriefing")
                 .define("allowColdGunGriefing", true);
         ALLOW_HEAT_GUN_GRIEFING = builder.comment("Whether Heat Gun beams may change blocks; also requires allowGriefing")

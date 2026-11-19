@@ -478,6 +478,90 @@ public final class PortRegressionTests
     }
 
     @GameTest(template = "test_empty")
+    public static void sonicWaveStopsAffectingTargetsDuringFade(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = helper.makeMockSurvivalPlayer();
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Sonic wave target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100);
+        target.setHealth(100); target.setPos(base.getX() + .5D, base.getY(), base.getZ() + .5D);
+        level.addFreshEntity(target);
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 7, 0, false);
+        wave.setPos(base.getX() + .5D, base.getY() + 1.0D, base.getZ() + .5D);
+        wave.setDeltaMovement(Vec3.ZERO); level.addFreshEntity(wave);
+        try
+        {
+            // ServerLevel normally increments tickCount before invoking tick().
+            wave.tickCount = 11; wave.tick();
+            if (target.getHealth() != 100.0F)
+            { helper.fail("The last four sonic-wave ticks must be visual only"); return; }
+            wave.tickCount = 10; wave.tick();
+            if (!(target.getHealth() < 100.0F))
+            { helper.fail("Sonic waves must still affect targets before the fade"); return; }
+            helper.succeed();
+        }
+        finally { wave.discard(); target.discard(); }
+    }
+
+    @GameTest(template = "test_empty")
+    public static void sonicWaveGlassHonorsGriefRulesAndClaims(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var pos = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "sonic-glass-protection"));
+        owner.setPos(pos.getX() - 15, pos.getY(), pos.getZ());
+        var wave = new com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity(owner, null, 0, 0, true);
+        wave.setPos(pos.getX() + .5D, pos.getY() + .5D, pos.getZ() + .5D);
+        try
+        {
+            var method = com.fiskmods.heroes.common.entity.projectile.SonicWaveEntity.class.getDeclaredMethod(
+                    "breakGlass", net.minecraft.server.level.ServerLevel.class, float.class, boolean.class, boolean.class);
+            method.setAccessible(true);
+            var guard = new ShieldGlassGuard(pos);
+            level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+            try
+            {
+                for (int i = 0; i < 100; ++i)
+                {
+                    method.invoke(wave, level, .125F, false, true);
+                    method.invoke(wave, level, .125F, true, false);
+                }
+                if (guard.events != 0 || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.GLASS))
+                { helper.fail("Disabled sonic or global griefing must not attempt a break"); return; }
+                for (int i = 0; i < 1000 && guard.events == 0; ++i)
+                    method.invoke(wave, level, .125F, true, true);
+                if (guard.events == 0 || !level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.GLASS))
+                { helper.fail("A canceled Forge break event must protect glass from sonic waves"); return; }
+            }
+            finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+            for (var glass : new net.minecraft.world.level.block.Block[] {net.minecraft.world.level.block.Blocks.GLASS,
+                    net.minecraft.world.level.block.Blocks.GLASS_PANE, net.minecraft.world.level.block.Blocks.RED_STAINED_GLASS_PANE})
+            {
+                level.setBlockAndUpdate(pos, glass.defaultBlockState());
+                for (int i = 0; i < 1000 && level.getBlockState(pos).is(glass); ++i)
+                    method.invoke(wave, level, .125F, true, true);
+                if (!level.isEmptyBlock(pos)) { helper.fail("Allowed sonic wave failed to break " + glass); return; }
+            }
+            var mob = net.minecraft.world.entity.EntityType.COW.create(level);
+            if (mob == null) { helper.fail("Sonic wave mob owner missing"); return; }
+            wave.setOwner(mob);
+            level.setBlockAndUpdate(pos, net.minecraft.world.level.block.Blocks.GLASS.defaultBlockState());
+            for (int i = 0; i < 100; ++i) method.invoke(wave, level, .125F, true, true);
+            if (!level.getBlockState(pos).is(net.minecraft.world.level.block.Blocks.GLASS))
+            { helper.fail("A non-player owner must not bypass claim checks"); return; }
+            helper.succeed();
+        }
+        catch (ReflectiveOperationException e) { helper.fail("Could not test sonic glass protection: " + e); }
+        finally { wave.discard(); level.removeBlock(pos, false); }
+    }
+
+    @GameTest(template = "test_empty")
     public static void thrownShieldBreaksGlassPlaneButRespectsClaims(GameTestHelper helper)
     {
         var level = helper.getLevel();

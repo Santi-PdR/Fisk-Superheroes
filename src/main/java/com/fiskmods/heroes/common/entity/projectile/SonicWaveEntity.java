@@ -10,10 +10,9 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.AbstractGlassBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
@@ -79,10 +78,13 @@ public final class SonicWaveEntity extends ThrowableProjectile
                         x, y, z, 0.0D, 0.0D, 0.0D);
             }
         }
-        else if (level() instanceof ServerLevel serverLevel)
+        else if (tickCount < 11 && level() instanceof ServerLevel serverLevel)
         {
+            // The final four ticks are visual fade only in the original wave.
             applyWave(serverLevel, radius);
-            if (breakGlass) breakGlass(serverLevel, radius);
+            if (breakGlass) breakGlass(serverLevel, radius,
+                    com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get(),
+                    com.fiskmods.heroes.common.config.SHConfig.ALLOW_SONIC_WAVE_GRIEFING.get());
         }
     }
 
@@ -109,25 +111,31 @@ public final class SonicWaveEntity extends ThrowableProjectile
         }
     }
 
-    private void breakGlass(ServerLevel level, float radius)
+    private void breakGlass(ServerLevel level, float radius, boolean allowGriefing, boolean allowSonicGriefing)
     {
-        Entity owner = getOwner();
-        if (!level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING)
-                || owner instanceof Player player && !player.mayBuild())
-        {
-            return;
-        }
+        if (!breakGlass || !allowGriefing || !allowSonicGriefing
+                || !level.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_MOBGRIEFING)
+                || !(getOwner() instanceof ServerPlayer player) || !player.mayBuild()) return;
 
         var bounds = getBoundingBox().inflate(radius);
         var min = net.minecraft.core.BlockPos.containing(bounds.minX, bounds.minY, bounds.minZ);
         var max = net.minecraft.core.BlockPos.containing(bounds.maxX, bounds.maxY, bounds.maxZ);
-        for (net.minecraft.core.BlockPos pos : net.minecraft.core.BlockPos.betweenClosed(min, max))
+        for (net.minecraft.core.BlockPos cursor : net.minecraft.core.BlockPos.betweenClosed(min, max))
         {
+            var pos = cursor.immutable();
+            if (!level.hasChunkAt(pos) || !level.getWorldBorder().isWithinBounds(pos)
+                    || !level.mayInteract(player, pos)
+                    || !player.mayUseItemAt(pos, net.minecraft.core.Direction.UP, player.getMainHandItem())) continue;
             var state = level.getBlockState(pos);
-            if (state.getBlock() instanceof AbstractGlassBlock && level.random.nextInt(10) == 0)
-            {
-                level.destroyBlock(pos, true, owner);
-            }
+            if (!(state.is(net.minecraftforge.common.Tags.Blocks.GLASS) || state.is(net.minecraftforge.common.Tags.Blocks.GLASS_PANES))
+                    || state.getDestroySpeed(level, pos) < 0.0F) continue;
+            // Legacy chance is one in ten times the rounded-up distance; clamp
+            // zero distance so a wave centered in a block cannot call nextInt(0).
+            int distance = Math.max(1, net.minecraft.util.Mth.ceil(Math.sqrt(distanceToSqr(
+                    pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D))));
+            if (level.random.nextInt(10 * distance) == 0
+                    && com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, state))
+                level.destroyBlock(pos, true, player);
         }
     }
 
