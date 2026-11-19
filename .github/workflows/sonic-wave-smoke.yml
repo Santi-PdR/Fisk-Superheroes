@@ -8,6 +8,7 @@ on:
       - '.ci/tonfa_visual_smoke.py'
       - '.ci/client_identity.gradle'
       - '.github/workflows/sonic-wave-smoke.yml'
+      - 'src/main/java/com/fiskmods/heroes/client/render/SonicWaveRenderer.java'
       - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/SonicWaveEntity.java'
       - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/IcicleEntity.java'
       - 'src/main/java/com/fiskmods/heroes/common/entity/projectile/ThrownShieldEntity.java'
@@ -34,7 +35,7 @@ jobs:
       - name: Install headless client dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq xvfb xdotool libgl1-mesa-dri
+          sudo apt-get install -y -qq xvfb xdotool scrot libgl1-mesa-dri
           python3 -m pip install --user 'pillow>=13,<14'
       - name: Prepare server and client
         run: |
@@ -53,7 +54,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sonic-wave-diagnostics
-          path: ci-sonic-*.log
+          path: |
+            ci-sonic-*.log
+            ci-sonic-*.png
           if-no-files-found: ignore
       - name: Publish concise diagnostics
         if: always()

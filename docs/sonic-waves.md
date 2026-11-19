@@ -23,12 +23,16 @@ reproduce any item duplication from the old removal path. Icicle
 shattering uses the original impact sound event when the external sound pack is
 loaded, with approximate snowflake particles. Waves push living and non-living
 entities along their actual movement, scaled by size and age as in the original;
-a minimum mass prevents infinite impulses for zero-sized entities. The wave
-particles approximate the original visual.
+a minimum mass prevents infinite impulses for zero-sized entities. The client
+renders a white, translucent ring with a cylindrical outer wall and an annular
+face, following the original radius, thickness, length and opacity; the previous
+Minecraft sonic-boom particles have been removed.
 
 Server GameTests cover protected glass and panes, active versus fading effects,
 directional item impulse, icicle shattering, and shield item preservation when a
 spawn is canceled. A dedicated-server test with a real Black Canary client checks
 ability input, living-target damage, item impulse, glass-pane breakage, icicle
-shattering and one shield drop retaining its data. The projectile probes in that test are summoned;
-the test is not a subjective visual or audio assessment.
+shattering and one shield drop retaining its data. It also verifies that the
+renderer runs and brightens pixels against a dark background, retaining screenshots
+for inspection. This is not a subjective comparison with the original visual or
+audio. The projectile probes in that test are summoned.

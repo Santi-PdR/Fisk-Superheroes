@@ -68,22 +68,7 @@ public final class SonicWaveEntity extends ThrowableProjectile
         }
 
         float radius = getRadius(0.0F);
-        if (level().isClientSide)
-        {
-            for (int i = 0; i < 5; ++i)
-            {
-                double angle = (tickCount * 0.9D) + (Math.PI * 2.0D * i / 5.0D);
-                double sideX = -getLookAngle().z;
-                double sideZ = getLookAngle().x;
-                double sideLength = Math.max(0.001D, Math.sqrt(sideX * sideX + sideZ * sideZ));
-                double x = getX() + sideX / sideLength * Math.cos(angle) * radius;
-                double y = getY() + Math.sin(angle) * radius;
-                double z = getZ() + sideZ / sideLength * Math.cos(angle) * radius;
-                level().addParticle(net.minecraft.core.particles.ParticleTypes.SONIC_BOOM,
-                        x, y, z, 0.0D, 0.0D, 0.0D);
-            }
-        }
-        else if (tickCount < 11 && level() instanceof ServerLevel serverLevel)
+        if (!level().isClientSide && tickCount < 11 && level() instanceof ServerLevel serverLevel)
         {
             // The final four ticks are visual fade only in the original wave.
             applyWave(serverLevel, radius, position().subtract(previousPosition));

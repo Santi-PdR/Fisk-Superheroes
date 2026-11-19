@@ -8,11 +8,13 @@ import time
 import uuid
 from pathlib import Path
 
+from PIL import Image
 from tonfa_visual_smoke import wait_for, xdo
 
 
 def main():
-    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null')
+    env = dict(os.environ, LIBGL_ALWAYS_SOFTWARE='1', ALSOFT_DRIVERS='null',
+               JAVA_TOOL_OPTIONS='-Dfiskheroes.ciSonicWaveDiagnostics=true')
     server_log, client_log = Path('ci-sonic-server.log'), Path('ci-sonic-client.log')
     common = ['--no-daemon', '--console=plain', '-Dorg.gradle.jvmargs=-Xmx512m',
               '-Dorg.gradle.workers.max=1', '-I', '.ci/client_identity.gradle']
@@ -59,6 +61,35 @@ def main():
             command('fill -2 180 1 2 184 10 minecraft:air')
             command('tp Dev 0.5 180 0.5 0 0')
             command('execute as Dev run suit fiskheroes:black_canary')
+            # A dark, static background makes the untextured translucent ring measurable
+            # without relying on any diagnostic texture or particle replacement.
+            command('time set day')
+            command('weather clear')
+            command('fill -6 176 8 6 186 8 minecraft:black_concrete')
+            xdo('key', 'F1')  # hide hand and HUD so they cannot count as a wave
+            time.sleep(1)
+            subprocess.run(['scrot', '-o', 'ci-sonic-before.png'], check=True, timeout=30)
+            before = Image.open('ci-sonic-before.png').convert('RGB').crop((430, 160, 850, 500))
+            xdo('keydown', 'c')
+            try:
+                wait_for(client_log, 'Sonic wave ring rendered', 30, 'wave renderer invoked', client)
+                brightened = 0
+                for sample in range(5):
+                    path = f'ci-sonic-ring-{sample}.png'
+                    subprocess.run(['scrot', '-o', path], check=True, timeout=30)
+                    after = Image.open(path).convert('RGB').crop((430, 160, 850, 500))
+                    count = sum(1 for old, new in zip(before.get_flattened_data(), after.get_flattened_data())
+                                if all(n - o >= 8 for o, n in zip(old, new)))
+                    brightened = max(brightened, count)
+                    time.sleep(.15)
+            finally:
+                xdo('keyup', 'c')
+                xdo('key', 'F1')
+            if brightened < 50:
+                raise RuntimeError(f'Sonic ring did not visibly brighten the background: {brightened} pixels')
+            print(f'PASS: visible translucent sonic ring ({brightened} brighter pixels)', flush=True)
+            command('fill -6 176 8 6 186 8 minecraft:air')
+            command('kill @e[type=fiskheroes:sonic_wave]')
             command('scoreboard objectives add sonic dummy')
             command('summon minecraft:cow 0.5 180.5 4.5 {NoAI:1b,NoGravity:1b,Silent:1b,Attributes:[{Name:"minecraft:generic.max_health",Base:100.0d}],Tags:["sonic_target"]}')
             command('data merge entity @e[type=minecraft:cow,tag=sonic_target,limit=1] {Health:100.0f}')
