@@ -349,9 +349,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         if (!griefingAllowed() || !(getOwner() instanceof ServerPlayer player)
                 || getDeltaMovement().lengthSqr() < 1.0E-7D) return;
         Vec3 start = position();
-        var obstacle = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
-        Vec3 end = obstacle.getType() == net.minecraft.world.phys.HitResult.Type.MISS
-                ? start.add(getDeltaMovement()) : obstacle.getLocation();
+        Vec3 end = start.add(getDeltaMovement());
+        // Most flight paths contain no eligible foliage. Walk only intersected blocks
+        // first and avoid a second entity/collision ray trace in the common case.
         var hit = net.minecraft.world.level.BlockGetter.traverseBlocks(start, end, this, (projectile, cursor) -> {
             var pos = cursor.immutable();
             if (!level().hasChunkAt(pos)) return null;
@@ -359,7 +359,11 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             if (!state.is(net.minecraft.world.level.block.Blocks.VINE) && !isOriginalDoublePlant(state)) return null;
             return state.getShape(level(), pos).clip(start, end, pos);
         }, projectile -> null);
-        if (hit == null || net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hit)) return;
+        if (hit == null) return;
+        var obstacle = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+        if (obstacle.getType() != net.minecraft.world.phys.HitResult.Type.MISS
+                && start.distanceToSqr(obstacle.getLocation()) <= start.distanceToSqr(hit.getLocation())) return;
+        if (net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hit)) return;
         var pos = hit.getBlockPos();
         if (!mayEdit(player, pos, hit.getDirection())) return;
         var state = level().getBlockState(pos);

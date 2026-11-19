@@ -603,6 +603,13 @@ public final class PortRegressionTests
         if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
         { helper.fail("The outline trace must not cut vines behind a solid wall"); return; }
         level.removeBlock(wall, false);
+        var target = net.minecraft.world.entity.EntityType.COW.create(level);
+        if (target == null) { helper.fail("Shield foliage occlusion target missing"); return; }
+        target.setNoAi(true); target.setNoGravity(true);
+        target.setPos(base.getX() + .97D, base.getY() + 1.0D, base.getZ() + 1.3D); level.addFreshEntity(target);
+        shield = vineShieldProbe(level, owner, base, true, .97D); shield.discard(); target.discard();
+        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
+        { helper.fail("The outline trace must not cut vines beyond a nearer entity impact"); return; }
         shield = vineShieldProbe(level, owner, base, false, .97D); shield.discard();
         if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.VINE))
         { helper.fail("Disabled projectile griefing must preserve vines"); return; }
