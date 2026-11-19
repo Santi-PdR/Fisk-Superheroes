@@ -554,6 +554,83 @@ public final class PortRegressionTests
         restored.discard(); helper.succeed();
     }
 
+    public static final class ShieldFoliageGuard
+    {
+        private final net.minecraft.core.BlockPos pos;
+        boolean cancelImpact, cancelBreak;
+        int impactEvents, breakEvents;
+        ShieldFoliageGuard(net.minecraft.core.BlockPos pos) { this.pos = pos; }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onImpact(net.minecraftforge.event.entity.ProjectileImpactEvent event)
+        {
+            if (event.getProjectile() instanceof com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity
+                    && event.getRayTraceResult() instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getBlockPos().equals(pos))
+            { impactEvents++; if (cancelImpact) event.setCanceled(true); }
+        }
+        @net.minecraftforge.eventbus.api.SubscribeEvent
+        public void onBreak(net.minecraftforge.event.level.BlockEvent.BreakEvent event)
+        {
+            if (event.getPos().equals(pos)) { breakEvents++; if (cancelBreak) event.setCanceled(true); }
+        }
+    }
+
+    private static com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity grassShieldProbe(
+            net.minecraft.server.level.ServerLevel level, net.minecraft.world.entity.player.Player owner,
+            net.minecraft.core.BlockPos base, boolean griefing)
+    {
+        var shield = new com.fiskmods.heroes.common.entity.projectile.ThrownShieldEntity(level, owner,
+                new net.minecraft.world.item.ItemStack(com.fiskmods.heroes.common.item.ModItems.CAPTAIN_AMERICAS_SHIELD.get()));
+        shield.setCanDoGriefing(griefing);
+        shield.setPos(base.getX() + .5D, base.getY() + 1.25D, base.getZ() + .5D);
+        shield.setDeltaMovement(0, 0, 3); level.addFreshEntity(shield); shield.tick();
+        return shield;
+    }
+
+    @GameTest(template = "test_empty")
+    public static void shieldCutsShortGrassWithoutCrossingProtectionOrWalls(GameTestHelper helper)
+    {
+        var level = helper.getLevel();
+        var base = helper.absolutePos(new net.minecraft.core.BlockPos(1, 185, 1));
+        var plant = base.offset(0, 1, 2); var wall = base.offset(0, 1, 1);
+        var owner = new net.minecraftforge.common.util.FakePlayer(level,
+                new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "shield-foliage-test"));
+        owner.setPos(base.getX() - 15, base.getY(), base.getZ());
+        level.setBlockAndUpdate(plant.below(), net.minecraft.world.level.block.Blocks.DIRT.defaultBlockState());
+        level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.GRASS.defaultBlockState());
+        level.setBlockAndUpdate(wall, net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+        var shield = grassShieldProbe(level, owner, base, true); shield.discard();
+        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
+        { helper.fail("The outline trace must not cut grass behind a solid wall"); return; }
+        level.removeBlock(wall, false);
+        shield = grassShieldProbe(level, owner, base, false); shield.discard();
+        if (!level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
+        { helper.fail("Disabled projectile griefing must preserve grass"); return; }
+        var guard = new ShieldFoliageGuard(plant);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(guard);
+        try
+        {
+            guard.cancelImpact = true;
+            shield = grassShieldProbe(level, owner, base, true); shield.discard();
+            if (guard.impactEvents != 1 || guard.breakEvents != 0 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
+            { helper.fail("Canceled projectile impact must preserve grass without a break event"); return; }
+            guard.cancelImpact = false; guard.cancelBreak = true;
+            shield = grassShieldProbe(level, owner, base, true); shield.discard();
+            if (guard.breakEvents != 1 || !level.getBlockState(plant).is(net.minecraft.world.level.block.Blocks.GRASS))
+            { helper.fail("A canceled block break must preserve grass"); return; }
+            guard.cancelBreak = false;
+            shield = grassShieldProbe(level, owner, base, true);
+            if (!level.isEmptyBlock(plant) || shield.isReturning() || shield.getDeltaMovement().z <= 0)
+            { shield.discard(); helper.fail("An allowed grass impact must cut grass and continue flying"); return; }
+            shield.discard();
+            level.setBlockAndUpdate(plant, net.minecraft.world.level.block.Blocks.FERN.defaultBlockState());
+            shield = grassShieldProbe(level, owner, base, true);
+            if (!level.isEmptyBlock(plant) || shield.isReturning())
+            { shield.discard(); helper.fail("Ferns must be cut without starting shield return"); return; }
+            shield.discard(); helper.succeed();
+        }
+        finally { net.minecraftforge.common.MinecraftForge.EVENT_BUS.unregister(guard); }
+    }
+
     @GameTest(template = "test_empty")
     public static void thrownShieldBouncesOffSolidWall(GameTestHelper helper)
     {

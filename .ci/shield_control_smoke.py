@@ -136,6 +136,8 @@ def main():
             # Throw the real equipped item through a glass wall. The center and
             # adjacent block must break, but a block outside the 3x3 plane must remain.
             command('fill -2 180 6 2 183 6 minecraft:glass')
+            # The earlier side hit knocks the player away from the original setup.
+            command('tp Dev 0.5 180 0.5 0 0')
             command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{GlassProbe:1b}')
             xdo('keydown', 'c')
             try:

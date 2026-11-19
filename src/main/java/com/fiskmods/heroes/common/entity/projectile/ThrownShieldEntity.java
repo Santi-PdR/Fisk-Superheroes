@@ -216,6 +216,9 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             }
         }
 
+        // Vanilla 1.20 traces collision shapes, so plants with no collision need a
+        // separate, bounded outline trace before the ordinary projectile movement.
+        if (!level().isClientSide) breakShortGrassAlongFlight();
         // ThrowableProjectile supplies the same air/water drag and 0.03 gravity as the original.
         super.tick();
         // Retain a bounded fallback for projectiles that never collide or cannot be recovered.
@@ -304,9 +307,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     /** The original breaks a 3x3 plane of glass around the impact face. */
     private void breakGlassAtImpact(BlockHitResult hit)
     {
-        if (!canDoGriefing || !com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get()
-                || !com.fiskmods.heroes.common.config.SHConfig.ALLOW_THROWN_SHIELD_GRIEFING.get()
-                || !(getOwner() instanceof ServerPlayer player)) return;
+        if (!griefingAllowed() || !(getOwner() instanceof ServerPlayer player)) return;
         var center = hit.getBlockPos();
         var state = level().getBlockState(center);
         if (!isGlass(state) || state.getDestroySpeed(level(), center) < 0.0F) return;
@@ -321,14 +322,51 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
                     case Y -> center.offset(a, 0, b);
                     case Z -> center.offset(a, b, 0);
                 };
-                if (!level().hasChunkAt(pos) || !level().getWorldBorder().isWithinBounds(pos)
-                        || !level().mayInteract(player, pos) || !player.mayUseItemAt(pos, direction, getItem())) continue;
+                if (!mayEdit(player, pos, direction)) continue;
                 var candidate = level().getBlockState(pos);
                 if (!isGlass(candidate) || candidate.getDestroySpeed(level(), pos) < 0.0F) continue;
                 if (com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, candidate))
                     level().destroyBlock(pos, true, player);
             }
         }
+    }
+
+    private boolean griefingAllowed()
+    {
+        return canDoGriefing && com.fiskmods.heroes.common.config.SHConfig.ALLOW_GRIEFING.get()
+                && com.fiskmods.heroes.common.config.SHConfig.ALLOW_THROWN_SHIELD_GRIEFING.get();
+    }
+
+    private boolean mayEdit(ServerPlayer player, net.minecraft.core.BlockPos pos, net.minecraft.core.Direction face)
+    {
+        return level().hasChunkAt(pos) && level().getWorldBorder().isWithinBounds(pos)
+                && level().mayInteract(player, pos) && player.mayUseItemAt(pos, face, getItem());
+    }
+
+    /** 1.7 tallgrass corresponds to 1.20 grass and ferns; double plants need separate handling. */
+    private void breakShortGrassAlongFlight()
+    {
+        if (!griefingAllowed() || !(getOwner() instanceof ServerPlayer player)
+                || getDeltaMovement().lengthSqr() < 1.0E-7D) return;
+        Vec3 start = position();
+        var obstacle = net.minecraft.world.entity.projectile.ProjectileUtil.getHitResultOnMoveVector(this, this::canHitEntity);
+        Vec3 end = obstacle.getType() == net.minecraft.world.phys.HitResult.Type.MISS
+                ? start.add(getDeltaMovement()) : obstacle.getLocation();
+        var hit = net.minecraft.world.level.BlockGetter.traverseBlocks(start, end, this, (projectile, cursor) -> {
+            var pos = cursor.immutable();
+            if (!level().hasChunkAt(pos)) return null;
+            var state = level().getBlockState(pos);
+            if (!state.is(net.minecraft.world.level.block.Blocks.GRASS) && !state.is(net.minecraft.world.level.block.Blocks.FERN)) return null;
+            return state.getShape(level(), pos).clip(start, end, pos);
+        }, projectile -> null);
+        if (hit == null || net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(this, hit)) return;
+        var pos = hit.getBlockPos();
+        if (!mayEdit(player, pos, hit.getDirection())) return;
+        var state = level().getBlockState(pos);
+        if ((state.is(net.minecraft.world.level.block.Blocks.GRASS) || state.is(net.minecraft.world.level.block.Blocks.FERN))
+                && state.getDestroySpeed(level(), pos) >= 0.0F
+                && com.fiskmods.heroes.common.util.ProtectedBlockChanges.canBreak(player, pos, state))
+            level().destroyBlock(pos, true, player);
     }
 
     private static boolean isGlass(net.minecraft.world.level.block.state.BlockState state)

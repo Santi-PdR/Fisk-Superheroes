@@ -65,7 +65,7 @@ public class SHConfig
                 .define("allowFlight", true);
         ALLOW_GRIEFING = builder.comment("Whether abilities may break blocks")
                 .define("allowGriefing", true);
-        ALLOW_THROWN_SHIELD_GRIEFING = builder.comment("Whether thrown shields may break glass; also requires allowGriefing")
+        ALLOW_THROWN_SHIELD_GRIEFING = builder.comment("Whether thrown shields may break glass and short vegetation; also requires allowGriefing")
                 .define("allowThrownShieldGriefing", true);
         ALLOW_FIRE_CHARGE_ARROW_PLACEMENT = builder.comment("Whether fire-charge arrows may place fire on impact")
                 .define("allowFireChargeArrowPlacement", true);
