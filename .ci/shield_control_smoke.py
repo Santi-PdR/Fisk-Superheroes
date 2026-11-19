@@ -171,6 +171,26 @@ def main():
             if count != 3: raise RuntimeError(f'Expected three shield launches, saw {count}')
             command('kill @e[type=fiskheroes:thrown_shield]')
             command('setblock 0 181 5 minecraft:air')
+            # Test a lower-half hit against a real two-block plant. Its support
+            # stays intact, and neither half may remain after the impact.
+            command('setblock 0 180 4 minecraft:dirt')
+            command('setblock 0 181 4 minecraft:tall_grass[half=lower]')
+            command('setblock 0 182 4 minecraft:tall_grass[half=upper]')
+            command('tp Dev 0.5 180 0.5 0 0')
+            command('item replace entity Dev weapon.mainhand with fiskheroes:captain_americas_shield{PlantProbe:1b}')
+            xdo('keydown', 'c')
+            try:
+                time.sleep(1)
+                attack()
+                time.sleep(2)
+            finally: xdo('keyup', 'c')
+            command('execute if block 0 181 4 minecraft:air if block 0 182 4 minecraft:air '
+                    'if block 0 180 4 minecraft:dirt run say SHIELD_DOUBLE_PLANT_OK')
+            wait_for(server_log, r'\[Server\] SHIELD_DOUBLE_PLANT_OK', 30,
+                     'real shield throw cuts both halves of tall grass', server)
+            count = server_log.read_text(errors='replace').count('Shield throw completed: player=Dev')
+            if count != 4: raise RuntimeError(f'Expected four shield launches, saw {count}')
+            command('kill @e[type=fiskheroes:thrown_shield]')
             if not keyboard:
                 # Sample actual server-owned projectiles with a runner-only magenta
                 # texture. Fresh spawns prevent client-side gravity prediction from
