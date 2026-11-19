@@ -32,6 +32,8 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
             ThrownShieldEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> MAGNETIC_ACTIVE = SynchedEntityData.defineId(
             ThrownShieldEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<java.util.Optional<java.util.UUID>> OWNER_UUID = SynchedEntityData.defineId(
+            ThrownShieldEntity.class, EntityDataSerializers.OPTIONAL_UUID);
     public static final net.minecraft.resources.ResourceKey<net.minecraft.world.damagesource.DamageType> SHIELD_DAMAGE =
             net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.DAMAGE_TYPE,
                     com.fiskmods.heroes.FiskHeroes.id("thrown_shield"));
@@ -40,6 +42,7 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
     private int returnTicks;
     private float spinTime, previousSpinTime;
     private boolean magneticDiagnosticLogged;
+    private boolean ownerDiagnosticLogged;
 
     public ThrownShieldEntity(EntityType<? extends ThrownShieldEntity> type, Level level)
     {
@@ -62,6 +65,23 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         entityData.define(RETURNING, false);
         entityData.define(AGE_OFFSET, 0);
         entityData.define(MAGNETIC_ACTIVE, false);
+        entityData.define(OWNER_UUID, java.util.Optional.empty());
+    }
+
+    @Override
+    public void setOwner(Entity owner)
+    {
+        super.setOwner(owner);
+        if (!level().isClientSide && owner != null) entityData.set(OWNER_UUID, java.util.Optional.of(owner.getUUID()));
+    }
+
+    @Override
+    public Entity getOwner()
+    {
+        Entity owner = super.getOwner();
+        if (owner == null && level().isClientSide)
+            return entityData.get(OWNER_UUID).map(id -> level().getPlayerByUUID(id)).orElse(null);
+        return owner;
     }
 
     @Override
@@ -131,6 +151,16 @@ public final class ThrownShieldEntity extends ThrowableItemProjectile
         {
             dropShield();
             return;
+        }
+        // Owner UUIDs loaded from disk bypass setOwner; sync them once resolved.
+        if (!level().isClientSide && owner != null && !entityData.get(OWNER_UUID).equals(java.util.Optional.of(owner.getUUID())))
+            entityData.set(OWNER_UUID, java.util.Optional.of(owner.getUUID()));
+        if (level().isClientSide && owner instanceof Player && !ownerDiagnosticLogged
+                && com.fiskmods.heroes.common.item.ItemCaptainAmericaShield.isElectromagnetic(getItem())
+                && Boolean.getBoolean("fiskheroes.ciShieldDiagnostics"))
+        {
+            ownerDiagnosticLogged = true;
+            com.fiskmods.heroes.FiskHeroes.LOGGER.info("Shield owner resolved: entity={}, owner={}", getId(), owner.getName().getString());
         }
 
         if (isReturning() && owner != null)

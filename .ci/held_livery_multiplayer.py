@@ -177,18 +177,22 @@ def main():
             observer_start = len(observer_log.read_text(errors='replace'))
             server_start = len(server_log.read_text(errors='replace'))
             command('summon fiskheroes:thrown_shield 0 181.6 18 '
-                    '{Owner:' + owner_tag + ',NoGravity:1b,Returning:1b,FlightAge:0,'
+                    '{Owner:' + owner_tag + ',Tags:["magnetic_probe"],NoGravity:1b,Returning:0b,FlightAge:0,'
                     'Shield:{id:"fiskheroes:captain_americas_shield",Count:1b,'
                     'tag:{Electromagnetic:1b,MagneticProbe:73}},Motion:[0.0d,0.0d,0.0d]}')
             time.sleep(.5)
             command('tp Dev 0 180 0 0 0')
-            wait_for_new(server_log, r'Shield magnetic return: side=server, entity=\d+, owner=Partner, magnetic=true',
-                         server_start, 30, 'server starts delayed magnetic return', server)
-            match = re.search(r'Shield magnetic return: side=server, entity=(\d+), owner=Partner, magnetic=true',
-                              server_log.read_text(errors='replace')[server_start:])
-            entity_id = match.group(1)
-            wait_for_new(observer_log, rf'Thrown shield model rendered: entity={entity_id}\b', observer_start, 30,
+            wait_for_new(observer_log, r'Thrown shield model rendered: entity=\d+', observer_start, 30,
                          'late observer renders the remote projectile', observer)
+            match = re.search(r'Thrown shield model rendered: entity=(\d+)',
+                              observer_log.read_text(errors='replace')[observer_start:])
+            entity_id = match.group(1)
+            wait_for_new(observer_log, rf'Shield owner resolved: entity={entity_id}, owner=Partner', observer_start, 30,
+                         'late observer resolves the projectile owner', observer)
+            # Start the return only after the client has actually loaded both entities.
+            command('data merge entity @e[type=fiskheroes:thrown_shield,tag=magnetic_probe,limit=1] {Returning:1b}')
+            wait_for_new(server_log, rf'Shield magnetic return: side=server, entity={entity_id}, owner=Partner, magnetic=true',
+                         server_start, 30, 'server starts delayed magnetic return', server)
             wait_for_new(observer_log, rf'Shield magnetic return: side=client, entity={entity_id}, owner=Partner, magnetic=true',
                          observer_start, 30, 'late observer receives authoritative magnetic state', observer)
             wait_for_new(server_log, rf'Shield recovered: entity={entity_id}, owner=Partner, magnetic=true',
