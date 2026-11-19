@@ -2,7 +2,7 @@ PASS: dedicated server ready
 PASS: client joined
 PASS: katana FIRST_PERSON_RIGHT_HAND foil=False
 PASS: katana FIRST_PERSON_RIGHT_HAND foil=True
-PASS: enchanted katana changes 13131 pixels in first person
+PASS: enchanted katana changes 13171 pixels in first person
 PASS: chokuto FIRST_PERSON_RIGHT_HAND foil=False
 PASS: chokuto FIRST_PERSON_RIGHT_HAND foil=True
 PASS: scimitar FIRST_PERSON_RIGHT_HAND foil=False
@@ -58,165 +58,168 @@ PASS: newly supported suit liveries resolve on enchanted held items
 java.lang.UnsupportedOperationException: Reflective setAccessible(true) disabled
 java.lang.IllegalAccessException: class io.netty.util.internal.PlatformDependent0$7 (in module io.netty.common) cannot access class jdk.internal.misc.Unsafe (in module java.base) because module java.base does not export jdk.internal.misc to module io.netty.common
 	at jdk.internal.reflect.Reflection.newIllegalAccessException(Reflection.java:392) ~[?:?] {}
-[03:46:59] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=GUI, foil=false, texture=fiskheroes:textures/models/katana.png
-[03:46:59] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
-[03:46:59] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:46:59] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/katana.png
-[03:47:03] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=GUI, foil=true, texture=fiskheroes:textures/models/katana.png
-[03:47:03] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/katana.png
-[03:47:07] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=GUI, foil=false, texture=fiskheroes:textures/models/chokuto.png
-[03:47:07] [Render thread/INFO] [Fisk's Superheroes/]: First-person chokuto arm rendered: RIGHT
-[03:47:07] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/chokuto.png
-[03:47:08] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=GUI, foil=true, texture=fiskheroes:textures/models/chokuto.png
-[03:47:08] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/chokuto.png
-[03:47:09] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=GUI, foil=false, texture=fiskheroes:textures/models/scimitar.png
-[03:47:09] [Render thread/INFO] [Fisk's Superheroes/]: First-person scimitar arm rendered: RIGHT
-[03:47:09] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/scimitar.png
-[03:47:10] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=GUI, foil=true, texture=fiskheroes:textures/models/scimitar.png
-[03:47:10] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/scimitar.png
-[03:47:11] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=GUI, foil=false, texture=fiskheroes:textures/models/bo_staff.png
-[03:47:11] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
-[03:47:11] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/bo_staff.png
-[03:47:12] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=GUI, foil=true, texture=fiskheroes:textures/models/bo_staff.png
-[03:47:12] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/bo_staff.png
-[03:47:13] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=GUI, foil=false, texture=fiskheroes:textures/models/ruptures_scythe.png
-[03:47:13] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
-[03:47:13] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/ruptures_scythe.png
-[03:47:14] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=GUI, foil=true, texture=fiskheroes:textures/models/ruptures_scythe.png
-[03:47:14] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/ruptures_scythe.png
-[03:47:15] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=GUI, foil=false, texture=fiskheroes:textures/models/tonfa.png
-[03:47:15] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
-[03:47:15] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:15] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/tonfa.png
-[03:47:16] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=GUI, foil=true, texture=fiskheroes:textures/models/tonfa.png
-[03:47:16] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/tonfa.png
-[03:47:17] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=GUI, foil=false, texture=fiskheroes:textures/models/captain_americas_shield.png
-[03:47:17] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: RIGHT
-[03:47:17] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:17] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/captain_americas_shield.png
-[03:47:18] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=GUI, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
-[03:47:18] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
-[03:47:19] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/grappling_gun.png
-[03:47:19] [Render thread/INFO] [Fisk's Superheroes/]: First-person grappling gun arm rendered: RIGHT
-[03:47:19] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:19] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/grappling_gun.png
-[03:47:20] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
-[03:47:20] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
-[03:47:21] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=GUI, foil=false, texture=fiskheroes:textures/models/chronos_rifle.png
-[03:47:21] [Render thread/INFO] [Fisk's Superheroes/]: First-person chronos rifle arm rendered: RIGHT
-[03:47:21] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:21] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/chronos_rifle.png
-[03:47:22] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=GUI, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
-[03:47:22] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
-[03:47:23] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/rip_hunters_gun.png
-[03:47:23] [Render thread/INFO] [Fisk's Superheroes/]: First-person rip hunter gun arm rendered: RIGHT
-[03:47:23] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:23] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/rip_hunters_gun.png
-[03:47:24] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
-[03:47:24] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
-[03:47:25] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/cold_gun.png
-[03:47:25] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
-[03:47:25] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:25] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/cold_gun.png
-[03:47:26] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/cold_gun.png
-[03:47:26] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/cold_gun.png
-[03:47:27] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/heat_gun.png
-[03:47:27] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
-[03:47:27] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:27] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/heat_gun.png
-[03:47:28] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/heat_gun.png
-[03:47:28] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/heat_gun.png
-[03:47:29] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=GUI, foil=false, texture=fiskheroes:textures/models/desert_eagle.png
-[03:47:29] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
-[03:47:29] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:29] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/desert_eagle.png
-[03:47:30] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=GUI, foil=true, texture=fiskheroes:textures/models/desert_eagle.png
-[03:47:30] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/desert_eagle.png
-[03:47:31] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=GUI, foil=false, texture=fiskheroes:textures/models/beretta_93r.png
-[03:47:31] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
-[03:47:31] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
-[03:47:31] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/beretta_93r.png
-[03:47:32] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=GUI, foil=true, texture=fiskheroes:textures/models/beretta_93r.png
-[03:47:32] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/beretta_93r.png
-[03:47:33] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=GUI, foil=false, texture=fiskheroes:textures/models/the_flash_ring.png
-[03:47:33] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/the_flash_ring.png
-[03:47:34] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=GUI, foil=true, texture=fiskheroes:textures/models/the_flash_ring.png
-[03:47:34] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/the_flash_ring.png
-[03:47:39] [Render thread/INFO] [Fisk's Superheroes/]: First-person chokuto arm rendered: LEFT
-[03:47:39] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/chokuto.png
-[03:47:43] [Render thread/INFO] [Fisk's Superheroes/]: First-person scimitar arm rendered: LEFT
-[03:47:43] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/scimitar.png
-[03:47:47] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: LEFT
-[03:47:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_LEFT_HAND, texture=default
-[03:47:47] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
-[03:47:48] [Render thread/INFO] [Fisk's Superheroes/]: First-person grappling gun arm rendered: LEFT
-[03:47:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:grappling_gun, context=FIRST_PERSON_LEFT_HAND, texture=default
-[03:47:48] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
-[03:47:49] [Render thread/INFO] [Fisk's Superheroes/]: First-person chronos rifle arm rendered: LEFT
-[03:47:49] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_LEFT_HAND, texture=default
-[03:47:49] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
-[03:47:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person rip hunter gun arm rendered: LEFT
-[03:47:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_LEFT_HAND, texture=default
-[03:47:50] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
-[03:47:52] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deadpool_xmen, texture=fiskheroes:textures/heroes/deadpool_xmen_layer1.png, poseAligned=true
-[03:47:52] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:52] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:53] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:53] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:54] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:54] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:55] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:55] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:56] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
-[03:47:56] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=GUI, foil=false, texture=fiskheroes:textures/models/katana.png
+[04:14:50] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: RIGHT
+[04:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:14:50] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/katana.png
+[04:14:54] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=GUI, foil=true, texture=fiskheroes:textures/models/katana.png
+[04:14:54] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/katana.png
+[04:14:58] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=GUI, foil=false, texture=fiskheroes:textures/models/chokuto.png
+[04:14:58] [Render thread/INFO] [Fisk's Superheroes/]: First-person chokuto arm rendered: RIGHT
+[04:14:58] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/chokuto.png
+[04:14:59] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=GUI, foil=true, texture=fiskheroes:textures/models/chokuto.png
+[04:14:59] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/chokuto.png
+[04:15:00] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=GUI, foil=false, texture=fiskheroes:textures/models/scimitar.png
+[04:15:00] [Render thread/INFO] [Fisk's Superheroes/]: First-person scimitar arm rendered: RIGHT
+[04:15:00] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/scimitar.png
+[04:15:01] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=GUI, foil=true, texture=fiskheroes:textures/models/scimitar.png
+[04:15:01] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/scimitar.png
+[04:15:02] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=GUI, foil=false, texture=fiskheroes:textures/models/bo_staff.png
+[04:15:02] [Render thread/INFO] [Fisk's Superheroes/]: First-person bo staff arm rendered: RIGHT
+[04:15:02] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/bo_staff.png
+[04:15:03] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=GUI, foil=true, texture=fiskheroes:textures/models/bo_staff.png
+[04:15:03] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:bo_staff, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/bo_staff.png
+[04:15:04] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=GUI, foil=false, texture=fiskheroes:textures/models/ruptures_scythe.png
+[04:15:04] [Render thread/INFO] [Fisk's Superheroes/]: First-person scythe arm rendered: RIGHT
+[04:15:04] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/ruptures_scythe.png
+[04:15:05] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=GUI, foil=true, texture=fiskheroes:textures/models/ruptures_scythe.png
+[04:15:05] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:ruptures_scythe, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/ruptures_scythe.png
+[04:15:06] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=GUI, foil=false, texture=fiskheroes:textures/models/tonfa.png
+[04:15:06] [Render thread/INFO] [Fisk's Superheroes/]: First-person tonfa arm rendered: RIGHT
+[04:15:06] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:06] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/tonfa.png
+[04:15:07] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=GUI, foil=true, texture=fiskheroes:textures/models/tonfa.png
+[04:15:07] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/tonfa.png
+[04:15:08] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=GUI, foil=false, texture=fiskheroes:textures/models/captain_americas_shield.png
+[04:15:08] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: RIGHT
+[04:15:08] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:08] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/captain_americas_shield.png
+[04:15:09] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=GUI, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
+[04:15:09] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
+[04:15:10] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/grappling_gun.png
+[04:15:10] [Render thread/INFO] [Fisk's Superheroes/]: First-person grappling gun arm rendered: RIGHT
+[04:15:10] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:10] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/grappling_gun.png
+[04:15:11] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
+[04:15:11] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
+[04:15:12] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=GUI, foil=false, texture=fiskheroes:textures/models/chronos_rifle.png
+[04:15:12] [Render thread/INFO] [Fisk's Superheroes/]: First-person chronos rifle arm rendered: RIGHT
+[04:15:12] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:12] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/chronos_rifle.png
+[04:15:13] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
+[04:15:13] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=GUI, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
+[04:15:14] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/rip_hunters_gun.png
+[04:15:14] [Render thread/INFO] [Fisk's Superheroes/]: First-person rip hunter gun arm rendered: RIGHT
+[04:15:14] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:14] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/rip_hunters_gun.png
+[04:15:15] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
+[04:15:15] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
+[04:15:16] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/cold_gun.png
+[04:15:16] [Render thread/INFO] [Fisk's Superheroes/]: First-person cold gun arm rendered: RIGHT
+[04:15:16] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:16] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/cold_gun.png
+[04:15:17] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/cold_gun.png
+[04:15:17] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:cold_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/cold_gun.png
+[04:15:18] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=GUI, foil=false, texture=fiskheroes:textures/models/heat_gun.png
+[04:15:18] [Render thread/INFO] [Fisk's Superheroes/]: First-person heat gun arm rendered: RIGHT
+[04:15:18] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:18] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/heat_gun.png
+[04:15:19] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=GUI, foil=true, texture=fiskheroes:textures/models/heat_gun.png
+[04:15:19] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:heat_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/heat_gun.png
+[04:15:20] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=GUI, foil=false, texture=fiskheroes:textures/models/desert_eagle.png
+[04:15:20] [Render thread/INFO] [Fisk's Superheroes/]: First-person desert eagle arm rendered: RIGHT
+[04:15:20] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:20] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/desert_eagle.png
+[04:15:21] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/desert_eagle.png
+[04:15:21] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:desert_eagle, context=GUI, foil=true, texture=fiskheroes:textures/models/desert_eagle.png
+[04:15:22] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=GUI, foil=false, texture=fiskheroes:textures/models/beretta_93r.png
+[04:15:22] [Render thread/INFO] [Fisk's Superheroes/]: First-person beretta arm rendered: RIGHT
+[04:15:22] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, texture=default
+[04:15:22] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/beretta_93r.png
+[04:15:23] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=GUI, foil=true, texture=fiskheroes:textures/models/beretta_93r.png
+[04:15:23] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:beretta_93r, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/beretta_93r.png
+[04:15:24] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=GUI, foil=false, texture=fiskheroes:textures/models/the_flash_ring.png
+[04:15:24] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=FIRST_PERSON_RIGHT_HAND, foil=false, texture=fiskheroes:textures/models/the_flash_ring.png
+[04:15:25] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=GUI, foil=true, texture=fiskheroes:textures/models/the_flash_ring.png
+[04:15:25] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:flash_ring, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/models/the_flash_ring.png
+[04:15:26] [Render thread/INFO] [Fisk's Superheroes/]: First-person katana arm rendered: LEFT
+[04:15:26] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, texture=default
+[04:15:26] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:katana, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/katana.png
+[04:15:30] [Render thread/INFO] [Fisk's Superheroes/]: First-person chokuto arm rendered: LEFT
+[04:15:30] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chokuto, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/chokuto.png
+[04:15:34] [Render thread/INFO] [Fisk's Superheroes/]: First-person scimitar arm rendered: LEFT
+[04:15:34] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:scimitar, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/scimitar.png
+[04:15:39] [Render thread/INFO] [Fisk's Superheroes/]: First-person captain america shield arm rendered: LEFT
+[04:15:39] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_LEFT_HAND, texture=default
+[04:15:39] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/captain_americas_shield.png
+[04:15:40] [Render thread/INFO] [Fisk's Superheroes/]: First-person grappling gun arm rendered: LEFT
+[04:15:40] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:grappling_gun, context=FIRST_PERSON_LEFT_HAND, texture=default
+[04:15:40] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/grappling_gun.png
+[04:15:41] [Render thread/INFO] [Fisk's Superheroes/]: First-person chronos rifle arm rendered: LEFT
+[04:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_LEFT_HAND, texture=default
+[04:15:41] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/chronos_rifle.png
+[04:15:42] [Render thread/INFO] [Fisk's Superheroes/]: First-person rip hunter gun arm rendered: LEFT
+[04:15:42] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=none, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_LEFT_HAND, texture=default
+[04:15:42] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_LEFT_HAND, foil=true, texture=fiskheroes:textures/models/rip_hunters_gun.png
+[04:15:44] [Render thread/INFO] [Fisk's Superheroes/]: First-person suit arm rendered: hero=fiskheroes:deadpool_xmen, texture=fiskheroes:textures/heroes/deadpool_xmen_layer1.png, poseAligned=true
+[04:15:44] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:44] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:tactical_tonfa, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:45] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:45] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:captain_americas_shield, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:46] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:46] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:grappling_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:47] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:47] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:chronos_rifle, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:48] [Render thread/INFO] [Fisk's Superheroes/]: Held weapon livery: wearer=Dev, hero=fiskheroes:deadpool_xmen, item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
+[04:15:48] [Render thread/INFO] [Fisk's Superheroes/]: Item model base pass: item=fiskheroes:rip_hunters_gun, context=FIRST_PERSON_RIGHT_HAND, foil=true, texture=fiskheroes:textures/heroes/deadpool_xmen_gun.png
 ==== server tail ====
-[03:46:58] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
-[03:46:58] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,41.02009132597996,0.0
-[03:46:58] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,41.02009132597996,0.0
-[03:46:58] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,41.02009132597996,0.0
-[03:46:58] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,41.02009132597996,0.0
-[03:46:59] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Katana]
-[03:47:03] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Katana]
-[03:47:07] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chokuto]
-[03:47:08] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chokuto]
-[03:47:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Scimitar]
-[03:47:10] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Scimitar]
-[03:47:11] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Bo-Staff]
-[03:47:12] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Bo-Staff]
-[03:47:13] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rupture's Scythe]
-[03:47:14] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rupture's Scythe]
-[03:47:15] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
-[03:47:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
-[03:47:17] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
-[03:47:18] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
-[03:47:19] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
-[03:47:20] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
-[03:47:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
-[03:47:22] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
-[03:47:23] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
-[03:47:24] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
-[03:47:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
-[03:47:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
-[03:47:27] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Heat Gun]
-[03:47:28] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Heat Gun]
-[03:47:29] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[03:47:30] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
-[03:47:31] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
-[03:47:32] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
-[03:47:33] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Flash Ring]
-[03:47:34] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Flash Ring]
-[03:47:35] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Katanas]
-[03:47:39] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Chokutos]
-[03:47:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Scimitars]
-[03:47:47] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
-[03:47:47] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
-[03:47:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
-[03:47:49] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
-[03:47:50] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
-[03:47:51] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
-[03:47:52] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
-[03:47:52] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
-[03:47:53] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
-[03:47:54] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
-[03:47:55] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
-[03:47:56] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
+[04:14:47] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 4.0,245.0,9.0
+[04:14:48] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 176 block(s)
+[04:14:48] [Server thread/INFO] [minecraft/MinecraftServer]: Successfully filled 66 block(s)
+[04:14:49] [Server thread/INFO] [minecraft/MinecraftServer]: Teleported Dev to 0.500000, 180.000000, 0.500000
+[04:14:49] [Server thread/WARN] [minecraft/ServerGamePacketListenerImpl]: Dev moved too quickly! 0.0,41.02009132597996,0.0
+[04:14:50] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Katana]
+[04:14:54] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Katana]
+[04:14:58] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chokuto]
+[04:14:59] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chokuto]
+[04:15:00] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Scimitar]
+[04:15:01] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Scimitar]
+[04:15:02] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Bo-Staff]
+[04:15:03] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Bo-Staff]
+[04:15:04] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rupture's Scythe]
+[04:15:05] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rupture's Scythe]
+[04:15:06] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
+[04:15:07] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
+[04:15:08] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
+[04:15:09] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
+[04:15:10] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
+[04:15:11] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
+[04:15:12] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
+[04:15:13] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
+[04:15:14] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
+[04:15:15] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
+[04:15:16] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
+[04:15:17] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Cold Gun]
+[04:15:18] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Heat Gun]
+[04:15:19] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Heat Gun]
+[04:15:20] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[04:15:21] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Desert Eagle]
+[04:15:22] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
+[04:15:23] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Beretta 93R]
+[04:15:24] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Flash Ring]
+[04:15:25] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Flash Ring]
+[04:15:26] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Katanas]
+[04:15:30] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Chokutos]
+[04:15:34] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Dual Scimitars]
+[04:15:38] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[04:15:39] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
+[04:15:40] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
+[04:15:41] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
+[04:15:42] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
+[04:15:43] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Air]
+[04:15:44] [Server thread/INFO] [minecraft/MinecraftServer]: Equipped Deadpool.
+[04:15:44] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Tactical Tonfa]
+[04:15:45] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Captain America's Shield]
+[04:15:46] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Grappling Gun]
+[04:15:47] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Chronos' Rifle]
+[04:15:48] [Server thread/INFO] [minecraft/MinecraftServer]: Replaced a slot on Dev with [Rip Hunter's Gun]
